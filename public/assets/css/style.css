@@ -1,0 +1,232 @@
+.ai-solutions-home-section-1 {
+  background-color: #020202;
+}
+.ai-solutions-home-section-1 .info-group {
+  margin-left: -84px;
+}
+
+.small-line {
+  width: 30px;
+  height: 1px;
+  background: var(--tc-theme-primary);
+}
+
+.ai-solutions-home-section-3 {
+  background-color: #f8efff;
+}
+
+.ai-solutions-home-section-5 .work-icon span {
+  background: #353535;
+}
+.ai-solutions-home-section-5 .icon-large {
+  width: 216px;
+  height: 216px;
+  background: var(--tc-system-white);
+}
+.ai-solutions-home-section-5 .dashed-line1 {
+  height: 1px;
+  background-image: linear-gradient(to right, #484848 33%, rgba(255, 255, 255, 0) 0%);
+  background-position: center;
+  background-size: 30px 1px;
+  background-repeat: repeat-x;
+}
+.ai-solutions-home-section-5 .dashed-line2 {
+  height: 1px;
+  background-image: linear-gradient(to right, #484848 33%, rgba(255, 255, 255, 0) 0%);
+  background-position: center;
+  background-size: 30px 1px;
+  background-repeat: repeat-x;
+  rotate: 22deg;
+}
+.ai-solutions-home-section-5 .dashed-line3 {
+  height: 1px;
+  background-image: linear-gradient(to right, #484848 33%, rgba(255, 255, 255, 0) 0%);
+  background-position: center;
+  background-size: 25px 1px;
+  background-repeat: repeat-x;
+  rotate: -22deg;
+}
+
+.ai-solutions-home-section-6 .card-pricing.card-basic {
+  background: #eff5ff;
+}
+.ai-solutions-home-section-6 .card-pricing.card-basic .border-card {
+  --bs-border-color: #cfdaec;
+}
+.ai-solutions-home-section-6 .card-pricing.card-advanced {
+  background: #f8efff;
+}
+.ai-solutions-home-section-6 .card-pricing.card-advanced .border-card {
+  --bs-border-color: #e6d8f0;
+}
+.ai-solutions-home-section-6 .card-pricing.card-advanced .sale-off {
+  border-radius: 0px 0px 6px 6px;
+  background: var(--tc-linear-1);
+}
+.ai-solutions-home-section-6 .card-pricing.card-team {
+  background: #ffefef;
+}
+.ai-solutions-home-section-6 .card-pricing.card-team .border-card {
+  --bs-border-color: #f0d6d6;
+}
+.ai-solutions-home-section-6 .monthly.active,
+.ai-solutions-home-section-6 .yearly.active {
+  background: var(--tc-linear-1) !important;
+  color: #fff !important;
+  transition: 0.3s;
+}
+
+.ai-solutions-home-section-7 .accordion-2 {
+  background-color: #100915;
+}
+.ai-solutions-home-section-7 .accordion-2 .card {
+  --bs-card-border-color: #22172b;
+}
+.ai-solutions-home-section-7 .accordion-2 .card .card-header a .arrow::before {
+  transition: 0.3s;
+  transform: rotate(0deg);
+  font-family: bootstrap-icons;
+  content: "\f2ea";
+  color: var(--tc-theme-primary);
+  font-size: 20px;
+}
+.ai-solutions-home-section-7 .accordion-2 .card .card-header a.collapsed .arrow {
+  background-color: transparent;
+}
+.ai-solutions-home-section-7 .accordion-2 .card .card-header a.collapsed .arrow::before {
+  transition: 0.3s;
+  color: var(--tc-system-black);
+  transform: rotate(180deg);
+  content: "\f4fe";
+}
+.ai-solutions-home-section-7 .accordion-2 .card .collapse.show {
+  border-bottom: 1px solid var(--tc-theme-primary);
+}
+
+.section-footer-4 {
+  --bs-border-color: #332457;
+}
+.section-footer-4 .icon svg {
+  height: 14px;
+  width: 14px;
+  fill: var(--tc-body-text-secondary);
+  opacity: 0.5;
+}
+.section-footer-4 .icon:hover svg {
+  fill: var(--tc-system-white);
+  opacity: 1;
+  transition-duration: 0.3s;
+}
+
+.card-team-member .social-icons {
+  transition: all 0.2s linear;
+  overflow: hidden;
+  transform: translateY(80%);
+  opacity: 0;
+  background: var(--tc-linear-1);
+}
+.card-team-member .social-icons .icon {
+  transition: all 0.3s ease-in-out;
+  height: 40px;
+  width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-team-member .social-icons .icon svg {
+  height: 14px;
+  width: 14px;
+  fill: var(--tc-system-white);
+}
+.card-team-member .social-icons .icon:hover {
+  background-color: var(--tc-system-white);
+  border-color: var(--tc-theme-primary) !important;
+}
+.card-team-member .social-icons .icon:hover svg {
+  fill: var(--tc-theme-primary);
+}
+.card-team-member:hover .social-icons {
+  transform: translateY(0);
+  opacity: 1;
+}
+.card-team-member:hover .card-name h6 {
+  color: var(--tc-theme-primary);
+}
+
+.card-services {
+  transition: all 0.2s ease-in-out;
+}
+.card-services:hover {
+  transition: all 0.2s ease-in-out;
+  background-color: var(--tc-system-black) !important;
+}
+.card-services:hover a {
+  transition: all 0.2s ease-in-out;
+  color: var(--tc-system-white);
+}
+.card-services:hover a h6 {
+  transition: all 0.2s ease-in-out;
+  color: var(--tc-system-white);
+}
+.card-services:hover p {
+  color: var(--tc-system-white);
+}
+
+.progress,
+.progress-stacked {
+  --bs-progress-height: 4px;
+  --bs-progress-font-size: 0.75rem;
+  --bs-progress-bg: transparent;
+  --bs-progress-border-radius: 0px;
+  --bs-progress-box-shadow: var(--bs-box-shadow-inset);
+  --bs-progress-bar-color: #fff;
+  --bs-progress-bar-bg: var(--tc-system-white);
+  --bs-progress-bar-transition: width 0.6s ease;
+  display: flex;
+  height: var(--bs-progress-height);
+  overflow: hidden;
+  font-size: var(--bs-progress-font-size);
+  background-color: var(--bs-progress-bg);
+  border-radius: var(--bs-progress-border-radius);
+}
+
+.tag-process .icon-shape {
+  transform: rotate(90deg);
+}
+@media (min-width: 1400px) {
+  .tag-process .icon-shape {
+    transform: rotate(0deg);
+  }
+}
+
+.card {
+  transition: all 0.3s ease-in-out;
+}
+.card .card-header a {
+  border-bottom: 1px solid transparent;
+}
+.card .card-header a .arrow::before {
+  transition: 0.3s;
+  transform: rotate(0deg);
+  font-family: bootstrap-icons;
+  content: "\f2ea";
+  color: var(--tc-system-navy-blue-3);
+  font-size: 20px;
+}
+.card .card-header a.collapsed {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.card .card-header a.collapsed .arrow {
+  background-color: transparent;
+}
+.card .card-header a.collapsed .arrow::before {
+  transition: 0.3s;
+  color: var(--tc-system-navy-blue-3);
+  transform: rotate(180deg);
+  content: "\f4fe";
+}
+
+.ai-solutions-blog-section-1 .swiper-button-prev {
+  left: unset;
+}
+/*# sourceMappingURL=style.css.map */

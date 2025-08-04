@@ -1,0 +1,36 @@
+{
+    "name": "astrax-ai-solutions-nextjs",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "aos": "^2.3.4",
+        "bootstrap": "^5.3.3",
+        "gsap": "^3.12.7",
+        "isotope-layout": "^3.0.6",
+        "next": "^14.2.1",
+        "react": "^18",
+        "react-dom": "^18",
+        "react-modal-video": "^2.0.2",
+        "split-text": "^1.0.0",
+        "swiper": "^11.2.5",
+        "wowjs": "^1.1.3"
+    },
+    "devDependencies": {
+        "@types/aos": "^3.0.7",
+        "@types/bootstrap": "^5.2.10",
+        "@types/isotope-layout": "^3.0.14",
+        "@types/node": "^22",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "@types/react-modal-video": "^1.2.3",
+        "eslint": "^9",
+        "eslint-config-next": "15.0.3",
+        "typescript": "^5"
+    }
+}
