@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MobileMenu from "../MobileMenu";
 import MainMenu from "../MainMenu";
+import Image from "next/image";
 
 export default function Header({ scroll, isMobileMenu, handleMobileMenu }: any) {
     return (
@@ -9,59 +10,9 @@ export default function Header({ scroll, isMobileMenu, handleMobileMenu }: any) 
                 <nav className={`navbar navbar-expand-lg navbar-dark z-5 ${scroll ? "navbar-stick top-0 position-fixed" : ""}`}>
                     <div className="container mt-3 mb-3">
                         <Link className="navbar-brand" href="/">
-                            <svg xmlns="http://www.w3.org/2000/svg" width={40} height={40} viewBox="0 0 40 40" fill="none">
-                                <g clipPath="url(#clip0_2220_28334)">
-                                    <path d="M24.5043 9.79627L22.7082 18.3971L35.2929 17.1938L37.1117 7.00508L24.5043 9.79627Z" fill="url(#paint0_linear_2220_28334)" />
-                                    <path d="M31.9171 17.6827L23.2697 20.618L30.6333 30.3856L40.723 26.6535L31.9171 17.6827Z" fill="url(#paint1_linear_2220_28334)" />
-                                    <path d="M28.4204 27.859L21.4605 22.2303L16.332 33.3239L24.7296 39.7337L28.4204 27.859Z" fill="url(#paint2_linear_2220_28334)" />
-                                    <path d="M17.5913 29.997L19.1912 21.3623L6.63465 22.8278L5.04812 33.0501L17.5913 29.997Z" fill="url(#paint3_linear_2220_28334)" />
-                                    <path d="M10.2917 22.1767L18.8717 19.0623L11.2859 9.45248L1.28177 13.3935L10.2917 22.1767Z" fill="url(#paint4_linear_2220_28334)" />
-                                    <path d="M13.7243 12.2233L20.8121 17.7044L25.6875 6.50841L17.1442 0.276579L13.7243 12.2233Z" fill="url(#paint5_linear_2220_28334)" />
-                                </g>
-                                <defs>
-                                    <linearGradient id="paint0_linear_2220_28334" x1="37.506" y1="0.189907" x2="-2.52908" y2="9.62" gradientUnits="userSpaceOnUse">
-                                        <stop stopColor="#23EFEF" />
-                                        <stop offset="0.349611" stopColor="#37B8BE" />
-                                        <stop offset="0.701514" stopColor="#2DA0FF" />
-                                        <stop offset={1} stopColor="#B172FE" />
-                                    </linearGradient>
-                                    <linearGradient id="paint1_linear_2220_28334" x1="37.506" y1="0.189907" x2="-2.52908" y2="9.62" gradientUnits="userSpaceOnUse">
-                                        <stop stopColor="#23EFEF" />
-                                        <stop offset="0.349611" stopColor="#37B8BE" />
-                                        <stop offset="0.701514" stopColor="#2DA0FF" />
-                                        <stop offset={1} stopColor="#B172FE" />
-                                    </linearGradient>
-                                    <linearGradient id="paint2_linear_2220_28334" x1="37.506" y1="0.189907" x2="-2.52908" y2="9.62" gradientUnits="userSpaceOnUse">
-                                        <stop stopColor="#23EFEF" />
-                                        <stop offset="0.349611" stopColor="#37B8BE" />
-                                        <stop offset="0.701514" stopColor="#2DA0FF" />
-                                        <stop offset={1} stopColor="#B172FE" />
-                                    </linearGradient>
-                                    <linearGradient id="paint3_linear_2220_28334" x1="37.506" y1="0.189907" x2="-2.52908" y2="9.62" gradientUnits="userSpaceOnUse">
-                                        <stop stopColor="#23EFEF" />
-                                        <stop offset="0.349611" stopColor="#37B8BE" />
-                                        <stop offset="0.701514" stopColor="#2DA0FF" />
-                                        <stop offset={1} stopColor="#B172FE" />
-                                    </linearGradient>
-                                    <linearGradient id="paint4_linear_2220_28334" x1="37.506" y1="0.189907" x2="-2.52908" y2="9.62" gradientUnits="userSpaceOnUse">
-                                        <stop stopColor="#23EFEF" />
-                                        <stop offset="0.349611" stopColor="#37B8BE" />
-                                        <stop offset="0.701514" stopColor="#2DA0FF" />
-                                        <stop offset={1} stopColor="#B172FE" />
-                                    </linearGradient>
-                                    <linearGradient id="paint5_linear_2220_28334" x1="37.506" y1="0.189907" x2="-2.52908" y2="9.62" gradientUnits="userSpaceOnUse">
-                                        <stop stopColor="#23EFEF" />
-                                        <stop offset="0.349611" stopColor="#37B8BE" />
-                                        <stop offset="0.701514" stopColor="#2DA0FF" />
-                                        <stop offset={1} stopColor="#B172FE" />
-                                    </linearGradient>
-                                    <clipPath id="clip0_2220_28334">
-                                        <rect width={40} height={40} fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
-
-                            <h5 className="mb-0 text-white">Astrax</h5>
+                            <div style={{ overflow: 'hidden', width: '120px', height: '80px' }}>
+                                <Image src="/assets/logo.svg" alt="KOI" width={120} height={80} style={{ objectFit: 'cover', objectPosition: 'left center', transform: 'scale(1.2)' }} />
+                            </div>
                         </Link>
                         <div className="d-none d-lg-flex">
                             <MainMenu />
@@ -91,17 +42,9 @@ export default function Header({ scroll, isMobileMenu, handleMobileMenu }: any) 
                     </div>
                     <div className="offCanvas__logo mb-30">
                         <Link className="d-flex align-items-center gap-2" href="/">
-                            <svg xmlns="http://www.w3.org/2000/svg" width={40} height={40} viewBox="0 0 40 40" fill="none">
-                                <g>
-                                    <path className="fill-green-3" d="M24.5043 9.79724L22.7082 18.3981L35.2929 17.1948L37.1117 7.00605L24.5043 9.79724Z"></path>
-                                    <path className="fill-green-3" d="M31.9171 17.6837L23.2697 20.6189L30.6333 30.3865L40.723 26.6545L31.9171 17.6837Z"></path>
-                                    <path className="fill-green-3" d="M28.4204 27.86L21.4605 22.2312L16.332 33.3249L24.7296 39.7347L28.4204 27.86Z"></path>
-                                    <path className="fill-green-3" d="M17.5913 29.998L19.1912 21.3633L6.63465 22.8288L5.04812 33.0511L17.5913 29.998Z"></path>
-                                    <path className="fill-green-3" d="M10.2917 22.1777L18.8717 19.0632L11.2859 9.45346L1.28177 13.3945L10.2917 22.1777Z"></path>
-                                    <path className="fill-green-3" d="M13.7243 12.2243L20.8121 17.7054L25.6875 6.50938L17.1442 0.277556L13.7243 12.2243Z"></path>
-                                </g>
-                            </svg>
-                            <h5 className="mb-0 text-dark">Astrax</h5>
+                            <div style={{ overflow: 'hidden', width: '120px', height: '80px' }}>
+                                <Image src="/assets/logo.svg" alt="KOI" width={120} height={80} style={{ objectFit: 'cover', objectPosition: 'left center', transform: 'scale(1.2)' }} />
+                            </div>
                         </Link>
                     </div>
                     <div className="offCanvas__side-info mb-30">

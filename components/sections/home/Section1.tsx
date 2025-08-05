@@ -11,20 +11,26 @@ export default function Section1() {
                 <div className="container position-relative z-1">
                     <div className="row align-items-center">
                         <div className="col-10 mx-auto">
-                            <h1 className="text-white fs-120 mb-0 text-anime-style-2">Generate quality</h1>
-                            <h1 className="text-white fs-120 mb-0 text-lg-end text-anime-style-1">texts. Instantly.</h1>
+                            <h1 className="text-white fs-120 mb-0 text-anime-style-2">Claude Code</h1>
+                            <h1 className="text-white fs-120 mb-0 text-lg-end text-anime-style-1">Official Mirror</h1>
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-lg-6 mx-auto mt-5">
-                            <form className="input-group mb-3 mt-4 position-relative" data-aos="zoom-in" data-aos-delay={100}>
-                                <input type="text" className="py-3 form-control generate rounded-start-4 border-end-0 border-primary" name="name" placeholder="Type something" />
-                                <div className="border border-start-0 border-primary rounded-end-4 bg-white">
-                                    <button className="btn btn-linear m-2 fs-7 fw-bold" type="submit" aria-label="generate" data-aos="fade-zoom-in" data-aos-delay={100}>
-                                        generate
-                                    </button>
-                                </div>
-                            </form>
+                        <div className="col-lg-8 mx-auto mt-4">
+                            <p className="text-white fs-5 text-center mb-4">
+                                Massive official Max account pool, zero ban risk, identical response speed and model capabilities as the official version
+                            </p>
+                            <div className="text-center">
+                                <span className="text-warning fs-6 me-3">🎁</span>
+                                <span className="text-white fs-6">Register now to experience professional AI assistant models and services</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-lg-6 mx-auto mt-5 text-center">         
+                            <button className="btn btn-linear m-2 fs-7 fw-bold" type="submit" aria-label="generate" data-aos="fade-zoom-in" data-aos-delay={100}>
+                                Get Started
+                            </button>
                         </div>
                     </div>
                 </div>
