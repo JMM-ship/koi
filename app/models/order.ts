@@ -1,5 +1,4 @@
-import { Order } from "@/types/order";
-import { getSupabaseClient } from "@/models/db";
+import { getSupabaseClient } from "@/app/models/db";
 
 export enum OrderStatus {
   Created = "created",
@@ -7,7 +6,7 @@ export enum OrderStatus {
   Deleted = "deleted",
 }
 
-export async function insertOrder(order: Order) {
+export async function insertOrder(order: any) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from("orders").insert(order);
 
@@ -20,7 +19,7 @@ export async function insertOrder(order: Order) {
 
 export async function findOrderByOrderNo(
   order_no: string
-): Promise<Order | undefined> {
+): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("orders")
@@ -37,7 +36,7 @@ export async function findOrderByOrderNo(
 
 export async function getFirstPaidOrderByUserUuid(
   user_uuid: string
-): Promise<Order | undefined> {
+): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("orders")
@@ -57,7 +56,7 @@ export async function getFirstPaidOrderByUserUuid(
 
 export async function getFirstPaidOrderByUserEmail(
   user_email: string
-): Promise<Order | undefined> {
+): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("orders")
@@ -152,7 +151,7 @@ export async function updateOrderSubscription(
 
 export async function getOrdersByUserUuid(
   user_uuid: string
-): Promise<Order[] | undefined> {
+): Promise<any[] | undefined> {
   const now = new Date().toISOString();
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
@@ -172,7 +171,7 @@ export async function getOrdersByUserUuid(
 
 export async function getOrdersByUserEmail(
   user_email: string
-): Promise<Order[] | undefined> {
+): Promise<any[] | undefined> {
   const now = new Date().toISOString();
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
@@ -192,7 +191,7 @@ export async function getOrdersByUserEmail(
 
 export async function getOrdersByPaidEmail(
   paid_email: string
-): Promise<Order[] | undefined> {
+): Promise<any[] | undefined> {
   const now = new Date().toISOString();
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
@@ -213,7 +212,7 @@ export async function getOrdersByPaidEmail(
 export async function getPaiedOrders(
   page: number,
   limit: number
-): Promise<Order[] | undefined> {
+): Promise<any[] | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("orders")

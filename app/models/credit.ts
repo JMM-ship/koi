@@ -1,7 +1,6 @@
-import { Credit } from "@/types/credit";
-import { getSupabaseClient } from "@/models/db";
+import { getSupabaseClient } from "@/app/models/db";
 
-export async function insertCredit(credit: Credit) {
+export async function insertCredit(credit: any) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from("credits").insert(credit);
 
@@ -14,7 +13,7 @@ export async function insertCredit(credit: Credit) {
 
 export async function findCreditByTransNo(
   trans_no: string
-): Promise<Credit | undefined> {
+): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("credits")
@@ -32,7 +31,7 @@ export async function findCreditByTransNo(
 
 export async function findCreditByOrderNo(
   order_no: string
-): Promise<Credit | undefined> {
+): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("credits")
@@ -50,7 +49,7 @@ export async function findCreditByOrderNo(
 
 export async function getUserValidCredits(
   user_uuid: string
-): Promise<Credit[] | undefined> {
+): Promise<any[] | undefined> {
   const now = new Date().toISOString();
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
@@ -71,7 +70,7 @@ export async function getCreditsByUserUuid(
   user_uuid: string,
   page: number = 1,
   limit: number = 50
-): Promise<Credit[] | undefined> {
+): Promise<any[] | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("credits")

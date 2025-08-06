@@ -2,15 +2,12 @@ import {
   findCreditByOrderNo,
   getUserValidCredits,
   insertCredit,
-} from "@/models/credit";
+} from "@/app/models/credit";
 
-import { Credit } from "@/types/credit";
-import { Order } from "@/types/order";
-import { UserCredits } from "@/types/user";
-import { findUserByUuid } from "@/models/user";
-import { getFirstPaidOrderByUserUuid } from "@/models/order";
-import { getIsoTimestr } from "@/lib/time";
-import { getSnowId } from "@/lib/hash";
+import { findUserByUuid } from "@/app/models/user";
+import { getFirstPaidOrderByUserUuid } from "@/app/models/order";
+import { getIsoTimestr } from "@/app/lib/time";
+import { getSnowId } from "@/app/lib/hash";
 
 export enum CreditsTransType {
   NewUser = "new_user", // initial credits for new user
@@ -24,8 +21,8 @@ export enum CreditsAmount {
   PingCost = 1,
 }
 
-export async function getUserCredits(user_uuid: string): Promise<UserCredits> {
-  let user_credits: UserCredits = {
+export async function getUserCredits(user_uuid: string): Promise<any> {
+  let user_credits: any = {
     left_credits: 0,
   };
 
@@ -37,7 +34,7 @@ export async function getUserCredits(user_uuid: string): Promise<UserCredits> {
 
     const credits = await getUserValidCredits(user_uuid);
     if (credits) {
-      credits.forEach((v: Credit) => {
+      credits.forEach((v: any) => {
         user_credits.left_credits += v.credits;
       });
     }
@@ -88,7 +85,7 @@ export async function decreaseCredits({
       }
     }
 
-    const new_credit: Credit = {
+    const new_credit: any = {
       trans_no: getSnowId(),
       created_at: getIsoTimestr(),
       user_uuid: user_uuid,
@@ -118,7 +115,7 @@ export async function increaseCredits({
   order_no?: string;
 }) {
   try {
-    const new_credit: Credit = {
+    const new_credit: any = {
       trans_no: getSnowId(),
       created_at: getIsoTimestr(),
       user_uuid: user_uuid,
@@ -134,7 +131,7 @@ export async function increaseCredits({
   }
 }
 
-export async function updateCreditForOrder(order: Order) {
+export async function updateCreditForOrder(order: any) {
   try {
     const credit = await findCreditByOrderNo(order.order_no);
     if (credit) {

@@ -1,7 +1,7 @@
-import { User } from "@/types/user";
-import { getIsoTimestr } from "@/lib/time";
+import { User } from "@/app/types/user";
+import { getIsoTimestr } from "@/app/lib/time";
 import { getSupabaseClient } from "./db";
-import { getUuid } from "@/lib/hash";
+import { getUuid } from "@/app/lib/hash";
 import bcrypt from "bcryptjs";
 
 export async function insertUser(user: User) {

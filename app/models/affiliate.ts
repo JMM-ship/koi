@@ -1,9 +1,9 @@
-import { Affiliate } from "@/types/affiliate";
-import { User } from "@/types/user";
-import { getSupabaseClient } from "@/models/db";
+
+
+import { getSupabaseClient } from "@/app/models/db";
 import { getUsersByUuids } from "./user";
 
-export async function insertAffiliate(affiliate: Affiliate) {
+export async function insertAffiliate(affiliate:any) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from("affiliates").insert({
     user_uuid: affiliate.user_uuid,
@@ -27,7 +27,7 @@ export async function getUserAffiliates(
   user_uuid: string,
   page: number = 1,
   limit: number = 50
-): Promise<Affiliate[] | undefined> {
+): Promise<any[] | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("affiliates")
@@ -109,7 +109,7 @@ export async function findAffiliateByOrderNo(order_no: string) {
 export async function getAllAffiliates(
   page: number = 1,
   limit: number = 50
-): Promise<Affiliate[]> {
+): Promise<any[]> {
   if (page < 1) page = 1;
   if (limit <= 0) limit = 50;
 

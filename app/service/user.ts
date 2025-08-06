@@ -1,10 +1,10 @@
 import { CreditsAmount, CreditsTransType } from "./credit";
-import { findUserByEmail, findUserByUuid, insertUser } from "@/models/user";
+import { findUserByEmail, findUserByUuid, insertUser } from "@/app/models/user";
 
 
-import { auth } from "@/auth/helpers";
-import { getOneYearLaterTimestr } from "@/lib/time";
-import { getUserUuidByApiKey } from "@/models/apikey";
+import { auth } from "@/app/auth/helpers";
+import { getOneYearLaterTimestr } from "@/app/lib/time";
+import { getUserUuidByApiKey } from "@/app/models/apikey";
 import { headers } from "next/headers";
 import { increaseCredits } from "./credit";
 

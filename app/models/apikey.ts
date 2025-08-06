@@ -1,12 +1,11 @@
-import { Apikey } from "@/types/apikey";
-import { getSupabaseClient } from "@/models/db";
+import { getSupabaseClient } from "@/app/models/db";
 
 export enum ApikeyStatus {
   Created = "created",
   Deleted = "deleted",
 }
 
-export async function insertApikey(apikey: Apikey) {
+export async function insertApikey(apikey: any) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from("apikeys").insert(apikey);
 
@@ -19,7 +18,7 @@ export async function getUserApikeys(
   user_uuid: string,
   page: number = 1,
   limit: number = 50
-): Promise<Apikey[] | undefined> {
+): Promise<any[] | undefined> {
   const offset = (page - 1) * limit;
 
   const supabase = getSupabaseClient();
