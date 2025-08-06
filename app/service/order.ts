@@ -6,10 +6,10 @@ import {
 import { findOrderByOrderNo, updateOrderStatus } from "@/app/models/order";
 import { getIsoTimestr, getOneYearLaterTimestr } from "@/app/lib/time";
 
-import Stripe from "stripe";
+// import Stripe from "stripe";
 import { updateAffiliateForOrder } from "./affiliate";
 
-export async function handleOrderSession(session: Stripe.Checkout.Session) {
+export async function handleOrderSession(session: any) {
   try {
     if (
       !session ||
