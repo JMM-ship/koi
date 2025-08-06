@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:aicodewith.com)"
+      "WebFetch(domain:aicodewith.com)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }

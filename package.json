@@ -9,15 +9,19 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@supabase/supabase-js": "^2.53.0",
         "aos": "^2.3.4",
+        "bcryptjs": "^3.0.2",
         "bootstrap": "^5.3.3",
         "gsap": "^3.12.7",
         "isotope-layout": "^3.0.6",
         "next": "^14.2.1",
         "next-auth": "^4.24.11",
+        "nodemailer": "^6.10.1",
         "react": "^18",
         "react-dom": "^18",
         "react-modal-video": "^2.0.2",
+        "simple-flakeid": "^0.0.5",
         "split-text": "^1.0.0",
         "swiper": "^11.2.5",
         "wowjs": "^1.1.3"
