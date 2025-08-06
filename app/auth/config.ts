@@ -1,7 +1,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import { NextAuthConfig } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import { Provider } from "next-auth/providers/index";
 
 import { getClientIp } from "@/app/lib/ip";
@@ -157,7 +157,7 @@ export const providerMap = providers
   })
   .filter((provider) => provider.id !== "google-one-tap");
 
-export const authOptions: NextAuthConfig = {
+export const authOptions: NextAuthOptions = {
   providers,
   pages: {
     signIn: "/auth/signin",

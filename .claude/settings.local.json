@@ -4,7 +4,8 @@
       "WebFetch(domain:aicodewith.com)",
       "Bash(mkdir:*)",
       "Bash(ls:*)",
-      "Bash(del \"E:\\work\\VSCode\\webs\\themeforest-WgbY6C9f-astrax-the-multipurpose-nextjs-template\\AstraX-NextJS-V2.0-UNZIP-FIRST\\1.AstraX-NextJS-Templates\\astrax-ai-solutions-nextjs\\app\\dashboard\\page.jsx\")"
+      "Bash(del \"E:\\work\\VSCode\\webs\\themeforest-WgbY6C9f-astrax-the-multipurpose-nextjs-template\\AstraX-NextJS-V2.0-UNZIP-FIRST\\1.AstraX-NextJS-Templates\\astrax-ai-solutions-nextjs\\app\\dashboard\\page.jsx\")",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }
