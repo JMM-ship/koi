@@ -1,13 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export default function SignInPage() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
     const [isLogin, setIsLogin] = useState(true)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
@@ -94,7 +96,7 @@ export default function SignInPage() {
             if (result?.error) {
                 setError('邮箱或密码错误')
             } else if (result?.ok) {
-                router.push('/')
+                router.push(callbackUrl)
                 router.refresh()
             }
         } catch (err) {
@@ -130,7 +132,7 @@ export default function SignInPage() {
                 })
 
                 if (result?.ok) {
-                    router.push('/')
+                    router.push(callbackUrl)
                     router.refresh()
                 }
             }
@@ -143,7 +145,7 @@ export default function SignInPage() {
 
     // Google登录
     const handleGoogleSignIn = () => {
-        signIn('google', { callbackUrl: '/' })
+        signIn('google', { callbackUrl })
     }
 
     return (
