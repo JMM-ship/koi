@@ -1,8 +1,8 @@
-import { Feedback } from "@/types/feedback";
+
 import { getSupabaseClient } from "./db";
 import { getUsersByUuids } from "./user";
 
-export async function insertFeedback(feedback: Feedback) {
+export async function insertFeedback(feedback: any) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from("feedbacks").insert(feedback);
 
@@ -15,7 +15,7 @@ export async function insertFeedback(feedback: Feedback) {
 
 export async function findFeedbackByUuid(
   uuid: string
-): Promise<Feedback | undefined> {
+): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("feedbacks")
@@ -33,7 +33,7 @@ export async function findFeedbackByUuid(
 export async function getFeedbacks(
   page: number = 1,
   limit: number = 50
-): Promise<Feedback[] | undefined> {
+): Promise<any[] | undefined> {
   if (page < 1) page = 1;
   if (limit <= 0) limit = 50;
 

@@ -1,4 +1,4 @@
-import { Post } from "@/types/post";
+
 import { getSupabaseClient } from "./db";
 
 export enum PostStatus {
@@ -8,7 +8,7 @@ export enum PostStatus {
   Offline = "offline",
 }
 
-export async function insertPost(post: Post) {
+export async function insertPost(post: any) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.from("posts").insert(post);
 
@@ -19,7 +19,7 @@ export async function insertPost(post: Post) {
   return data;
 }
 
-export async function updatePost(uuid: string, post: Partial<Post>) {
+export async function updatePost(uuid: string, post: Partial<any>) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("posts")
@@ -33,7 +33,7 @@ export async function updatePost(uuid: string, post: Partial<Post>) {
   return data;
 }
 
-export async function findPostByUuid(uuid: string): Promise<Post | undefined> {
+export async function findPostByUuid(uuid: string): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("posts")
@@ -52,7 +52,7 @@ export async function findPostByUuid(uuid: string): Promise<Post | undefined> {
 export async function findPostBySlug(
   slug: string,
   locale: string
-): Promise<Post | undefined> {
+): Promise<any | undefined> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("posts")
@@ -72,7 +72,7 @@ export async function findPostBySlug(
 export async function getAllPosts(
   page: number = 1,
   limit: number = 50
-): Promise<Post[]> {
+): Promise<any[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("posts")
@@ -91,7 +91,7 @@ export async function getPostsByLocale(
   locale: string,
   page: number = 1,
   limit: number = 50
-): Promise<Post[]> {
+): Promise<any[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("posts")
