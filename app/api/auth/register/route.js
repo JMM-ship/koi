@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createUserWithPassword, findUserByEmail } from '@/models/user';
-import { increaseCredits } from '@/services/credit';
-import { CreditsAmount, CreditsTransType } from '@/services/credit';
-import { getOneYearLaterTimestr } from '@/lib/time';
-import { findVerificationCode, markCodeAsUsed } from '@/models/verification';
+import { createUserWithPassword, findUserByEmail } from '@/app/models/user';
+import { increaseCredits } from '@/app/service/credit';
+import { CreditsAmount, CreditsTransType } from '@/app/service/credit';
+import { getOneYearLaterTimestr } from '@/app/lib/time';
+import { findVerificationCode, markCodeAsUsed } from '@/app/models/verification';
 
 export async function POST(request) {
   try {
@@ -30,7 +30,7 @@ export async function POST(request) {
     // 检查验证码是否已过期
     const expiresAt = new Date(verification.expires_at);
     const now = new Date();
-    
+
     // 调试日志
     console.log('验证码验证:', {
       expires_at: verification.expires_at,
@@ -39,7 +39,7 @@ export async function POST(request) {
       isExpired: now > expiresAt,
       timeDiff: (expiresAt - now) / 1000 / 60 // 分钟差
     });
-    
+
     if (now > expiresAt) {
       return NextResponse.json(
         { error: '验证码已过期' },
@@ -110,7 +110,7 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Registration error:', error);
-    
+
     // 处理数据库错误
     if (error.code === '23505') { // Unique violation
       return NextResponse.json(
@@ -118,7 +118,7 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
       { error: '注册时发生错误，请稍后重试' },
       { status: 500 }

@@ -1,13 +1,12 @@
-import { findAffiliateByOrderNo, insertAffiliate } from "@/models/affiliate";
+import { findAffiliateByOrderNo, insertAffiliate } from "@/app/models/affiliate";
 
 import { AffiliateRewardAmount } from "./constant";
 import { AffiliateRewardPercent } from "./constant";
 import { AffiliateStatus } from "./constant";
-import { Order } from "@/types/order";
-import { findUserByUuid } from "@/models/user";
-import { getIsoTimestr } from "@/lib/time";
+import { findUserByUuid } from "@/app/models/user";
+import { getIsoTimestr } from "@/app/lib/time";
 
-export async function updateAffiliateForOrder(order: Order) {
+export async function updateAffiliateForOrder(order: any) {
   try {
     const user = await findUserByUuid(order.user_uuid);
     if (user && user.uuid && user.invited_by && user.invited_by !== user.uuid) {

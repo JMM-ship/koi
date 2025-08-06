@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "./db";
-import { getIsoTimestr } from "@/lib/time";
+import { getIsoTimestr } from "@/app/lib/time";
 
 export interface EmailVerificationCode {
   id?: number;

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createVerificationCode, getLatestVerificationCode } from '@/models/verification';
-import { sendVerificationEmail, generateVerificationCode } from '@/lib/email';
+import { createVerificationCode, getLatestVerificationCode } from '@/app/models/verification';
+import { sendVerificationEmail, generateVerificationCode } from '@/app/lib/email';
 
 export async function POST(request) {
   try {
@@ -29,13 +29,13 @@ export async function POST(request) {
       const createdAt = new Date(latestCode.created_at);
       const now = new Date();
       const diffInSeconds = (now - createdAt) / 1000;
-      
+
       if (diffInSeconds < 60) {
         const remainingSeconds = Math.ceil(60 - diffInSeconds);
         return NextResponse.json(
-          { 
+          {
             error: `请稍候 ${remainingSeconds} 秒后再试`,
-            remainingSeconds 
+            remainingSeconds
           },
           { status: 429 }
         );
@@ -58,7 +58,7 @@ export async function POST(request) {
 
     // 发送邮件
     const emailResult = await sendVerificationEmail(email, code);
-    
+
     if (!emailResult.success) {
       return NextResponse.json(
         { error: '发送邮件失败，请检查邮箱地址或稍后重试' },

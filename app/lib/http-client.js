@@ -4,7 +4,7 @@ export function getHttpOptions() {
   const httpsProxy = process.env.HTTPS_PROXY || process.env.https_proxy;
   
   const options = {
-    timeout: 10000, // 10 秒超时
+    timeout: 30000, // 30 秒超时
   };
 
   // 如果设置了代理
