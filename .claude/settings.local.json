@@ -5,7 +5,8 @@
       "Bash(mkdir:*)",
       "Bash(ls:*)",
       "Bash(del \"E:\\work\\VSCode\\webs\\themeforest-WgbY6C9f-astrax-the-multipurpose-nextjs-template\\AstraX-NextJS-V2.0-UNZIP-FIRST\\1.AstraX-NextJS-Templates\\astrax-ai-solutions-nextjs\\app\\dashboard\\page.jsx\")",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "mcp__figma__get_image"
     ],
     "deny": []
   }
