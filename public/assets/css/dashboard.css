@@ -489,6 +489,13 @@
   background: #16171d;
   border-radius: 12px;
   padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.balance-content {
+  flex: 1;
 }
 
 .balance-header {
@@ -510,30 +517,16 @@
 .balance-usd {
   font-size: 13px;
   color: #8b8d97;
-  margin-bottom: 16px;
 }
 
-.balance-footer {
+.balance-chart-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
-.balance-change {
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.balance-change.negative {
-  color: #ff006e;
-}
-
-.balance-change.positive {
-  color: #00d084;
-}
-
-.mini-chart {
-  opacity: 0.8;
+.balance-ring-chart {
+  position: relative;
 }
 
 /* Visits by Location */

@@ -16,7 +16,7 @@ export default function Dashboard() {
       <Sidebar />
 
       <div className="dashboard-main">
-        <TopBar />
+        {/* <TopBar /> */}
 
         <div className="dashboard-content">
           <div className="dashboard-grid">

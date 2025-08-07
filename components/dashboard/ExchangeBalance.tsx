@@ -1,6 +1,11 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import * as echarts from 'echarts';
+
 const ExchangeBalance = () => {
+  const chartRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   const balances = [
     {
       id: 1,
@@ -8,8 +13,8 @@ const ExchangeBalance = () => {
       amount: "0.213435345",
       usdValue: "3,897.98 USD",
       change: "-0.32%",
-      color: "blue",
-      chartData: [40, 60, 45, 70, 50, 80, 60]
+      color: "#00b4d8",
+      percentage: 68
     },
     {
       id: 2,
@@ -17,8 +22,8 @@ const ExchangeBalance = () => {
       amount: "0.213435345",
       usdValue: "3,897.98 USD", 
       change: "-0.32%",
-      color: "red",
-      chartData: [60, 40, 55, 45, 65, 35, 50]
+      color: "#ff006e",
+      percentage: 45
     },
     {
       id: 3,
@@ -26,57 +31,117 @@ const ExchangeBalance = () => {
       amount: "0.213435345",
       usdValue: "3,897.98 USD",
       change: "-0.32%",
-      color: "green",
-      chartData: [30, 50, 40, 60, 45, 55, 40]
+      color: "#00d084",
+      percentage: 75
     }
   ];
 
-  const renderMiniChart = (data: number[], color: string) => {
-    const width = 100;
-    const height = 40;
-    const max = Math.max(...data);
-    const points = data.map((value, index) => ({
-      x: (index / (data.length - 1)) * width,
-      y: height - (value / max) * height
-    }));
+  useEffect(() => {
+    const charts: echarts.ECharts[] = [];
 
-    const path = points.reduce((acc, point, i) => {
-      if (i === 0) return `M ${point.x} ${point.y}`;
-      return `${acc} L ${point.x} ${point.y}`;
-    }, "");
+    balances.forEach((balance, index) => {
+      if (chartRefs.current[index]) {
+        const myChart = echarts.init(chartRefs.current[index]!);
+        charts.push(myChart);
 
-    return (
-      <svg width={width} height={height} className="mini-chart">
-        <path
-          d={path}
-          fill="none"
-          stroke={color}
-          strokeWidth="2"
-        />
-      </svg>
-    );
-  };
+        const option = {
+          backgroundColor: 'transparent',
+          series: [
+            {
+              type: 'gauge',
+              startAngle: 90,
+              endAngle: -270,
+              radius: '100%',
+              center: ['50%', '50%'],
+              pointer: {
+                show: false
+              },
+              progress: {
+                show: true,
+                overlap: false,
+                roundCap: true,
+                clip: false,
+                itemStyle: {
+                  color: balance.color,
+                  shadowBlur: 10,
+                  shadowColor: balance.color
+                }
+              },
+              axisLine: {
+                lineStyle: {
+                  width: 8,
+                  color: [[1, '#1e1f26']]
+                }
+              },
+              splitLine: {
+                show: false
+              },
+              axisTick: {
+                show: false
+              },
+              axisLabel: {
+                show: false
+              },
+              data: [
+                {
+                  value: balance.percentage,
+                  detail: {
+                    valueAnimation: true,
+                    offsetCenter: ['0%', '0%'],
+                    fontSize: 14,
+                    fontWeight: '500',
+                    color: '#fff',
+                    formatter: balance.change
+                  }
+                }
+              ],
+              detail: {
+                fontSize: 14,
+                color: '#fff',
+                formatter: balance.change,
+                offsetCenter: ['0%', '0%']
+              },
+              animationDuration: 1000,
+              animationEasing: 'cubicOut'
+            }
+          ]
+        };
+
+        myChart.setOption(option);
+      }
+    });
+
+    const handleResize = () => {
+      charts.forEach(chart => chart.resize());
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      charts.forEach(chart => chart.dispose());
+    };
+  }, []);
 
   return (
     <div className="exchange-balances">
-      {balances.map((balance) => (
+      {balances.map((balance, index) => (
         <div key={balance.id} className="balance-card">
-          <div className="balance-header">
-            <span className="balance-label">{balance.label}</span>
+          <div className="balance-content">
+            <div className="balance-header">
+              <span className="balance-label">{balance.label}</span>
+            </div>
+            
+            <div className="balance-amount">{balance.amount}</div>
+            <div className="balance-usd">{balance.usdValue}</div>
           </div>
           
-          <div className="balance-amount">{balance.amount}</div>
-          <div className="balance-usd">{balance.usdValue}</div>
-          
-          <div className="balance-footer">
-            <span className={`balance-change ${balance.change.startsWith("-") ? "negative" : "positive"}`}>
-              {balance.change}
-            </span>
-            {renderMiniChart(balance.chartData, 
-              balance.color === "blue" ? "#00b4d8" : 
-              balance.color === "red" ? "#ff006e" : 
-              "#00d084"
-            )}
+          <div className="balance-chart-container">
+            <div 
+              ref={el => chartRefs.current[index] = el}
+              className="balance-ring-chart"
+              style={{ width: '80px', height: '80px' }}
+            />
           </div>
         </div>
       ))}
