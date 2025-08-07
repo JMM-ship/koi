@@ -809,6 +809,10 @@
   text-align: center;
 }
 
+.satisfaction-chart-echarts {
+  margin: 0 auto;
+}
+
 .satisfaction-chart {
   position: relative;
   display: inline-block;

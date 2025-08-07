@@ -35,14 +35,16 @@ export default function Dashboard() {
 
             {/* 右侧边栏内容 */}
             <div className="side-content">
+              {/* 满意度 */}
+              <SatisfactionRate />
+
               {/* 访问地区统计 */}
               <VisitsByLocation />
 
               {/* 信用卡 */}
               <CreditCard />
 
-              {/* 满意度 */}
-              <SatisfactionRate />
+
             </div>
           </div>
         </div>
