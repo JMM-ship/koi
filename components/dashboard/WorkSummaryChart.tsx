@@ -1,30 +1,163 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import * as echarts from 'echarts';
+import "@/public/assets/css/dashboard-chart.css";
 
 const WorkSummaryChart = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("daily");
+  const chartRef = useRef<HTMLDivElement>(null);
 
-  // 模拟图表数据点
-  const generateChartPath = () => {
-    const width = 600;
-    const height = 250;
-    const points = 50;
+  useEffect(() => {
+    if (!chartRef.current) return;
 
-    // 生成随机数据点
-    const data = Array.from({ length: points }, (_, i) => ({
-      x: (i / points) * width,
-      y: height / 2 + Math.sin(i * 0.3) * 60 + Math.random() * 30
-    }));
+    const myChart = echarts.init(chartRef.current);
 
-    // 创建SVG路径
-    const path = data.reduce((acc, point, i) => {
-      if (i === 0) return `M ${point.x} ${point.y}`;
-      return `${acc} L ${point.x} ${point.y}`;
-    }, "");
+    const option = {
+      backgroundColor: 'transparent',
+      grid: {
+        top: 20,
+        right: 20,
+        bottom: 60,
+        left: 60,
+        containLabel: false
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          show: false
+        },
+        splitLine: {
+          show: false
+        }
+      },
+      yAxis: {
+        type: 'value',
+        min: 0,
+        max: 500,
+        interval: 100,
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          show: false
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: '#2a2d3a',
+            type: 'dashed',
+            opacity: 0.3
+          }
+        }
+      },
+      series: [
+        {
+          name: 'Last Month',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 8,
+          sampling: 'average',
+          itemStyle: {
+            color: '#00b4d8',
+            shadowColor: 'rgba(0, 180, 216, 0.5)',
+            shadowBlur: 10
+          },
+          lineStyle: {
+            width: 3,
+            color: '#00b4d8',
+            shadowColor: 'rgba(0, 180, 216, 0.5)',
+            shadowBlur: 10
+          },
+          data: [420, 200, 380, 340, 480, 320, 420, 450, 480],
+          markPoint: {
+            symbol: 'circle',
+            symbolSize: 10,
+            itemStyle: {
+              color: '#00b4d8',
+              borderColor: '#fff',
+              borderWidth: 2
+            },
+            data: [
+              { coord: [3, 340], value: 340 }
+            ]
+          }
+        },
+        {
+          name: 'This Month',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 8,
+          sampling: 'average',
+          itemStyle: {
+            color: '#ff006e',
+            shadowColor: 'rgba(255, 0, 110, 0.5)',
+            shadowBlur: 10
+          },
+          lineStyle: {
+            width: 3,
+            color: '#ff006e',
+            shadowColor: 'rgba(255, 0, 110, 0.5)',
+            shadowBlur: 10
+          },
+          data: [350, 250, 400, 380, 150, 450, 200, 400, 380],
+          markPoint: {
+            symbol: 'circle',
+            symbolSize: 10,
+            itemStyle: {
+              color: '#ff006e',
+              borderColor: '#fff',
+              borderWidth: 2
+            },
+            data: [
+              { coord: [5, 450], value: 450 }
+            ]
+          }
+        }
+      ],
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(22, 23, 29, 0.9)',
+        borderColor: '#2a2d3a',
+        textStyle: {
+          color: '#fff'
+        },
+        formatter: function(params: any) {
+          let result = params[0].axisValue + '<br/>';
+          params.forEach((item: any) => {
+            result += `<span style="display:inline-block;margin-right:5px;border-radius:50%;width:10px;height:10px;background-color:${item.color};"></span>${item.seriesName}: ${item.value}<br/>`;
+          });
+          return result;
+        }
+      }
+    };
 
-    return path;
-  };
+    myChart.setOption(option);
+
+    const handleResize = () => {
+      myChart.resize();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      myChart.dispose();
+    };
+  }, [selectedPeriod]);
 
   return (
     <div className="work-summary-card">
@@ -48,59 +181,8 @@ const WorkSummaryChart = () => {
 
       <div className="date-range">Nov - July</div>
 
-      <div className="chart-container">
-        <svg viewBox="0 0 600 300" className="chart-svg">
-          {/* 网格线 */}
-          <g className="grid-lines">
-            {[0, 100, 200, 300, 400].map((y) => (
-              <line
-                key={y}
-                x1="0"
-                y1={y * 0.75}
-                x2="600"
-                y2={y * 0.75}
-                stroke="#2a2d3a"
-                strokeDasharray="5,5"
-                opacity="0.3"
-              />
-            ))}
-          </g>
-
-          {/* 蓝色线条 */}
-          <path
-            d={generateChartPath()}
-            fill="none"
-            stroke="#00b4d8"
-            strokeWidth="3"
-            className="chart-line-blue"
-          />
-
-          {/* 红色线条 */}
-          <path
-            d={generateChartPath()}
-            fill="none"
-            stroke="#ff006e"
-            strokeWidth="3"
-            className="chart-line-red"
-          />
-        </svg>
-
-        <div className="chart-legends">
-          <div className="legend-item">
-            <span className="legend-dot blue"></span>
-            <span className="legend-text">Last Month</span>
-            <span className="legend-value">2.36%</span>
-          </div>
-          <div className="legend-item">
-            <span className="legend-dot red"></span>
-            <span className="legend-text">This Month</span>
-            <span className="legend-value">2.36%</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="chart-values">
-        <div className="y-axis-labels">
+      <div className="chart-wrapper">
+        <div className="chart-y-axis">
           <span>500</span>
           <span>400</span>
           <span>300</span>
@@ -108,13 +190,30 @@ const WorkSummaryChart = () => {
           <span>100</span>
           <span>0</span>
         </div>
+        
+        <div ref={chartRef} className="echarts-container" style={{ width: '100%', height: '300px' }}></div>
       </div>
 
-      <div className="total-signups">
-        <div className="signups-number">9845</div>
-        <div className="signups-info">
-          <span className="signups-badge">826</span>
-          <span className="signups-text">Sign-Ups past 30 days</span>
+      <div className="chart-legends">
+        <div className="legend-item">
+          <span className="legend-dot blue"></span>
+          <span className="legend-text">Last Month</span>
+          <span className="legend-value">2.36%</span>
+        </div>
+        <div className="legend-item">
+          <span className="legend-dot red"></span>
+          <span className="legend-text">This Month</span>
+          <span className="legend-value">2.36%</span>
+        </div>
+      </div>
+
+      <div className="chart-bottom-section">
+        <div className="total-signups">
+          <div className="signups-number">9845</div>
+          <div className="signups-info">
+            <span className="signups-badge">826</span>
+            <span className="signups-text">Sign-Ups past 30 days</span>
+          </div>
         </div>
       </div>
     </div>

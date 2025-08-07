@@ -425,11 +425,15 @@
   margin-left: 8px;
 }
 
+.chart-bottom-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 20px;
+}
+
 .chart-values {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
+  position: relative;
 }
 
 .y-axis-labels {
@@ -476,7 +480,8 @@
 /* Exchange Balance Cards */
 .exchange-balances {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  flex: 1;
+  grid-template-rows: repeat(3, 1fr);
   gap: 20px;
 }
 
@@ -602,6 +607,11 @@
   color: #8b8d97;
 }
 
+.main-bottom{
+  display: flex;
+  gap: 30px;
+}
+
 /* Credit Card */
 .credit-card-section {
   background: #16171d;
@@ -704,6 +714,7 @@
 /* Team Members */
 .team-members-card {
   background: #16171d;
+  flex: 1;
   border-radius: 12px;
   padding: 24px;
 }

@@ -14,32 +14,33 @@ export default function Dashboard() {
   return (
     <div className="dashboard-container">
       <Sidebar />
-      
+
       <div className="dashboard-main">
         <TopBar />
-        
+
         <div className="dashboard-content">
           <div className="dashboard-grid">
             {/* 左侧主要内容区 */}
             <div className="main-content">
               {/* 工作总结图表 */}
               <WorkSummaryChart />
-              
-              {/* 余额卡片组 */}
-              <ExchangeBalance />
-              
-              {/* 团队成员列表 */}
-              <TeamMembers />
+              <div className="main-bottom">
+                {/* 余额卡片组 */}
+                <ExchangeBalance />
+
+                {/* 团队成员列表 */}
+                <TeamMembers />
+              </div>
             </div>
-            
+
             {/* 右侧边栏内容 */}
             <div className="side-content">
               {/* 访问地区统计 */}
               <VisitsByLocation />
-              
+
               {/* 信用卡 */}
               <CreditCard />
-              
+
               {/* 满意度 */}
               <SatisfactionRate />
             </div>

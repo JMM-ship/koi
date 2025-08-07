@@ -1,0 +1,27 @@
+/* Chart Wrapper for ECharts */
+.chart-wrapper {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 300px;
+  color: #5a5c66;
+  font-size: 11px;
+  width: 30px;
+  text-align: right;
+}
+
+.echarts-container {
+  flex: 1;
+}
+
+/* Ensure chart legends styling */
+.chart-legends {
+  margin-bottom: 10px;
+}
