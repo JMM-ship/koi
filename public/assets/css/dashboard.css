@@ -21,6 +21,8 @@
   background: var(--dashboard-bg);
   color: var(--dashboard-text);
   font-family: "Rubik", sans-serif;
+  height: 100vh;
+  overflow: hidden
 }
 
 /* Sidebar Styles */
@@ -203,6 +205,11 @@
   margin-left: 260px;
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden
 }
 
 /* TopBar Styles */
@@ -354,20 +361,47 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 30px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  gap: 20px;
+  height: 100%;
 }
 
 .main-content {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.main-content-chart {
+  flex: 0 0 auto;
+  max-height: 45%;
+  overflow: hidden;
 }
 
 .side-content {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 20px;
+  overflow: auto;
+  min-width: 0;
+  padding-right: 10px;
+}
+
+.side-content-item {
+  flex: 0 0 auto;
+}
+
+/* Sidebar collapsed states */
+.dashboard-main.collapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+.dashboard-main.expanded {
+  margin-left: 260px;
+  width: calc(100% - 260px);
 }
 
 /* Work Summary Chart */
@@ -1019,39 +1053,45 @@
 }
 
 /* Scrollbar Styles */
-.dashboard-content::-webkit-scrollbar {
-  width: 8px;
+.side-content::-webkit-scrollbar {
+  width: 6px;
 }
 
-.dashboard-content::-webkit-scrollbar-track {
-  background: var(--dashboard-bg);
+.side-content::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.dashboard-content::-webkit-scrollbar-thumb {
-  background: var(--dashboard-border);
-  border-radius: 4px;
+.side-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
-.dashboard-content::-webkit-scrollbar-thumb:hover {
-  background: var(--dashboard-primary);
+.side-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Responsive Design */
 @media (max-width: 1400px) {
   .dashboard-grid {
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
   }
 }
 
 @media (max-width: 1200px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
   }
 
   .side-content {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  
+  .side-content > div,
+  .side-content-item {
+    min-width: 280px;
   }
 
   .exchange-balances {
@@ -1069,15 +1109,25 @@
     transform: translateX(0);
   }
 
-  .dashboard-main {
+  .dashboard-main,
+  .dashboard-main.collapsed,
+  .dashboard-main.expanded {
     margin-left: 0;
   }
 
   .dashboard-content {
-    padding: 20px;
+    padding: 10px;
+  }
+  
+  .dashboard-grid {
+    gap: 10px;
   }
 
   .side-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-bottom {
     grid-template-columns: 1fr;
   }
 
