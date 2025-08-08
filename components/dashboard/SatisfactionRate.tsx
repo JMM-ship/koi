@@ -5,7 +5,10 @@ import * as echarts from 'echarts';
 
 const SatisfactionRate = () => {
   const chartRef = useRef<HTMLDivElement>(null);
-  const percentage = 76.54;
+  const totalCredits = 10000; // 总积分
+  const usedCredits = 3480; // 已使用积分
+  const remainingCredits = totalCredits - usedCredits; // 剩余积分
+  const percentage = (remainingCredits / totalCredits) * 100; // 剩余百分比
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -122,7 +125,7 @@ const SatisfactionRate = () => {
             color: '#5a5c66',
             fontSize: 11,
             distance: -45,
-            formatter: function(value: number) {
+            formatter: function (value: number) {
               if (value === 0) return '0%';
               if (value === 100) return '100%';
               return '';
@@ -145,8 +148,8 @@ const SatisfactionRate = () => {
           left: 'center',
           top: '55%',
           style: {
-            text: `${percentage}%`,
-            fontSize: 36,
+            text: `${remainingCredits.toLocaleString()}`,
+            fontSize: 32,
             fontWeight: 600,
             fill: '#fff',
             textAlign: 'center'
@@ -157,7 +160,7 @@ const SatisfactionRate = () => {
           left: 'center',
           top: '70%',
           style: {
-            text: 'Based on likes',
+            text: `Remaining / ${totalCredits.toLocaleString()} Credits`,
             fontSize: 13,
             fill: '#8b8d97',
             textAlign: 'center'
@@ -168,7 +171,7 @@ const SatisfactionRate = () => {
           left: 'center',
           top: '35%',
           style: {
-            text: '📈',
+            text: '💎',
             fontSize: 24,
             textAlign: 'center'
           }
@@ -195,7 +198,7 @@ const SatisfactionRate = () => {
           graphic: [
             {
               style: {
-                text: `${currentValue.toFixed(2)}%`
+                text: `${Math.round((currentValue / 100) * totalCredits).toLocaleString()}`
               }
             },
             {},
@@ -225,9 +228,9 @@ const SatisfactionRate = () => {
 
   return (
     <div className="satisfaction-card">
-      <h3 className="card-title">Satisfaction rate</h3>
-      
-      <div 
+      <h3 className="card-title">Credits Balance</h3>
+
+      <div
         ref={chartRef}
         className="satisfaction-chart-echarts"
         style={{ width: '100%', height: '220px' }}
