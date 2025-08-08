@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,60 +13,183 @@ import {
   FiSettings,
   FiUser,
   FiSlack,
-  FiGitlab
+  FiGitlab,
+  FiChevronLeft,
+  FiChevronRight,
+  FiMenu
 } from "react-icons/fi";
+
+interface MenuItem {
+  id: number;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  path: string;
+  active?: boolean;
+  hasNotification?: boolean;
+  hasDropdown?: boolean;
+}
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showTooltip, setShowTooltip] = useState<number | null>(null);
 
-  const menuItems = [
-    { id: 1, icon: FiGrid, label: "Dashboard", path: "/dashboard", active: true },
-    { id: 2, icon: FiUser, label: "My Subscription", path: "/dashboard/subscription" },
-    { id: 3, icon: FiSlack, label: "API Keys", path: "/dashboard/api-keys" },
-    { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "/dashboard/plans" },
+  const menuItems: MenuItem[] = [
+    { id: 1, icon: FiGrid, label: "Dashboard", path: "/dashboard", active: pathname === "/dashboard" },
+    { id: 2, icon: FiUser, label: "My Subscription", path: "/dashboard/subscription", active: pathname === "/dashboard/subscription" },
+    { id: 3, icon: FiSlack, label: "API Keys", path: "/dashboard/api-keys", active: pathname === "/dashboard/api-keys" },
+    { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "/dashboard/plans", active: pathname === "/dashboard/plans" },
   ];
 
-  const accountItems = [
-    { id: 1, icon: FiSettings, label: "Settings", path: "/dashboard/settings", hasDropdown: true },
-    { id: 2, icon: FiUser, label: "Profile", path: "/dashboard/profile" },
+  const accountItems: MenuItem[] = [
+    { id: 1, icon: FiSettings, label: "Settings", path: "/dashboard/settings", hasDropdown: true, active: pathname === "/dashboard/settings" },
+    { id: 2, icon: FiUser, label: "Profile", path: "/dashboard/profile", active: pathname === "/dashboard/profile" },
   ];
+
+  const toggleSidebar = () => {
+    setIsCollapsed(!isCollapsed);
+  };
 
   return (
-    <div className="dashboard-sidebar">
+    <div className={`dashboard-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
         <div className="logo-wrapper">
           <Link className="navbar-brand dashborad-logo" href="/">
-            <div style={{ overflow: 'hidden', width: '170px', height: '80px' }}>
-              <Image src="/assets/logo.svg" alt="KOI" width={160} height={120} style={{ objectFit: 'cover', objectPosition: 'left center', transform: 'scale(1.2)' }} />
+            <div style={{ 
+              overflow: 'hidden', 
+              width: isCollapsed ? '40px' : '170px', 
+              height: '80px',
+              transition: 'width 0.3s ease'
+            }}>
+              <Image 
+                src="/assets/logo.svg" 
+                alt="KOI" 
+                width={160} 
+                height={120} 
+                style={{ 
+                  objectFit: 'cover', 
+                  objectPosition: 'left center', 
+                  transform: isCollapsed ? 'scale(0.8)' : 'scale(1.2)',
+                  transition: 'transform 0.3s ease'
+                }} 
+              />
             </div>
           </Link>
         </div>
+        <button 
+          className="sidebar-toggle"
+          onClick={toggleSidebar}
+          style={{
+            position: 'absolute',
+            right: isCollapsed ? '-15px' : '10px',
+            top: '30px',
+            background: '#fff',
+            border: '1px solid #e0e0e0',
+            borderRadius: '50%',
+            width: '30px',
+            height: '30px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'right 0.3s ease',
+            zIndex: 10
+          }}
+        >
+          {isCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
+        </button>
       </div>
 
       <nav className="sidebar-nav">
         <ul className="nav-list">
           {menuItems.map((item) => (
-            <li key={item.id} className={`nav-item ${item.active ? "active" : ""}`}>
+            <li 
+              key={item.id} 
+              className={`nav-item ${item.active ? "active" : ""}`}
+              onMouseEnter={() => isCollapsed && setShowTooltip(item.id)}
+              onMouseLeave={() => setShowTooltip(null)}
+              style={{ position: 'relative' }}
+            >
               <Link href={item.path} className="nav-link">
                 <item.icon className="nav-icon" />
-                <span className="nav-label">{item.label}</span>
+                {!isCollapsed && <span className="nav-label">{item.label}</span>}
                 {item.hasNotification && <span className="notification-dot"></span>}
-                {item.hasDropdown && <span className="dropdown-arrow">▼</span>}
+                {item.hasDropdown && !isCollapsed && <span className="dropdown-arrow">▼</span>}
               </Link>
+              {isCollapsed && showTooltip === item.id && (
+                <div className="sidebar-tooltip" style={{
+                  position: 'absolute',
+                  left: '100%',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  marginLeft: '10px',
+                  background: '#333',
+                  color: '#fff',
+                  padding: '5px 10px',
+                  borderRadius: '4px',
+                  whiteSpace: 'nowrap',
+                  fontSize: '12px',
+                  zIndex: 1000
+                }}>
+                  {item.label}
+                  <div style={{
+                    position: 'absolute',
+                    right: '100%',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    borderRight: '5px solid #333',
+                    borderTop: '5px solid transparent',
+                    borderBottom: '5px solid transparent'
+                  }}></div>
+                </div>
+              )}
             </li>
           ))}
         </ul>
 
         <div className="nav-section">
-          <div className="section-title">ACCOUNT</div>
+          {!isCollapsed && <div className="section-title">ACCOUNT</div>}
           <ul className="nav-list">
             {accountItems.map((item) => (
-              <li key={item.id} className="nav-item">
+              <li 
+                key={item.id} 
+                className={`nav-item ${item.active ? "active" : ""}`}
+                onMouseEnter={() => isCollapsed && setShowTooltip(item.id + 100)}
+                onMouseLeave={() => setShowTooltip(null)}
+                style={{ position: 'relative' }}
+              >
                 <Link href={item.path} className="nav-link">
                   <item.icon className="nav-icon" />
-                  <span className="nav-label">{item.label}</span>
-                  {item.hasDropdown && <span className="dropdown-arrow">▼</span>}
+                  {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                  {item.hasDropdown && !isCollapsed && <span className="dropdown-arrow">▼</span>}
                 </Link>
+                {isCollapsed && showTooltip === item.id + 100 && (
+                  <div className="sidebar-tooltip" style={{
+                    position: 'absolute',
+                    left: '100%',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    marginLeft: '10px',
+                    background: '#333',
+                    color: '#fff',
+                    padding: '5px 10px',
+                    borderRadius: '4px',
+                    whiteSpace: 'nowrap',
+                    fontSize: '12px',
+                    zIndex: 1000
+                  }}>
+                    {item.label}
+                    <div style={{
+                      position: 'absolute',
+                      right: '100%',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      borderRight: '5px solid #333',
+                      borderTop: '5px solid transparent',
+                      borderBottom: '5px solid transparent'
+                    }}></div>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -73,18 +197,68 @@ const Sidebar = () => {
       </nav>
 
       <div className="sidebar-footer">
-        <div className="user-profile">
-          <img
+        <div className={`user-profile ${isCollapsed ? 'collapsed' : ''}`}>
+          <Image
             src="/assets/img/team/team-1.jpg"
             alt="User"
             className="user-avatar"
+            width={40}
+            height={40}
+            style={{
+              borderRadius: '50%',
+              objectFit: 'cover'
+            }}
           />
-          <div className="user-info">
-            <div className="user-name">Adam Simpson</div>
-          </div>
-          <button className="more-btn">⋯</button>
+          {!isCollapsed && (
+            <>
+              <div className="user-info">
+                <div className="user-name">Adam Simpson</div>
+              </div>
+              <button className="more-btn">⋯</button>
+            </>
+          )}
         </div>
       </div>
+
+      <style jsx>{`
+        .dashboard-sidebar {
+          transition: width 0.3s ease;
+          width: 260px;
+        }
+        
+        .dashboard-sidebar.collapsed {
+          width: 80px;
+        }
+        
+        .dashboard-sidebar.collapsed .nav-label,
+        .dashboard-sidebar.collapsed .section-title,
+        .dashboard-sidebar.collapsed .user-info,
+        .dashboard-sidebar.collapsed .more-btn {
+          display: none;
+        }
+        
+        .dashboard-sidebar.collapsed .nav-link {
+          justify-content: center;
+        }
+        
+        .dashboard-sidebar.collapsed .nav-icon {
+          margin-right: 0;
+        }
+        
+        .dashboard-sidebar.collapsed .user-profile {
+          justify-content: center;
+        }
+        
+        .nav-link {
+          display: flex;
+          align-items: center;
+          transition: all 0.3s ease;
+        }
+        
+        .nav-icon {
+          transition: margin 0.3s ease;
+        }
+      `}</style>
     </div>
   );
 };
