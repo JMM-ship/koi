@@ -25,13 +25,13 @@ export default function Dashboard() {
           <div className="dashboard-grid">
             {/* 左侧主要内容区 */}
             <div className="main-content">
-              {/* 工作总结图表 */}
+              {/* 消耗趋势图 */}
               <div className="main-content-chart">
                 <WorkSummaryChart />
               </div>
 
               <div className="main-bottom">
-                {/* 余额卡片组 */}
+                {/* 积分消耗排名 */}
                 <div>
                   <ExchangeBalance />
                 </div>

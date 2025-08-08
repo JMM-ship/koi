@@ -6,40 +6,43 @@ import * as echarts from 'echarts';
 const ExchangeBalance = () => {
   const chartRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const balances = [
+  const rankings = [
     {
       id: 1,
-      label: "Exchange Balance",
-      amount: "0.213435345",
-      usdValue: "3,897.98 USD",
-      change: "-0.32%",
-      color: "#00b4d8",
-      percentage: 68
+      label: "Today",
+      period: "24 hours",
+      points: "2,847",
+      rank: "#12",
+      outperformed: 85,
+      color: "#794aff",
+      trend: "+12%"
     },
     {
       id: 2,
-      label: "Exchange Balance",
-      amount: "0.213435345",
-      usdValue: "3,897.98 USD",
-      change: "-0.32%",
-      color: "#ff006e",
-      percentage: 45
+      label: "This Week",
+      period: "7 days",
+      points: "18,234",
+      rank: "#28",
+      outperformed: 72,
+      color: "#00b4d8",
+      trend: "+8%"
     },
     {
       id: 3,
-      label: "Exchange Balance",
-      amount: "0.213435345",
-      usdValue: "3,897.98 USD",
-      change: "-0.32%",
+      label: "This Month",
+      period: "30 days",
+      points: "65,892",
+      rank: "#45",
+      outperformed: 68,
       color: "#00d084",
-      percentage: 75
+      trend: "+15%"
     }
   ];
 
   useEffect(() => {
     const charts: echarts.ECharts[] = [];
 
-    balances.forEach((balance, index) => {
+    rankings.forEach((ranking, index) => {
       if (chartRefs.current[index]) {
         const myChart = echarts.init(chartRefs.current[index]!);
         charts.push(myChart);
@@ -62,9 +65,9 @@ const ExchangeBalance = () => {
                 roundCap: true,
                 clip: false,
                 itemStyle: {
-                  color: balance.color,
+                  color: ranking.color,
                   shadowBlur: 10,
-                  shadowColor: balance.color
+                  shadowColor: ranking.color
                 }
               },
               axisLine: {
@@ -84,21 +87,22 @@ const ExchangeBalance = () => {
               },
               data: [
                 {
-                  value: balance.percentage,
+                  value: ranking.outperformed,
                   detail: {
                     valueAnimation: true,
                     offsetCenter: ['0%', '0%'],
-                    fontSize: 14,
-                    fontWeight: '500',
+                    fontSize: 16,
+                    fontWeight: 'bold',
                     color: '#fff',
-                    formatter: balance.change
+                    formatter: '{value}%'
                   }
                 }
               ],
               detail: {
-                fontSize: 14,
+                fontSize: 16,
+                fontWeight: 'bold',
                 color: '#fff',
-                formatter: balance.change,
+                formatter: '{value}%',
                 offsetCenter: ['0%', '0%']
               },
               animationDuration: 1000,
@@ -125,14 +129,23 @@ const ExchangeBalance = () => {
 
   return (
     <div className="exchange-balances">
-      {balances.map((balance, index) => (
-        <div key={balance.id} className="balance-card">
+      <div className="ranking-header">
+        <h3 style={{ color: '#fff', fontSize: '16px', marginBottom: '15px' }}>Points Consumption Ranking</h3>
+      </div>
+      {rankings.map((ranking, index) => (
+        <div key={ranking.id} className="balance-card">
           <div className="balance-content">
             <div className="balance-header">
-              <span className="balance-label">{balance.label}</span>
+              <span className="balance-label">{ranking.label}</span>
+              <span style={{ color: '#666', fontSize: '11px', marginLeft: '8px' }}>({ranking.period})</span>
             </div>
-            <div className="balance-amount">{balance.amount}</div>
-            <div className="balance-usd">{balance.usdValue}</div>
+            <div className="balance-amount" style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+              <span>{ranking.points}</span>
+              <span style={{ fontSize: '14px', color: ranking.color }}>{ranking.rank}</span>
+            </div>
+            <div className="balance-usd" style={{ fontSize: '12px', color: '#999' }}>
+              Outperformed {ranking.outperformed}% of users
+            </div>
           </div>
           <div className="balance-chart-container">
             <div
