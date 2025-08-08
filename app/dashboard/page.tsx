@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import TopBar from "@/components/dashboard/TopBar";
 import WorkSummaryChart from "@/components/dashboard/WorkSummaryChart";
@@ -11,11 +12,17 @@ import SatisfactionRate from "@/components/dashboard/SatisfactionRate";
 import "@/public/assets/css/dashboard.css";
 
 export default function Dashboard() {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   return (
     <div className="dashboard-container">
-      <Sidebar />
+      <Sidebar onCollapsedChange={setIsSidebarCollapsed} />
 
-      <div className="dashboard-main">
+      <div className="dashboard-main" style={{
+        marginLeft: isSidebarCollapsed ? '80px' : '260px',
+        width: isSidebarCollapsed ? 'calc(100% - 80px)' : 'calc(100% - 260px)',
+        transition: 'all 0.3s ease'
+      }}>
         {/* <TopBar /> */}
 
         <div className="dashboard-content">

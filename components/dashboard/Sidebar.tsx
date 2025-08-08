@@ -16,23 +16,34 @@ import {
   FiGitlab,
   FiChevronLeft,
   FiChevronRight,
-  FiMenu
+  FiChevronDown,
+  FiChevronUp,
+  FiMenu,
+  FiBell,
+  FiLock,
+  FiShield
 } from "react-icons/fi";
 
 interface MenuItem {
   id: number;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  path: string;
+  path?: string;
   active?: boolean;
   hasNotification?: boolean;
   hasDropdown?: boolean;
+  subItems?: MenuItem[];
 }
 
-const Sidebar = () => {
+interface SidebarProps {
+  onCollapsedChange?: (collapsed: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
+  const [expandedItems, setExpandedItems] = useState<number[]>([]);
 
   const menuItems: MenuItem[] = [
     { id: 1, icon: FiGrid, label: "Dashboard", path: "/dashboard", active: pathname === "/dashboard" },
@@ -42,12 +53,24 @@ const Sidebar = () => {
   ];
 
   const accountItems: MenuItem[] = [
-    { id: 1, icon: FiSettings, label: "Settings", path: "/dashboard/settings", hasDropdown: true, active: pathname === "/dashboard/settings" },
     { id: 2, icon: FiUser, label: "Profile", path: "/dashboard/profile", active: pathname === "/dashboard/profile" },
   ];
 
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    const newCollapsed = !isCollapsed;
+    setIsCollapsed(newCollapsed);
+    if (newCollapsed) {
+      setExpandedItems([]);
+    }
+    onCollapsedChange?.(newCollapsed);
+  };
+
+  const toggleDropdown = (itemId: number) => {
+    setExpandedItems(prev =>
+      prev.includes(itemId)
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
   };
 
   return (
@@ -55,28 +78,28 @@ const Sidebar = () => {
       <div className="sidebar-header">
         <div className="logo-wrapper">
           <Link className="navbar-brand dashborad-logo" href="/">
-            <div style={{ 
-              overflow: 'hidden', 
-              width: isCollapsed ? '40px' : '170px', 
+            <div style={{
+              overflow: 'hidden',
+              width: isCollapsed ? '40px' : '170px',
               height: '80px',
               transition: 'width 0.3s ease'
             }}>
-              <Image 
-                src="/assets/logo.svg" 
-                alt="KOI" 
-                width={160} 
-                height={120} 
-                style={{ 
-                  objectFit: 'cover', 
-                  objectPosition: 'left center', 
+              <Image
+                src="/assets/logo.svg"
+                alt="KOI"
+                width={160}
+                height={120}
+                style={{
+                  objectFit: 'cover',
+                  objectPosition: 'left center',
                   transform: isCollapsed ? 'scale(0.8)' : 'scale(1.2)',
                   transition: 'transform 0.3s ease'
-                }} 
+                }}
               />
             </div>
           </Link>
         </div>
-        <button 
+        <button
           className="sidebar-toggle"
           onClick={toggleSidebar}
           style={{
@@ -103,8 +126,8 @@ const Sidebar = () => {
       <nav className="sidebar-nav">
         <ul className="nav-list">
           {menuItems.map((item) => (
-            <li 
-              key={item.id} 
+            <li
+              key={item.id}
               className={`nav-item ${item.active ? "active" : ""}`}
               onMouseEnter={() => isCollapsed && setShowTooltip(item.id)}
               onMouseLeave={() => setShowTooltip(null)}
@@ -151,44 +174,91 @@ const Sidebar = () => {
           {!isCollapsed && <div className="section-title">ACCOUNT</div>}
           <ul className="nav-list">
             {accountItems.map((item) => (
-              <li 
-                key={item.id} 
-                className={`nav-item ${item.active ? "active" : ""}`}
-                onMouseEnter={() => isCollapsed && setShowTooltip(item.id + 100)}
-                onMouseLeave={() => setShowTooltip(null)}
-                style={{ position: 'relative' }}
-              >
-                <Link href={item.path} className="nav-link">
-                  <item.icon className="nav-icon" />
-                  {!isCollapsed && <span className="nav-label">{item.label}</span>}
-                  {item.hasDropdown && !isCollapsed && <span className="dropdown-arrow">▼</span>}
-                </Link>
-                {isCollapsed && showTooltip === item.id + 100 && (
-                  <div className="sidebar-tooltip" style={{
-                    position: 'absolute',
-                    left: '100%',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    marginLeft: '10px',
-                    background: '#333',
-                    color: '#fff',
-                    padding: '5px 10px',
-                    borderRadius: '4px',
-                    whiteSpace: 'nowrap',
-                    fontSize: '12px',
-                    zIndex: 1000
-                  }}>
-                    {item.label}
-                    <div style={{
+              <li key={item.id}>
+                <div
+                  className={`nav-item ${item.active ? "active" : ""}`}
+                  onMouseEnter={() => isCollapsed && setShowTooltip(item.id + 100)}
+                  onMouseLeave={() => setShowTooltip(null)}
+                  style={{ position: 'relative' }}
+                >
+                  {item.hasDropdown ? (
+                    <div
+                      className="nav-link"
+                      onClick={() => !isCollapsed && toggleDropdown(item.id)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <item.icon className="nav-icon" />
+                      {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                      {item.hasDropdown && !isCollapsed && (
+                        <span className="dropdown-arrow">
+                          {expandedItems.includes(item.id) ? <FiChevronUp /> : <FiChevronDown />}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <Link href={item.path!} className="nav-link">
+                      <item.icon className="nav-icon" />
+                      {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                    </Link>
+                  )}
+                  {isCollapsed && showTooltip === item.id + 100 && (
+                    <div className="sidebar-tooltip" style={{
                       position: 'absolute',
-                      right: '100%',
+                      left: '100%',
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      borderRight: '5px solid #333',
-                      borderTop: '5px solid transparent',
-                      borderBottom: '5px solid transparent'
-                    }}></div>
-                  </div>
+                      marginLeft: '10px',
+                      background: '#333',
+                      color: '#fff',
+                      padding: '5px 10px',
+                      borderRadius: '4px',
+                      whiteSpace: 'nowrap',
+                      fontSize: '12px',
+                      zIndex: 1000
+                    }}>
+                      {item.label}
+                      <div style={{
+                        position: 'absolute',
+                        right: '100%',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        borderRight: '5px solid #333',
+                        borderTop: '5px solid transparent',
+                        borderBottom: '5px solid transparent'
+                      }}></div>
+                    </div>
+                  )}
+                </div>
+                {item.subItems && !isCollapsed && expandedItems.includes(item.id) && (
+                  <ul className="sub-menu" style={{
+                    listStyle: 'none',
+                    padding: '0',
+                    margin: '0',
+                    overflow: 'hidden',
+                    transition: 'max-height 0.3s ease',
+                    maxHeight: expandedItems.includes(item.id) ? '200px' : '0'
+                  }}>
+                    {item.subItems.map((subItem) => (
+                      <li key={subItem.id} className="sub-menu-item">
+                        <Link
+                          href={subItem.path!}
+                          className="sub-nav-link"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '8px 20px 8px 50px',
+                            color: pathname === subItem.path ? '#007bff' : '#666',
+                            textDecoration: 'none',
+                            fontSize: '14px',
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          <subItem.icon className="nav-icon" style={{ fontSize: '16px', marginRight: '10px' }} />
+                          <span>{subItem.label}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </li>
             ))}
@@ -257,6 +327,17 @@ const Sidebar = () => {
         
         .nav-icon {
           transition: margin 0.3s ease;
+        }
+        
+        .dropdown-arrow {
+          margin-left: auto;
+          display: flex;
+          align-items: center;
+        }
+        
+        .sub-nav-link:hover {
+          background-color: #f5f5f5;
+          color: #007bff !important;
         }
       `}</style>
     </div>
