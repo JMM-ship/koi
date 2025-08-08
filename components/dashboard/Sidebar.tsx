@@ -1,12 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  FiGrid, 
-  FiFolder, 
-  FiCalendar, 
-  FiFileText, 
+import {
+  FiGrid,
+  FiFolder,
+  FiCalendar,
+  FiFileText,
   FiShoppingBag,
   FiSettings,
   FiUser,
@@ -19,29 +20,25 @@ const Sidebar = () => {
 
   const menuItems = [
     { id: 1, icon: FiGrid, label: "Dashboard", path: "/dashboard", active: true },
-    { id: 2, icon: FiFolder, label: "Projects", path: "/dashboard/projects", hasNotification: true },
-    { id: 3, icon: FiCalendar, label: "Calendar", path: "/dashboard/calendar" },
-    { id: 4, icon: FiFileText, label: "Documents", path: "/dashboard/documents", hasDropdown: true },
-    { id: 5, icon: FiShoppingBag, label: "Store", path: "/dashboard/store" },
-  ];
-
-  const integrations = [
-    { id: 1, icon: FiGitlab, label: "Figma", path: "/dashboard/figma" },
-    { id: 2, icon: FiSlack, label: "Slack", path: "/dashboard/slack", hasNotification: true, notificationCount: 99 },
-    { id: 3, icon: "🎮", label: "Jira", path: "/dashboard/jira", isEmoji: true },
+    { id: 2, icon: FiUser, label: "My Subscription", path: "/dashboard/subscription" },
+    { id: 3, icon: FiSlack, label: "API Keys", path: "/dashboard/api-keys" },
+    { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "/dashboard/plans" },
   ];
 
   const accountItems = [
     { id: 1, icon: FiSettings, label: "Settings", path: "/dashboard/settings", hasDropdown: true },
-    { id: 2, icon: FiSettings, label: "Settings", path: "/dashboard/settings2" },
+    { id: 2, icon: FiUser, label: "Profile", path: "/dashboard/profile" },
   ];
 
   return (
     <div className="dashboard-sidebar">
       <div className="sidebar-header">
         <div className="logo-wrapper">
-          <span className="logo-icon">📊</span>
-          <span className="logo-text">Dashcube</span>
+          <Link className="navbar-brand dashborad-logo" href="/">
+            <div style={{ overflow: 'hidden', width: '170px', height: '80px' }}>
+              <Image src="/assets/logo.svg" alt="KOI" width={160} height={120} style={{ objectFit: 'cover', objectPosition: 'left center', transform: 'scale(1.2)' }} />
+            </div>
+          </Link>
         </div>
       </div>
 
@@ -58,27 +55,6 @@ const Sidebar = () => {
             </li>
           ))}
         </ul>
-
-        <div className="nav-section">
-          <div className="section-title">INTEGRATIONS</div>
-          <ul className="nav-list">
-            {integrations.map((item) => (
-              <li key={item.id} className="nav-item">
-                <Link href={item.path} className="nav-link">
-                  {item.isEmoji ? (
-                    <span className="nav-icon emoji">{item.icon}</span>
-                  ) : (
-                    <item.icon className="nav-icon" />
-                  )}
-                  <span className="nav-label">{item.label}</span>
-                  {item.hasNotification && (
-                    <span className="notification-badge">{item.notificationCount}</span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
 
         <div className="nav-section">
           <div className="section-title">ACCOUNT</div>
@@ -98,9 +74,9 @@ const Sidebar = () => {
 
       <div className="sidebar-footer">
         <div className="user-profile">
-          <img 
-            src="/assets/img/team/team-1.jpg" 
-            alt="User" 
+          <img
+            src="/assets/img/team/team-1.jpg"
+            alt="User"
             className="user-avatar"
           />
           <div className="user-info">
