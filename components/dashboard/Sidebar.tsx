@@ -27,7 +27,7 @@ import {
 
 interface MenuItem {
   id: number;
-  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   path?: string;
   active?: boolean;
@@ -77,9 +77,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
   };
 
   const handleLogout = async () => {
-    if (isLoggingOut) return; // 防止重复点击
+    if (isLoggingOut) return;
 
-    // 显示确认对话框
     const confirmed = window.confirm('确定要退出登录吗？');
     if (!confirmed) return;
 
@@ -121,274 +120,245 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
   };
 
   return (
-    <div className={`dashboard-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <div className="logo-wrapper">
-          <Link className="navbar-brand dashborad-logo" href="/">
-            <div style={{
-              overflow: 'hidden',
-              width: isCollapsed ? '40px' : '170px',
-              height: '80px',
-              transition: 'width 0.3s ease'
-            }}>
-              <Image
-                src="/assets/logo.svg"
-                alt="KOI"
-                width={160}
-                height={120}
-                style={{
-                  objectFit: 'cover',
-                  objectPosition: 'left center',
-                  transform: isCollapsed ? 'scale(0.8)' : 'scale(1.2)',
-                  transition: 'transform 0.3s ease'
-                }}
-              />
-            </div>
-          </Link>
-        </div>
-        <button
-          className="sidebar-toggle"
-          onClick={toggleSidebar}
-          style={{
-            position: 'absolute',
-            right: isCollapsed ? '-15px' : '10px',
-            top: '30px',
-            background: '#fff',
-            border: '1px solid #e0e0e0',
-            borderRadius: '50%',
-            width: '30px',
-            height: '30px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'right 0.3s ease',
-            zIndex: 10
-          }}
-        >
-          {isCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
-        </button>
-      </div>
-
-      <nav className="sidebar-nav">
-        <ul className="nav-list">
-          {menuItems.map((item) => (
-            <li
-              key={item.id}
-              className={`nav-item ${item.active ? "active" : ""}`}
-              onMouseEnter={() => isCollapsed && setShowTooltip(item.id)}
-              onMouseLeave={() => setShowTooltip(null)}
-              style={{ position: 'relative' }}
-            >
-              <Link href={item.path!} className="nav-link">
-                <item.icon className="nav-icon" />
-                {!isCollapsed && <span className="nav-label">{item.label}</span>}
-                {item.hasNotification && <span className="notification-dot"></span>}
-                {item.hasDropdown && !isCollapsed && <span className="dropdown-arrow">▼</span>}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        <div className="nav-section">
-          {!isCollapsed && <div className="section-title">ACCOUNT</div>}
-          <ul className="nav-list">
-            {accountItems.map((item) => (
-              <li key={item.id}>
-                <div
-                  className={`nav-item ${item.active ? "active" : ""}`}
-                  onMouseEnter={() => isCollapsed && setShowTooltip(item.id + 100)}
-                  onMouseLeave={() => setShowTooltip(null)}
-                  style={{ position: 'relative' }}
-                >
-                  {item.hasDropdown ? (
-                    <div
-                      className="nav-link"
-                      onClick={() => !isCollapsed && toggleDropdown(item.id)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <item.icon className="nav-icon" />
-                      {!isCollapsed && <span className="nav-label">{item.label}</span>}
-                      {item.hasDropdown && !isCollapsed && (
-                        <span className="dropdown-arrow">
-                          {expandedItems.includes(item.id) ? <FiChevronUp /> : <FiChevronDown />}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <Link href={item.path!} className="nav-link">
-                      <item.icon className="nav-icon" />
-                      {!isCollapsed && <span className="nav-label">{item.label}</span>}
-                    </Link>
-                  )}
-                  {isCollapsed && showTooltip === item.id + 100 && (
-                    <div className="sidebar-tooltip" style={{
-                      position: 'absolute',
-                      left: '100%',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      marginLeft: '10px',
-                      background: '#333',
-                      color: '#fff',
-                      padding: '5px 10px',
-                      borderRadius: '4px',
-                      whiteSpace: 'nowrap',
-                      fontSize: '12px',
-                      zIndex: 1000
-                    }}>
-                      {item.label}
-                      <div style={{
-                        position: 'absolute',
-                        right: '100%',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        borderRight: '5px solid #333',
-                        borderTop: '5px solid transparent',
-                        borderBottom: '5px solid transparent'
-                      }}></div>
-                    </div>
-                  )}
-                </div>
-                {item.subItems && !isCollapsed && expandedItems.includes(item.id) && (
-                  <ul className="sub-menu" style={{
-                    listStyle: 'none',
-                    padding: '0',
-                    margin: '0',
-                    overflow: 'hidden',
-                    transition: 'max-height 0.3s ease',
-                    maxHeight: expandedItems.includes(item.id) ? '200px' : '0'
-                  }}>
-                    {item.subItems.map((subItem) => (
-                      <li key={subItem.id} className="sub-menu-item">
-                        <Link
-                          href={subItem.path!}
-                          className="sub-nav-link"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            padding: '8px 20px 8px 50px',
-                            color: pathname === subItem.path ? '#007bff' : '#666',
-                            textDecoration: 'none',
-                            fontSize: '14px',
-                            transition: 'all 0.3s ease'
-                          }}
-                        >
-                          <subItem.icon className="nav-icon" style={{ fontSize: '16px', marginRight: '10px' }} />
-                          <span>{subItem.label}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
-
-      <div className="sidebar-footer">
-        <div className={`user-profile ${isCollapsed ? 'collapsed' : ''}`}>
-          <Image
-            src="/assets/img/team/team-1.jpg"
-            alt="User"
-            className="user-avatar"
-            width={40}
-            height={40}
-            style={{
-              borderRadius: '50%',
-              objectFit: 'cover'
-            }}
-          />
-          {!isCollapsed && (
-            <>
-              <div className="user-info">
-                <div className="user-name">Adam Simpson</div>
-              </div>
-              <button
-                className="logout-btn"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                title="退出登录"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: isLoggingOut ? '#999' : '#dc3545',
-                  fontSize: '18px',
-                  cursor: isLoggingOut ? 'not-allowed' : 'pointer',
-                  padding: '5px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  transition: 'all 0.2s ease',
-                  opacity: isLoggingOut ? 0.6 : 1,
-                }}
-                onMouseEnter={(e) => !isLoggingOut && (e.currentTarget.style.transform = 'scale(1.1)')}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-              >
-                <FiLogOut style={{
-                  animation: isLoggingOut ? 'spin 1s linear infinite' : 'none'
-                }} />
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      <style jsx>{`
+    <>
+      {/* 添加旋转动画的样式 */}
+      <style jsx global>{`
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
+        .animate-spin-slow {
+          animation: spin 1s linear infinite;
+        }
         
+        /* 覆盖 dashboard.css 的固定宽度 */
         .dashboard-sidebar {
-          transition: width 0.3s ease;
-          width: 260px;
+          width: ${isCollapsed ? '80px' : '260px'} !important;
+          transition: width 0.3s ease !important;
         }
         
-        .dashboard-sidebar.collapsed {
-          width: 80px;
-        }
-        
-        .dashboard-sidebar.collapsed .nav-label,
-        .dashboard-sidebar.collapsed .section-title,
-        .dashboard-sidebar.collapsed .user-info,
-        .dashboard-sidebar.collapsed .logout-btn {
-          display: none;
-        }
-        
-        .dashboard-sidebar.collapsed .nav-link {
-          justify-content: center;
-        }
-        
-        .dashboard-sidebar.collapsed .nav-icon {
-          margin-right: 0;
-        }
-        
-        .dashboard-sidebar.collapsed .user-profile {
-          justify-content: center;
-        }
-        
-        .nav-link {
-          display: flex;
-          align-items: center;
-          transition: all 0.3s ease;
-        }
-        
-        .nav-icon {
-          transition: margin 0.3s ease;
-        }
-        
-        .dropdown-arrow {
-          margin-left: auto;
-          display: flex;
-          align-items: center;
-        }
-        
-        .sub-nav-link:hover {
-          background-color: #f5f5f5;
-          color: #007bff !important;
-        }
+        /* 收缩时隐藏文字 */
+        ${isCollapsed ? `
+          .dashboard-sidebar .nav-label,
+          .dashboard-sidebar .section-title,
+          .dashboard-sidebar .user-info,
+          .dashboard-sidebar .logout-btn,
+          .dashboard-sidebar .dropdown-arrow {
+            display: none !important;
+          }
+          
+          .dashboard-sidebar .nav-link {
+            justify-content: center !important;
+          }
+          
+          .dashboard-sidebar .nav-icon {
+            margin-right: 0 !important;
+          }
+        ` : ''}
       `}</style>
-    </div>
+
+      <div
+        className="dashboard-sidebar transition-all duration-300"
+        style={{ width: isCollapsed ? '80px' : '260px' }}
+      >
+        <div className="sidebar-header relative">
+          <div className="logo-wrapper">
+            <Link className="navbar-brand" href="/">
+              <div style={{ overflow: 'hidden', width: '180px', height: '100px' }}>
+                <Image src="/assets/logo.svg" alt="KOI" width={180} height={100} style={{ objectFit: 'cover', objectPosition: 'left center', transform: 'scale(1.2)' }} />
+              </div>
+            </Link>
+          </div>
+          <button
+            className="sidebar-toggle"
+            onClick={toggleSidebar}
+            style={{
+              position: 'absolute',
+              right: isCollapsed ? '-15px' : '10px',
+              top: '30px',
+              background: '#fff',
+              border: '1px solid #e0e0e0',
+              borderRadius: '50%',
+              width: '30px',
+              height: '30px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              zIndex: 10,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#f5f5f5';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#fff';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            {isCollapsed ? <FiChevronRight /> : <FiChevronLeft />}
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          <ul className="nav-list">
+            {menuItems.map((item) => (
+              <li
+                key={item.id}
+                className={`nav-item relative ${item.active ? "active" : ""}`}
+                onMouseEnter={() => isCollapsed && setShowTooltip(item.id)}
+                onMouseLeave={() => setShowTooltip(null)}
+              >
+                <Link
+                  href={item.path!}
+                  className="nav-link"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: isCollapsed ? 'center' : 'flex-start'
+                  }}
+                >
+                  <item.icon className="nav-icon" style={{ marginRight: isCollapsed ? '0' : undefined }} />
+                  {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                  {item.hasNotification && <span className="notification-dot"></span>}
+                  {item.hasDropdown && !isCollapsed && <span className="dropdown-arrow">▼</span>}
+                </Link>
+
+                {/* Tooltip */}
+                {isCollapsed && showTooltip === item.id && (
+                  <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
+                    {item.label}
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-r-[5px] border-r-gray-800 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent"></div>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          <div className="nav-section">
+            {!isCollapsed && <div className="section-title">ACCOUNT</div>}
+            <ul className="nav-list">
+              {accountItems.map((item) => (
+                <li key={item.id}>
+                  <div
+                    className={`nav-item relative ${item.active ? "active" : ""}`}
+                    onMouseEnter={() => isCollapsed && setShowTooltip(item.id + 100)}
+                    onMouseLeave={() => setShowTooltip(null)}
+                  >
+                    {item.hasDropdown ? (
+                      <div
+                        className="nav-link cursor-pointer"
+                        onClick={() => !isCollapsed && toggleDropdown(item.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: isCollapsed ? 'center' : 'flex-start'
+                        }}
+                      >
+                        <item.icon className="nav-icon" style={{ marginRight: isCollapsed ? '0' : undefined }} />
+                        {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                        {item.hasDropdown && !isCollapsed && (
+                          <span className="dropdown-arrow ml-auto flex items-center">
+                            {expandedItems.includes(item.id) ? <FiChevronUp /> : <FiChevronDown />}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.path!}
+                        className="nav-link"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: isCollapsed ? 'center' : 'flex-start'
+                        }}
+                      >
+                        <item.icon className="nav-icon" style={{ marginRight: isCollapsed ? '0' : undefined }} />
+                        {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                      </Link>
+                    )}
+
+                    {/* Tooltip */}
+                    {isCollapsed && showTooltip === item.id + 100 && (
+                      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
+                        {item.label}
+                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-r-[5px] border-r-gray-800 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent"></div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Submenu */}
+                  {item.subItems && !isCollapsed && expandedItems.includes(item.id) && (
+                    <ul className="list-none p-0 m-0 overflow-hidden transition-all duration-300 max-h-52">
+                      {item.subItems.map((subItem) => (
+                        <li key={subItem.id} className="sub-menu-item">
+                          <Link
+                            href={subItem.path!}
+                            className={`flex items-center py-2 px-5 pl-12 text-sm transition-all duration-300 hover:bg-gray-100 ${pathname === subItem.path ? 'text-blue-500' : 'text-gray-600'
+                              } hover:text-blue-500`}
+                          >
+                            <subItem.icon className="text-base mr-2" />
+                            <span>{subItem.label}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="user-profile" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: isCollapsed ? 'center' : 'flex-start'
+          }}>
+            <Image
+              src="/assets/img/team/team-1.jpg"
+              alt="User"
+              className="user-avatar rounded-full object-cover"
+              width={40}
+              height={40}
+            />
+            {!isCollapsed && (
+              <>
+                <div className="user-info" style={{ marginLeft: '12px' }}>
+                  <div className="user-name" style={{ fontSize: '14px', fontWeight: '500' }}>Adam Simpson</div>
+                </div>
+                <button
+                  className="logout-btn"
+                  style={{
+                    marginLeft: 'auto',
+                    background: 'transparent',
+                    border: 'none',
+                    color: isLoggingOut ? '#999' : '#dc3545',
+                    fontSize: '18px',
+                    cursor: isLoggingOut ? 'not-allowed' : 'pointer',
+                    padding: '5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    transition: 'all 0.2s ease',
+                    opacity: isLoggingOut ? 0.6 : 1,
+                  }}
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  title="退出登录"
+                  onMouseEnter={(e) => !isLoggingOut && (e.currentTarget.style.transform = 'scale(1.1)')}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <FiLogOut className={isLoggingOut ? 'animate-spin-slow' : ''} />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
