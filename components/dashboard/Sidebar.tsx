@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FiGrid,
   FiFolder,
@@ -42,9 +42,11 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const menuItems: MenuItem[] = [
     { id: 1, icon: FiGrid, label: "Dashboard", path: "/dashboard", active: pathname === "/dashboard" },
@@ -74,12 +76,48 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
     );
   };
 
-  const handleLogout = () => {
-    // 这里添加退出登录的逻辑
-    console.log('Logging out...');
-    // 例如：清除本地存储、重定向到登录页等
-    // localStorage.clear();
-    // window.location.href = '/login';
+  const handleLogout = async () => {
+    if (isLoggingOut) return; // 防止重复点击
+
+    // 显示确认对话框
+    const confirmed = window.confirm('确定要退出登录吗？');
+    if (!confirmed) return;
+
+    setIsLoggingOut(true);
+
+    try {
+      // 1. 调用退出 API（如果有的话）
+      // await fetch('/api/auth/logout', { 
+      //   method: 'POST',
+      //   credentials: 'include'
+      // });
+
+      // 2. 清除本地存储的用户信息
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('userData');
+      localStorage.removeItem('refreshToken');
+
+      // 3. 清除会话存储
+      sessionStorage.clear();
+
+      // 4. 清除所有 cookies（如果需要）
+      document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+
+      // 5. 显示退出成功提示
+      console.log('退出登录成功');
+
+      // 6. 重定向到登录页面
+      router.push('/auth/signin');
+
+    } catch (error) {
+      console.error('退出登录失败:', error);
+      alert('退出登录失败，请重试');
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -266,25 +304,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
               <div className="user-info">
                 <div className="user-name">Adam Simpson</div>
               </div>
-              <button 
-                className="logout-btn" 
+              <button
+                className="logout-btn"
                 onClick={handleLogout}
-                title="Logout"
+                disabled={isLoggingOut}
+                title="退出登录"
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#dc3545',
+                  color: isLoggingOut ? '#999' : '#dc3545',
                   fontSize: '18px',
-                  cursor: 'pointer',
+                  cursor: isLoggingOut ? 'not-allowed' : 'pointer',
                   padding: '5px',
                   display: 'flex',
                   alignItems: 'center',
-                  transition: 'transform 0.2s ease',
+                  transition: 'all 0.2s ease',
+                  opacity: isLoggingOut ? 0.6 : 1,
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                onMouseEnter={(e) => !isLoggingOut && (e.currentTarget.style.transform = 'scale(1.1)')}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
               >
-                <FiLogOut />
+                <FiLogOut style={{
+                  animation: isLoggingOut ? 'spin 1s linear infinite' : 'none'
+                }} />
               </button>
             </>
           )}
@@ -292,6 +334,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
       </div>
 
       <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
         .dashboard-sidebar {
           transition: width 0.3s ease;
           width: 260px;
