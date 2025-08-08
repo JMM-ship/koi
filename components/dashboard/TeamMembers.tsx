@@ -82,16 +82,41 @@ const TeamMembers = () => {
   const totalRecords = creditDetails.length;
 
   return (
-    <div className="team-members-card">
-      <div className="card-header">
-        <h3 className="card-title">积分明细</h3>
-        <div className="team-location">
-          <span>共 {totalRecords} 条记录</span>
+    <>
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #8b5cf6, #3b82f6);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, #a78bfa, #60a5fa);
+        }
+      `}</style>
+      
+      <div className="team-members-card">
+        <div className="card-header">
+          <h3 className="card-title">积分明细</h3>
+          <div className="team-location">
+            <span>共 {totalRecords} 条记录</span>
+          </div>
+          <button className="show-more-btn">查看全部 &gt;</button>
         </div>
-        <button className="show-more-btn">查看全部 &gt;</button>
-      </div>
 
-      <div className="team-list">
+        <div
+          className="team-list custom-scrollbar"
+          style={{
+            maxHeight: "300px",
+            overflowY: "auto",
+            paddingRight: "4px"
+          }}
+        >
         {creditDetails.map((detail) => (
           <div key={detail.id} className="team-member">
             <div className="member-info">
@@ -141,6 +166,7 @@ const TeamMembers = () => {
         ))}
       </div>
     </div>
+    </>
   );
 };
 
