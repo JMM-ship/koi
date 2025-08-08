@@ -27,7 +27,7 @@ import {
 
 interface MenuItem {
   id: number;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   label: string;
   path?: string;
   active?: boolean;
