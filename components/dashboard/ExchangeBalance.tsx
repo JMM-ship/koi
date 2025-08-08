@@ -20,7 +20,7 @@ const ExchangeBalance = () => {
       id: 2,
       label: "Exchange Balance",
       amount: "0.213435345",
-      usdValue: "3,897.98 USD", 
+      usdValue: "3,897.98 USD",
       change: "-0.32%",
       color: "#ff006e",
       percentage: 45
@@ -131,14 +131,12 @@ const ExchangeBalance = () => {
             <div className="balance-header">
               <span className="balance-label">{balance.label}</span>
             </div>
-            
             <div className="balance-amount">{balance.amount}</div>
             <div className="balance-usd">{balance.usdValue}</div>
           </div>
-          
           <div className="balance-chart-container">
-            <div 
-              ref={el => chartRefs.current[index] = el}
+            <div
+              ref={el => { chartRefs.current[index] = el; }}
               className="balance-ring-chart"
               style={{ width: '80px', height: '80px' }}
             />
