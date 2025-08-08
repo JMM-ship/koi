@@ -82,25 +82,7 @@ const TeamMembers = () => {
   const totalRecords = creditDetails.length;
 
   return (
-    <>
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #8b5cf6, #3b82f6);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(180deg, #a78bfa, #60a5fa);
-        }
-      `}</style>
-      
-      <div className="team-members-card">
+    <div className="team-members-card">
         <div className="card-header">
           <h3 className="card-title">积分明细</h3>
           <div className="team-location">
@@ -166,7 +148,6 @@ const TeamMembers = () => {
         ))}
       </div>
     </div>
-    </>
   );
 };
 
