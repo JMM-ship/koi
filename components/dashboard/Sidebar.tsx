@@ -21,12 +21,13 @@ import {
   FiMenu,
   FiBell,
   FiLock,
-  FiShield
+  FiShield,
+  FiLogOut
 } from "react-icons/fi";
 
 interface MenuItem {
   id: number;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   label: string;
   path?: string;
   active?: boolean;
@@ -71,6 +72,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
         ? prev.filter(id => id !== itemId)
         : [...prev, itemId]
     );
+  };
+
+  const handleLogout = () => {
+    // 这里添加退出登录的逻辑
+    console.log('Logging out...');
+    // 例如：清除本地存储、重定向到登录页等
+    // localStorage.clear();
+    // window.location.href = '/login';
   };
 
   return (
@@ -133,39 +142,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
               onMouseLeave={() => setShowTooltip(null)}
               style={{ position: 'relative' }}
             >
-              <Link href={item.path} className="nav-link">
+              <Link href={item.path!} className="nav-link">
                 <item.icon className="nav-icon" />
                 {!isCollapsed && <span className="nav-label">{item.label}</span>}
                 {item.hasNotification && <span className="notification-dot"></span>}
                 {item.hasDropdown && !isCollapsed && <span className="dropdown-arrow">▼</span>}
               </Link>
-              {isCollapsed && showTooltip === item.id && (
-                <div className="sidebar-tooltip" style={{
-                  position: 'absolute',
-                  left: '100%',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  marginLeft: '10px',
-                  background: '#333',
-                  color: '#fff',
-                  padding: '5px 10px',
-                  borderRadius: '4px',
-                  whiteSpace: 'nowrap',
-                  fontSize: '12px',
-                  zIndex: 1000
-                }}>
-                  {item.label}
-                  <div style={{
-                    position: 'absolute',
-                    right: '100%',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    borderRight: '5px solid #333',
-                    borderTop: '5px solid transparent',
-                    borderBottom: '5px solid transparent'
-                  }}></div>
-                </div>
-              )}
             </li>
           ))}
         </ul>
@@ -284,7 +266,26 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
               <div className="user-info">
                 <div className="user-name">Adam Simpson</div>
               </div>
-              <button className="more-btn">⋯</button>
+              <button 
+                className="logout-btn" 
+                onClick={handleLogout}
+                title="Logout"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#dc3545',
+                  fontSize: '18px',
+                  cursor: 'pointer',
+                  padding: '5px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'transform 0.2s ease',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                <FiLogOut />
+              </button>
             </>
           )}
         </div>
@@ -303,7 +304,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
         .dashboard-sidebar.collapsed .nav-label,
         .dashboard-sidebar.collapsed .section-title,
         .dashboard-sidebar.collapsed .user-info,
-        .dashboard-sidebar.collapsed .more-btn {
+        .dashboard-sidebar.collapsed .logout-btn {
           display: none;
         }
         
