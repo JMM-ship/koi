@@ -43,7 +43,7 @@
   background: var(--dashboard-gradient);
 }
 
-.dashborad-logo{
+.dashborad-logo {
   position: relative;
   top: -20px;
 }
@@ -347,8 +347,9 @@
 /* Dashboard Content */
 .dashboard-content {
   flex: 1;
-  padding: 30px;
-  overflow-y: auto;
+  padding: 20px;
+  overflow: hidden;
+  height: 100%;
 }
 
 .dashboard-grid {
@@ -374,8 +375,11 @@
   background: var(--dashboard-card-bg);
   border: 1px solid var(--dashboard-border);
   border-radius: 16px;
-  padding: 24px;
+  padding: 20px;
   transition: all 0.3s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .work-summary-card:hover {
@@ -430,8 +434,8 @@
 
 .chart-container {
   position: relative;
-  height: 300px;
-  margin-bottom: 20px;
+  height: 250px;
+  margin-bottom: 15px;
 }
 
 .chart-svg {
@@ -541,21 +545,21 @@
 
 /* Exchange Balance Cards */
 .exchange-balances {
-  display: grid;
-  flex: 1;
-  grid-template-rows: repeat(3, 1fr);
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .balance-card {
   background: var(--dashboard-card-bg);
   border: 1px solid var(--dashboard-border);
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s;
+  margin-bottom: 15px;
 }
 
 .balance-card:hover {
@@ -606,7 +610,7 @@
   background: var(--dashboard-card-bg);
   border: 1px solid var(--dashboard-border);
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   transition: all 0.3s;
 }
 
@@ -691,9 +695,14 @@
   color: var(--dashboard-text-secondary);
 }
 
-.main-bottom{
+.main-bottom {
   display: flex;
   gap: 30px;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  min-height: 0;
 }
 
 /* Credit Card */
@@ -701,7 +710,7 @@
   background: var(--dashboard-card-bg);
   border: 1px solid var(--dashboard-border);
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   transition: all 0.3s;
 }
 
@@ -719,8 +728,8 @@
   position: relative;
   background: var(--dashboard-gradient);
   border-radius: 16px;
-  padding: 24px;
-  height: 200px;
+  padding: 20px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -740,7 +749,7 @@
   right: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -813,9 +822,12 @@
   background: var(--dashboard-card-bg);
   flex: 1;
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   border: 1px solid var(--dashboard-border);
   transition: all 0.3s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .team-members-card:hover {
@@ -849,8 +861,10 @@
 .team-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  margin-top: 24px;
+  gap: 15px;
+  margin-top: 20px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .team-member {
@@ -920,7 +934,7 @@
   background: var(--dashboard-card-bg);
   border: 1px solid var(--dashboard-border);
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   text-align: center;
   transition: all 0.3s;
 }
@@ -1033,13 +1047,13 @@
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .side-content {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
-  
+
   .exchange-balances {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1050,27 +1064,27 @@
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
-  
+
   .dashboard-sidebar.active {
     transform: translateX(0);
   }
-  
+
   .dashboard-main {
     margin-left: 0;
   }
-  
+
   .dashboard-content {
     padding: 20px;
   }
-  
+
   .side-content {
     grid-template-columns: 1fr;
   }
-  
+
   .exchange-balances {
     grid-template-columns: 1fr;
   }
-  
+
   .topbar-right .search-box {
     display: none;
   }

@@ -15,47 +15,149 @@ export default function Dashboard() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard-container" style={{
+      height: '100vh',
+      overflow: 'hidden'
+    }}>
       <Sidebar onCollapsedChange={setIsSidebarCollapsed} />
 
       <div className="dashboard-main" style={{
         marginLeft: isSidebarCollapsed ? '80px' : '260px',
         width: isSidebarCollapsed ? 'calc(100% - 80px)' : 'calc(100% - 260px)',
-        transition: 'all 0.3s ease'
+        transition: 'all 0.3s ease',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden'
       }}>
         {/* <TopBar /> */}
 
-        <div className="dashboard-content">
-          <div className="dashboard-grid">
+        <div className="dashboard-content" style={{
+          flex: 1,
+          padding: '20px',
+          overflow: 'hidden'
+        }}>
+          <div className="dashboard-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) minmax(300px, 380px)',
+            gap: '20px',
+            height: '100%'
+          }}>
             {/* 左侧主要内容区 */}
-            <div className="main-content">
+            <div className="main-content" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              overflow: 'hidden',
+              minWidth: 0
+            }}>
               {/* 工作总结图表 */}
-              <WorkSummaryChart />
+              <div style={{
+                flex: '0 0 auto',
+                maxHeight: '45%',
+                overflow: 'hidden'
+              }}>
+                <WorkSummaryChart />
+              </div>
+
               <div className="main-bottom">
                 {/* 余额卡片组 */}
-                <ExchangeBalance />
+                <div>
+                  <ExchangeBalance />
+                </div>
 
                 {/* 团队成员列表 */}
-                <TeamMembers />
+                <div>
+                  <TeamMembers />
+                </div>
               </div>
             </div>
 
             {/* 右侧边栏内容 */}
-            <div className="side-content">
+            <div className="side-content" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              overflow: 'auto',
+              minWidth: 0,
+              paddingRight: '10px'
+            }}>
               {/* 满意度 */}
-              <SatisfactionRate />
+              <div style={{ flex: '0 0 auto' }}>
+                <SatisfactionRate />
+              </div>
 
               {/* 访问地区统计 */}
-              <VisitsByLocation />
+              <div style={{ flex: '0 0 auto' }}>
+                <VisitsByLocation />
+              </div>
 
               {/* 信用卡 */}
-              <CreditCard />
-
-
+              <div style={{ flex: '0 0 auto' }}>
+                <CreditCard />
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* 响应式样式 */}
+      <style jsx>{`
+        @media (max-width: 1400px) {
+          .dashboard-grid {
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 320px) !important;
+          }
+        }
+        
+        @media (max-width: 1200px) {
+          .dashboard-grid {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: 1fr auto !important;
+          }
+          
+          .side-content {
+            flex-direction: row !important;
+            overflow-x: auto !important;
+            padding-bottom: 10px !important;
+          }
+          
+          .side-content > div {
+            min-width: 280px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .dashboard-content {
+            padding: 10px !important;
+          }
+          
+          .main-bottom {
+            grid-template-columns: 1fr !important;
+          }
+          
+          .dashboard-grid {
+            gap: 10px !important;
+          }
+        }
+        
+        /* 隐藏滚动条但保持滚动功能 */
+        .side-content::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .side-content::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .side-content::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+        }
+        
+        .side-content::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
     </div>
   );
 }
