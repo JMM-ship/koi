@@ -1,87 +1,141 @@
 "use client";
 
 const TeamMembers = () => {
-  const teamMembers = [
+  const creditDetails = [
     {
       id: 1,
-      name: "Silvester Ananag",
-      avatar: "/assets/img/team/team-1.jpg",
-      progress: 65,
-      value: "350",
-      color: "#00d084"
+      model: "GPT-4o",
+      credits: 150,
+      timestamp: "2024-12-18 14:32",
+      type: "文本生成",
+      status: "completed"
     },
     {
       id: 2,
-      name: "Amanda Rouge",
-      avatar: "/assets/img/team/team-2.jpg",
-      progress: 55,
-      value: "411",
-      color: "#ffa500"
+      model: "Claude 3.5",
+      credits: 200,
+      timestamp: "2024-12-18 13:45",
+      type: "代码生成",
+      status: "completed"
     },
     {
       id: 3,
-      name: "Adam Dinner",
-      avatar: "/assets/img/team/team-3.jpg",
-      progress: 41,
-      value: "25",
-      color: "#ff006e"
+      model: "DALL-E 3",
+      credits: 500,
+      timestamp: "2024-12-18 12:20",
+      type: "图像生成",
+      status: "completed"
     },
     {
       id: 4,
-      name: "Isabella Bean",
-      avatar: "/assets/img/team/team-4.jpg",
-      progress: 59,
-      value: "9",
-      color: "#00b4d8"
+      model: "GPT-3.5",
+      credits: 50,
+      timestamp: "2024-12-18 11:15",
+      type: "对话聊天",
+      status: "completed"
     },
     {
       id: 5,
-      name: "Robby Adams",
-      avatar: "/assets/img/team/team-5.jpg",
-      progress: 62,
-      value: "63",
-      color: "#00d084"
+      model: "Midjourney",
+      credits: 800,
+      timestamp: "2024-12-18 10:30",
+      type: "图像生成",
+      status: "completed"
+    },
+    {
+      id: 6,
+      model: "GPT-4o",
+      credits: 180,
+      timestamp: "2024-12-18 09:45",
+      type: "文档分析",
+      status: "completed"
+    },
+    {
+      id: 7,
+      model: "Claude 3.5",
+      credits: 220,
+      timestamp: "2024-12-18 08:30",
+      type: "代码调试",
+      status: "completed"
+    },
+    {
+      id: 8,
+      model: "DALL-E 3",
+      credits: 450,
+      timestamp: "2024-12-17 22:10",
+      type: "图像编辑",
+      status: "completed"
     }
   ];
+
+  const getModelColor = (model: string) => {
+    const colors: { [key: string]: string } = {
+      "GPT-4o": "#00d084",
+      "GPT-3.5": "#00b4d8",
+      "Claude 3.5": "#ffa500",
+      "DALL-E 3": "#ff006e",
+      "Midjourney": "#8b5cf6"
+    };
+    return colors[model] || "#6b7280";
+  };
+
+  const totalRecords = creditDetails.length;
 
   return (
     <div className="team-members-card">
       <div className="card-header">
-        <h3 className="card-title">Team</h3>
+        <h3 className="card-title">积分明细</h3>
         <div className="team-location">
-          <span className="location-icon">📍</span>
-          <span>Sales New York</span>
+          <span>共 {totalRecords} 条记录</span>
         </div>
-        <button className="show-more-btn">SHOW MORE &gt;</button>
+        <button className="show-more-btn">查看全部 &gt;</button>
       </div>
 
       <div className="team-list">
-        {teamMembers.map((member) => (
-          <div key={member.id} className="team-member">
+        {creditDetails.map((detail) => (
+          <div key={detail.id} className="team-member">
             <div className="member-info">
-              <img 
-                src={member.avatar} 
-                alt={member.name}
-                className="member-avatar"
-                onError={(e) => {
-                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${member.name}&background=random`;
+              <div
+                className="model-badge"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "8px",
+                  backgroundColor: getModelColor(detail.model),
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                  flexShrink: 0
                 }}
-              />
-              <span className="member-name">{member.name}</span>
-            </div>
-            
-            <div className="member-stats">
-              <div className="progress-bar-wrapper">
-                <div 
-                  className="progress-bar"
-                  style={{
-                    width: `${member.progress}%`,
-                    backgroundColor: member.color
-                  }}
-                ></div>
+              >
+                {detail.model.substring(0, 2).toUpperCase()}
               </div>
-              <span className="member-percentage">{member.progress}%</span>
-              <span className="member-value">{member.value}</span>
+              <div style={{ marginLeft: "12px", flex: 1 }}>
+                <div className="member-name" style={{ fontWeight: 600, marginBottom: "4px" }}>
+                  {detail.model}
+                </div>
+                <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                  {detail.type} · {detail.timestamp}
+                </div>
+              </div>
+            </div>
+
+            <div className="member-stats" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <span
+                className="member-value"
+                style={{
+                  fontWeight: 600,
+                  fontSize: "16px",
+                  color: getModelColor(detail.model),
+                  minWidth: "80px",
+                  textAlign: "right"
+                }}
+              >
+                -{detail.credits} 积分
+              </span>
             </div>
           </div>
         ))}
