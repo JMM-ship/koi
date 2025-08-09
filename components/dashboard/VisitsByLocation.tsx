@@ -5,6 +5,11 @@ const CurrentPlan = () => {
     name: "Professional",
     price: "$29",
     billing: "month",
+    status: "active", // active, expiring_soon, expired
+    statusLabel: "Active",
+    statusColor: "#00d084",
+    startDate: "December 15, 2024",
+    endDate: "January 15, 2025",
     features: [
       { name: "Unlimited API Calls", included: true },
       { name: "Advanced Analytics", included: true },
@@ -21,99 +26,157 @@ const CurrentPlan = () => {
   };
 
   return (
-    <div className="card shadow-lg border-0" style={{ borderRadius: '15px' }}>
-      <div className="card-body p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h3 className="h4 fw-bold mb-0">Current Plan</h3>
-          <button className="btn btn-primary btn-sm" style={{ 
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    <div className="balance-card" style={{ 
+      background: '#0a0a0a',
+      border: '1px solid #1a1a1a',
+      borderRadius: '12px',
+      padding: '20px',
+      display: 'block',
+      transition: 'all 0.3s',
+      height: 'auto'
+    }}>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', margin: 0 }}>Current Plan</h3>
+        <span style={{
+          padding: '4px 10px',
+          borderRadius: '4px',
+          fontSize: '11px',
+          fontWeight: '600',
+          color: '#000',
+          background: planDetails.statusColor,
+          textTransform: 'uppercase'
+        }}>
+          {planDetails.statusLabel}
+        </span>
+      </div>
+
+      <div className="mb-3 p-3" style={{ 
+        background: 'rgba(121, 74, 255, 0.1)',
+        border: '1px solid rgba(121, 74, 255, 0.2)',
+        borderRadius: '8px'
+      }}>
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h4 style={{ fontSize: '15px', fontWeight: '600', color: '#fff', margin: 0 }}>{planDetails.name}</h4>
+          <div className="text-end">
+            <span style={{ fontSize: '24px', fontWeight: '700', color: '#fff' }}>{planDetails.price}</span>
+            <span style={{ color: '#999', fontSize: '13px' }}>/{planDetails.billing}</span>
+          </div>
+        </div>
+        <div className="d-flex justify-content-between align-items-center">
+          <button className="btn btn-sm" style={{ 
+            background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
             border: 'none',
-            borderRadius: '8px',
-            padding: '8px 20px'
+            borderRadius: '6px',
+            padding: '4px 12px',
+            color: '#fff',
+            fontSize: '12px',
+            fontWeight: '500'
           }}>
             Upgrade
           </button>
         </div>
+      </div>
 
-        <div className="mb-4 p-3 rounded-3" style={{ background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
-          <div className="d-flex justify-content-between align-items-center">
-            <h4 className="h5 fw-semibold mb-0">{planDetails.name}</h4>
-            <div className="text-end">
-              <span className="h3 fw-bold text-dark">{planDetails.price}</span>
-              <span className="text-muted small">/{planDetails.billing}</span>
-            </div>
-          </div>
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
+        <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Subscription Period</h5>
+        <div className="d-flex justify-content-between" style={{ marginBottom: '6px' }}>
+          <span style={{ fontSize: '12px', color: '#999' }}>Start Date</span>
+          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.startDate}</span>
         </div>
-
-        <div className="border-top pt-3 mb-3">
-          <h5 className="small text-uppercase text-muted fw-semibold mb-3">Features</h5>
-          <ul className="list-unstyled">
-            {planDetails.features.map((feature, index) => (
-              <li key={index} className="d-flex align-items-center mb-2">
-                <span className={`badge rounded-circle me-2 ${
-                  feature.included 
-                    ? 'bg-success' 
-                    : 'bg-secondary'
-                }`} style={{ width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {feature.included ? '✓' : '×'}
-                </span>
-                <span className={`small ${
-                  feature.included ? '' : 'text-muted text-decoration-line-through'
-                }`}>
-                  {feature.name}
-                </span>
-              </li>
-            ))}
-          </ul>
+        <div className="d-flex justify-content-between">
+          <span style={{ fontSize: '12px', color: '#999' }}>End Date</span>
+          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.endDate}</span>
         </div>
+      </div>
 
-        <div className="border-top pt-3 mb-3">
-          <h5 className="small text-uppercase text-muted fw-semibold mb-3">Usage</h5>
-          <div className="mb-2">
-            <div className="d-flex justify-content-between mb-1">
-              <span className="small text-muted">API Calls</span>
-              <span className="small fw-medium">
-                {planDetails.usage.apiCalls.used.toLocaleString()} / {planDetails.usage.apiCalls.limit}
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
+        <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Features</h5>
+        <ul className="list-unstyled" style={{ margin: 0 }}>
+          {planDetails.features.map((feature, index) => (
+            <li key={index} className="d-flex align-items-center" style={{ marginBottom: '8px' }}>
+              <span style={{ 
+                width: '18px', 
+                height: '18px', 
+                borderRadius: '50%',
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                background: feature.included ? '#00d084' : '#4b5563',
+                marginRight: '8px',
+                fontSize: '10px',
+                color: feature.included ? '#000' : '#999',
+                fontWeight: 'bold',
+                flexShrink: 0
+              }}>
+                {feature.included ? '✓' : '×'}
               </span>
-            </div>
-          </div>
-          
-          <div className="mb-2">
-            <div className="d-flex justify-content-between mb-1">
-              <span className="small text-muted">Storage</span>
-              <span className="small fw-medium">
-                {planDetails.usage.storage.used}{planDetails.usage.storage.unit} / {planDetails.usage.storage.limit}{planDetails.usage.storage.unit}
+              <span style={{
+                fontSize: '13px',
+                color: feature.included ? '#fff' : '#666',
+                textDecoration: feature.included ? 'none' : 'line-through'
+              }}>
+                {feature.name}
               </span>
-            </div>
-            <div className="progress" style={{ height: '8px' }}>
-              <div 
-                className="progress-bar"
-                role="progressbar"
-                style={{ 
-                  width: `${(planDetails.usage.storage.used / planDetails.usage.storage.limit) * 100}%`,
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                }}
-                aria-valuenow={planDetails.usage.storage.used}
-                aria-valuemin={0}
-                aria-valuemax={planDetails.usage.storage.limit}
-              ></div>
-            </div>
-          </div>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-          <div className="d-flex justify-content-between">
-            <span className="small text-muted">Team Members</span>
-            <span className="small fw-medium">
-              {planDetails.usage.users.used} / {planDetails.usage.users.limit}
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
+        <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Usage</h5>
+        <div style={{ marginBottom: '8px' }}>
+          <div className="d-flex justify-content-between" style={{ marginBottom: '4px' }}>
+            <span style={{ fontSize: '12px', color: '#999' }}>API Calls</span>
+            <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>
+              {planDetails.usage.apiCalls.used.toLocaleString()} / {planDetails.usage.apiCalls.limit}
             </span>
           </div>
         </div>
-
-        <div className="border-top pt-3 d-flex justify-content-between align-items-center">
-          <span className="text-muted" style={{ fontSize: '12px' }}>Next billing: {planDetails.nextBilling}</span>
-          <button className="btn btn-link btn-sm text-primary p-0 text-decoration-none">
-            Manage Billing
-          </button>
+        
+        <div style={{ marginBottom: '8px' }}>
+          <div className="d-flex justify-content-between" style={{ marginBottom: '4px' }}>
+            <span style={{ fontSize: '12px', color: '#999' }}>Storage</span>
+            <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>
+              {planDetails.usage.storage.used}{planDetails.usage.storage.unit} / {planDetails.usage.storage.limit}{planDetails.usage.storage.unit}
+            </span>
+          </div>
+          <div className="progress" style={{ 
+            height: '6px',
+            backgroundColor: '#1e1f26',
+            borderRadius: '3px'
+          }}>
+            <div 
+              className="progress-bar"
+              role="progressbar"
+              style={{ 
+                width: `${(planDetails.usage.storage.used / planDetails.usage.storage.limit) * 100}%`,
+                background: '#794aff',
+                borderRadius: '3px'
+              }}
+              aria-valuenow={planDetails.usage.storage.used}
+              aria-valuemin={0}
+              aria-valuemax={planDetails.usage.storage.limit}
+            ></div>
+          </div>
         </div>
+
+        <div className="d-flex justify-content-between">
+          <span style={{ fontSize: '12px', color: '#999' }}>Team Members</span>
+          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>
+            {planDetails.usage.users.used} / {planDetails.usage.users.limit}
+          </span>
+        </div>
+      </div>
+
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px' }} className="d-flex justify-content-between align-items-center">
+        <span style={{ fontSize: '11px', color: '#666' }}>Next billing: {planDetails.nextBilling}</span>
+        <button className="btn btn-link p-0" style={{ 
+          fontSize: '12px',
+          color: '#794aff',
+          textDecoration: 'none'
+        }}>
+          Manage Billing
+        </button>
       </div>
     </div>
   );
