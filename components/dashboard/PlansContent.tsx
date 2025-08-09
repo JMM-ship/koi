@@ -1,65 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import { FiCheck } from "react-icons/fi";
+import { FiCheck, FiAlertTriangle } from "react-icons/fi";
 
 export default function PlansContent() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-
   const plans = [
     {
       id: 1,
-      name: "Starter",
-      monthlyPrice: 9,
-      yearlyPrice: 90,
-      description: "Perfect for individuals and small projects",
+      name: "Monthly",
+      monthlyPrice: 399,
+      description: "",
       features: [
-        { text: "1,000 API calls/month", included: true },
-        { text: "Basic analytics", included: true },
-        { text: "Email support", included: true },
-        { text: "1 GB storage", included: true },
-        { text: "Custom integrations", included: false },
-        { text: "Priority support", included: false },
-        { text: "Advanced analytics", included: false },
+        { text: "5 people share one $200 Max account", included: true },
+        { text: "Total 10,800 points/day - suitable for daily development", included: true },
+        { text: "4 points deducted per morning", included: true },
+        { text: "Support Claude 4 Opus & Sonnet", included: true },
+        { text: "1v1 engineer service", included: true },
       ],
-      recommended: false
+      recommended: false,
+      buttonText: "Choose Standard Plan"
     },
     {
       id: 2,
-      name: "Professional",
-      monthlyPrice: 29,
-      yearlyPrice: 290,
-      description: "Best for growing businesses and teams",
+      name: "Large Monthly",
+      monthlyPrice: 699,
+      originalPrice: 100,
+      description: "",
+      discount: "Much more than double",
       features: [
-        { text: "10,000 API calls/month", included: true },
-        { text: "Advanced analytics", included: true },
-        { text: "Priority email support", included: true },
-        { text: "10 GB storage", included: true },
-        { text: "Custom integrations", included: true },
-        { text: "API webhooks", included: true },
-        { text: "Team collaboration", included: false },
+        { text: "3 people share one $200 account", included: true },
+        { text: "Total 19,000 points/day - high intensity development", included: true },
+        { text: "4 points deducted per morning", included: true },
+        { text: "Support Claude 4 Opus & Sonnet", included: true },
+        { text: "1v1 engineer service", included: true },
+        { text: "Priority technical support", included: true },
+        { text: "$100 quota worth more than double, only ¥699", included: true, highlight: true },
       ],
       recommended: true,
-      current: true
+      isPopular: true,
+      buttonText: "Choose Advanced Plan"
     },
     {
       id: 3,
-      name: "Enterprise",
-      monthlyPrice: 99,
-      yearlyPrice: 990,
-      description: "For large organizations with custom needs",
+      name: "Exclusive",
+      monthlyPrice: 1799,
+      description: "",
+      hasPromo: true,
+      promoText: "¥200 Experience Voucher",
       features: [
-        { text: "Unlimited API calls", included: true },
-        { text: "Real-time analytics", included: true },
-        { text: "24/7 phone & email support", included: true },
-        { text: "100 GB storage", included: true },
-        { text: "Custom integrations", included: true },
-        { text: "API webhooks", included: true },
-        { text: "Team collaboration", included: true },
-        { text: "SLA guarantee", included: true },
-        { text: "Custom training", included: true },
+        { text: "Exclusive $200 experience", included: true },
+        { text: "Exclusive account, ultra experience", included: true },
+        { text: "Total 71,500 points/day - high intensity professional development", included: true },
+        { text: "4 points deducted per morning", included: true },
+        { text: "Support Claude 4 Opus & Sonnet", included: true },
+        { text: "Dedicated WeChat consulting service", included: true },
+        { text: "1v1 engineer service", included: true },
+        { text: "Priority technical support", included: true },
       ],
-      recommended: false
+      recommended: false,
+      buttonText: "Choose Custom Plan"
     }
   ];
 
@@ -67,61 +66,28 @@ export default function PlansContent() {
     <>
       <div className="dashboard-header mb-4">
         <div className="text-center">
-          <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>Choose Your Plan</h1>
-          <p style={{ fontSize: '14px', color: '#999', marginBottom: '24px' }}>Select the perfect plan for your needs. Upgrade or downgrade at any time.</p>
+          <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#fff', marginBottom: '16px' }}>
+            Pricing Plans
+          </h1>
+          <p style={{ fontSize: '16px', color: '#999', marginBottom: '12px' }}>
+            Base plan $200 Max account, monthly pricing is 28% of base, best value
+          </p>
           
           <div style={{
-            display: 'inline-flex',
-            background: '#1a1a1a',
+            background: 'rgba(255, 193, 7, 0.1)',
+            border: '1px solid rgba(255, 193, 7, 0.2)',
             borderRadius: '8px',
-            padding: '4px'
+            padding: '12px 24px',
+            marginBottom: '32px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            maxWidth: '800px'
           }}>
-            <button
-              onClick={() => setBillingCycle('monthly')}
-              style={{
-                padding: '8px 24px',
-                borderRadius: '6px',
-                border: 'none',
-                background: billingCycle === 'monthly' ? '#794aff' : 'transparent',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingCycle('yearly')}
-              style={{
-                padding: '8px 24px',
-                borderRadius: '6px',
-                border: 'none',
-                background: billingCycle === 'yearly' ? '#794aff' : 'transparent',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s',
-                position: 'relative'
-              }}
-            >
-              Yearly
-              <span style={{
-                position: 'absolute',
-                top: '-8px',
-                right: '-8px',
-                background: '#00d084',
-                color: '#000',
-                fontSize: '10px',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontWeight: '600'
-              }}>
-                SAVE 20%
-              </span>
-            </button>
+            <FiAlertTriangle style={{ color: '#ffc107', fontSize: '18px', flexShrink: 0 }} />
+            <span style={{ fontSize: '13px', color: '#ffc107', textAlign: 'left' }}>
+              <strong>Important:</strong> During subscription period, the pricing will follow Claude's official adjustments (non-member, non-platform pricing)
+            </span>
           </div>
         </div>
       </div>
@@ -131,86 +97,124 @@ export default function PlansContent() {
           <div key={plan.id} className="col-lg-4 mb-4">
             <div className="balance-card" style={{
               background: '#0a0a0a',
-              border: plan.current ? '2px solid #794aff' : '1px solid #1a1a1a',
+              border: plan.recommended ? '2px solid #ff4444' : '1px solid #1a1a1a',
               borderRadius: '12px',
               padding: '24px',
               position: 'relative',
               height: '100%',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              transition: 'all 0.3s',
+              ...(plan.recommended && {
+                transform: 'scale(1.05)',
+                boxShadow: '0 8px 24px rgba(255, 68, 68, 0.2)'
+              })
             }}>
               {plan.recommended && (
                 <div style={{
                   position: 'absolute',
-                  top: '-12px',
+                  top: '-14px',
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  background: '#ff4444',
                   color: '#fff',
-                  padding: '4px 16px',
-                  borderRadius: '12px',
-                  fontSize: '11px',
+                  padding: '6px 24px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
                   fontWeight: '600',
-                  textTransform: 'uppercase'
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  whiteSpace: 'nowrap'
                 }}>
-                  Recommended
+                  🔥 Compare $100 quota worth more than double
                 </div>
               )}
               
-              {plan.current && (
+              {plan.hasPromo && (
                 <div style={{
                   position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  background: '#00d084',
-                  color: '#000',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  fontSize: '10px',
-                  fontWeight: '600',
-                  textTransform: 'uppercase'
+                  top: '16px',
+                  right: '16px',
+                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  color: '#fff',
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  fontWeight: '600'
                 }}>
-                  Current
+                  {plan.promoText}
                 </div>
               )}
 
-              <div className="text-center mb-4">
-                <h3 style={{ fontSize: '20px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>{plan.name}</h3>
-                <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>{plan.description}</p>
+              <div className="text-center mb-4" style={{ paddingTop: plan.recommended ? '20px' : '0' }}>
+                <h3 style={{ 
+                  fontSize: '18px', 
+                  fontWeight: '600', 
+                  color: '#999', 
+                  marginBottom: '20px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px'
+                }}>
+                  {plan.name}
+                </h3>
                 
-                <div style={{ marginBottom: '20px' }}>
-                  <span style={{ fontSize: '36px', fontWeight: '700', color: '#fff' }}>
-                    ${billingCycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice}
-                  </span>
-                  <span style={{ fontSize: '14px', color: '#666' }}>
-                    /{billingCycle === 'monthly' ? 'month' : 'year'}
-                  </span>
+                <div style={{ marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '52px', fontWeight: '700', color: '#fff', lineHeight: 1 }}>
+                      ¥{plan.monthlyPrice}
+                    </span>
+                    <span style={{ fontSize: '16px', color: '#666' }}>
+                      /month
+                    </span>
+                  </div>
+                  {plan.originalPrice && (
+                    <div style={{ marginTop: '8px' }}>
+                      <span style={{ fontSize: '14px', color: '#666', textDecoration: 'line-through' }}>
+                        Original ¥{plan.originalPrice}/month
+                      </span>
+                      <span style={{ 
+                        fontSize: '12px', 
+                        color: '#ff4444', 
+                        marginLeft: '8px', 
+                        fontWeight: '600',
+                        background: 'rgba(255, 68, 68, 0.1)',
+                        padding: '2px 8px',
+                        borderRadius: '4px'
+                      }}>
+                        {plan.discount}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <ul className="list-unstyled" style={{ flex: 1, marginBottom: '20px' }}>
+              <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px' }}>
                 {plan.features.map((feature, index) => (
-                  <li key={index} className="d-flex align-items-center" style={{ marginBottom: '12px' }}>
+                  <li key={index} className="d-flex align-items-start" style={{ marginBottom: '14px' }}>
                     <span style={{
-                      width: '20px',
-                      height: '20px',
+                      width: '18px',
+                      height: '18px',
                       borderRadius: '50%',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: feature.included ? 'rgba(0, 208, 132, 0.2)' : 'rgba(75, 85, 99, 0.2)',
+                      background: feature.included ? 'rgba(0, 208, 132, 0.15)' : 'rgba(75, 85, 99, 0.2)',
                       marginRight: '10px',
-                      flexShrink: 0
+                      flexShrink: 0,
+                      marginTop: '2px'
                     }}>
                       <FiCheck style={{
-                        fontSize: '12px',
-                        color: feature.included ? '#00d084' : '#4b5563'
+                        fontSize: '11px',
+                        color: feature.included ? '#00d084' : '#4b5563',
+                        fontWeight: 'bold'
                       }} />
                     </span>
                     <span style={{
                       fontSize: '13px',
-                      color: feature.included ? '#fff' : '#666',
-                      textDecoration: feature.included ? 'none' : 'line-through'
+                      color: feature.highlight ? '#ffc107' : (feature.included ? '#e0e0e0' : '#666'),
+                      lineHeight: '1.5',
+                      fontWeight: feature.highlight ? '500' : '400'
                     }}>
                       {feature.text}
                     </span>
@@ -220,30 +224,57 @@ export default function PlansContent() {
 
               <button style={{
                 width: '100%',
-                padding: '12px',
+                padding: '14px',
                 borderRadius: '8px',
-                border: plan.current ? '1px solid #794aff' : 'none',
-                background: plan.current ? 'transparent' : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                color: plan.current ? '#794aff' : '#fff',
+                border: 'none',
+                background: plan.recommended 
+                  ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)' 
+                  : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                color: '#fff',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}>
-                {plan.current ? 'Current Plan' : 'Upgrade Now'}
+                transition: 'all 0.3s',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+              >
+                {plan.buttonText}
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="text-center mt-4">
-        <p style={{ fontSize: '13px', color: '#666' }}>
-          All plans include SSL certificate, 99.9% uptime guarantee, and basic customer support.
-        </p>
-        <p style={{ fontSize: '13px', color: '#666' }}>
-          Need a custom plan? <a href="#" style={{ color: '#794aff', textDecoration: 'none' }}>Contact our sales team</a>
-        </p>
+      <div className="text-center mt-5">
+        <div style={{
+          background: 'rgba(121, 74, 255, 0.05)',
+          border: '1px solid rgba(121, 74, 255, 0.15)',
+          borderRadius: '12px',
+          padding: '20px',
+          maxWidth: '800px',
+          margin: '0 auto'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', textAlign: 'left' }}>
+            <span style={{ fontSize: '20px' }}>💡</span>
+            <div>
+              <p style={{ fontSize: '14px', color: '#fff', marginBottom: '8px', fontWeight: '500' }}>
+                Daily refresh reminder: The quota will be consumed during the morning refresh. This helps you see the latest updates from Claude official and completes the login process.
+              </p>
+              <p style={{ fontSize: '13px', color: '#999', margin: 0 }}>
+                We handle the tedious login work for you automatically
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
