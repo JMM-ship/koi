@@ -6,6 +6,7 @@ import DashboardContent from "@/components/dashboard/DashboardContent";
 import SubscriptionContent from "@/components/dashboard/SubscriptionContent";
 import ApiKeysContent from "@/components/dashboard/ApiKeysContent";
 import PlansContent from "@/components/dashboard/PlansContent";
+import ProfileContent from "@/components/dashboard/ProfileContent";
 import "@/public/assets/css/dashboard.css";
 
 export default function Dashboard() {
@@ -23,14 +24,7 @@ export default function Dashboard() {
       case 'plans':
         return <PlansContent />;
       case 'profile':
-        return (
-          <div className="dashboard-grid">
-            <div className="main-content">
-              <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>Profile</h1>
-              <p style={{ fontSize: '14px', color: '#999' }}>Manage your profile settings</p>
-            </div>
-          </div>
-        );
+        return <ProfileContent />;
       default:
         return <DashboardContent />;
     }
