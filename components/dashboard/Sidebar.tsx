@@ -38,9 +38,11 @@ interface MenuItem {
 
 interface SidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void;
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashboard', onTabChange }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -49,14 +51,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const menuItems: MenuItem[] = [
-    { id: 1, icon: FiGrid, label: "Dashboard", path: "/dashboard", active: pathname === "/dashboard" },
-    { id: 2, icon: FiUser, label: "My Subscription", path: "/dashboard/subscription", active: pathname === "/dashboard/subscription" },
-    { id: 3, icon: FiSlack, label: "API Keys", path: "/dashboard/api-keys", active: pathname === "/dashboard/api-keys" },
-    { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "/dashboard/plans", active: pathname === "/dashboard/plans" },
+    { id: 1, icon: FiGrid, label: "Dashboard", path: "dashboard", active: activeTab === "dashboard" },
+    { id: 2, icon: FiUser, label: "My Subscription", path: "subscription", active: activeTab === "subscription" },
+    { id: 3, icon: FiSlack, label: "API Keys", path: "api-keys", active: activeTab === "api-keys" },
+    { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "plans", active: activeTab === "plans" },
   ];
 
   const accountItems: MenuItem[] = [
-    { id: 2, icon: FiUser, label: "Profile", path: "/dashboard/profile", active: pathname === "/dashboard/profile" },
+    { id: 2, icon: FiUser, label: "Profile", path: "profile", active: activeTab === "profile" },
   ];
 
   const toggleSidebar = () => {
@@ -211,20 +213,21 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
                 onMouseEnter={() => isCollapsed && setShowTooltip(item.id)}
                 onMouseLeave={() => setShowTooltip(null)}
               >
-                <Link
-                  href={item.path!}
+                <div
+                  onClick={() => onTabChange?.(item.path!)}
                   className="nav-link"
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: isCollapsed ? 'center' : 'flex-start'
+                    justifyContent: isCollapsed ? 'center' : 'flex-start',
+                    cursor: 'pointer'
                   }}
                 >
                   <item.icon className="nav-icon" style={{ marginRight: isCollapsed ? '0' : undefined }} />
                   {!isCollapsed && <span className="nav-label">{item.label}</span>}
                   {item.hasNotification && <span className="notification-dot"></span>}
                   {item.hasDropdown && !isCollapsed && <span className="dropdown-arrow">▼</span>}
-                </Link>
+                </div>
 
                 {/* Tooltip */}
                 {isCollapsed && showTooltip === item.id && (
@@ -266,18 +269,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange }) => {
                         )}
                       </div>
                     ) : (
-                      <Link
-                        href={item.path!}
+                      <div
+                        onClick={() => onTabChange?.(item.path!)}
                         className="nav-link"
                         style={{
                           display: 'flex',
                           alignItems: 'center',
-                          justifyContent: isCollapsed ? 'center' : 'flex-start'
+                          justifyContent: isCollapsed ? 'center' : 'flex-start',
+                          cursor: 'pointer'
                         }}
                       >
                         <item.icon className="nav-icon" style={{ marginRight: isCollapsed ? '0' : undefined }} />
                         {!isCollapsed && <span className="nav-label">{item.label}</span>}
-                      </Link>
+                      </div>
                     )}
 
                     {/* Tooltip */}
