@@ -72,7 +72,7 @@ export default function PlansContent() {
           <p style={{ fontSize: '16px', color: '#999', marginBottom: '12px' }}>
             Base plan $200 Max account, monthly pricing is 28% of base, best value
           </p>
-          
+
           <div style={{
             background: 'rgba(255, 193, 7, 0.1)',
             border: '1px solid rgba(255, 193, 7, 0.2)',
@@ -130,7 +130,7 @@ export default function PlansContent() {
                   🔥 Compare $100 quota worth more than double
                 </div>
               )}
-              
+
               {plan.hasPromo && (
                 <div style={{
                   position: 'absolute',
@@ -148,17 +148,17 @@ export default function PlansContent() {
               )}
 
               <div className="text-center mb-4" style={{ paddingTop: plan.recommended ? '20px' : '0' }}>
-                <h3 style={{ 
-                  fontSize: '18px', 
-                  fontWeight: '600', 
-                  color: '#999', 
+                <h3 style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: '#999',
                   marginBottom: '20px',
                   textTransform: 'uppercase',
                   letterSpacing: '1px'
                 }}>
                   {plan.name}
                 </h3>
-                
+
                 <div style={{ marginBottom: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
                     <span style={{ fontSize: '52px', fontWeight: '700', color: '#fff', lineHeight: 1 }}>
@@ -173,10 +173,10 @@ export default function PlansContent() {
                       <span style={{ fontSize: '14px', color: '#666', textDecoration: 'line-through' }}>
                         Original ¥{plan.originalPrice}/month
                       </span>
-                      <span style={{ 
-                        fontSize: '12px', 
-                        color: '#ff4444', 
-                        marginLeft: '8px', 
+                      <span style={{
+                        fontSize: '12px',
+                        color: '#ff4444',
+                        marginLeft: '8px',
                         fontWeight: '600',
                         background: 'rgba(255, 68, 68, 0.1)',
                         padding: '2px 8px',
@@ -212,9 +212,9 @@ export default function PlansContent() {
                     </span>
                     <span style={{
                       fontSize: '13px',
-                      color: feature.highlight ? '#ffc107' : (feature.included ? '#e0e0e0' : '#666'),
+                      color: (feature as any).highlight ? '#ffc107' : (feature.included ? '#e0e0e0' : '#666'),
                       lineHeight: '1.5',
-                      fontWeight: feature.highlight ? '500' : '400'
+                      fontWeight: (feature as any).highlight ? '500' : '400'
                     }}>
                       {feature.text}
                     </span>
@@ -227,8 +227,8 @@ export default function PlansContent() {
                 padding: '14px',
                 borderRadius: '8px',
                 border: 'none',
-                background: plan.recommended 
-                  ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)' 
+                background: plan.recommended
+                  ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
                   : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
                 color: '#fff',
                 fontSize: '14px',
@@ -238,14 +238,14 @@ export default function PlansContent() {
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               >
                 {plan.buttonText}
               </button>
