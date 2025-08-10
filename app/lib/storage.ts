@@ -72,17 +72,10 @@ export class Storage {
 
     const res = await upload.done();
 
-    // 修复Supabase Storage URL格式
     let url = res.Location;
     
     if (process.env.STORAGE_DOMAIN) {
       url = `${process.env.STORAGE_DOMAIN}/${res.Bucket}/${res.Key}`;
-    }
-    
-    // 如果是Supabase，需要特殊处理URL格式
-    if (url && url.includes('supabase.co') && url.includes('/s3/')) {
-      // 将 /storage/v1/s3/ 替换为 /storage/v1/object/public/
-      url = url.replace('/storage/v1/s3/', '/storage/v1/object/public/');
     }
     
     return {

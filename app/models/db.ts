@@ -27,11 +27,6 @@ export function getPrismaClient() {
   return prisma;
 }
 
-// 兼容旧代码的函数名（迁移过渡期使用）
-export function getSupabaseClient() {
-  console.warn('getSupabaseClient is deprecated, use getPrismaClient instead');
-  return getPrismaClient();
-}
 
 // 导出prisma实例，方便直接使用
 export { prisma };

@@ -8,7 +8,10 @@
       "Bash(npm install:*)",
       "mcp__figma__get_image",
       "Bash(npx prisma generate:*)",
-      "Bash(cmd /c \"npx prisma generate\")"
+      "Bash(cmd /c \"npx prisma generate\")",
+      "Bash(npm run prisma:generate:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(cmd /c npm uninstall:*)"
     ],
     "deny": []
   }
