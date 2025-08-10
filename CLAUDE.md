@@ -1,7 +1,8 @@
 # CLAUDE.md
 
 总是用中文回答我
-使用tainwindcss作为css
+使用tainwindcss作为css，
+我的电脑是win系统
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview

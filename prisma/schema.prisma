@@ -1,0 +1,218 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户模型
+model User {
+  id             Int       @id @default(autoincrement())
+  uuid           String    @unique @db.VarChar(255)
+  email          String    @db.VarChar(255)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  nickname       String?   @db.VarChar(255)
+  avatarUrl      String?   @map("avatar_url") @db.VarChar(255)
+  locale         String?   @db.VarChar(50)
+  signinType     String?   @map("signin_type") @db.VarChar(50)
+  signinIp       String?   @map("signin_ip") @db.VarChar(255)
+  signinProvider String?   @map("signin_provider") @db.VarChar(50)
+  signinOpenid   String?   @map("signin_openid") @db.VarChar(255)
+  inviteCode     String    @default("") @map("invite_code") @db.VarChar(255)
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  invitedBy      String    @default("") @map("invited_by") @db.VarChar(255)
+  isAffiliate    Boolean   @default(false) @map("is_affiliate")
+  password       String?   @db.VarChar(255)
+
+  @@unique([email, signinProvider], map: "uk_email_provider")
+  @@index([uuid], map: "idx_uuid")
+  @@index([email], map: "idx_email")
+  @@index([inviteCode], map: "idx_invite_code")
+  @@map("users")
+}
+
+// 订单模型
+model Order {
+  id                Int       @id @default(autoincrement())
+  orderNo           String    @unique @map("order_no") @db.VarChar(255)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  userUuid          String    @default("") @map("user_uuid") @db.VarChar(255)
+  userEmail         String    @default("") @map("user_email") @db.VarChar(255)
+  amount            Int
+  interval          String?   @db.VarChar(50)
+  expiredAt         DateTime? @map("expired_at")
+  status            String    @db.VarChar(50)
+  stripeSessionId   String?   @map("stripe_session_id") @db.VarChar(255)
+  credits           Int
+  currency          String?   @db.VarChar(50)
+  subId             String?   @map("sub_id") @db.VarChar(255)
+  subIntervalCount  Int?      @map("sub_interval_count")
+  subCycleAnchor    Int?      @map("sub_cycle_anchor")
+  subPeriodEnd      Int?      @map("sub_period_end")
+  subPeriodStart    Int?      @map("sub_period_start")
+  subTimes          Int?      @map("sub_times")
+  productId         String?   @map("product_id") @db.VarChar(255)
+  productName       String?   @map("product_name") @db.VarChar(255)
+  validMonths       Int?      @map("valid_months")
+  orderDetail       String?   @map("order_detail") @db.Text
+  paidAt            DateTime? @map("paid_at")
+  paidEmail         String?   @map("paid_email") @db.VarChar(255)
+  paidDetail        String?   @map("paid_detail") @db.Text
+
+  @@index([orderNo], map: "idx_order_no")
+  @@index([userUuid], map: "idx_user_uuid")
+  @@index([status], map: "idx_status")
+  @@index([createdAt], map: "idx_created_at")
+  @@map("orders")
+}
+
+// API密钥模型
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  apiKey    String   @unique @map("api_key") @db.VarChar(255)
+  title     String?  @db.VarChar(100)
+  userUuid  String   @map("user_uuid") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  status    String?  @db.VarChar(50)
+
+  @@index([apiKey], map: "idx_api_key")
+  @@index([userUuid], map: "idx_user_uuid")
+  @@index([status], map: "idx_status")
+  @@map("apikeys")
+}
+
+// 积分交易模型
+model Credit {
+  id        Int       @id @default(autoincrement())
+  transNo   String    @unique @map("trans_no") @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at")
+  userUuid  String    @map("user_uuid") @db.VarChar(255)
+  transType String    @map("trans_type") @db.VarChar(50)
+  credits   Int
+  orderNo   String?   @map("order_no") @db.VarChar(255)
+  expiredAt DateTime? @map("expired_at")
+
+  @@index([transNo], map: "idx_trans_no")
+  @@index([userUuid], map: "idx_user_uuid")
+  @@index([transType], map: "idx_trans_type")
+  @@index([createdAt], map: "idx_created_at")
+  @@map("credits")
+}
+
+// 文章/博客模型
+model Post {
+  id               Int      @id @default(autoincrement())
+  uuid             String   @unique @db.VarChar(255)
+  slug             String?  @db.VarChar(255)
+  title            String?  @db.VarChar(255)
+  description      String?  @db.Text
+  content          String?  @db.Text
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  status           String?  @db.VarChar(50)
+  coverUrl         String?  @map("cover_url") @db.VarChar(255)
+  authorName       String?  @map("author_name") @db.VarChar(255)
+  authorAvatarUrl  String?  @map("author_avatar_url") @db.VarChar(255)
+  locale           String?  @db.VarChar(50)
+
+  @@index([uuid], map: "idx_uuid")
+  @@index([slug], map: "idx_slug")
+  @@index([status], map: "idx_status")
+  @@index([locale], map: "idx_locale")
+  @@index([createdAt], map: "idx_created_at")
+  @@map("posts")
+}
+
+// 推广联盟模型
+model Affiliate {
+  id            Int      @id @default(autoincrement())
+  userUuid      String   @map("user_uuid") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at")
+  status        String   @default("") @db.VarChar(50)
+  invitedBy     String   @map("invited_by") @db.VarChar(255)
+  paidOrderNo   String   @default("") @map("paid_order_no") @db.VarChar(255)
+  paidAmount    Int      @default(0) @map("paid_amount")
+  rewardPercent Int      @default(0) @map("reward_percent")
+  rewardAmount  Int      @default(0) @map("reward_amount")
+
+  @@index([userUuid], map: "idx_user_uuid")
+  @@index([invitedBy], map: "idx_invited_by")
+  @@index([status], map: "idx_status")
+  @@map("affiliates")
+}
+
+// 反馈模型
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  status    String?  @db.VarChar(50)
+  userUuid  String?  @map("user_uuid") @db.VarChar(255)
+  content   String?  @db.Text
+  rating    Int?
+
+  @@index([userUuid], map: "idx_user_uuid")
+  @@index([status], map: "idx_status")
+  @@index([createdAt], map: "idx_created_at")
+  @@map("feedbacks")
+}
+
+// 图片分类模型
+model Category {
+  id        String   @id @default(uuid()) @db.Char(36)
+  userId    String   @map("user_id") @db.VarChar(255)
+  name      String   @db.VarChar(100)
+  color     String   @default("blue") @db.VarChar(20)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  images    Image[]  // 关联图片
+
+  @@unique([userId, name], map: "uk_user_name")
+  @@index([userId], map: "idx_user_id")
+  @@index([sortOrder], map: "idx_sort_order")
+  @@map("categories")
+}
+
+// 图片模型
+model Image {
+  id           String    @id @default(uuid()) @db.Char(36)
+  userId       String    @map("user_id") @db.VarChar(255)
+  fileUrl      String    @map("file_url") @db.Text
+  thumbnailUrl String    @map("thumbnail_url") @db.Text
+  name         String    @db.VarChar(255)
+  categoryId   String?   @map("category_id") @db.Char(36)
+  fileSize     Int?      @map("file_size")
+  mimeType     String?   @map("mime_type") @db.VarChar(100)
+  width        Int?
+  height       Int?
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  
+  category     Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId], map: "idx_user_id")
+  @@index([categoryId], map: "idx_category_id")
+  @@index([createdAt(sort: Desc)], map: "idx_created_at")
+  @@map("images")
+}
+
+// 邮箱验证码模型
+model EmailVerificationCode {
+  id        Int      @id @default(autoincrement())
+  email     String   @db.VarChar(255)
+  code      String   @db.VarChar(6)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  isUsed    Boolean  @default(false) @map("is_used")
+
+  @@index([email, code], map: "idx_email_code")
+  @@index([expiresAt], map: "idx_expires_at")
+  @@index([createdAt], map: "idx_created_at")
+  @@map("email_verification_codes")
+}

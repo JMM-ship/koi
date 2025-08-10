@@ -1,69 +1,91 @@
-import { getSupabaseClient } from "@/app/models/db";
+import { prisma } from "@/app/models/db";
+import { Credit as PrismaCredit } from "@prisma/client";
+
+// 转换函数：将应用层数据转换为Prisma格式
+function toPrismaCredit(credit: any): any {
+  return {
+    transNo: credit.trans_no,
+    userUuid: credit.user_uuid,
+    transType: credit.trans_type,
+    credits: credit.credits,
+    orderNo: credit.order_no || null,
+    expiredAt: credit.expired_at ? new Date(credit.expired_at) : null,
+  };
+}
+
+// 转换函数：将Prisma数据转换为应用层格式
+function fromPrismaCredit(credit: PrismaCredit | null): any | undefined {
+  if (!credit) return undefined;
+  
+  return {
+    id: credit.id,
+    trans_no: credit.transNo,
+    created_at: credit.createdAt.toISOString(),
+    user_uuid: credit.userUuid,
+    trans_type: credit.transType,
+    credits: credit.credits,
+    order_no: credit.orderNo,
+    expired_at: credit.expiredAt?.toISOString(),
+  };
+}
 
 export async function insertCredit(credit: any) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("credits").insert(credit);
-
-  if (error) {
+  try {
+    const data = await prisma.credit.create({
+      data: toPrismaCredit(credit),
+    });
+    return fromPrismaCredit(data);
+  } catch (error) {
     throw error;
   }
-
-  return data;
 }
 
 export async function findCreditByTransNo(
   trans_no: string
 ): Promise<any | undefined> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("credits")
-    .select("*")
-    .eq("trans_no", trans_no)
-    .limit(1)
-    .single();
-
-  if (error) {
+  try {
+    const credit = await prisma.credit.findUnique({
+      where: { transNo: trans_no },
+    });
+    return fromPrismaCredit(credit);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function findCreditByOrderNo(
   order_no: string
 ): Promise<any | undefined> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("credits")
-    .select("*")
-    .eq("order_no", order_no)
-    .limit(1)
-    .single();
-
-  if (error) {
+  try {
+    const credit = await prisma.credit.findFirst({
+      where: { orderNo: order_no },
+    });
+    return fromPrismaCredit(credit);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function getUserValidCredits(
   user_uuid: string
 ): Promise<any[] | undefined> {
-  const now = new Date().toISOString();
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("credits")
-    .select("*")
-    .eq("user_uuid", user_uuid)
-    .gte("expired_at", now)
-    .order("expired_at", { ascending: true });
-
-  if (error) {
+  const now = new Date();
+  try {
+    const credits = await prisma.credit.findMany({
+      where: {
+        userUuid: user_uuid,
+        expiredAt: {
+          gte: now,
+        },
+      },
+      orderBy: {
+        expiredAt: 'asc',
+      },
+    });
+    return credits.map(fromPrismaCredit);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function getCreditsByUserUuid(
@@ -71,17 +93,19 @@ export async function getCreditsByUserUuid(
   page: number = 1,
   limit: number = 50
 ): Promise<any[] | undefined> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("credits")
-    .select("*")
-    .eq("user_uuid", user_uuid)
-    .order("created_at", { ascending: false })
-    .range((page - 1) * limit, page * limit - 1);
-
-  if (error) {
+  try {
+    const credits = await prisma.credit.findMany({
+      where: {
+        userUuid: user_uuid,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return credits.map(fromPrismaCredit);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
