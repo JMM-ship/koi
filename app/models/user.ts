@@ -1,56 +1,90 @@
 import { User } from "@/app/types/user";
 import { getIsoTimestr } from "@/app/lib/time";
-import { getSupabaseClient } from "./db";
+import { prisma } from "./db";
 import { getUuid } from "@/app/lib/hash";
 import bcrypt from "bcryptjs";
+import { User as PrismaUser } from "@prisma/client";
+
+// 转换Prisma User到应用User类型
+function toPrismaUser(user: User): any {
+  return {
+    uuid: user.uuid,
+    email: user.email,
+    nickname: user.nickname || null,
+    avatarUrl: user.avatar_url || null,
+    locale: user.locale || null,
+    signinType: user.signin_type || null,
+    signinIp: user.signin_ip || null,
+    signinProvider: user.signin_provider || null,
+    signinOpenid: user.signin_openid || null,
+    inviteCode: user.invite_code || '',
+    invitedBy: user.invited_by || '',
+    isAffiliate: user.is_affiliate || false,
+    password: user.password || null,
+  };
+}
+
+// 转换Prisma User到应用User类型
+function fromPrismaUser(user: PrismaUser | null): User | undefined {
+  if (!user) return undefined;
+  
+  return {
+    id: user.id,
+    uuid: user.uuid,
+    email: user.email,
+    created_at: user.createdAt.toISOString(),
+    nickname: user.nickname || undefined,
+    avatar_url: user.avatarUrl || undefined,
+    locale: user.locale || undefined,
+    signin_type: user.signinType || undefined,
+    signin_ip: user.signinIp || undefined,
+    signin_provider: user.signinProvider || undefined,
+    signin_openid: user.signinOpenid || undefined,
+    invite_code: user.inviteCode || undefined,
+    updated_at: user.updatedAt.toISOString(),
+    invited_by: user.invitedBy || undefined,
+    is_affiliate: user.isAffiliate || undefined,
+    password: user.password || undefined,
+  };
+}
 
 export async function insertUser(user: User) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("users").insert(user);
-
-  if (error) {
+  try {
+    const data = await prisma.user.create({
+      data: toPrismaUser(user),
+    });
+    return fromPrismaUser(data);
+  } catch (error) {
     throw error;
   }
-
-  return data;
 }
 
 export async function findUserByEmail(
   email: string,
   provider?: string
 ): Promise<User | undefined> {
-  const supabase = getSupabaseClient();
-  let query = supabase
-    .from("users")
-    .select("*")
-    .eq("email", email);
-  
-  if (provider) {
-    query = query.eq("signin_provider", provider);
-  }
-  
-  const { data, error } = await query.limit(1).single();
-
-  if (error) {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+        ...(provider && { signinProvider: provider }),
+      },
+    });
+    return fromPrismaUser(user);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function findUserByUuid(uuid: string): Promise<User | undefined> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("uuid", uuid)
-    .single();
-
-  if (error) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { uuid },
+    });
+    return fromPrismaUser(user);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function getUsers(
@@ -61,135 +95,133 @@ export async function getUsers(
   if (limit <= 0) limit = 50;
 
   const offset = (page - 1) * limit;
-  const supabase = getSupabaseClient();
 
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  if (error) {
+  try {
+    const users = await prisma.user.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return users.map(fromPrismaUser).filter(Boolean) as User[];
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function updateUserInviteCode(
   user_uuid: string,
   invite_code: string
 ) {
-  const supabase = getSupabaseClient();
-  const updated_at = getIsoTimestr();
-  const { data, error } = await supabase
-    .from("users")
-    .update({ invite_code, updated_at })
-    .eq("uuid", user_uuid);
-
-  if (error) {
+  try {
+    const data = await prisma.user.update({
+      where: { uuid: user_uuid },
+      data: {
+        inviteCode: invite_code,
+        updatedAt: new Date(),
+      },
+    });
+    return fromPrismaUser(data);
+  } catch (error) {
     throw error;
   }
-
-  return data;
 }
 
 export async function updateUserInvitedBy(
   user_uuid: string,
   invited_by: string
 ) {
-  const supabase = getSupabaseClient();
-  const updated_at = getIsoTimestr();
-  const { data, error } = await supabase
-    .from("users")
-    .update({ invited_by, updated_at })
-    .eq("uuid", user_uuid);
-
-  if (error) {
+  try {
+    const data = await prisma.user.update({
+      where: { uuid: user_uuid },
+      data: {
+        invitedBy: invited_by,
+        updatedAt: new Date(),
+      },
+    });
+    return fromPrismaUser(data);
+  } catch (error) {
     throw error;
   }
-
-  return data;
 }
 
 export async function getUsersByUuids(user_uuids: string[]): Promise<User[]> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .in("uuid", user_uuids);
-  if (error) {
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        uuid: {
+          in: user_uuids,
+        },
+      },
+    });
+    return users.map(fromPrismaUser).filter(Boolean) as User[];
+  } catch (error) {
     return [];
   }
-
-  return data as User[];
 }
 
 export async function findUserByInviteCode(invite_code: string) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("invite_code", invite_code)
-    .single();
-
-  if (error) {
+  try {
+    const user = await prisma.user.findFirst({
+      where: { inviteCode: invite_code },
+    });
+    return fromPrismaUser(user);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function getUserUuidsByEmail(email: string) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("users")
-    .select("uuid")
-    .eq("email", email);
-  if (error) {
+  try {
+    const users = await prisma.user.findMany({
+      where: { email },
+      select: { uuid: true },
+    });
+    return users.map((user) => user.uuid);
+  } catch (error) {
     return [];
   }
-
-  return data.map((user) => user.uuid);
 }
 
 export async function getUsersTotal(): Promise<number | undefined> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("users").select("count", {
-    count: "exact",
-  });
-
-  if (error) {
+  try {
+    const count = await prisma.user.count();
+    return count;
+  } catch (error) {
     return undefined;
   }
-
-  return data[0].count;
 }
 
 export async function getUserCountByDate(
   startTime: string
 ): Promise<Map<string, number> | undefined> {
-  const supabase = getSupabaseClient();
-  let query = supabase
-    .from("users")
-    .select("created_at")
-    .gte("created_at", startTime);
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        createdAt: {
+          gte: new Date(startTime),
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
 
-  query = query.order("created_at", { ascending: true });
+    // Group by date in memory
+    const dateCountMap = new Map<string, number>();
+    users.forEach((item) => {
+      const date = item.createdAt.toISOString().split("T")[0];
+      dateCountMap.set(date, (dateCountMap.get(date) || 0) + 1);
+    });
 
-  const { data, error } = await query;
-  if (error) {
+    return dateCountMap;
+  } catch (error) {
     return undefined;
   }
-
-  // Group by date in memory since Supabase doesn't support GROUP BY directly
-  const dateCountMap = new Map<string, number>();
-  data.forEach((item) => {
-    const date = item.created_at.split("T")[0];
-    dateCountMap.set(date, (dateCountMap.get(date) || 0) + 1);
-  });
-
-  return dateCountMap;
 }
 
 export async function createUserWithPassword(
@@ -197,33 +229,28 @@ export async function createUserWithPassword(
   password: string,
   nickname: string
 ): Promise<User> {
-  const supabase = getSupabaseClient();
-  
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
   
-  const newUser: User = {
+  const newUser = {
     uuid: getUuid(),
     email,
     password: hashedPassword,
     nickname,
-    signin_provider: "credentials",
-    signin_type: "credentials",
-    created_at: getIsoTimestr(),
-    invite_code: '',
-    invited_by: '',
-    is_affiliate: false,
+    signinProvider: "credentials",
+    signinType: "credentials",
+    inviteCode: '',
+    invitedBy: '',
+    isAffiliate: false,
   };
   
-  const { data, error } = await supabase
-    .from("users")
-    .insert(newUser)
-    .select()
-    .single();
+  try {
+    const data = await prisma.user.create({
+      data: newUser,
+    });
     
-  if (error) {
+    return fromPrismaUser(data) as User;
+  } catch (error) {
     throw error;
   }
-  
-  return data;
 }

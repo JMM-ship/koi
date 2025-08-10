@@ -1,4 +1,5 @@
-import { getSupabaseClient } from "./db";
+import { prisma } from "./db";
+import { Image as PrismaImage } from "@prisma/client";
 
 export interface Image {
   id: string;
@@ -27,18 +28,50 @@ export interface CreateImageInput {
   height?: number;
 }
 
+// 转换函数：将Prisma数据转换为应用层格式
+function fromPrismaImage(image: PrismaImage | null): Image | null {
+  if (!image) return null;
+  
+  return {
+    id: image.id,
+    user_id: image.userId,
+    file_url: image.fileUrl,
+    thumbnail_url: image.thumbnailUrl,
+    name: image.name,
+    category_id: image.categoryId || undefined,
+    file_size: image.fileSize || undefined,
+    mime_type: image.mimeType || undefined,
+    width: image.width || undefined,
+    height: image.height || undefined,
+    created_at: image.createdAt.toISOString(),
+    updated_at: image.updatedAt.toISOString(),
+  };
+}
+
 export const ImageModel = {
   // 创建图片记录
   async create(data: CreateImageInput): Promise<Image> {
-    const supabase = getSupabaseClient();
-    const { data: image, error } = await supabase
-      .from("images")
-      .insert(data)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return image;
+    try {
+      const image = await prisma.image.create({
+        data: {
+          userId: data.user_id,
+          fileUrl: data.file_url,
+          thumbnailUrl: data.thumbnail_url,
+          name: data.name,
+          categoryId: data.category_id || null,
+          fileSize: data.file_size || null,
+          mimeType: data.mime_type || null,
+          width: data.width || null,
+          height: data.height || null,
+        },
+      });
+      
+      const result = fromPrismaImage(image);
+      if (!result) throw new Error("Failed to create image");
+      return result;
+    } catch (error) {
+      throw error;
+    }
   },
 
   // 获取用户的所有图片
@@ -48,87 +81,154 @@ export const ImageModel = {
     limit = 50,
     offset = 0
   ): Promise<{ images: Image[]; total: number }> {
-    const supabase = getSupabaseClient();
-    let query = supabase
-      .from("images")
-      .select("*", { count: "exact" })
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
+    try {
+      const where: any = {
+        userId: userId,
+      };
 
-    if (categoryId === null) {
-      // 查询未分类的图片
-      query = query.is("category_id", null);
-    } else if (categoryId) {
-      // 查询特定分类的图片
-      query = query.eq("category_id", categoryId);
+      if (categoryId === null) {
+        // 查询未分类的图片
+        where.categoryId = null;
+      } else if (categoryId) {
+        // 查询特定分类的图片
+        where.categoryId = categoryId;
+      }
+
+      const [images, total] = await Promise.all([
+        prisma.image.findMany({
+          where,
+          skip: offset,
+          take: limit,
+          orderBy: {
+            createdAt: 'desc',
+          },
+        }),
+        prisma.image.count({ where }),
+      ]);
+
+      return {
+        images: images.map(fromPrismaImage).filter(Boolean) as Image[],
+        total,
+      };
+    } catch (error) {
+      throw error;
     }
-
-    const { data: images, error, count } = await query;
-
-    if (error) throw error;
-    return { images: images || [], total: count || 0 };
   },
 
   // 获取单个图片
   async getById(id: string, userId: string): Promise<Image | null> {
-    const supabase = getSupabaseClient();
-    const { data: image, error } = await supabase
-      .from("images")
-      .select()
-      .eq("id", id)
-      .eq("user_id", userId)
-      .single();
-
-    if (error) {
-      if (error.code === "PGRST116") return null;
-      throw error;
+    try {
+      const image = await prisma.image.findFirst({
+        where: {
+          id: id,
+          userId: userId,
+        },
+      });
+      
+      return fromPrismaImage(image);
+    } catch (error) {
+      return null;
     }
-    return image;
   },
 
-  // 更新图片信息
+  // 更新图片
   async update(
     id: string,
     userId: string,
     data: Partial<CreateImageInput>
   ): Promise<Image> {
-    const supabase = getSupabaseClient();
-    const { data: image, error } = await supabase
-      .from("images")
-      .update({ ...data, updated_at: new Date().toISOString() })
-      .eq("id", id)
-      .eq("user_id", userId)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return image;
+    try {
+      const updateData: any = {};
+      if (data.name !== undefined) updateData.name = data.name;
+      if (data.category_id !== undefined) updateData.categoryId = data.category_id;
+      if (data.file_size !== undefined) updateData.fileSize = data.file_size;
+      if (data.mime_type !== undefined) updateData.mimeType = data.mime_type;
+      if (data.width !== undefined) updateData.width = data.width;
+      if (data.height !== undefined) updateData.height = data.height;
+      
+      const image = await prisma.image.update({
+        where: {
+          id: id,
+          userId: userId,
+        },
+        data: updateData,
+      });
+      
+      const result = fromPrismaImage(image);
+      if (!result) throw new Error("Failed to update image");
+      return result;
+    } catch (error) {
+      throw error;
+    }
   },
 
   // 删除图片
   async delete(id: string, userId: string): Promise<boolean> {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase
-      .from("images")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", userId);
-
-    if (error) throw error;
-    return true;
+    try {
+      await prisma.image.delete({
+        where: {
+          id: id,
+          userId: userId,
+        },
+      });
+      return true;
+    } catch (error) {
+      throw error;
+    }
   },
 
   // 批量删除图片
-  async deleteMany(ids: string[], userId: string): Promise<boolean> {
-    const supabase = getSupabaseClient();
-    const { error } = await supabase
-      .from("images")
-      .delete()
-      .in("id", ids)
-      .eq("user_id", userId);
+  async deleteMany(ids: string[], userId: string): Promise<number> {
+    try {
+      const result = await prisma.image.deleteMany({
+        where: {
+          id: {
+            in: ids,
+          },
+          userId: userId,
+        },
+      });
+      return result.count;
+    } catch (error) {
+      throw error;
+    }
+  },
 
-    if (error) throw error;
-    return true;
+  // 批量更新图片分类
+  async updateCategory(
+    imageIds: string[],
+    categoryId: string | null,
+    userId: string
+  ): Promise<number> {
+    try {
+      const result = await prisma.image.updateMany({
+        where: {
+          id: {
+            in: imageIds,
+          },
+          userId: userId,
+        },
+        data: {
+          categoryId: categoryId,
+        },
+      });
+      return result.count;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // 获取用户的图片总数
+  async getTotalCount(userId: string): Promise<number> {
+    try {
+      const count = await prisma.image.count({
+        where: {
+          userId: userId,
+        },
+      });
+      return count;
+    } catch (error) {
+      throw error;
+    }
   },
 };

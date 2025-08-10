@@ -6,7 +6,12 @@
       "Bash(ls:*)",
       "Bash(del \"E:\\work\\VSCode\\webs\\themeforest-WgbY6C9f-astrax-the-multipurpose-nextjs-template\\AstraX-NextJS-V2.0-UNZIP-FIRST\\1.AstraX-NextJS-Templates\\astrax-ai-solutions-nextjs\\app\\dashboard\\page.jsx\")",
       "Bash(npm install:*)",
-      "mcp__figma__get_image"
+      "mcp__figma__get_image",
+      "Bash(npx prisma generate:*)",
+      "Bash(cmd /c \"npx prisma generate\")",
+      "Bash(npm run prisma:generate:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(cmd /c npm uninstall:*)"
     ],
     "deny": []
   }

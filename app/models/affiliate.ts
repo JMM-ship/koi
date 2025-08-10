@@ -1,26 +1,46 @@
-
-
-import { getSupabaseClient } from "@/app/models/db";
+import { prisma } from "@/app/models/db";
 import { getUsersByUuids } from "./user";
+import { Affiliate as PrismaAffiliate } from "@prisma/client";
 
-export async function insertAffiliate(affiliate:any) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase.from("affiliates").insert({
-    user_uuid: affiliate.user_uuid,
-    invited_by: affiliate.invited_by,
-    created_at: affiliate.created_at,
+// 转换函数：将应用层数据转换为Prisma格式
+function toPrismaAffiliate(affiliate: any): any {
+  return {
+    userUuid: affiliate.user_uuid,
+    invitedBy: affiliate.invited_by,
+    status: affiliate.status || '',
+    paidOrderNo: affiliate.paid_order_no || '',
+    paidAmount: affiliate.paid_amount || 0,
+    rewardPercent: affiliate.reward_percent || 0,
+    rewardAmount: affiliate.reward_amount || 0,
+  };
+}
+
+// 转换函数：将Prisma数据转换为应用层格式
+function fromPrismaAffiliate(affiliate: PrismaAffiliate | null): any | undefined {
+  if (!affiliate) return undefined;
+  
+  return {
+    id: affiliate.id,
+    user_uuid: affiliate.userUuid,
+    created_at: affiliate.createdAt.toISOString(),
     status: affiliate.status,
-    paid_order_no: affiliate.paid_order_no,
-    paid_amount: affiliate.paid_amount,
-    reward_percent: affiliate.reward_percent,
-    reward_amount: affiliate.reward_amount,
-  });
+    invited_by: affiliate.invitedBy,
+    paid_order_no: affiliate.paidOrderNo,
+    paid_amount: affiliate.paidAmount,
+    reward_percent: affiliate.rewardPercent,
+    reward_amount: affiliate.rewardAmount,
+  };
+}
 
-  if (error) {
+export async function insertAffiliate(affiliate: any) {
+  try {
+    const data = await prisma.affiliate.create({
+      data: toPrismaAffiliate(affiliate),
+    });
+    return fromPrismaAffiliate(data);
+  } catch (error) {
     throw error;
   }
-
-  return data;
 }
 
 export async function getUserAffiliates(
@@ -28,82 +48,83 @@ export async function getUserAffiliates(
   page: number = 1,
   limit: number = 50
 ): Promise<any[] | undefined> {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("affiliates")
-    .select("*")
-    .eq("invited_by", user_uuid)
-    .order("created_at", { ascending: false })
-    .range((page - 1) * limit, page * limit);
+  try {
+    const affiliates = await prisma.affiliate.findMany({
+      where: {
+        invitedBy: user_uuid,
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-  if (error) {
+    if (!affiliates || affiliates.length === 0) {
+      return undefined;
+    }
+
+    const user_uuids = Array.from(new Set(affiliates.map((item) => item.userUuid)));
+    const users = await getUsersByUuids(user_uuids);
+    
+    const affiliatesWithUsers = affiliates.map((item) => {
+      const affiliate = fromPrismaAffiliate(item);
+      const user = users.find((user) => user.uuid === item.userUuid);
+      return { ...affiliate, user };
+    });
+
+    return affiliatesWithUsers;
+  } catch (error) {
     console.error("Error fetching user invites:", error);
     return [];
   }
-
-  if (!data || data.length === 0) {
-    return undefined;
-  }
-
-  const user_uuids = Array.from(new Set(data.map((item) => item.user_uuid)));
-
-  const users = await getUsersByUuids(user_uuids);
-  const affiliates = data.map((item) => {
-    const user = users.find((user) => user.uuid === item.user_uuid);
-    return { ...item, user };
-  });
-
-  return affiliates;
 }
 
 export async function getAffiliateSummary(user_uuid: string) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("affiliates")
-    .select("*")
-    .eq("invited_by", user_uuid);
-
   const summary = {
     total_invited: 0,
     total_paid: 0,
     total_reward: 0,
   };
 
-  if (error) {
+  try {
+    const affiliates = await prisma.affiliate.findMany({
+      where: {
+        invitedBy: user_uuid,
+      },
+    });
+
+    const invited_users = new Set();
+    const paid_users = new Set();
+
+    affiliates.forEach((item) => {
+      invited_users.add(item.userUuid);
+      if (item.paidAmount > 0) {
+        paid_users.add(item.userUuid);
+        summary.total_reward += item.rewardAmount;
+      }
+    });
+
+    summary.total_invited = invited_users.size;
+    summary.total_paid = paid_users.size;
+
+    return summary;
+  } catch (error) {
     return summary;
   }
-
-  const invited_users = new Set();
-  const paid_users = new Set();
-
-  data.forEach((item) => {
-    invited_users.add(item.user_uuid);
-    if (item.paid_amount > 0) {
-      paid_users.add(item.user_uuid);
-
-      summary.total_reward += item.reward_amount;
-    }
-  });
-
-  summary.total_invited = invited_users.size;
-  summary.total_paid = paid_users.size;
-
-  return summary;
 }
 
 export async function findAffiliateByOrderNo(order_no: string) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("affiliates")
-    .select("*")
-    .eq("paid_order_no", order_no)
-    .single();
-
-  if (error) {
+  try {
+    const affiliate = await prisma.affiliate.findFirst({
+      where: {
+        paidOrderNo: order_no,
+      },
+    });
+    return fromPrismaAffiliate(affiliate);
+  } catch (error) {
     return undefined;
   }
-
-  return data;
 }
 
 export async function getAllAffiliates(
@@ -115,36 +136,38 @@ export async function getAllAffiliates(
 
   const offset = (page - 1) * limit;
 
-  const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("affiliates")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .range(offset, offset + limit - 1);
+  try {
+    const affiliates = await prisma.affiliate.findMany({
+      skip: offset,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-  if (error) {
-    return [];
-  }
+    if (!affiliates || affiliates.length === 0) {
+      return [];
+    }
 
-  if (!data || data.length === 0) {
-    return [];
-  }
-
-  const user_uuids = Array.from(new Set(data.map((item) => item.user_uuid)));
-  const invited_by_uuids = Array.from(
-    new Set(data.map((item) => item.invited_by))
-  );
-
-  const users = await getUsersByUuids(user_uuids);
-  const invited_by_users = await getUsersByUuids(invited_by_uuids);
-
-  const affiliates = data.map((item) => {
-    const user = users.find((user) => user.uuid === item.user_uuid);
-    const invited_by = invited_by_users.find(
-      (user) => user.uuid === item.invited_by
+    const user_uuids = Array.from(new Set(affiliates.map((item) => item.userUuid)));
+    const invited_by_uuids = Array.from(
+      new Set(affiliates.map((item) => item.invitedBy))
     );
-    return { ...item, user, invited_by_user: invited_by };
-  });
 
-  return affiliates;
+    const users = await getUsersByUuids(user_uuids);
+    const invited_by_users = await getUsersByUuids(invited_by_uuids);
+
+    const affiliatesWithDetails = affiliates.map((item) => {
+      const affiliate = fromPrismaAffiliate(item);
+      const user = users.find((user) => user.uuid === item.userUuid);
+      const invited_by = invited_by_users.find(
+        (user) => user.uuid === item.invitedBy
+      );
+      return { ...affiliate, user, invited_by_user: invited_by };
+    });
+
+    return affiliatesWithDetails;
+  } catch (error) {
+    return [];
+  }
 }

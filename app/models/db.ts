@@ -1,18 +1,35 @@
-import { createClient } from "@supabase/supabase-js";
+import { PrismaClient } from '@prisma/client';
 
-export function getSupabaseClient() {
-  const supabaseUrl = process.env.SUPABASE_URL || "";
-  
-  let supabaseKey = process.env.SUPABASE_ANON_KEY || "";
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  }
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Supabase URL or key is not set");
-  }
-
-  const client = createClient(supabaseUrl, supabaseKey);
-
-  return client;
+// 声明全局类型，避免TypeScript错误
+declare global {
+  var prisma: PrismaClient | undefined;
 }
+
+let prisma: PrismaClient;
+
+if (process.env.NODE_ENV === 'production') {
+  // 生产环境：创建新的Prisma客户端实例
+  prisma = new PrismaClient({
+    log: ['error', 'warn'],
+  });
+} else {
+  // 开发环境：使用全局单例避免热重载时创建多个实例
+  if (!global.prisma) {
+    global.prisma = new PrismaClient({
+      log: ['query', 'error', 'warn'],
+    });
+  }
+  prisma = global.prisma;
+}
+
+// 导出Prisma客户端
+export function getPrismaClient() {
+  return prisma;
+}
+
+
+// 导出prisma实例，方便直接使用
+export { prisma };
+
+// 导出Prisma类型，方便在其他文件中使用
+export type { User, Order, ApiKey, Credit, Post, Affiliate, Feedback, Category, Image, EmailVerificationCode } from '@prisma/client';

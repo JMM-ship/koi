@@ -6,12 +6,17 @@
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint"
+        "lint": "next lint",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate": "prisma migrate dev",
+        "prisma:studio": "dotenv -e .env.development -- prisma studio",
+        "prisma:push": "prisma db push",
+        "studio": "prisma studio"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.859.0",
         "@aws-sdk/lib-storage": "^3.859.0",
-        "@supabase/supabase-js": "^2.53.0",
+        "@prisma/client": "^6.13.0",
         "aos": "^2.3.4",
         "aws-sdk": "^2.1692.0",
         "bcryptjs": "^3.0.2",
@@ -21,6 +26,7 @@
         "gsap": "^3.12.7",
         "https-proxy-agent": "^7.0.2",
         "isotope-layout": "^3.0.6",
+        "mysql2": "^3.11.5",
         "next": "^14.2.1",
         "next-auth": "^4.24.11",
         "nodemailer": "^6.10.1",
@@ -44,6 +50,7 @@
         "@types/react-modal-video": "^1.2.3",
         "eslint": "^9",
         "eslint-config-next": "15.0.3",
+        "prisma": "^6.13.0",
         "typescript": "^5"
     }
 }
