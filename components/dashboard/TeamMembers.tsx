@@ -7,7 +7,7 @@ const TeamMembers = () => {
       model: "GPT-4o",
       credits: 150,
       timestamp: "2024-12-18 14:32",
-      type: "文本生成",
+      type: "Text Generation",
       status: "completed"
     },
     {
@@ -15,7 +15,7 @@ const TeamMembers = () => {
       model: "Claude 3.5",
       credits: 200,
       timestamp: "2024-12-18 13:45",
-      type: "代码生成",
+      type: "Code Generation",
       status: "completed"
     },
     {
@@ -23,7 +23,7 @@ const TeamMembers = () => {
       model: "DALL-E 3",
       credits: 500,
       timestamp: "2024-12-18 12:20",
-      type: "图像生成",
+      type: "Image Generation",
       status: "completed"
     },
     {
@@ -31,7 +31,7 @@ const TeamMembers = () => {
       model: "GPT-3.5",
       credits: 50,
       timestamp: "2024-12-18 11:15",
-      type: "对话聊天",
+      type: "Chat Conversation",
       status: "completed"
     },
     {
@@ -39,7 +39,7 @@ const TeamMembers = () => {
       model: "Midjourney",
       credits: 800,
       timestamp: "2024-12-18 10:30",
-      type: "图像生成",
+      type: "Image Generation",
       status: "completed"
     },
     {
@@ -47,7 +47,7 @@ const TeamMembers = () => {
       model: "GPT-4o",
       credits: 180,
       timestamp: "2024-12-18 09:45",
-      type: "文档分析",
+      type: "Document Analysis",
       status: "completed"
     },
     {
@@ -55,7 +55,7 @@ const TeamMembers = () => {
       model: "Claude 3.5",
       credits: 220,
       timestamp: "2024-12-18 08:30",
-      type: "代码调试",
+      type: "Code Debugging",
       status: "completed"
     },
     {
@@ -63,7 +63,7 @@ const TeamMembers = () => {
       model: "DALL-E 3",
       credits: 450,
       timestamp: "2024-12-17 22:10",
-      type: "图像编辑",
+      type: "Image Editing",
       status: "completed"
     }
   ];
@@ -83,22 +83,22 @@ const TeamMembers = () => {
 
   return (
     <div className="team-members-card">
-        <div className="card-header">
-          <h3 className="card-title">积分明细</h3>
-          <div className="team-location">
-            <span>共 {totalRecords} 条记录</span>
-          </div>
-          <button className="show-more-btn">查看全部 &gt;</button>
+      <div className="card-header">
+        <h3 className="card-title">Credits Details</h3>
+        <div className="team-location">
+          <span>Total {totalRecords} records</span>
         </div>
+        <button className="show-more-btn">View All &gt;</button>
+      </div>
 
-        <div
-          className="team-list custom-scrollbar"
-          style={{
-            maxHeight: "300px",
-            overflowY: "auto",
-            paddingRight: "4px"
-          }}
-        >
+      <div
+        className="team-list custom-scrollbar"
+        style={{
+          maxHeight: "300px",
+          overflowY: "auto",
+          paddingRight: "4px"
+        }}
+      >
         {creditDetails.map((detail) => (
           <div key={detail.id} className="team-member">
             <div className="member-info">
@@ -141,7 +141,7 @@ const TeamMembers = () => {
                   textAlign: "right"
                 }}
               >
-                -{detail.credits} 积分
+                -{detail.credits} Credits
               </span>
             </div>
           </div>
