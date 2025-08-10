@@ -83,22 +83,22 @@ const TeamMembers = () => {
 
   return (
     <div className="team-members-card">
-        <div className="card-header">
-          <h3 className="card-title">积分明细</h3>
-          <div className="team-location">
-            <span>共 {totalRecords} 条记录</span>
-          </div>
-          <button className="show-more-btn">查看全部 &gt;</button>
+      <div className="card-header">
+        <h3 className="card-title">积分明细</h3>
+        <div className="team-location">
+          <span>共 {totalRecords} 条记录</span>
         </div>
+        <button className="show-more-btn">查看全部 &gt;</button>
+      </div>
 
-        <div
-          className="team-list custom-scrollbar"
-          style={{
-            maxHeight: "300px",
-            overflowY: "auto",
-            paddingRight: "4px"
-          }}
-        >
+      <div
+        className="team-list custom-scrollbar"
+        style={{
+          maxHeight: "300px",
+          overflowY: "auto",
+          paddingRight: "4px"
+        }}
+      >
         {creditDetails.map((detail) => (
           <div key={detail.id} className="team-member">
             <div className="member-info">

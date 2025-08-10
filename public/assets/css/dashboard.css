@@ -431,6 +431,7 @@
 .card-title {
   font-size: 20px;
   font-weight: 500;
+  margin-right: 20px !important;
   margin: 0;
   font-family: "Libre Franklin", sans-serif;
 }
@@ -1088,8 +1089,8 @@
     overflow-x: auto;
     padding-bottom: 10px;
   }
-  
-  .side-content > div,
+
+  .side-content>div,
   .side-content-item {
     min-width: 280px;
   }
@@ -1118,7 +1119,7 @@
   .dashboard-content {
     padding: 10px;
   }
-  
+
   .dashboard-grid {
     gap: 10px;
   }
@@ -1126,7 +1127,7 @@
   .side-content {
     grid-template-columns: 1fr;
   }
-  
+
   .main-bottom {
     grid-template-columns: 1fr;
   }
