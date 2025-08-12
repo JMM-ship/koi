@@ -140,7 +140,8 @@ providers.push(
         id: user.uuid,
         email: user.email,
         name: user.nickname,
-        image: user.avatar_url,
+        image: user.avatarUrl,
+        role: user.role || 'user',
       };
     },
   })
@@ -205,11 +206,28 @@ export const authOptions: NextAuthOptions = {
               uuid: savedUser.uuid,
               email: savedUser.email,
               nickname: savedUser.nickname,
-              avatar_url: savedUser.avatar_url,
-              created_at: savedUser.created_at,
+              avatar_url: savedUser.avatarUrl,
+              created_at: savedUser.createdAt,
+              role: savedUser.role || 'user',
             };
           } catch (e) {
             console.error("save user failed:", e);
+          }
+        } else if (token.user && token.user.email) {
+          // 每次都从数据库获取最新的用户信息，特别是role
+          try {
+            const latestUser = await findUserByEmail(token.user.email);
+            if (latestUser) {
+              token.user = {
+                ...token.user,
+                role: latestUser.role || 'user',
+                status: latestUser.status || 'active',
+                planType: latestUser.planType || 'free',
+                totalCredits: latestUser.totalCredits || 0,
+              };
+            }
+          } catch (e) {
+            console.error("update user info failed:", e);
           }
         }
         return token;

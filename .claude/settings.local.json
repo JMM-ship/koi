@@ -11,7 +11,26 @@
       "Bash(cmd /c \"npx prisma generate\")",
       "Bash(npm run prisma:generate:*)",
       "Bash(npm uninstall:*)",
-      "Bash(cmd /c npm uninstall:*)"
+      "Bash(cmd /c npm uninstall:*)",
+      "Bash(npx prisma:*)",
+      "Bash(cp:*)",
+      "Bash(mysql:*)",
+      "Bash(docker:*)",
+      "Bash(curl:*)",
+      "Bash(sudo sh:*)",
+      "Bash(sudo docker run:*)",
+      "Bash(--name mysql-koi )",
+      "Bash(-e MYSQL_ROOT_PASSWORD=123456 )",
+      "Bash(-e MYSQL_DATABASE=koi )",
+      "Bash(-p 3306:3306 )",
+      "Bash(-v koi_mysql_data:/var/lib/mysql )",
+      "Bash(sudo docker:*)",
+      "Bash(npm run dev:*)",
+      "Bash(ss:*)",
+      "Bash(ufw:*)",
+      "Bash(iptables:*)",
+      "Bash(sudo systemctl:*)",
+      "Bash(sudo journalctl:*)"
     ],
     "deny": []
   }

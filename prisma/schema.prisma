@@ -28,6 +28,13 @@ model User {
   invitedBy      String    @default("") @map("invited_by") @db.VarChar(255)
   isAffiliate    Boolean   @default(false) @map("is_affiliate")
   password       String?   @db.VarChar(255)
+  
+  // 新增管理员相关字段
+  role           String    @default("user") @db.VarChar(20) // user | admin
+  status         String    @default("active") @db.VarChar(20) // active | suspended | deleted
+  planType       String    @default("free") @map("plan_type") @db.VarChar(50) // free | basic | pro | enterprise
+  planExpiredAt  DateTime? @map("plan_expired_at")
+  totalCredits   Int       @default(0) @map("total_credits")
 
   @@unique([email, signinProvider], map: "uk_email_provider")
   @@index([uuid], map: "idx_uuid")
@@ -215,4 +222,26 @@ model EmailVerificationCode {
   @@index([expiresAt], map: "idx_expires_at")
   @@index([createdAt], map: "idx_created_at")
   @@map("email_verification_codes")
+}
+
+// 卡密模型
+model RedemptionCode {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique @db.VarChar(255)
+  codeType    String    @map("code_type") @db.VarChar(50) // credits | plan
+  codeValue   String    @map("code_value") @db.VarChar(255) // 积分数量或套餐类型
+  validDays   Int       @default(30) @map("valid_days") // 有效天数（仅套餐类型）
+  status      String    @default("active") @db.VarChar(20) // active | used | expired | cancelled
+  batchId     String?   @map("batch_id") @db.VarChar(255) // 批次ID
+  createdAt   DateTime  @default(now()) @map("created_at")
+  usedAt      DateTime? @map("used_at") // 使用时间
+  usedBy      String?   @map("used_by") @db.VarChar(255) // 使用者UUID
+  expiresAt   DateTime? @map("expires_at") // 过期时间
+  notes       String?   @db.Text // 备注
+  
+  @@index([code], map: "idx_code")
+  @@index([status], map: "idx_status")
+  @@index([batchId], map: "idx_batch_id")
+  @@index([createdAt], map: "idx_created_at")
+  @@map("redemption_codes")
 }

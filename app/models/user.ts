@@ -45,6 +45,11 @@ function fromPrismaUser(user: PrismaUser | null): User | undefined {
     invited_by: user.invitedBy || undefined,
     is_affiliate: user.isAffiliate || undefined,
     password: user.password || undefined,
+    role: user.role || 'user',
+    status: user.status || 'active',
+    planType: user.planType || 'free',
+    planExpiredAt: user.planExpiredAt?.toISOString() || undefined,
+    totalCredits: user.totalCredits || 0,
   };
 }
 

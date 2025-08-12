@@ -7,6 +7,9 @@ import SubscriptionContent from "@/components/dashboard/SubscriptionContent";
 import ApiKeysContent from "@/components/dashboard/ApiKeysContent";
 import PlansContent from "@/components/dashboard/PlansContent";
 import ProfileContent from "@/components/dashboard/ProfileContent";
+import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
+import AdminUserManagement from "@/components/dashboard/admin/AdminUserManagement";
+import AdminCodeManagement from "@/components/dashboard/admin/AdminCodeManagement";
 import "@/public/assets/css/dashboard.css";
 
 export default function Dashboard() {
@@ -25,6 +28,13 @@ export default function Dashboard() {
         return <PlansContent />;
       case 'profile':
         return <ProfileContent />;
+      // 管理员页面
+      case 'admin':
+        return <AdminDashboard />;
+      case 'admin-users':
+        return <AdminUserManagement />;
+      case 'admin-codes':
+        return <AdminCodeManagement />;
       default:
         return <DashboardContent />;
     }
