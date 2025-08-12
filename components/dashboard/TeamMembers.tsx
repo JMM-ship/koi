@@ -88,18 +88,17 @@ const TeamMembers = () => {
         <div className="team-location">
           <span>Total {totalRecords} records</span>
         </div>
-        <button className="show-more-btn">View All &gt;</button>
       </div>
 
       <div
-        className="team-list custom-scrollbar"
+        className="team-list"
         style={{
-          maxHeight: "300px",
-          overflowY: "auto",
-          paddingRight: "4px"
+          maxHeight: "none",
+          overflowY: "hidden",
+          paddingRight: "0"
         }}
       >
-        {creditDetails.map((detail) => (
+        {creditDetails.slice(0, 5).map((detail) => (
           <div key={detail.id} className="team-member">
             <div className="member-info">
               <div
