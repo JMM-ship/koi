@@ -132,212 +132,109 @@ export default function ProfileContent() {
   };
 
   return (
-    <div style={{ width: '100%', padding: '20px' }}>
-      <div className="mb-4">
-        <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
-          Personal Settings
-        </h1>
-        <p style={{ fontSize: '14px', color: '#999' }}>
+    <div className="profile-content-wrapper">
+      {/* 页面标题 */}
+      <div className="profile-header">
+        <h1 className="profile-title">Personal Settings</h1>
+        <p className="profile-subtitle">
           Manage your personal information and account security
         </p>
       </div>
 
       {/* 消息提示 */}
       {message.text && (
-        <div style={{
-          padding: '12px 16px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          background: message.type === 'success' ? 'rgba(0, 208, 132, 0.1)' : 'rgba(255, 0, 110, 0.1)',
-          border: `1px solid ${message.type === 'success' ? '#00d084' : '#ff006e'}`,
-          color: message.type === 'success' ? '#00d084' : '#ff006e',
-          fontSize: '14px'
-        }}>
+        <div className={`profile-message ${message.type}`}>
           {message.text}
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* 内容区域 */}
+      <div className="profile-cards-container">
         {/* Personal Information Section */}
-        <div className="balance-card" style={{
-          background: '#0a0a0a',
-          border: '1px solid #1a1a1a',
-          borderRadius: '12px',
-          padding: '24px'
-        }}>
-          <div className="d-flex align-items-center mb-4">
-            <FiUser style={{ fontSize: '20px', color: '#794aff', marginRight: '10px' }} />
-            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#fff', margin: 0 }}>
-              Personal Information
-            </h3>
+        <div className="profile-card">
+          <div className="profile-card-header">
+            <FiUser className="profile-card-icon" />
+            <h3 className="profile-card-title">Personal Information</h3>
           </div>
           
-          <p style={{ fontSize: '13px', color: '#666', marginBottom: '24px' }}>
+          <p className="profile-card-description">
             Update your personal information and avatar
           </p>
 
           {/* Avatar Section */}
-          <div className="mb-4">
-            <label style={{ fontSize: '12px', color: '#999', marginBottom: '12px', display: 'block' }}>
-              Avatar URL
-            </label>
-            <div className="d-flex align-items-center gap-3">
-              <div style={{
-                width: '60px',
-                height: '60px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-                color: '#fff',
-                fontWeight: 'bold',
-                overflow: 'hidden'
-              }}>
+          <div className="profile-avatar-section">
+            <label className="profile-label">Avatar URL</label>
+            <div className="profile-avatar-container">
+              <div className="profile-avatar">
                 <Image
-                  src="/assets/img/team/team-1.jpg"
+                  src={avatarUrl || "/assets/img/team/team-1.jpg"}
                   alt="Avatar"
                   width={60}
                   height={60}
                   style={{ objectFit: 'cover' }}
                 />
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  background: '#1a1a1a',
-                  border: '1px solid #2a2a2a',
-                  borderRadius: '8px',
-                  padding: '10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px'
-                }}>
+              <div className="profile-avatar-input-wrapper">
+                <div className="profile-input-group">
                   <input
                     type="text"
                     value={avatarUrl}
                     onChange={(e) => setAvatarUrl(e.target.value)}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#999',
-                      fontSize: '12px',
-                      flex: 1,
-                      outline: 'none'
-                    }}
+                    className="profile-input"
+                    placeholder="Enter avatar URL"
                   />
                   <button
                     onClick={handleCopyUrl}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: copiedUrl ? '#00d084' : '#666',
-                      cursor: 'pointer',
-                      padding: '4px'
-                    }}
+                    className={`profile-copy-btn ${copiedUrl ? 'copied' : ''}`}
                   >
                     <FiCopy />
                   </button>
                 </div>
-                <p style={{ fontSize: '11px', color: '#666', marginTop: '8px', margin: 0 }}>
+                <p className="profile-input-hint">
                   Support jpg, png, gif format image links
                 </p>
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <div className="profile-form-grid">
             {/* Email Field */}
-            <div>
-              <label style={{ fontSize: '12px', color: '#999', marginBottom: '8px', display: 'block' }}>
-                Email Address
-              </label>
-              <div style={{
-                background: '#1a1a1a',
-                border: '1px solid #2a2a2a',
-                borderRadius: '8px',
-                padding: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
+            <div className="profile-form-group">
+              <label className="profile-label">Email Address</label>
+              <div className="profile-input-wrapper">
                 <input
                   type="email"
                   value={email}
                   disabled
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#666',
-                    fontSize: '14px',
-                    flex: 1,
-                    outline: 'none'
-                  }}
+                  className="profile-input disabled"
                 />
               </div>
-              <p style={{ fontSize: '11px', color: '#666', marginTop: '8px' }}>
+              <p className="profile-input-hint">
                 Email address cannot be modified
               </p>
             </div>
 
             {/* Nickname Field */}
-            <div>
-              <label style={{ fontSize: '12px', color: '#999', marginBottom: '8px', display: 'block' }}>
-                Nickname
-              </label>
-              <div style={{
-                background: '#1a1a1a',
-                border: '1px solid #2a2a2a',
-                borderRadius: '8px',
-                padding: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
+            <div className="profile-form-group">
+              <label className="profile-label">Nickname</label>
+              <div className="profile-input-wrapper">
                 <input
                   type="text"
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#fff',
-                    fontSize: '14px',
-                    flex: 1,
-                    outline: 'none'
-                  }}
+                  className="profile-input"
+                  placeholder="Enter nickname"
                 />
               </div>
             </div>
           </div>
 
           {/* Save Button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="profile-button-container">
             <button
               onClick={handleSaveProfile}
               disabled={loading}
-              style={{
-                padding: '12px 32px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+              className="profile-btn profile-btn-primary"
             >
               {loading ? 'Saving...' : 'Save Profile'}
             </button>
@@ -345,104 +242,51 @@ export default function ProfileContent() {
         </div>
 
         {/* Password Settings Section */}
-        <div className="balance-card" style={{
-          background: '#0a0a0a',
-          border: '1px solid #1a1a1a',
-          borderRadius: '12px',
-          padding: '24px'
-        }}>
-          <div className="d-flex align-items-center mb-4">
-            <FiLock style={{ fontSize: '20px', color: '#794aff', marginRight: '10px' }} />
-            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#fff', margin: 0 }}>
-              Password Settings
-            </h3>
+        <div className="profile-card">
+          <div className="profile-card-header">
+            <FiLock className="profile-card-icon" />
+            <h3 className="profile-card-title">Password Settings</h3>
           </div>
           
-          <p style={{ fontSize: '13px', color: '#666', marginBottom: '24px' }}>
+          <p className="profile-card-description">
             Change your login password to protect account security
           </p>
 
           {/* Current Password */}
-          <div className="mb-4">
-            <label style={{ fontSize: '12px', color: '#999', marginBottom: '8px', display: 'block' }}>
-              Current Password
-            </label>
-            <div style={{
-              background: '#1a1a1a',
-              border: '1px solid #2a2a2a',
-              borderRadius: '8px',
-              padding: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}>
+          <div className="profile-form-group">
+            <label className="profile-label">Current Password</label>
+            <div className="profile-input-group">
               <input
                 type={showCurrentPassword ? "text" : "password"}
                 placeholder="Enter current password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#fff',
-                  fontSize: '14px',
-                  flex: 1,
-                  outline: 'none'
-                }}
+                className="profile-input"
               />
               <button
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#666',
-                  cursor: 'pointer',
-                  padding: '4px'
-                }}
+                className="profile-password-toggle"
               >
                 {showCurrentPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
+          <div className="profile-form-grid">
             {/* New Password */}
-            <div>
-              <label style={{ fontSize: '12px', color: '#999', marginBottom: '8px', display: 'block' }}>
-                New Password
-              </label>
-              <div style={{
-                background: '#1a1a1a',
-                border: '1px solid #2a2a2a',
-                borderRadius: '8px',
-                padding: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
+            <div className="profile-form-group">
+              <label className="profile-label">New Password</label>
+              <div className="profile-input-group">
                 <input
                   type={showNewPassword ? "text" : "password"}
                   placeholder="Enter new password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#fff',
-                    fontSize: '14px',
-                    flex: 1,
-                    outline: 'none'
-                  }}
+                  className="profile-input"
                 />
                 <button
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#666',
-                    cursor: 'pointer',
-                    padding: '4px'
-                  }}
+                  className="profile-password-toggle"
                 >
                   {showNewPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
@@ -450,42 +294,19 @@ export default function ProfileContent() {
             </div>
 
             {/* Confirm Password */}
-            <div>
-              <label style={{ fontSize: '12px', color: '#999', marginBottom: '8px', display: 'block' }}>
-                Confirm Password
-              </label>
-              <div style={{
-                background: '#1a1a1a',
-                border: '1px solid #2a2a2a',
-                borderRadius: '8px',
-                padding: '12px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px'
-              }}>
+            <div className="profile-form-group">
+              <label className="profile-label">Confirm Password</label>
+              <div className="profile-input-group">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    color: '#fff',
-                    fontSize: '14px',
-                    flex: 1,
-                    outline: 'none'
-                  }}
+                  className="profile-input"
                 />
                 <button
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#666',
-                    cursor: 'pointer',
-                    padding: '4px'
-                  }}
+                  className="profile-password-toggle"
                 >
                   {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
@@ -494,39 +315,299 @@ export default function ProfileContent() {
           </div>
 
           {/* Verify Button */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="profile-button-container">
             <button
               onClick={handleVerifyPassword}
               disabled={loading}
-              style={{
-                padding: '12px 32px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+              className="profile-btn profile-btn-primary"
             >
-              <FiShield style={{ fontSize: '16px' }} />
+              <FiShield className="profile-btn-icon" />
               {loading ? 'Verifying...' : 'Verify Password'}
             </button>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .profile-content-wrapper {
+          width: 100%;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+
+        .profile-header {
+          margin-bottom: 30px;
+        }
+
+        .profile-title {
+          font-size: 28px;
+          font-weight: 600;
+          color: #fff;
+          margin-bottom: 8px;
+          font-family: "Libre Franklin", sans-serif;
+        }
+
+        .profile-subtitle {
+          font-size: 14px;
+          color: #999;
+        }
+
+        .profile-message {
+          padding: 12px 16px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          font-size: 14px;
+          animation: slideIn 0.3s ease;
+        }
+
+        .profile-message.success {
+          background: rgba(0, 208, 132, 0.1);
+          border: 1px solid #00d084;
+          color: #00d084;
+        }
+
+        .profile-message.error {
+          background: rgba(255, 0, 110, 0.1);
+          border: 1px solid #ff006e;
+          color: #ff006e;
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .profile-cards-container {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .profile-card {
+          background: #0a0a0a;
+          border: 1px solid #1a1a1a;
+          border-radius: 12px;
+          padding: 28px;
+          transition: all 0.3s ease;
+        }
+
+        .profile-card:hover {
+          border-color: #794aff;
+          box-shadow: 0 4px 20px rgba(121, 74, 255, 0.1);
+        }
+
+        .profile-card-header {
+          display: flex;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+
+        .profile-card-icon {
+          font-size: 20px;
+          color: #794aff;
+          margin-right: 12px;
+        }
+
+        .profile-card-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #fff;
+          margin: 0;
+          font-family: "Libre Franklin", sans-serif;
+        }
+
+        .profile-card-description {
+          font-size: 13px;
+          color: #666;
+          margin-bottom: 28px;
+        }
+
+        .profile-avatar-section {
+          margin-bottom: 28px;
+        }
+
+        .profile-label {
+          font-size: 12px;
+          color: #999;
+          margin-bottom: 12px;
+          display: block;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .profile-avatar-container {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .profile-avatar {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          overflow: hidden;
+          flex-shrink: 0;
+          border: 2px solid #794aff;
+        }
+
+        .profile-avatar-input-wrapper {
+          flex: 1;
+        }
+
+        .profile-input-group {
+          background: #1a1a1a;
+          border: 1px solid #2a2a2a;
+          border-radius: 8px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          transition: all 0.3s;
+        }
+
+        .profile-input-group:focus-within {
+          border-color: #794aff;
+          box-shadow: 0 0 0 3px rgba(121, 74, 255, 0.1);
+        }
+
+        .profile-input {
+          background: transparent;
+          border: none;
+          color: #fff;
+          font-size: 14px;
+          padding: 12px 14px;
+          flex: 1;
+          outline: none;
+          width: 100%;
+        }
+
+        .profile-input::placeholder {
+          color: #666;
+        }
+
+        .profile-input.disabled {
+          color: #666;
+          cursor: not-allowed;
+        }
+
+        .profile-input-wrapper {
+          background: #1a1a1a;
+          border: 1px solid #2a2a2a;
+          border-radius: 8px;
+          transition: all 0.3s;
+        }
+
+        .profile-input-wrapper:focus-within {
+          border-color: #794aff;
+          box-shadow: 0 0 0 3px rgba(121, 74, 255, 0.1);
+        }
+
+        .profile-copy-btn,
+        .profile-password-toggle {
+          background: none;
+          border: none;
+          color: #666;
+          cursor: pointer;
+          padding: 12px;
+          transition: color 0.3s;
+        }
+
+        .profile-copy-btn:hover,
+        .profile-password-toggle:hover {
+          color: #794aff;
+        }
+
+        .profile-copy-btn.copied {
+          color: #00d084;
+        }
+
+        .profile-input-hint {
+          font-size: 11px;
+          color: #666;
+          margin-top: 8px;
+        }
+
+        .profile-form-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+          margin-bottom: 28px;
+        }
+
+        .profile-form-group {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .profile-button-container {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: 24px;
+        }
+
+        .profile-btn {
+          padding: 12px 32px;
+          border-radius: 8px;
+          border: none;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .profile-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .profile-btn-primary {
+          background: linear-gradient(135deg, #794aff 0%, #b084ff 100%);
+          color: #fff;
+          box-shadow: 0 4px 15px rgba(121, 74, 255, 0.3);
+        }
+
+        .profile-btn-primary:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(121, 74, 255, 0.4);
+        }
+
+        .profile-btn-icon {
+          font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+          .profile-content-wrapper {
+            padding: 15px;
+          }
+
+          .profile-title {
+            font-size: 24px;
+          }
+
+          .profile-card {
+            padding: 20px;
+          }
+
+          .profile-form-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .profile-avatar-container {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+      `}</style>
     </div>
   );
 }
