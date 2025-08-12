@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/auth/config';
 import { getUserCreditInfo } from '@/app/service/creditManager';
 
 // GET /api/credits/balance - 获取积分余额
 export async function GET(request: NextRequest) {
   try {
     // 验证用户登录
-    const session = await getServerSession();
-    if (!session?.user?.id) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.uuid) {
       return NextResponse.json(
         {
           success: false,
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const userUuid = session.user.id;
+    const userUuid = session.user.uuid;
     
     // 获取用户积分信息
     const creditInfo = await getUserCreditInfo(userUuid);

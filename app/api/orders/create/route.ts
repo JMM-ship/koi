@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/auth/config';
 import { createOrder, OrderType } from '@/app/service/orderProcessor';
 
 // POST /api/orders/create - 创建订单
 export async function POST(request: NextRequest) {
   try {
     // 验证用户登录
-    const session = await getServerSession();
-    if (!session?.user?.id || !session?.user?.email) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.uuid || !session?.user?.email) {
       return NextResponse.json(
         {
           success: false,
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
     
     // 创建订单
     const result = await createOrder({
-      userUuid: session.user.id,
+      userUuid: session.user.uuid,
       userEmail: session.user.email,
       orderType,
       packageId,

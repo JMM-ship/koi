@@ -177,8 +177,11 @@ export const authOptions: NextAuthOptions = {
       return baseUrl;
     },
     async session({ session, token, user }) {
-      if (token && token.user && token.user) {
-        session.user = token.user;
+      if (token && token.user) {
+        session.user = {
+          ...token.user,
+          id: token.user.uuid // Add id field for compatibility
+        };
       }
       return session;
     },

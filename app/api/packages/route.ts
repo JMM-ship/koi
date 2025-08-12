@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/auth/config';
 import { getActivePackages, getPackageById } from '@/app/models/package';
 import { getPackagesWithUserStatus } from '@/app/service/packageManager';
 
@@ -12,8 +13,8 @@ export async function GET(request: NextRequest) {
     const currency = searchParams.get('currency') || 'CNY';
     
     // 获取用户会话（可选）
-    const session = await getServerSession();
-    const userUuid = session?.user?.id;
+    const session = await getServerSession(authOptions);
+    const userUuid = session?.user?.uuid;
     
     // 获取套餐列表
     let result;

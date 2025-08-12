@@ -1,66 +1,244 @@
 "use client";
 
-import { useState } from "react";
-import { FiCheck, FiAlertTriangle } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { FiCheck, FiAlertTriangle, FiX } from "react-icons/fi";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+interface Package {
+  id: string;
+  name: string;
+  name_en?: string;
+  price: number;
+  original_price?: number;
+  daily_credits: number;
+  valid_days: number;
+  features?: string[];
+  tag?: string;
+  is_recommended: boolean;
+  currency: string;
+}
+
+interface UserPackage {
+  id: string;
+  packageId: string;
+  packageName: string;
+  endDate: string;
+  dailyCredits: number;
+  remainingDays: number;
+}
 
 export default function PlansContent() {
-  const plans = [
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [currentPackage, setCurrentPackage] = useState<UserPackage | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
+
+  // Default packages data (fallback)
+  const defaultPackages: Package[] = [
     {
-      id: 1,
-      name: "Monthly",
-      monthlyPrice: 399,
-      description: "",
+      id: 'pkg_basic',
+      name: 'Monthly',
+      name_en: 'Monthly',
+      price: 399,
+      original_price: undefined,
+      daily_credits: 10800,
+      valid_days: 30,
       features: [
-        { text: "5 people share one $200 Max account", included: true },
-        { text: "Total 10,800 points/day - suitable for daily development", included: true },
-        { text: "4 points deducted per morning", included: true },
-        { text: "Support Claude 4 Opus & Sonnet", included: true },
-        { text: "1v1 engineer service", included: true },
+        "5 people share one $200 Max account",
+        "Total 10,800 points/day - suitable for daily development",
+        "4 points deducted per morning",
+        "Support Claude 4 Opus & Sonnet",
+        "1v1 engineer service"
       ],
-      recommended: false,
-      buttonText: "Choose Standard Plan"
+      is_recommended: false,
+      currency: 'CNY',
+      tag: undefined
     },
     {
-      id: 2,
-      name: "Large Monthly",
-      monthlyPrice: 699,
-      originalPrice: 100,
-      description: "",
-      discount: "Much more than double",
+      id: 'pkg_pro',
+      name: 'Large Monthly',
+      name_en: 'Large Monthly',
+      price: 699,
+      original_price: 999,
+      daily_credits: 30000,
+      valid_days: 30,
       features: [
-        { text: "3 people share one $200 account", included: true },
-        { text: "Total 19,000 points/day - high intensity development", included: true },
-        { text: "4 points deducted per morning", included: true },
-        { text: "Support Claude 4 Opus & Sonnet", included: true },
-        { text: "1v1 engineer service", included: true },
-        { text: "Priority technical support", included: true },
-        { text: "$100 quota worth more than double, only ¥699", included: true, highlight: true },
+        "3 people share one $200 account",
+        "Total 30,000 points/day - high intensity development",
+        "4 points deducted per morning",
+        "Support Claude 4 Opus & Sonnet",
+        "1v1 engineer service",
+        "Priority technical support",
+        "$100 quota worth more than double, only ¥699"
       ],
-      recommended: true,
-      isPopular: true,
-      buttonText: "Choose Advanced Plan"
+      is_recommended: true,
+      currency: 'CNY',
+      tag: 'HOT'
     },
     {
-      id: 3,
-      name: "Exclusive",
-      monthlyPrice: 1799,
-      description: "",
-      hasPromo: true,
-      promoText: "¥200 Experience Voucher",
+      id: 'pkg_enterprise',
+      name: 'Exclusive',
+      name_en: 'Exclusive',
+      price: 1799,
+      original_price: undefined,
+      daily_credits: 100000,
+      valid_days: 30,
       features: [
-        { text: "Exclusive $200 experience", included: true },
-        { text: "Exclusive account, ultra experience", included: true },
-        { text: "Total 71,500 points/day - high intensity professional development", included: true },
-        { text: "4 points deducted per morning", included: true },
-        { text: "Support Claude 4 Opus & Sonnet", included: true },
-        { text: "Dedicated WeChat consulting service", included: true },
-        { text: "1v1 engineer service", included: true },
-        { text: "Priority technical support", included: true },
+        "Exclusive $200 experience",
+        "Exclusive account, ultra experience",
+        "Total 100,000 points/day - professional development",
+        "4 points deducted per morning",
+        "Support Claude 4 Opus & Sonnet",
+        "Dedicated WeChat consulting service",
+        "1v1 engineer service",
+        "Priority technical support"
       ],
-      recommended: false,
-      buttonText: "Choose Custom Plan"
+      is_recommended: false,
+      currency: 'CNY',
+      tag: 'NEW'
     }
   ];
+
+  // Get packages list
+  useEffect(() => {
+    fetchPackages();
+  }, []);
+
+  const fetchPackages = async () => {
+    try {
+      const response = await fetch('/api/packages');
+      const data = await response.json();
+
+      if (data.success && data.data?.packages?.length > 0) {
+        // Convert price from cents to yuan
+        const packagesData = data.data.packages.map((pkg: any) => ({
+          ...pkg,
+          price: pkg.price / 100,
+          original_price: pkg.original_price ? pkg.original_price / 100 : undefined
+        }));
+        setPackages(packagesData);
+        setCurrentPackage(data.data.currentPackage);
+      } else {
+        // Use default data if no packages from API
+        setPackages(defaultPackages);
+      }
+    } catch (error) {
+      console.error('Failed to fetch packages:', error);
+      // Use default data on error
+      setPackages(defaultPackages);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle purchase button click
+  const handlePurchase = (pkg: Package) => {
+    console.log(session, "dsds");
+
+    if (!session) {
+      alert('Please login first');
+      router.push('/signin');
+      return;
+    }
+
+    setSelectedPackage(pkg);
+    setShowConfirmModal(true);
+  };
+
+  // Confirm purchase
+  const confirmPurchase = async () => {
+    if (!selectedPackage || purchasing) return;
+
+    setPurchasing(true);
+
+    try {
+      // Create order
+      const response = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderType: 'package',
+          packageId: selectedPackage.id,
+          paymentMethod: 'mock' // Mock payment
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Simulate payment success
+        await simulatePaymentSuccess(data.data.order.orderNo);
+
+        alert('Package purchased successfully!');
+        setShowConfirmModal(false);
+
+        // Refresh page data
+        await fetchPackages();
+      } else {
+        alert(data.error?.message || 'Failed to create order');
+      }
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      alert('Purchase failed, please try again');
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  // Simulate payment success (development only)
+  const simulatePaymentSuccess = async (orderNo: string) => {
+    const response = await fetch('/api/orders/pay/mock', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        orderNo,
+        paymentDetails: {
+          method: 'mock',
+          transactionId: 'mock_' + Date.now(),
+          paidAt: new Date().toISOString()
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Payment processing failed');
+    }
+  };
+
+  // Format package features
+  const formatFeatures = (pkg: Package) => {
+    if (pkg.features && pkg.features.length > 0) {
+      return pkg.features;
+    }
+
+    // Generate default features based on package info
+    return [
+      `${pkg.daily_credits.toLocaleString()} credits daily`,
+      'Full speed response',
+      'Support all AI models',
+      'Technical support service',
+      `${pkg.valid_days} days validity`
+    ];
+  };
+
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -72,6 +250,26 @@ export default function PlansContent() {
           <p style={{ fontSize: '16px', color: '#999', marginBottom: '12px' }}>
             Base plan $200 Max account, monthly pricing is 28% of base, best value
           </p>
+
+          {currentPackage && (
+            <div style={{
+              background: 'rgba(0, 208, 132, 0.1)',
+              border: '1px solid rgba(0, 208, 132, 0.2)',
+              borderRadius: '8px',
+              padding: '12px 24px',
+              marginBottom: '24px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              maxWidth: '600px'
+            }}>
+              <FiCheck style={{ color: '#00d084', fontSize: '18px', flexShrink: 0 }} />
+              <span style={{ fontSize: '13px', color: '#00d084', textAlign: 'left' }}>
+                Current plan: <strong>{currentPackage.packageName}</strong>,
+                {currentPackage.remainingDays} days remaining
+              </span>
+            </div>
+          )}
 
           <div style={{
             background: 'rgba(255, 193, 7, 0.1)',
@@ -93,11 +291,11 @@ export default function PlansContent() {
       </div>
 
       <div className="row justify-content-center">
-        {plans.map((plan) => (
-          <div key={plan.id} className="col-lg-4 mb-4">
+        {packages.map((pkg) => (
+          <div key={pkg.id} className="col-lg-4 mb-4">
             <div className="balance-card" style={{
               background: '#0a0a0a',
-              border: plan.recommended ? '2px solid #ff4444' : '1px solid #1a1a1a',
+              border: pkg.is_recommended ? '2px solid #ff4444' : '1px solid #1a1a1a',
               borderRadius: '12px',
               padding: '24px',
               position: 'relative',
@@ -105,12 +303,12 @@ export default function PlansContent() {
               display: 'flex',
               flexDirection: 'column',
               transition: 'all 0.3s',
-              ...(plan.recommended && {
+              ...(pkg.is_recommended && {
                 transform: 'scale(1.05)',
                 boxShadow: '0 8px 24px rgba(255, 68, 68, 0.2)'
               })
             }}>
-              {plan.recommended && (
+              {pkg.is_recommended && (
                 <div style={{
                   position: 'absolute',
                   top: '-14px',
@@ -127,27 +325,29 @@ export default function PlansContent() {
                   gap: '6px',
                   whiteSpace: 'nowrap'
                 }}>
-                  🔥 Compare $100 quota worth more than double
+                  🔥 Most Popular
                 </div>
               )}
 
-              {plan.hasPromo && (
+              {pkg.tag && (
                 <div style={{
                   position: 'absolute',
                   top: '16px',
                   right: '16px',
-                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  background: pkg.tag === 'HOT'
+                    ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
+                    : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
                   color: '#fff',
                   padding: '6px 14px',
                   borderRadius: '6px',
                   fontSize: '11px',
                   fontWeight: '600'
                 }}>
-                  {plan.promoText}
+                  {pkg.tag}
                 </div>
               )}
 
-              <div className="text-center mb-4" style={{ paddingTop: plan.recommended ? '20px' : '0' }}>
+              <div className="text-center mb-4" style={{ paddingTop: pkg.is_recommended ? '20px' : '0' }}>
                 <h3 style={{
                   fontSize: '18px',
                   fontWeight: '600',
@@ -156,22 +356,22 @@ export default function PlansContent() {
                   textTransform: 'uppercase',
                   letterSpacing: '1px'
                 }}>
-                  {plan.name}
+                  {pkg.name_en || pkg.name}
                 </h3>
 
                 <div style={{ marginBottom: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
                     <span style={{ fontSize: '52px', fontWeight: '700', color: '#fff', lineHeight: 1 }}>
-                      ¥{plan.monthlyPrice}
+                      ¥{pkg.price}
                     </span>
                     <span style={{ fontSize: '16px', color: '#666' }}>
                       /month
                     </span>
                   </div>
-                  {plan.originalPrice && (
+                  {pkg.original_price && (
                     <div style={{ marginTop: '8px' }}>
                       <span style={{ fontSize: '14px', color: '#666', textDecoration: 'line-through' }}>
-                        Original ¥{plan.originalPrice}/month
+                        Original ¥{pkg.original_price}/month
                       </span>
                       <span style={{
                         fontSize: '12px',
@@ -182,7 +382,7 @@ export default function PlansContent() {
                         padding: '2px 8px',
                         borderRadius: '4px'
                       }}>
-                        {plan.discount}
+                        Save {Math.round((1 - pkg.price / pkg.original_price) * 100)}%
                       </span>
                     </div>
                   )}
@@ -190,7 +390,7 @@ export default function PlansContent() {
               </div>
 
               <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px' }}>
-                {plan.features.map((feature, index) => (
+                {formatFeatures(pkg).map((feature, index) => (
                   <li key={index} className="d-flex align-items-start" style={{ marginBottom: '14px' }}>
                     <span style={{
                       width: '18px',
@@ -199,55 +399,61 @@ export default function PlansContent() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: feature.included ? 'rgba(0, 208, 132, 0.15)' : 'rgba(75, 85, 99, 0.2)',
+                      background: 'rgba(0, 208, 132, 0.15)',
                       marginRight: '10px',
                       flexShrink: 0,
                       marginTop: '2px'
                     }}>
                       <FiCheck style={{
                         fontSize: '11px',
-                        color: feature.included ? '#00d084' : '#4b5563',
+                        color: '#00d084',
                         fontWeight: 'bold'
                       }} />
                     </span>
                     <span style={{
                       fontSize: '13px',
-                      color: (feature as any).highlight ? '#ffc107' : (feature.included ? '#e0e0e0' : '#666'),
-                      lineHeight: '1.5',
-                      fontWeight: (feature as any).highlight ? '500' : '400'
+                      color: '#e0e0e0',
+                      lineHeight: '1.5'
                     }}>
-                      {feature.text}
+                      {feature}
                     </span>
                   </li>
                 ))}
               </ul>
 
-              <button style={{
-                width: '100%',
-                padding: '14px',
-                borderRadius: '8px',
-                border: 'none',
-                background: plan.recommended
-                  ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
-                  : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                color: '#fff',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s',
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-              }}
+              <button
+                onClick={() => handlePurchase(pkg)}
+                disabled={currentPackage?.packageId === pkg.id}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: currentPackage?.packageId === pkg.id
+                    ? '#333'
+                    : pkg.is_recommended
+                      ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
+                      : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: currentPackage?.packageId === pkg.id ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
+                  if (currentPackage?.packageId !== pkg.id) {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
+                  }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                {plan.buttonText}
+                {currentPackage?.packageId === pkg.id ? 'Current Plan' : 'Choose Plan'}
               </button>
             </div>
           </div>
@@ -276,6 +482,110 @@ export default function PlansContent() {
           </div>
         </div>
       </div>
+
+      {/* Confirm purchase modal */}
+      {showConfirmModal && selectedPackage && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: '#1a1a1a',
+            borderRadius: '12px',
+            padding: '32px',
+            maxWidth: '500px',
+            width: '90%',
+            position: 'relative',
+            border: '1px solid #333'
+          }}>
+            <button
+              onClick={() => setShowConfirmModal(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'transparent',
+                border: 'none',
+                color: '#666',
+                cursor: 'pointer',
+                padding: '4px'
+              }}
+            >
+              <FiX size={20} />
+            </button>
+
+            <h3 style={{ color: '#fff', marginBottom: '24px' }}>Confirm Purchase</h3>
+
+            <div style={{
+              background: '#0a0a0a',
+              borderRadius: '8px',
+              padding: '20px',
+              marginBottom: '24px'
+            }}>
+              <h4 style={{ color: '#fff', fontSize: '18px', marginBottom: '16px' }}>
+                {selectedPackage.name_en || selectedPackage.name}
+              </h4>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <span style={{ color: '#999' }}>Price</span>
+                <span style={{ color: '#fff', fontWeight: 'bold' }}>¥{selectedPackage.price}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <span style={{ color: '#999' }}>Daily Credits</span>
+                <span style={{ color: '#fff' }}>{selectedPackage.daily_credits.toLocaleString()}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#999' }}>Validity</span>
+                <span style={{ color: '#fff' }}>{selectedPackage.valid_days} days</span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid #333',
+                  background: 'transparent',
+                  color: '#999',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmPurchase}
+                disabled={purchasing}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: purchasing ? 'not-allowed' : 'pointer',
+                  opacity: purchasing ? 0.6 : 1
+                }}
+              >
+                {purchasing ? 'Processing...' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
