@@ -50,6 +50,18 @@ const CurrentPlan = () => {
         </span>
       </div>
 
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
+        <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Subscription Period</h5>
+        <div className="d-flex justify-content-between" style={{ marginBottom: '6px' }}>
+          <span style={{ fontSize: '12px', color: '#999' }}>Start Date</span>
+          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.startDate}</span>
+        </div>
+        <div className="d-flex justify-content-between">
+          <span style={{ fontSize: '12px', color: '#999' }}>End Date</span>
+          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.endDate}</span>
+        </div>
+      </div>
+
       <div className="mb-3 p-3" style={{
         background: 'rgba(121, 74, 255, 0.1)',
         border: '1px solid rgba(121, 74, 255, 0.2)',
@@ -62,7 +74,7 @@ const CurrentPlan = () => {
             <span style={{ color: '#999', fontSize: '13px' }}>/{planDetails.billing}</span>
           </div>
         </div>
-        <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center">
           <button className="btn btn-sm" style={{
             background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
             border: 'none',
@@ -70,24 +82,26 @@ const CurrentPlan = () => {
             padding: '4px 12px',
             color: '#fff',
             fontSize: '12px',
-            fontWeight: '500'
+            fontWeight: '500',
+            marginRight: '2px'
           }}>
             Upgrade
+          </button>
+          <button className="btn btn-sm" style={{
+            background: 'linear-gradient(135deg, #00d084 0%, #00b377 100%)',
+            border: 'none',
+            borderRadius: '6px',
+            padding: '4px 12px',
+            color: '#fff',
+            fontSize: '12px',
+            fontWeight: '500'
+          }}>
+            Renew
           </button>
         </div>
       </div>
 
-      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
-        <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Subscription Period</h5>
-        <div className="d-flex justify-content-between" style={{ marginBottom: '6px' }}>
-          <span style={{ fontSize: '12px', color: '#999' }}>Start Date</span>
-          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.startDate}</span>
-        </div>
-        <div className="d-flex justify-content-between">
-          <span style={{ fontSize: '12px', color: '#999' }}>End Date</span>
-          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.endDate}</span>
-        </div>
-      </div>
+
 
       <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
         <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Features</h5>
@@ -122,7 +136,7 @@ const CurrentPlan = () => {
         </ul>
       </div>
 
-      {/* <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
+      {/* <div style={{ borderTop: '1px solidrgb(146, 127, 127)', paddingTop: '12px', marginBottom: '12px' }}>
         <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Usage</h5>
         <div style={{ marginBottom: '8px' }}>
           <div className="d-flex justify-content-between" style={{ marginBottom: '4px' }}>
