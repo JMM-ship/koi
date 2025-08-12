@@ -26,7 +26,7 @@ const CurrentPlan = () => {
   };
 
   return (
-    <div className="balance-card" style={{ 
+    <div className="balance-card" style={{
       background: '#0a0a0a',
       border: '1px solid #1a1a1a',
       borderRadius: '12px',
@@ -50,7 +50,7 @@ const CurrentPlan = () => {
         </span>
       </div>
 
-      <div className="mb-3 p-3" style={{ 
+      <div className="mb-3 p-3" style={{
         background: 'rgba(121, 74, 255, 0.1)',
         border: '1px solid rgba(121, 74, 255, 0.2)',
         borderRadius: '8px'
@@ -63,7 +63,7 @@ const CurrentPlan = () => {
           </div>
         </div>
         <div className="d-flex justify-content-between align-items-center">
-          <button className="btn btn-sm" style={{ 
+          <button className="btn btn-sm" style={{
             background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
             border: 'none',
             borderRadius: '6px',
@@ -94,12 +94,12 @@ const CurrentPlan = () => {
         <ul className="list-unstyled" style={{ margin: 0 }}>
           {planDetails.features.map((feature, index) => (
             <li key={index} className="d-flex align-items-center" style={{ marginBottom: '8px' }}>
-              <span style={{ 
-                width: '18px', 
-                height: '18px', 
+              <span style={{
+                width: '18px',
+                height: '18px',
                 borderRadius: '50%',
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
                 background: feature.included ? '#00d084' : '#4b5563',
                 marginRight: '8px',
@@ -122,7 +122,7 @@ const CurrentPlan = () => {
         </ul>
       </div>
 
-      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
+      {/* <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
         <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Usage</h5>
         <div style={{ marginBottom: '8px' }}>
           <div className="d-flex justify-content-between" style={{ marginBottom: '4px' }}>
@@ -177,7 +177,7 @@ const CurrentPlan = () => {
         }}>
           Manage Billing
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

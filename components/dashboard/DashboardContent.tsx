@@ -42,10 +42,10 @@ export default function DashboardContent() {
           <VisitsByLocation />
         </div>
 
-        {/* 信用卡 */}
+        {/* 信用卡
         <div className="side-content-item">
           <CreditCard />
-        </div>
+        </div> */}
       </div>
     </div>
   );
