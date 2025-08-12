@@ -63,11 +63,28 @@ model Order {
   paidAt            DateTime? @map("paid_at")
   paidEmail         String?   @map("paid_email") @db.VarChar(255)
   paidDetail        String?   @map("paid_detail") @db.Text
+  
+  // 新增字段
+  orderType         String    @default("credits") @map("order_type") @db.VarChar(20) // package, credits
+  packageId         String?   @map("package_id") @db.Char(36)
+  packageSnapshot   Json?     @map("package_snapshot")
+  creditAmount      Int?      @map("credit_amount")
+  startDate         DateTime? @map("start_date")
+  endDate           DateTime? @map("end_date")
+  discountAmount    Int       @default(0) @map("discount_amount")
+  couponCode        String?   @map("coupon_code") @db.VarChar(50)
+  paymentMethod     String?   @map("payment_method") @db.VarChar(50)
+  refundStatus      String?   @map("refund_status") @db.VarChar(50)
+  refundAmount      Int       @default(0) @map("refund_amount")
+  refundAt          DateTime? @map("refund_at")
 
   @@index([orderNo], map: "idx_order_no")
   @@index([userUuid], map: "idx_user_uuid")
   @@index([status], map: "idx_status")
   @@index([createdAt], map: "idx_created_at")
+  @@index([orderType], map: "idx_orders_order_type")
+  @@index([packageId], map: "idx_orders_package_id")
+  @@index([paymentMethod], map: "idx_orders_payment_method")
   @@map("orders")
 }
 
@@ -215,4 +232,94 @@ model EmailVerificationCode {
   @@index([expiresAt], map: "idx_expires_at")
   @@index([createdAt], map: "idx_created_at")
   @@map("email_verification_codes")
+}
+
+// 套餐模型
+model Package {
+  id            String   @id @default(uuid()) @db.Char(36)
+  name          String   @db.VarChar(100)
+  nameEn        String?  @map("name_en") @db.VarChar(100)
+  version       String   @db.VarChar(20)
+  description   String?  @db.Text
+  price         Int
+  originalPrice Int?     @map("original_price")
+  currency      String   @default("CNY") @db.VarChar(10)
+  dailyCredits  Int      @map("daily_credits")
+  validDays     Int      @default(30) @map("valid_days")
+  features      Json?
+  limitations   Json?
+  sortOrder     Int      @default(0) @map("sort_order")
+  isActive      Boolean  @default(true) @map("is_active")
+  isRecommended Boolean  @default(false) @map("is_recommended")
+  tag           String?  @db.VarChar(50)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([sortOrder], map: "idx_packages_sort_order")
+  @@index([isActive], map: "idx_packages_is_active")
+  @@index([version], map: "idx_packages_version")
+  @@map("packages")
+}
+
+// 用户套餐模型
+model UserPackage {
+  id              String   @id @default(uuid()) @db.Char(36)
+  userUuid        String   @map("user_uuid") @db.VarChar(255)
+  packageId       String   @map("package_id") @db.Char(36)
+  orderNo         String   @map("order_no") @db.VarChar(255)
+  startDate       DateTime @map("start_date")
+  endDate         DateTime @map("end_date")
+  dailyCredits    Int      @map("daily_credits")
+  packageSnapshot Json?    @map("package_snapshot")
+  isActive        Boolean  @default(true) @map("is_active")
+  isAutoRenew     Boolean  @default(false) @map("is_auto_renew")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([userUuid], map: "idx_user_packages_user_uuid")
+  @@index([packageId], map: "idx_user_packages_package_id")
+  @@index([orderNo], map: "idx_user_packages_order_no")
+  @@index([endDate], map: "idx_user_packages_end_date")
+  @@index([isActive], map: "idx_user_packages_is_active")
+  @@map("user_packages")
+}
+
+// 积分余额模型
+model CreditBalance {
+  id                  String   @id @default(uuid()) @db.Char(36)
+  userUuid            String   @unique @map("user_uuid") @db.VarChar(255)
+  packageCredits      Int      @default(0) @map("package_credits")
+  packageResetAt      DateTime? @map("package_reset_at")
+  independentCredits  Int      @default(0) @map("independent_credits")
+  totalUsed           Int      @default(0) @map("total_used")
+  totalPurchased      Int      @default(0) @map("total_purchased")
+  version             Int      @default(0)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@index([updatedAt], map: "idx_credit_balances_updated_at")
+  @@map("credit_balances")
+}
+
+// 积分流水模型
+model CreditTransaction {
+  id            String   @id @default(uuid()) @db.Char(36)
+  transNo       String   @unique @map("trans_no") @db.VarChar(255)
+  userUuid      String   @map("user_uuid") @db.VarChar(255)
+  type          String   @db.VarChar(20) // income, expense, reset
+  creditType    String   @map("credit_type") @db.VarChar(20) // package, independent
+  amount        Int
+  beforeBalance Int      @map("before_balance")
+  afterBalance  Int      @map("after_balance")
+  orderNo       String?  @map("order_no") @db.VarChar(255)
+  description   String?  @db.VarChar(500)
+  metadata      Json?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([userUuid], map: "idx_credit_transactions_user_uuid")
+  @@index([type], map: "idx_credit_transactions_type")
+  @@index([creditType], map: "idx_credit_transactions_credit_type")
+  @@index([orderNo], map: "idx_credit_transactions_order_no")
+  @@index([createdAt], map: "idx_credit_transactions_created_at")
+  @@map("credit_transactions")
 }

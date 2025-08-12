@@ -11,7 +11,9 @@
       "Bash(cmd /c \"npx prisma generate\")",
       "Bash(npm run prisma:generate:*)",
       "Bash(npm uninstall:*)",
-      "Bash(cmd /c npm uninstall:*)"
+      "Bash(cmd /c npm uninstall:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(cmd /c \"npx prisma migrate dev --name add_order_system\")"
     ],
     "deny": []
   }
