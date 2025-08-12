@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiUser, FiMail, FiLock, FiShield, FiCopy, FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 export default function ProfileContent() {
+  const { data: session } = useSession();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -12,8 +14,30 @@ export default function ProfileContent() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [copiedUrl, setCopiedUrl] = useState(false);
-  const [nickname, setNickname] = useState("twosquarenoocat");
-  const [avatarUrl, setAvatarUrl] = useState("https://lh3.googleusercontent.com/a/ACg8ocLoi4Wy0mXNmSSamEy-IG-hwMlvxEdlkzxPgQb2M2jfypWN3H4=s96-c");
+  const [nickname, setNickname] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
+
+  // 获取用户信息
+  useEffect(() => {
+    fetchProfile();
+  }, [session]);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch("/api/profile");
+      if (response.ok) {
+        const data = await response.json();
+        setNickname(data.nickname || "");
+        setAvatarUrl(data.avatarUrl || "");
+        setEmail(data.email || "");
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(avatarUrl);
@@ -21,12 +45,90 @@ export default function ProfileContent() {
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 
-  const handleSaveProfile = () => {
-    console.log("Saving profile...");
+  const handleSaveProfile = async () => {
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+    
+    try {
+      const response = await fetch("/api/profile/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nickname,
+          avatarUrl,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({ type: "success", text: "Profile updated successfully!" });
+        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+      } else {
+        setMessage({ type: "error", text: data.error || "Failed to update profile" });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "An error occurred while updating profile" });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyPassword = () => {
-    console.log("Verifying password...");
+  const handleVerifyPassword = async () => {
+    setLoading(true);
+    setMessage({ type: "", text: "" });
+
+    // 验证输入
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setMessage({ type: "error", text: "All password fields are required" });
+      setLoading(false);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: "error", text: "New passwords do not match" });
+      setLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setMessage({ type: "error", text: "Password must be at least 6 characters long" });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/profile/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({ type: "success", text: "Password changed successfully!" });
+        // 清空密码字段
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+      } else {
+        setMessage({ type: "error", text: data.error || "Failed to change password" });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "An error occurred while changing password" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +141,21 @@ export default function ProfileContent() {
           Manage your personal information and account security
         </p>
       </div>
+
+      {/* 消息提示 */}
+      {message.text && (
+        <div style={{
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          background: message.type === 'success' ? 'rgba(0, 208, 132, 0.1)' : 'rgba(255, 0, 110, 0.1)',
+          border: `1px solid ${message.type === 'success' ? '#00d084' : '#ff006e'}`,
+          color: message.type === 'success' ? '#00d084' : '#ff006e',
+          fontSize: '14px'
+        }}>
+          {message.text}
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {/* Personal Information Section */}
@@ -146,7 +263,7 @@ export default function ProfileContent() {
               }}>
                 <input
                   type="email"
-                  value="twosquarenoocat@gmail.com"
+                  value={email}
                   disabled
                   style={{
                     background: 'transparent',
@@ -198,6 +315,7 @@ export default function ProfileContent() {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={handleSaveProfile}
+              disabled={loading}
               style={{
                 padding: '12px 32px',
                 borderRadius: '8px',
@@ -221,7 +339,7 @@ export default function ProfileContent() {
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
-              Save Profile
+              {loading ? 'Saving...' : 'Save Profile'}
             </button>
           </div>
         </div>
@@ -379,6 +497,7 @@ export default function ProfileContent() {
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={handleVerifyPassword}
+              disabled={loading}
               style={{
                 padding: '12px 32px',
                 borderRadius: '8px',
@@ -403,7 +522,7 @@ export default function ProfileContent() {
               }}
             >
               <FiShield style={{ fontSize: '16px' }} />
-              Verify Password
+              {loading ? 'Verifying...' : 'Verify Password'}
             </button>
           </div>
         </div>
