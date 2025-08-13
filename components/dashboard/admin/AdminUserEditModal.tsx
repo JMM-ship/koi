@@ -67,7 +67,7 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
                     {error}
                   </div>
                 )}
-                
+
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <label className="form-label">用户邮箱</label>
@@ -82,19 +82,19 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <label className="form-label">昵称</label>
-                    <input 
-                      type="text" 
-                      className="form-control" 
+                    <input
+                      type="text"
+                      className="form-control"
                       value={formData.nickname}
                       onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
                     />
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">角色</label>
-                    <select 
+                    <select
                       className="form-select"
                       value={formData.role}
-                      onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, role: e.target.value as "user" | "admin" })}
                     >
                       <option value="user">用户</option>
                       <option value="admin">管理员</option>
@@ -105,10 +105,10 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <label className="form-label">账户状态</label>
-                    <select 
+                    <select
                       className="form-select"
                       value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value as AdminUser['status'] })}
                     >
                       <option value="active">正常</option>
                       <option value="suspended">暂停</option>
@@ -117,10 +117,10 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">套餐类型</label>
-                    <select 
+                    <select
                       className="form-select"
                       value={formData.planType}
-                      onChange={(e) => setFormData({ ...formData, planType: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, planType: e.target.value as AdminUser['planType'] })}
                     >
                       <option value="free">免费版</option>
                       <option value="basic">基础版</option>
@@ -133,9 +133,9 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
                 <div className="row mb-3">
                   <div className="col-md-6">
                     <label className="form-label">套餐到期时间</label>
-                    <input 
-                      type="date" 
-                      className="form-control" 
+                    <input
+                      type="date"
+                      className="form-control"
                       value={formData.planExpiredAt}
                       onChange={(e) => setFormData({ ...formData, planExpiredAt: e.target.value })}
                     />

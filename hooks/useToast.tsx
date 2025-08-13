@@ -39,7 +39,7 @@ export const useToast = () => {
   };
 
   const showCustom = (content: React.ReactNode, options?: any) => {
-    return toast.custom(content, options);
+    return toast.custom(content as any, options);
   };
 
   const dismiss = (toastId?: string) => {

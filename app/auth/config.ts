@@ -140,7 +140,7 @@ providers.push(
         id: user.uuid,
         email: user.email,
         name: user.nickname,
-        image: user.avatarUrl,
+        image: user.avatar_url,
         role: user.role || 'user',
       };
     },

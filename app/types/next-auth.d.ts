@@ -36,6 +36,9 @@ declare module "next-auth/jwt" {
       avatar_url?: string
       created_at?: string
       role?: string
+      status?: string
+      planType?: string
+      totalCredits?: number
     }
   }
 }
