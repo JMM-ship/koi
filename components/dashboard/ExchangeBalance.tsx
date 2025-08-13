@@ -8,24 +8,18 @@ const ExchangeBalance = () => {
   const rankingData = {
     today: {
       points: "2,847",
-      rank: 12,
-      totalUsers: 100,
       percentage: 88,
       trend: "+12%",
       color: "#00d084"
     },
     week: {
       points: "18,234",
-      rank: 28,
-      totalUsers: 100,
       percentage: 72,
       trend: "+8%",
       color: "#00b4d8"
     },
     month: {
       points: "65,892",
-      rank: 45,
-      totalUsers: 100,
       percentage: 55,
       trend: "+15%",
       color: "#ffa500"
@@ -105,36 +99,30 @@ const ExchangeBalance = () => {
         </div>
 
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <span style={{ fontSize: '14px', color: '#9ca3af' }}>
-              Current Ranking
-            </span>
-            <span style={{ fontSize: '16px', fontWeight: 'bold', color: currentData.color }}>
-              #{currentData.rank}
-            </span>
-          </div>
-          
-          <div style={{ marginBottom: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontSize: '12px', color: '#6b7280' }}>
-                Top {currentData.percentage}%
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ fontSize: '14px', color: '#9ca3af' }}>
+                Performance Ranking
               </span>
-              <span style={{ fontSize: '12px', color: '#6b7280' }}>
-                Better than {currentData.percentage}% of users
+              <span style={{ fontSize: '18px', fontWeight: 'bold', color: currentData.color }}>
+                {currentData.percentage}%
               </span>
+            </div>
+            <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>
+              Better than {currentData.percentage}% of users
             </div>
             <div style={{ 
               width: '100%', 
-              height: '8px', 
+              height: '10px', 
               backgroundColor: '#1e1f26', 
-              borderRadius: '4px',
+              borderRadius: '5px',
               overflow: 'hidden'
             }}>
               <div style={{
                 width: `${currentData.percentage}%`,
                 height: '100%',
                 background: `linear-gradient(90deg, ${currentData.color}, ${currentData.color}dd)`,
-                borderRadius: '4px',
+                borderRadius: '5px',
                 transition: 'width 0.5s ease-in-out',
                 boxShadow: `0 0 10px ${currentData.color}50`
               }} />
@@ -144,8 +132,8 @@ const ExchangeBalance = () => {
 
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
-          gap: '16px',
+          gridTemplateColumns: 'repeat(2, 1fr)', 
+          gap: '20px',
           paddingTop: '16px',
           borderTop: '1px solid #2a2b35'
         }}>
@@ -157,15 +145,9 @@ const ExchangeBalance = () => {
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '20px', fontWeight: 'bold', color: currentData.color }}>
-              #{currentData.rank}
-            </div>
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>Rank</div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#00d084' }}>
               {currentData.percentage}%
             </div>
-            <div style={{ fontSize: '12px', color: '#6b7280' }}>Percentile</div>
+            <div style={{ fontSize: '12px', color: '#6b7280' }}>Better Than</div>
           </div>
         </div>
       </div>
