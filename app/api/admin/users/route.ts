@@ -71,10 +71,35 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
       prisma.user.count({ where }),
     ]);
 
+    // 转换用户数据类型
+    const adminUsers: AdminUser[] = users.map(user => ({
+      id: user.id,
+      uuid: user.uuid,
+      email: user.email,
+      nickname: user.nickname,
+      avatarUrl: user.avatarUrl,
+      password: '', // 不返回密码
+      locale: null,
+      signinType: null,
+      signinIp: null,
+      signinProvider: user.signinProvider,
+      signinOpenid: null,
+      inviteCode: user.inviteCode,
+      invitedBy: user.invitedBy,
+      isAffiliate: false,
+      role: user.role as 'user' | 'admin',
+      status: user.status as 'active' | 'suspended' | 'deleted',
+      planType: user.planType as 'free' | 'basic' | 'pro' | 'enterprise',
+      planExpiredAt: user.planExpiredAt,
+      totalCredits: user.totalCredits,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }));
+
     // 构建响应
     const response: PaginatedResponse<AdminUser> = {
       success: true,
-      data: users as AdminUser[],
+      data: adminUsers,
       pagination: {
         page,
         limit,

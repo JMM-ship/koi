@@ -47,16 +47,35 @@ export const GET = withAdminAuth(async (
       select: { createdAt: true },
     });
 
-    const userDetail: UserDetail = {
-      ...user,
-      role: user.role as 'user' | 'admin', // Type assertion for role
-      status: user.status as 'active' | 'suspended' | 'deleted', // Type assertion for status
+    // 强制类型转换，确保符合 UserDetail 类型
+    const userDetail = {
+      id: user.id,
+      uuid: user.uuid,
+      email: user.email,
+      nickname: user.nickname,
+      avatarUrl: user.avatarUrl,
+      password: user.password,
+      status: user.status,
+      planType: user.planType,
+      planExpiredAt: user.planExpiredAt,
+      totalCredits: user.totalCredits,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      role: user.role,
+      locale: user.locale,
+      signinType: user.signinType,
+      signinIp: user.signinIp,
+      signinProvider: user.signinProvider,
+      signinOpenid: user.signinOpenid,
+      inviteCode: user.inviteCode,
+      invitedBy: user.invitedBy,
+      isAffiliate: user.isAffiliate,
       stats: {
         totalOrders,
         totalApiCalls: totalApiKeys, // 用API密钥数量代替
         lastActiveAt: lastOrder?.createdAt || null,
       },
-    };
+    } as UserDetail;
 
     const response: SuccessResponse<UserDetail> = {
       success: true,
