@@ -11,6 +11,7 @@ declare module "next-auth" {
       image?: string | null
       avatar_url?: string
       created_at?: string
+      role?: string
     }
   }
 
@@ -22,6 +23,7 @@ declare module "next-auth" {
     nickname?: string
     image?: string | null
     avatar_url?: string
+    role?: string
   }
 }
 
@@ -33,6 +35,7 @@ declare module "next-auth/jwt" {
       nickname?: string
       avatar_url?: string
       created_at?: string
+      role?: string
     }
   }
 }

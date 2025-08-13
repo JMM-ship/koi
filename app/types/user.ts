@@ -15,4 +15,9 @@ export interface User {
   invited_by?: string;
   is_affiliate?: boolean;
   password?: string;
+  role?: string;
+  status?: string;
+  planType?: string;
+  planExpiredAt?: string;
+  totalCredits?: number;
 }

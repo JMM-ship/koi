@@ -17,6 +17,7 @@ import "/public/assets/css/style.css";
 import type { Metadata } from "next";
 import { Libre_Franklin, Rubik } from "next/font/google";
 import { Providers } from "./providers";
+import DebugProvider from "@/components/debug/DebugProvider";
 
 const LibreFranklinHeading = Libre_Franklin({
     weight: ["300", "400", "500", "600", "700"], // Only bold for headings
@@ -45,7 +46,11 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${LibreFranklinHeading.variable} ${rubik.variable}`}>
-                <Providers>{children}</Providers>
+                <Providers>
+                    <DebugProvider>
+                        {children}
+                    </DebugProvider>
+                </Providers>
             </body>
         </html>
     );

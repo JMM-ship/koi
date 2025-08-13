@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   FiGrid,
   FiFolder,
@@ -12,6 +13,7 @@ import {
   FiShoppingBag,
   FiSettings,
   FiUser,
+  FiUsers,
   FiSlack,
   FiGitlab,
   FiChevronLeft,
@@ -22,7 +24,8 @@ import {
   FiBell,
   FiLock,
   FiShield,
-  FiLogOut
+  FiLogOut,
+  FiKey
 } from "react-icons/fi";
 
 interface MenuItem {
@@ -45,10 +48,14 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashboard', onTabChange }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session } = useSession();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  // 检查是否为管理员
+  const isAdmin = session?.user?.role === 'admin';
 
   const menuItems: MenuItem[] = [
     { id: 1, icon: FiGrid, label: "Dashboard", path: "dashboard", active: activeTab === "dashboard" },
@@ -56,6 +63,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
     { id: 3, icon: FiSlack, label: "API Keys", path: "api-keys", active: activeTab === "api-keys" },
     { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "plans", active: activeTab === "plans" },
   ];
+  
+  // 管理员菜单项
+  const adminItems: MenuItem[] = isAdmin ? [
+    { id: 10, icon: FiShield, label: "Admin Panel", path: "admin", active: activeTab === "admin" },
+    { id: 11, icon: FiUsers, label: "User Management", path: "admin-users", active: activeTab === "admin-users" },
+    { id: 12, icon: FiKey, label: "Code Management", path: "admin-codes", active: activeTab === "admin-codes" },
+  ] : [];
 
   const accountItems: MenuItem[] = [
     { id: 2, icon: FiUser, label: "Profile", path: "profile", active: activeTab === "profile" },
@@ -239,6 +253,45 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
               </li>
             ))}
           </ul>
+
+          {/* 管理员菜单部分 */}
+          {adminItems.length > 0 && (
+            <div className="nav-section">
+              {!isCollapsed && <div className="section-title">ADMIN</div>}
+              <ul className="nav-list">
+                {adminItems.map((item) => (
+                  <li
+                    key={item.id}
+                    className={`nav-item relative ${item.active ? "active" : ""}`}
+                    onMouseEnter={() => isCollapsed && setShowTooltip(item.id)}
+                    onMouseLeave={() => setShowTooltip(null)}
+                  >
+                    <div
+                      onClick={() => onTabChange?.(item.path!)}
+                      className="nav-link"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: isCollapsed ? 'center' : 'flex-start',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <item.icon className="nav-icon" style={{ marginRight: isCollapsed ? '0' : undefined }} />
+                      {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                    </div>
+
+                    {/* Tooltip */}
+                    {isCollapsed && showTooltip === item.id && (
+                      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-50">
+                        {item.label}
+                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-r-[5px] border-r-gray-800 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent"></div>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div className="nav-section">
             {!isCollapsed && <div className="section-title">ACCOUNT</div>}
