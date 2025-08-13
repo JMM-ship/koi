@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2 } from "react-icons/fi";
+import { useToast } from "@/hooks/useToast";
 
 export default function ApiKeysContent() {
   const [showKey, setShowKey] = useState<{ [key: string]: boolean }>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const { showSuccess, showInfo, showConfirm } = useToast();
 
   const apiKeys = [
     {
@@ -37,6 +39,7 @@ export default function ApiKeysContent() {
   const handleCopy = (key: string) => {
     navigator.clipboard.writeText(key);
     setCopiedKey(key);
+    showSuccess('API 密钥已复制到剪贴板');
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
@@ -63,7 +66,9 @@ export default function ApiKeysContent() {
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
-          }}>
+          }}
+          onClick={() => showInfo('创建新API密钥功能即将上线')}
+          >
             <FiPlus /> Create New Key
           </button>
         </div>
@@ -100,7 +105,15 @@ export default function ApiKeysContent() {
                   color: '#ff006e',
                   cursor: 'pointer',
                   padding: '4px'
-                }}>
+                }}
+                onClick={() => {
+                  showConfirm(
+                    `确定要删除 "${apiKey.name}" 吗？此操作不可恢复。`,
+                    () => showSuccess(`已删除 "${apiKey.name}"`),
+                    () => showInfo('已取消删除')
+                  );
+                }}
+                >
                   <FiTrash2 />
                 </button>
               </div>
@@ -148,20 +161,6 @@ export default function ApiKeysContent() {
                     </button>
                   </div>
                 </div>
-                {copiedKey === apiKey.key && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-20px',
-                    right: '10px',
-                    fontSize: '11px',
-                    color: '#00d084',
-                    background: '#0a0a0a',
-                    padding: '2px 6px',
-                    borderRadius: '4px'
-                  }}>
-                    Copied!
-                  </span>
-                )}
               </div>
 
               <div className="d-flex justify-content-between" style={{ fontSize: '12px' }}>

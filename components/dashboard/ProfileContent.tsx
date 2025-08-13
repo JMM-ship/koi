@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { FiUser, FiMail, FiLock, FiShield, FiCopy, FiEye, FiEyeOff } from "react-icons/fi";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useToast } from "@/hooks/useToast";
 
 export default function ProfileContent() {
   const { data: session } = useSession();
+  const { showSuccess, showError, showInfo } = useToast();
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -18,7 +20,6 @@ export default function ProfileContent() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
 
   // 获取用户信息
   useEffect(() => {
@@ -35,19 +36,19 @@ export default function ProfileContent() {
         setEmail(data.email || "");
       }
     } catch (error) {
-      console.error("Error fetching profile:", error);
+      showError("获取用户信息失败");
     }
   };
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(avatarUrl);
     setCopiedUrl(true);
+    showInfo("头像链接已复制");
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 
   const handleSaveProfile = async () => {
     setLoading(true);
-    setMessage({ type: "", text: "" });
     
     try {
       const response = await fetch("/api/profile/update", {
@@ -64,13 +65,12 @@ export default function ProfileContent() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: "success", text: "Profile updated successfully!" });
-        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+        showSuccess("个人资料更新成功！");
       } else {
-        setMessage({ type: "error", text: data.error || "Failed to update profile" });
+        showError(data.error || "更新个人资料失败");
       }
     } catch (error) {
-      setMessage({ type: "error", text: "An error occurred while updating profile" });
+      showError("更新个人资料时发生错误");
     } finally {
       setLoading(false);
     }
@@ -78,23 +78,22 @@ export default function ProfileContent() {
 
   const handleVerifyPassword = async () => {
     setLoading(true);
-    setMessage({ type: "", text: "" });
 
     // 验证输入
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setMessage({ type: "error", text: "All password fields are required" });
+      showError("请填写所有密码字段");
       setLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setMessage({ type: "error", text: "New passwords do not match" });
+      showError("新密码不匹配");
       setLoading(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      setMessage({ type: "error", text: "Password must be at least 6 characters long" });
+      showError("密码长度至少为6个字符");
       setLoading(false);
       return;
     }
@@ -115,17 +114,16 @@ export default function ProfileContent() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: "success", text: "Password changed successfully!" });
+        showSuccess("密码修改成功！");
         // 清空密码字段
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-        setTimeout(() => setMessage({ type: "", text: "" }), 3000);
       } else {
-        setMessage({ type: "error", text: data.error || "Failed to change password" });
+        showError(data.error || "密码修改失败");
       }
     } catch (error) {
-      setMessage({ type: "error", text: "An error occurred while changing password" });
+      showError("修改密码时发生错误");
     } finally {
       setLoading(false);
     }
@@ -141,12 +139,6 @@ export default function ProfileContent() {
         </p>
       </div>
 
-      {/* 消息提示 */}
-      {message.text && (
-        <div className={`profile-message ${message.type}`}>
-          {message.text}
-        </div>
-      )}
 
       {/* 内容区域 */}
       <div className="profile-cards-container">
@@ -353,36 +345,6 @@ export default function ProfileContent() {
           color: #999;
         }
 
-        .profile-message {
-          padding: 12px 16px;
-          border-radius: 8px;
-          margin-bottom: 20px;
-          font-size: 14px;
-          animation: slideIn 0.3s ease;
-        }
-
-        .profile-message.success {
-          background: rgba(0, 208, 132, 0.1);
-          border: 1px solid #00d084;
-          color: #00d084;
-        }
-
-        .profile-message.error {
-          background: rgba(255, 0, 110, 0.1);
-          border: 1px solid #ff006e;
-          color: #ff006e;
-        }
-
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
 
         .profile-cards-container {
           display: flex;

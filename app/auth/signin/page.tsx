@@ -5,10 +5,12 @@ import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useToast } from '@/hooks/useToast'
 
 export default function SignInPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { showSuccess, showError, showInfo } = useToast()
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
     const [isLogin, setIsLogin] = useState(true)
     const [loading, setLoading] = useState(false)
@@ -34,6 +36,7 @@ export default function SignInPage() {
     const sendVerificationCode = async () => {
         if (!registerData.email) {
             setError('请输入邮箱地址')
+            showError('请输入邮箱地址')
             return
         }
 
@@ -51,6 +54,7 @@ export default function SignInPage() {
 
             if (!response.ok) {
                 setError(data.error || '发送验证码失败')
+                showError(data.error || '发送验证码失败')
                 if (data.remainingSeconds) {
                     setCountdown(data.remainingSeconds)
                     startCountdown(data.remainingSeconds)
@@ -59,9 +63,11 @@ export default function SignInPage() {
                 setVerificationSent(true)
                 setCountdown(60)
                 startCountdown(60)
+                showSuccess('验证码已发送到您的邮箱')
             }
         } catch (err) {
             setError('发送验证码时发生错误')
+            showError('发送验证码时发生错误')
         } finally {
             setLoading(false)
         }
@@ -95,12 +101,15 @@ export default function SignInPage() {
 
             if (result?.error) {
                 setError('邮箱或密码错误')
+                showError('邮箱或密码错误')
             } else if (result?.ok) {
+                showSuccess('登录成功！')
                 router.push(callbackUrl)
                 router.refresh()
             }
         } catch (err) {
             setError('登录时发生错误')
+            showError('登录时发生错误')
         } finally {
             setLoading(false)
         }
@@ -123,7 +132,9 @@ export default function SignInPage() {
 
             if (!response.ok) {
                 setError(data.error || '注册失败')
+                showError(data.error || '注册失败')
             } else {
+                showSuccess('注册成功！正在自动登录...')
                 // 注册成功后自动登录
                 const result = await signIn('credentials', {
                     email: registerData.email,
@@ -138,6 +149,7 @@ export default function SignInPage() {
             }
         } catch (err) {
             setError('注册时发生错误')
+            showError('注册时发生错误')
         } finally {
             setLoading(false)
         }

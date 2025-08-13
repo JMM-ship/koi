@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CodeGenerateRequest } from "@/app/types/admin";
+import { useToast } from "@/hooks/useToast";
 
 interface AdminCodeGenerateModalProps {
   onClose: () => void;
@@ -9,6 +10,7 @@ interface AdminCodeGenerateModalProps {
 }
 
 export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCodeGenerateModalProps) {
+  const { showSuccess, showError, showInfo } = useToast();
   const [formData, setFormData] = useState<CodeGenerateRequest>({
     codeType: 'credits',
     codeValue: '',
@@ -26,11 +28,13 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
     
     if (!formData.codeValue) {
       setError('请输入卡密值');
+      showError('请输入卡密值');
       return;
     }
     
     if (formData.quantity < 1 || formData.quantity > 1000) {
       setError('生成数量必须在1-1000之间');
+      showError('生成数量必须在1-1000之间');
       return;
     }
 
@@ -50,12 +54,15 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
 
       if (data.success) {
         setGeneratedCodes(data.data.codes);
+        showSuccess(`成功生成 ${data.data.codes.length} 个卡密`);
         // 不立即关闭，让用户可以复制卡密
       } else {
         setError(data.error || 'Failed to generate codes');
+        showError(data.error || '生成卡密失败');
       }
     } catch (err) {
       setError('Failed to generate codes');
+      showError('生成卡密失败');
     } finally {
       setLoading(false);
     }
@@ -64,7 +71,7 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
   const copyToClipboard = () => {
     const text = generatedCodes.join('\n');
     navigator.clipboard.writeText(text).then(() => {
-      alert('卡密已复制到剪贴板');
+      showSuccess('卡密已复制到剪贴板');
     });
   };
 
@@ -77,6 +84,7 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
     link.download = `codes_${new Date().toISOString().split('T')[0]}.txt`;
     link.click();
     URL.revokeObjectURL(url);
+    showSuccess('卡密已下载');
   };
 
   return (

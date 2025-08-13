@@ -6,8 +6,10 @@ import { RedemptionCode, PaginatedResponse } from "@/app/types/admin";
 import { formatCodeStatus, formatCodeType } from "@/app/lib/admin/utils";
 import AdminCodeGenerateModal from "./AdminCodeGenerateModal";
 import { FiPlus, FiSearch, FiRefreshCw, FiDownload, FiX } from "react-icons/fi";
+import { useToast } from "@/hooks/useToast";
 
 export default function AdminCodeManagement() {
+  const { showSuccess, showError, showConfirm } = useToast();
   const [codes, setCodes] = useState<RedemptionCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,9 +54,11 @@ export default function AdminCodeManagement() {
         setPagination(data.pagination);
       } else {
         setError('Failed to fetch codes');
+        showError('获取卡密列表失败');
       }
     } catch (err) {
       setError('Failed to fetch codes');
+      showError('获取卡密列表失败');
     } finally {
       setLoading(false);
     }
@@ -71,25 +75,31 @@ export default function AdminCodeManagement() {
   };
 
   const handleStatusUpdate = async (code: string, newStatus: 'active' | 'cancelled') => {
-    try {
-      const response = await fetch(`/api/admin/codes/${code}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+    showConfirm(
+      `确定要${newStatus === 'cancelled' ? '作废' : '激活'}这个卡密吗？`,
+      async () => {
+        try {
+          const response = await fetch(`/api/admin/codes/${code}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: newStatus }),
+          });
 
-      const data = await response.json();
-      
-      if (data.success) {
-        fetchCodes();
-      } else {
-        alert(data.error || 'Failed to update code status');
+          const data = await response.json();
+          
+          if (data.success) {
+            showSuccess(`卡密已${newStatus === 'cancelled' ? '作废' : '激活'}`);
+            fetchCodes();
+          } else {
+            showError(data.error || '更新卡密状态失败');
+          }
+        } catch (err) {
+          showError('更新卡密状态失败');
+        }
       }
-    } catch (err) {
-      alert('Failed to update code status');
-    }
+    );
   };
 
   const formatDate = (date: Date | string | null) => {
@@ -124,6 +134,7 @@ export default function AdminCodeManagement() {
     link.download = `codes_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
+    showSuccess('卡密列表已导出');
   };
 
   return (
