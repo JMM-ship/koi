@@ -39,7 +39,7 @@ export default function ApiKeysContent() {
   const handleCopy = (key: string) => {
     navigator.clipboard.writeText(key);
     setCopiedKey(key);
-    showSuccess('API 密钥已复制到剪贴板');
+    showSuccess('API key copied to clipboard');
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
@@ -67,7 +67,7 @@ export default function ApiKeysContent() {
             alignItems: 'center',
             gap: '8px'
           }}
-          onClick={() => showInfo('创建新API密钥功能即将上线')}
+          onClick={() => showInfo('Create API key feature coming soon')}
           >
             <FiPlus /> Create New Key
           </button>
@@ -108,9 +108,9 @@ export default function ApiKeysContent() {
                 }}
                 onClick={() => {
                   showConfirm(
-                    `确定要删除 "${apiKey.name}" 吗？此操作不可恢复。`,
-                    () => showSuccess(`已删除 "${apiKey.name}"`),
-                    () => showInfo('已取消删除')
+                    `Are you sure you want to delete "${apiKey.name}"? This action cannot be undone.`,
+                    () => showSuccess(`Deleted "${apiKey.name}"`),
+                    () => showInfo('Deletion cancelled')
                   );
                 }}
                 >

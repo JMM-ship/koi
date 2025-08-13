@@ -36,7 +36,7 @@ export default function SignInPage() {
     const sendVerificationCode = async () => {
         if (!registerData.email) {
             setError('请输入邮箱地址')
-            showError('请输入邮箱地址')
+            showError('Please enter email address')
             return
         }
 
@@ -54,7 +54,7 @@ export default function SignInPage() {
 
             if (!response.ok) {
                 setError(data.error || '发送验证码失败')
-                showError(data.error || '发送验证码失败')
+                showError(data.error || 'Failed to send verification code')
                 if (data.remainingSeconds) {
                     setCountdown(data.remainingSeconds)
                     startCountdown(data.remainingSeconds)
@@ -63,11 +63,11 @@ export default function SignInPage() {
                 setVerificationSent(true)
                 setCountdown(60)
                 startCountdown(60)
-                showSuccess('验证码已发送到您的邮箱')
+                showSuccess('Verification code sent to your email')
             }
         } catch (err) {
             setError('发送验证码时发生错误')
-            showError('发送验证码时发生错误')
+            showError('Error sending verification code')
         } finally {
             setLoading(false)
         }
@@ -101,15 +101,15 @@ export default function SignInPage() {
 
             if (result?.error) {
                 setError('邮箱或密码错误')
-                showError('邮箱或密码错误')
+                showError('Invalid email or password')
             } else if (result?.ok) {
-                showSuccess('登录成功！')
+                showSuccess('Login successful!')
                 router.push(callbackUrl)
                 router.refresh()
             }
         } catch (err) {
             setError('登录时发生错误')
-            showError('登录时发生错误')
+            showError('Error during login')
         } finally {
             setLoading(false)
         }
@@ -132,9 +132,9 @@ export default function SignInPage() {
 
             if (!response.ok) {
                 setError(data.error || '注册失败')
-                showError(data.error || '注册失败')
+                showError(data.error || 'Registration failed')
             } else {
-                showSuccess('注册成功！正在自动登录...')
+                showSuccess('Registration successful! Logging in...')
                 // 注册成功后自动登录
                 const result = await signIn('credentials', {
                     email: registerData.email,
@@ -149,7 +149,7 @@ export default function SignInPage() {
             }
         } catch (err) {
             setError('注册时发生错误')
-            showError('注册时发生错误')
+            showError('Error during registration')
         } finally {
             setLoading(false)
         }

@@ -36,14 +36,14 @@ export default function ProfileContent() {
         setEmail(data.email || "");
       }
     } catch (error) {
-      showError("获取用户信息失败");
+      showError("Failed to fetch profile");
     }
   };
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(avatarUrl);
     setCopiedUrl(true);
-    showInfo("头像链接已复制");
+    showInfo("Avatar URL copied to clipboard");
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 
@@ -65,12 +65,12 @@ export default function ProfileContent() {
       const data = await response.json();
 
       if (response.ok) {
-        showSuccess("个人资料更新成功！");
+        showSuccess("Profile updated successfully!");
       } else {
-        showError(data.error || "更新个人资料失败");
+        showError(data.error || "Failed to update profile");
       }
     } catch (error) {
-      showError("更新个人资料时发生错误");
+      showError("An error occurred while updating profile");
     } finally {
       setLoading(false);
     }
@@ -81,19 +81,19 @@ export default function ProfileContent() {
 
     // 验证输入
     if (!currentPassword || !newPassword || !confirmPassword) {
-      showError("请填写所有密码字段");
+      showError("All password fields are required");
       setLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      showError("新密码不匹配");
+      showError("New passwords do not match");
       setLoading(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      showError("密码长度至少为6个字符");
+      showError("Password must be at least 6 characters long");
       setLoading(false);
       return;
     }
@@ -114,16 +114,16 @@ export default function ProfileContent() {
       const data = await response.json();
 
       if (response.ok) {
-        showSuccess("密码修改成功！");
+        showSuccess("Password changed successfully!");
         // 清空密码字段
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        showError(data.error || "密码修改失败");
+        showError(data.error || "Failed to change password");
       }
     } catch (error) {
-      showError("修改密码时发生错误");
+      showError("An error occurred while changing password");
     } finally {
       setLoading(false);
     }

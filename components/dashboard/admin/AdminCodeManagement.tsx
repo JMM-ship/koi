@@ -54,11 +54,11 @@ export default function AdminCodeManagement() {
         setPagination(data.pagination);
       } else {
         setError('Failed to fetch codes');
-        showError('获取卡密列表失败');
+        showError('Failed to fetch codes list');
       }
     } catch (err) {
       setError('Failed to fetch codes');
-      showError('获取卡密列表失败');
+      showError('Failed to fetch codes list');
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export default function AdminCodeManagement() {
 
   const handleStatusUpdate = async (code: string, newStatus: 'active' | 'cancelled') => {
     showConfirm(
-      `确定要${newStatus === 'cancelled' ? '作废' : '激活'}这个卡密吗？`,
+      `Are you sure you want to ${newStatus === 'cancelled' ? 'cancel' : 'activate'} this code?`,
       async () => {
         try {
           const response = await fetch(`/api/admin/codes/${code}`, {
@@ -90,13 +90,13 @@ export default function AdminCodeManagement() {
           const data = await response.json();
           
           if (data.success) {
-            showSuccess(`卡密已${newStatus === 'cancelled' ? '作废' : '激活'}`);
+            showSuccess(`Code ${newStatus === 'cancelled' ? 'cancelled' : 'activated'} successfully`);
             fetchCodes();
           } else {
-            showError(data.error || '更新卡密状态失败');
+            showError(data.error || 'Failed to update code status');
           }
         } catch (err) {
-          showError('更新卡密状态失败');
+          showError('Failed to update code status');
         }
       }
     );
@@ -134,7 +134,7 @@ export default function AdminCodeManagement() {
     link.download = `codes_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    showSuccess('卡密列表已导出');
+    showSuccess('Codes list exported successfully');
   };
 
   return (

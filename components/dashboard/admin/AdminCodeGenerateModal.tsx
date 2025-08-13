@@ -28,13 +28,13 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
     
     if (!formData.codeValue) {
       setError('请输入卡密值');
-      showError('请输入卡密值');
+      showError('Please enter code value');
       return;
     }
     
     if (formData.quantity < 1 || formData.quantity > 1000) {
       setError('生成数量必须在1-1000之间');
-      showError('生成数量必须在1-1000之间');
+      showError('Quantity must be between 1-1000');
       return;
     }
 
@@ -54,15 +54,15 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
 
       if (data.success) {
         setGeneratedCodes(data.data.codes);
-        showSuccess(`成功生成 ${data.data.codes.length} 个卡密`);
+        showSuccess(`Successfully generated ${data.data.codes.length} codes`);
         // 不立即关闭，让用户可以复制卡密
       } else {
         setError(data.error || 'Failed to generate codes');
-        showError(data.error || '生成卡密失败');
+        showError(data.error || 'Failed to generate codes');
       }
     } catch (err) {
       setError('Failed to generate codes');
-      showError('生成卡密失败');
+      showError('Failed to generate codes');
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
   const copyToClipboard = () => {
     const text = generatedCodes.join('\n');
     navigator.clipboard.writeText(text).then(() => {
-      showSuccess('卡密已复制到剪贴板');
+      showSuccess('Codes copied to clipboard');
     });
   };
 
@@ -84,7 +84,7 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
     link.download = `codes_${new Date().toISOString().split('T')[0]}.txt`;
     link.click();
     URL.revokeObjectURL(url);
-    showSuccess('卡密已下载');
+    showSuccess('Codes downloaded successfully');
   };
 
   return (
