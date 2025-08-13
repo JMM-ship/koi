@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { FiCheck, FiAlertTriangle, FiX } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/useToast";
 
 interface Package {
   id: string;
@@ -31,6 +32,7 @@ interface UserPackage {
 export default function PlansContent() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { showSuccess, showError, showWarning } = useToast();
   const [packages, setPackages] = useState<Package[]>([]);
   const [currentPackage, setCurrentPackage] = useState<UserPackage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -128,7 +130,7 @@ export default function PlansContent() {
         setPackages(defaultPackages);
       }
     } catch (error) {
-      console.error('Failed to fetch packages:', error);
+      showError('Failed to load packages');
       // Use default data on error
       setPackages(defaultPackages);
     } finally {
@@ -138,10 +140,8 @@ export default function PlansContent() {
 
   // Handle purchase button click
   const handlePurchase = (pkg: Package) => {
-    console.log(session, "dsds");
-
     if (!session) {
-      alert('Please login first');
+      showWarning('Please login first');
       router.push('/signin');
       return;
     }
@@ -176,17 +176,16 @@ export default function PlansContent() {
         // Simulate payment success
         await simulatePaymentSuccess(data.data.order.orderNo);
 
-        alert('Package purchased successfully!');
+        showSuccess('Package purchased successfully!');
         setShowConfirmModal(false);
 
         // Refresh page data
         await fetchPackages();
       } else {
-        alert(data.error?.message || 'Failed to create order');
+        showError(data.error?.message || 'Failed to create order');
       }
     } catch (error) {
-      console.error('Purchase failed:', error);
-      alert('Purchase failed, please try again');
+      showError('Purchase failed, please try again');
     } finally {
       setPurchasing(false);
     }
