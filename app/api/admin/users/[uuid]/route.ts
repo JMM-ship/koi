@@ -49,6 +49,8 @@ export const GET = withAdminAuth(async (
 
     const userDetail: UserDetail = {
       ...user,
+      role: user.role as 'user' | 'admin', // Type assertion for role
+      status: user.status as 'active' | 'suspended' | 'deleted', // Type assertion for status
       stats: {
         totalOrders,
         totalApiCalls: totalApiKeys, // 用API密钥数量代替
