@@ -1,161 +1,174 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import * as echarts from 'echarts';
+import { useState } from "react";
 
 const ExchangeBalance = () => {
-  const chartRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('today');
 
-  const rankings = [
-    {
-      id: 1,
-      label: "Today",
-      period: "24 hours",
+  const rankingData = {
+    today: {
       points: "2,847",
-      rank: "#12",
-      outperformed: 85,
-      color: "#794aff",
-      trend: "+12%"
+      rank: 12,
+      totalUsers: 100,
+      percentage: 88,
+      trend: "+12%",
+      color: "#00d084"
     },
-    {
-      id: 2,
-      label: "This Week",
-      period: "7 days",
+    week: {
       points: "18,234",
-      rank: "#28",
-      outperformed: 72,
-      color: "#00b4d8",
-      trend: "+8%"
+      rank: 28,
+      totalUsers: 100,
+      percentage: 72,
+      trend: "+8%",
+      color: "#00b4d8"
     },
-    {
-      id: 3,
-      label: "This Month",
-      period: "30 days",
+    month: {
       points: "65,892",
-      rank: "#45",
-      outperformed: 68,
-      color: "#00d084",
-      trend: "+15%"
+      rank: 45,
+      totalUsers: 100,
+      percentage: 55,
+      trend: "+15%",
+      color: "#ffa500"
     }
-  ];
+  };
 
-  useEffect(() => {
-    const charts: echarts.ECharts[] = [];
-
-    rankings.forEach((ranking, index) => {
-      if (chartRefs.current[index]) {
-        const myChart = echarts.init(chartRefs.current[index]!);
-        charts.push(myChart);
-
-        const option = {
-          backgroundColor: 'transparent',
-          series: [
-            {
-              type: 'gauge',
-              startAngle: 90,
-              endAngle: -270,
-              radius: '100%',
-              center: ['50%', '50%'],
-              pointer: {
-                show: false
-              },
-              progress: {
-                show: true,
-                overlap: false,
-                roundCap: true,
-                clip: false,
-                itemStyle: {
-                  color: ranking.color,
-                  shadowBlur: 10,
-                  shadowColor: ranking.color
-                }
-              },
-              axisLine: {
-                lineStyle: {
-                  width: 8,
-                  color: [[1, '#1e1f26']]
-                }
-              },
-              splitLine: {
-                show: false
-              },
-              axisTick: {
-                show: false
-              },
-              axisLabel: {
-                show: false
-              },
-              data: [
-                {
-                  value: ranking.outperformed,
-                  detail: {
-                    valueAnimation: true,
-                    offsetCenter: ['0%', '0%'],
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    color: '#fff',
-                    formatter: '{value}%'
-                  }
-                }
-              ],
-              detail: {
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: '#fff',
-                formatter: '{value}%',
-                offsetCenter: ['0%', '0%']
-              },
-              animationDuration: 1000,
-              animationEasing: 'cubicOut'
-            }
-          ]
-        };
-
-        myChart.setOption(option);
-      }
-    });
-
-    const handleResize = () => {
-      charts.forEach(chart => chart.resize());
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      charts.forEach(chart => chart.dispose());
-    };
-  }, []);
+  const currentData = rankingData[selectedPeriod];
 
   return (
-    <div className="exchange-balances">
-      <div className="ranking-header">
-        <h3 style={{ color: '#fff', fontSize: '16px', marginBottom: '15px' }}>Points Consumption Ranking</h3>
+    <div className="team-members-card">
+      <div className="card-header">
+        <h3 className="card-title">Credits Details</h3>
+        <div className="period-switcher" style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={() => setSelectedPeriod('today')}
+            style={{
+              padding: '4px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: selectedPeriod === 'today' ? '#00d084' : '#2a2b35',
+              color: '#fff',
+              fontSize: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            Today
+          </button>
+          <button
+            onClick={() => setSelectedPeriod('week')}
+            style={{
+              padding: '4px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: selectedPeriod === 'week' ? '#00d084' : '#2a2b35',
+              color: '#fff',
+              fontSize: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            7 Days
+          </button>
+          <button
+            onClick={() => setSelectedPeriod('month')}
+            style={{
+              padding: '4px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              background: selectedPeriod === 'month' ? '#00d084' : '#2a2b35',
+              color: '#fff',
+              fontSize: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            30 Days
+          </button>
+        </div>
       </div>
-      {rankings.map((ranking, index) => (
-        <div key={ranking.id} className="balance-card">
-          <div className="balance-content">
-            <div className="balance-header">
-              <span className="balance-label">{ranking.label}</span>
-              <span style={{ color: '#666', fontSize: '11px', marginLeft: '8px' }}>({ranking.period})</span>
+
+      <div className="team-list" style={{ padding: '20px' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+            <div>
+              <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#fff' }}>
+                {currentData.points}
+              </span>
+              <span style={{ fontSize: '14px', color: '#6b7280', marginLeft: '8px' }}>
+                Credits Consumed
+              </span>
             </div>
-            <div className="balance-amount" style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-              <span>{ranking.points}</span>
-              <span style={{ fontSize: '14px', color: ranking.color }}>{ranking.rank}</span>
-            </div>
-            <div className="balance-usd" style={{ fontSize: '12px', color: '#999' }}>
-              Outperformed {ranking.outperformed}% of users
-            </div>
-          </div>
-          <div className="balance-chart-container">
-            <div
-              ref={el => { chartRefs.current[index] = el; }}
-              className="balance-ring-chart"
-              style={{ width: '80px', height: '80px' }}
-            />
+            <span style={{ fontSize: '14px', color: currentData.color }}>
+              {currentData.trend}
+            </span>
           </div>
         </div>
-      ))}
+
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontSize: '14px', color: '#9ca3af' }}>
+              Current Ranking
+            </span>
+            <span style={{ fontSize: '16px', fontWeight: 'bold', color: currentData.color }}>
+              #{currentData.rank}
+            </span>
+          </div>
+          
+          <div style={{ marginBottom: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                Top {currentData.percentage}%
+              </span>
+              <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                Better than {currentData.percentage}% of users
+              </span>
+            </div>
+            <div style={{ 
+              width: '100%', 
+              height: '8px', 
+              backgroundColor: '#1e1f26', 
+              borderRadius: '4px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${currentData.percentage}%`,
+                height: '100%',
+                background: `linear-gradient(90deg, ${currentData.color}, ${currentData.color}dd)`,
+                borderRadius: '4px',
+                transition: 'width 0.5s ease-in-out',
+                boxShadow: `0 0 10px ${currentData.color}50`
+              }} />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(3, 1fr)', 
+          gap: '16px',
+          paddingTop: '16px',
+          borderTop: '1px solid #2a2b35'
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#fff' }}>
+              {selectedPeriod === 'today' ? '24h' : selectedPeriod === 'week' ? '7d' : '30d'}
+            </div>
+            <div style={{ fontSize: '12px', color: '#6b7280' }}>Period</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '20px', fontWeight: 'bold', color: currentData.color }}>
+              #{currentData.rank}
+            </div>
+            <div style={{ fontSize: '12px', color: '#6b7280' }}>Rank</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#00d084' }}>
+              {currentData.percentage}%
+            </div>
+            <div style={{ fontSize: '12px', color: '#6b7280' }}>Percentile</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
