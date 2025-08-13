@@ -933,7 +933,7 @@
   align-items: center;
   gap: 16px;
   flex: 1;
-  max-width: 300px;
+  max-width: 100px;
   margin-left: 20px;
 }
 
@@ -1113,20 +1113,21 @@
 }
 
 /* High DPI and Zoom Support */
-@media (min-resolution: 144dpi), (min-resolution: 1.5dppx) {
+@media (min-resolution: 144dpi),
+(min-resolution: 1.5dppx) {
   .dashboard-container {
     overflow-y: auto;
   }
-  
+
   .dashboard-main {
     min-height: auto;
     height: auto;
   }
-  
+
   .dashboard-content {
     min-height: auto;
   }
-  
+
   .main-content-chart {
     min-height: 350px;
   }

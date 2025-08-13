@@ -6,6 +6,7 @@ import CreditCard from "@/components/dashboard/CreditCard";
 import ExchangeBalance from "@/components/dashboard/ExchangeBalance";
 import TeamMembers from "@/components/dashboard/TeamMembers";
 import SatisfactionRate from "@/components/dashboard/SatisfactionRate";
+import IndependentCredits from "@/components/dashboard/IndependentCredits";
 
 export default function DashboardContent() {
   return (
@@ -40,6 +41,11 @@ export default function DashboardContent() {
         {/* 访问地区统计 */}
         <div className="side-content-item">
           <VisitsByLocation />
+        </div>
+
+        {/* 独立积分卡片 */}
+        <div className="side-content-item">
+          <IndependentCredits />
         </div>
 
         {/* 信用卡
