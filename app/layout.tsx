@@ -18,6 +18,7 @@ import type { Metadata } from "next";
 import { Libre_Franklin, Rubik } from "next/font/google";
 import { Providers } from "./providers";
 import DebugProvider from "@/components/debug/DebugProvider";
+import ToastProvider from "@/components/providers/ToastProvider";
 
 const LibreFranklinHeading = Libre_Franklin({
     weight: ["300", "400", "500", "600", "700"], // Only bold for headings
@@ -50,6 +51,7 @@ export default function RootLayout({
                     <DebugProvider>
                         {children}
                     </DebugProvider>
+                    <ToastProvider />
                 </Providers>
             </body>
         </html>

@@ -35,7 +35,8 @@
       "Bash(npx prisma migrate dev:*)",
       "Bash(cmd /c \"npx prisma migrate dev --name add_order_system\")",
       "Bash(node:*)",
-      "Bash(cmd /c:*)"
+      "Bash(cmd /c:*)",
+      "Bash(del:*)"
     ],
     "deny": []
   }
