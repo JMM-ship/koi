@@ -21,7 +21,11 @@ export default function ApiKeysContent() {
       const response = await fetch('/api/apikeys');
       if (!response.ok) throw new Error('Failed to fetch API keys');
       const data = await response.json();
-      setApiKeys(data.apiKeys || []);
+
+      const activeKeys = (data.apiKeys || [])
+        .filter((key: any) => key.status !== "deleted");
+
+      setApiKeys(activeKeys);
     } catch (error) {
       console.error('Error fetching API keys:', error);
       showError('Failed to load API keys');
@@ -63,23 +67,23 @@ export default function ApiKeysContent() {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || 'Failed to create API key');
       }
 
       // 保存新创建的密钥以便显示
       setNewlyCreatedKey(data.apiKey.apiKey);
-      
+
       // 显示新密钥模态框
       setShowCreateModal(false);
       setNewKeyTitle('');
-      
+
       // 显示成功消息和密钥
       setTimeout(() => {
         showNewKeyModal(data.apiKey.apiKey);
       }, 300);
-      
+
       // 刷新列表
       await fetchApiKeys();
     } catch (error: any) {
@@ -105,7 +109,7 @@ export default function ApiKeysContent() {
       justify-content: center;
       z-index: 2000;
     `;
-    
+
     modal.innerHTML = `
       <div style="background: #0a0a0a; border: 2px solid #00d084; border-radius: 12px; padding: 24px; max-width: 600px; width: 90%;">
         <h3 style="color: #00d084; margin-bottom: 16px; font-size: 20px;">🎉 API Key Created Successfully!</h3>
@@ -124,14 +128,14 @@ export default function ApiKeysContent() {
         </button>
       </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     document.getElementById('copyNewKey')?.addEventListener('click', () => {
       navigator.clipboard.writeText(key);
       showSuccess('API key copied to clipboard');
     });
-    
+
     document.getElementById('closeModal')?.addEventListener('click', () => {
       document.body.removeChild(modal);
     });
@@ -170,7 +174,7 @@ export default function ApiKeysContent() {
             <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>API Keys</h1>
             <p style={{ fontSize: '14px', color: '#999' }}>Manage your API keys for accessing our services</p>
           </div>
-          <button className="btn" style={{
+          {/* <button className="btn" style={{
             background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
             color: '#fff',
             border: 'none',
@@ -182,10 +186,10 @@ export default function ApiKeysContent() {
             alignItems: 'center',
             gap: '8px'
           }}
-          onClick={() => setShowCreateModal(true)}
+            onClick={() => setShowCreateModal(true)}
           >
             <FiPlus /> Create New Key
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -214,7 +218,7 @@ export default function ApiKeysContent() {
             <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '20px' }}>
               Create New API Key
             </h3>
-            
+
             <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', fontSize: '14px', color: '#999', marginBottom: '8px' }}>
                 Key Title
@@ -248,8 +252,8 @@ export default function ApiKeysContent() {
                 <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffa500' }}>Important</span>
               </div>
               <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>
-                • Each user can only have one active API key<br/>
-                • Your key will only be shown once<br/>
+                • Each user can only have one active API key<br />
+                • Your key will only be shown once<br />
                 • Save it in a secure location immediately
               </p>
             </div>
@@ -321,8 +325,8 @@ export default function ApiKeysContent() {
           <p style={{ fontSize: '14px', color: '#999', marginBottom: '24px' }}>
             Create your first API key to start using our services programmatically
           </p>
-          <button 
-            className="btn" 
+          <button
+            className="btn"
             style={{
               background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
               color: '#fff',
@@ -372,7 +376,7 @@ export default function ApiKeysContent() {
                     cursor: 'pointer',
                     padding: '4px'
                   }}
-                  onClick={() => handleDeleteKey(apiKey.id, apiKey.title)}
+                    onClick={() => handleDeleteKey(apiKey.id, apiKey.title)}
                   >
                     <FiTrash2 />
                   </button>
@@ -454,8 +458,8 @@ export default function ApiKeysContent() {
         padding: '20px'
       }}>
         <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '20px' }}>API Usage Guidelines</h3>
-        
-        <div className="row">
+
+        <div className="row" style={{ width: 600 }}>
           <div className="col-md-3">
             <div style={{ marginBottom: '20px' }}>
               <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Rate Limit</p>
@@ -493,10 +497,10 @@ export default function ApiKeysContent() {
           marginTop: '20px'
         }}>
           <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>
-            <strong style={{ color: '#fff' }}>Security Tips:</strong><br/>
-            • Never share your API key publicly or commit it to version control<br/>
-            • Use environment variables to store your keys in production<br/>
-            • Rotate your keys regularly for better security<br/>
+            <strong style={{ color: '#fff' }}>Security Tips:</strong><br />
+            • Never share your API key publicly or commit it to version control<br />
+            • Use environment variables to store your keys in production<br />
+            • Rotate your keys regularly for better security<br />
             • Monitor your API usage for any unusual activity
           </p>
         </div>
