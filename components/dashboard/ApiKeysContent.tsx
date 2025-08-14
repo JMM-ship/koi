@@ -1,40 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2 } from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2, FiKey } from "react-icons/fi";
 import { useToast } from "@/hooks/useToast";
 
 export default function ApiKeysContent() {
   const [showKey, setShowKey] = useState<{ [key: string]: boolean }>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const { showSuccess, showInfo, showConfirm } = useToast();
+  const [apiKeys, setApiKeys] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newKeyTitle, setNewKeyTitle] = useState('');
+  const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
+  const { showSuccess, showInfo, showConfirm, showError } = useToast();
 
-  const apiKeys = [
-    {
-      id: 1,
-      name: "Production API Key",
-      key: "sk-prod-4NzK9mW2xL8vQ3jF6hR1tY5pU7aS0dG",
-      created: "Jan 5, 2025",
-      lastUsed: "2 hours ago",
-      status: "active"
-    },
-    {
-      id: 2,
-      name: "Development API Key",
-      key: "sk-dev-8HgF3nM1qW5eR7tY2uI9oP0aS4dL6kJ",
-      created: "Dec 20, 2024",
-      lastUsed: "5 days ago",
-      status: "active"
-    },
-    {
-      id: 3,
-      name: "Testing API Key",
-      key: "sk-test-2BnV6cX9zL1kM3jH5gF8dS0aQ4wE7rT",
-      created: "Dec 10, 2024",
-      lastUsed: "Never",
-      status: "inactive"
+  // 获取 API 密钥列表
+  const fetchApiKeys = async () => {
+    try {
+      const response = await fetch('/api/apikeys');
+      if (!response.ok) throw new Error('Failed to fetch API keys');
+      const data = await response.json();
+      setApiKeys(data.apiKeys || []);
+    } catch (error) {
+      console.error('Error fetching API keys:', error);
+      showError('Failed to load API keys');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    fetchApiKeys();
+  }, []);
 
   const handleCopy = (key: string) => {
     navigator.clipboard.writeText(key);
@@ -45,6 +43,123 @@ export default function ApiKeysContent() {
 
   const toggleKeyVisibility = (keyId: number) => {
     setShowKey(prev => ({ ...prev, [keyId]: !prev[keyId] }));
+  };
+
+  // 创建新的 API 密钥
+  const handleCreateKey = async () => {
+    if (!newKeyTitle.trim()) {
+      showError('Please enter a title for your API key');
+      return;
+    }
+
+    setCreating(true);
+    try {
+      const response = await fetch('/api/apikeys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: newKeyTitle }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create API key');
+      }
+
+      // 保存新创建的密钥以便显示
+      setNewlyCreatedKey(data.apiKey.apiKey);
+      
+      // 显示新密钥模态框
+      setShowCreateModal(false);
+      setNewKeyTitle('');
+      
+      // 显示成功消息和密钥
+      setTimeout(() => {
+        showNewKeyModal(data.apiKey.apiKey);
+      }, 300);
+      
+      // 刷新列表
+      await fetchApiKeys();
+    } catch (error: any) {
+      console.error('Error creating API key:', error);
+      showError(error.message || 'Failed to create API key');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  // 显示新创建的密钥
+  const showNewKeyModal = (key: string) => {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    `;
+    
+    modal.innerHTML = `
+      <div style="background: #0a0a0a; border: 2px solid #00d084; border-radius: 12px; padding: 24px; max-width: 600px; width: 90%;">
+        <h3 style="color: #00d084; margin-bottom: 16px; font-size: 20px;">🎉 API Key Created Successfully!</h3>
+        <div style="background: #1a1a1a; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="color: #ffa500; margin-bottom: 8px; font-weight: 600;">⚠️ Important: Save this key now!</p>
+          <p style="color: #999; margin-bottom: 16px; font-size: 14px;">This is the only time you'll see your full API key. Store it securely.</p>
+          <div style="background: #000; border: 1px solid #2a2a2a; border-radius: 4px; padding: 12px; word-break: break-all;">
+            <code style="color: #00d084; font-family: monospace; font-size: 14px;">${key}</code>
+          </div>
+        </div>
+        <button id="copyNewKey" style="background: linear-gradient(135deg, #794aff 0%, #b084ff 100%); color: white; border: none; padding: 10px 20px; border-radius: 6px; margin-right: 12px; cursor: pointer;">
+          Copy to Clipboard
+        </button>
+        <button id="closeModal" style="background: #1a1a1a; color: #999; border: 1px solid #2a2a2a; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
+          I've Saved It
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    document.getElementById('copyNewKey')?.addEventListener('click', () => {
+      navigator.clipboard.writeText(key);
+      showSuccess('API key copied to clipboard');
+    });
+    
+    document.getElementById('closeModal')?.addEventListener('click', () => {
+      document.body.removeChild(modal);
+    });
+  };
+
+  // 删除 API 密钥
+  const handleDeleteKey = async (keyId: number, keyTitle: string) => {
+    showConfirm(
+      `Are you sure you want to delete "${keyTitle}"? This action cannot be undone.`,
+      async () => {
+        try {
+          const response = await fetch(`/api/apikeys?id=${keyId}`, {
+            method: 'DELETE',
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to delete API key');
+          }
+
+          showSuccess(`Deleted "${keyTitle}"`);
+          await fetchApiKeys();
+        } catch (error) {
+          console.error('Error deleting API key:', error);
+          showError('Failed to delete API key');
+        }
+      },
+      () => showInfo('Deletion cancelled')
+    );
   };
 
   return (
@@ -67,116 +182,270 @@ export default function ApiKeysContent() {
             alignItems: 'center',
             gap: '8px'
           }}
-          onClick={() => showInfo('Create API key feature coming soon')}
+          onClick={() => setShowCreateModal(true)}
           >
             <FiPlus /> Create New Key
           </button>
         </div>
       </div>
 
-      <div className="row">
-        {apiKeys.map((apiKey) => (
-          <div key={apiKey.id} className="col-lg-6 mb-4">
-            <div className="balance-card" style={{
-              background: '#0a0a0a',
-              border: '1px solid #1a1a1a',
-              borderRadius: '12px',
-              padding: '20px',
-              position: 'relative'
-            }}>
-              <div className="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                  <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '4px' }}>{apiKey.name}</h4>
-                  <span style={{
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    background: apiKey.status === 'active' ? '#00d084' : '#4b5563',
-                    color: apiKey.status === 'active' ? '#000' : '#999',
-                    textTransform: 'uppercase'
-                  }}>
-                    {apiKey.status}
-                  </span>
-                </div>
-                <button style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#ff006e',
-                  cursor: 'pointer',
-                  padding: '4px'
+      {/* 创建 API 密钥模态框 */}
+      {showCreateModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: '#0a0a0a',
+            border: '1px solid #1a1a1a',
+            borderRadius: '12px',
+            padding: '24px',
+            width: '90%',
+            maxWidth: '500px'
+          }}>
+            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '20px' }}>
+              Create New API Key
+            </h3>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', fontSize: '14px', color: '#999', marginBottom: '8px' }}>
+                Key Title
+              </label>
+              <input
+                type="text"
+                value={newKeyTitle}
+                onChange={(e) => setNewKeyTitle(e.target.value)}
+                placeholder="e.g., Production Key"
+                style={{
+                  width: '100%',
+                  padding: '10px',
+                  background: '#1a1a1a',
+                  border: '1px solid #2a2a2a',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  fontSize: '14px'
                 }}
-                onClick={() => {
-                  showConfirm(
-                    `Are you sure you want to delete "${apiKey.name}"? This action cannot be undone.`,
-                    () => showSuccess(`Deleted "${apiKey.name}"`),
-                    () => showInfo('Deletion cancelled')
-                  );
-                }}
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
+              />
+            </div>
 
-              <div style={{
-                background: '#1a1a1a',
-                borderRadius: '6px',
-                padding: '12px',
-                marginBottom: '16px',
+            <div style={{
+              background: '#1a1a1a',
+              border: '1px solid #2a2a2a',
+              borderRadius: '6px',
+              padding: '12px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <FiKey style={{ color: '#ffa500' }} />
+                <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffa500' }}>Important</span>
+              </div>
+              <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>
+                • Each user can only have one active API key<br/>
+                • Your key will only be shown once<br/>
+                • Save it in a secure location immediately
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setNewKeyTitle('');
+                }}
+                style={{
+                  flex: 1,
+                  padding: '10px',
+                  background: '#1a1a1a',
+                  border: '1px solid #2a2a2a',
+                  borderRadius: '6px',
+                  color: '#999',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateKey}
+                disabled={creating || !newKeyTitle.trim()}
+                style={{
+                  flex: 1,
+                  padding: '10px',
+                  background: creating || !newKeyTitle.trim() ? '#333' : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: creating || !newKeyTitle.trim() ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {creating ? 'Creating...' : 'Create Key'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '200px',
+          color: '#999'
+        }}>
+          Loading API keys...
+        </div>
+      ) : apiKeys.length === 0 ? (
+        <div className="balance-card" style={{
+          background: '#0a0a0a',
+          border: '1px solid #1a1a1a',
+          borderRadius: '12px',
+          padding: '40px',
+          textAlign: 'center'
+        }}>
+          <FiKey style={{ fontSize: '48px', color: '#666', marginBottom: '16px' }} />
+          <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
+            No API Keys Yet
+          </h3>
+          <p style={{ fontSize: '14px', color: '#999', marginBottom: '24px' }}>
+            Create your first API key to start using our services programmatically
+          </p>
+          <button 
+            className="btn" 
+            style={{
+              background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px 24px',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer'
+            }}
+            onClick={() => setShowCreateModal(true)}
+          >
+            <FiPlus style={{ marginRight: '8px', display: 'inline' }} />
+            Create Your First Key
+          </button>
+        </div>
+      ) : (
+        <div className="row">
+          {apiKeys.map((apiKey) => (
+            <div key={apiKey.id} className="col-lg-6 mb-4">
+              <div className="balance-card" style={{
+                background: '#0a0a0a',
+                border: '1px solid #1a1a1a',
+                borderRadius: '12px',
+                padding: '20px',
                 position: 'relative'
               }}>
-                <div className="d-flex align-items-center justify-content-between">
-                  <code style={{
-                    color: '#794aff',
-                    fontSize: '12px',
-                    fontFamily: 'monospace',
-                    letterSpacing: '0.5px'
-                  }}>
-                    {showKey[apiKey.id] ? apiKey.key : '••••••••••••••••••••••••••••••••'}
-                  </code>
-                  <div className="d-flex gap-2">
-                    <button
-                      onClick={() => toggleKeyVisibility(apiKey.id)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#999',
-                        cursor: 'pointer',
-                        padding: '4px'
-                      }}
-                    >
-                      {showKey[apiKey.id] ? <FiEyeOff /> : <FiEye />}
-                    </button>
-                    <button
-                      onClick={() => handleCopy(apiKey.key)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: copiedKey === apiKey.key ? '#00d084' : '#999',
-                        cursor: 'pointer',
-                        padding: '4px'
-                      }}
-                    >
-                      <FiCopy />
-                    </button>
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '4px' }}>{apiKey.title}</h4>
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: '600',
+                      background: apiKey.status === 'active' ? '#00d084' : '#4b5563',
+                      color: apiKey.status === 'active' ? '#000' : '#999',
+                      textTransform: 'uppercase'
+                    }}>
+                      {apiKey.status}
+                    </span>
+                  </div>
+                  <button style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ff006e',
+                    cursor: 'pointer',
+                    padding: '4px'
+                  }}
+                  onClick={() => handleDeleteKey(apiKey.id, apiKey.title)}
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '6px',
+                  padding: '12px',
+                  marginBottom: '16px',
+                  position: 'relative'
+                }}>
+                  <div className="d-flex align-items-center justify-content-between">
+                    <code style={{
+                      color: '#794aff',
+                      fontSize: '12px',
+                      fontFamily: 'monospace',
+                      letterSpacing: '0.5px'
+                    }}>
+                      {showKey[apiKey.id] ? apiKey.fullKey : apiKey.apiKey}
+                    </code>
+                    <div className="d-flex gap-2">
+                      <button
+                        onClick={() => toggleKeyVisibility(apiKey.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#999',
+                          cursor: 'pointer',
+                          padding: '4px'
+                        }}
+                      >
+                        {showKey[apiKey.id] ? <FiEyeOff /> : <FiEye />}
+                      </button>
+                      <button
+                        onClick={() => handleCopy(apiKey.fullKey)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: copiedKey === apiKey.fullKey ? '#00d084' : '#999',
+                          cursor: 'pointer',
+                          padding: '4px'
+                        }}
+                      >
+                        <FiCopy />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="d-flex justify-content-between" style={{ fontSize: '12px' }}>
+                  <div>
+                    <span style={{ color: '#666' }}>Created: </span>
+                    <span style={{ color: '#fff' }}>
+                      {new Date(apiKey.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                  <div>
+                    <span style={{ color: '#666' }}>Status: </span>
+                    <span style={{ color: apiKey.status === 'active' ? '#00d084' : '#666' }}>
+                      {apiKey.status === 'active' ? 'Active' : 'Inactive'}
+                    </span>
                   </div>
                 </div>
               </div>
-
-              <div className="d-flex justify-content-between" style={{ fontSize: '12px' }}>
-                <div>
-                  <span style={{ color: '#666' }}>Created: </span>
-                  <span style={{ color: '#fff' }}>{apiKey.created}</span>
-                </div>
-                <div>
-                  <span style={{ color: '#666' }}>Last used: </span>
-                  <span style={{ color: '#fff' }}>{apiKey.lastUsed}</span>
-                </div>
-              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <div className="balance-card" style={{
         background: '#0a0a0a',
@@ -184,37 +453,52 @@ export default function ApiKeysContent() {
         borderRadius: '12px',
         padding: '20px'
       }}>
-        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '20px' }}>API Usage Statistics</h3>
+        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '20px' }}>API Usage Guidelines</h3>
         
         <div className="row">
           <div className="col-md-3">
             <div style={{ marginBottom: '20px' }}>
-              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Total Requests (Today)</p>
-              <h4 style={{ fontSize: '24px', color: '#fff', fontWeight: '600' }}>12,458</h4>
-              <span style={{ fontSize: '12px', color: '#00d084' }}>+15% from yesterday</span>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div style={{ marginBottom: '20px' }}>
-              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Success Rate</p>
-              <h4 style={{ fontSize: '24px', color: '#fff', fontWeight: '600' }}>99.8%</h4>
-              <span style={{ fontSize: '12px', color: '#00d084' }}>Excellent</span>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div style={{ marginBottom: '20px' }}>
-              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Average Latency</p>
-              <h4 style={{ fontSize: '24px', color: '#fff', fontWeight: '600' }}>45ms</h4>
-              <span style={{ fontSize: '12px', color: '#00d084' }}>-5ms from average</span>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div style={{ marginBottom: '20px' }}>
               <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Rate Limit</p>
               <h4 style={{ fontSize: '24px', color: '#fff', fontWeight: '600' }}>1000/min</h4>
-              <span style={{ fontSize: '12px', color: '#666' }}>Professional tier</span>
+              <span style={{ fontSize: '12px', color: '#00d084' }}>Professional tier</span>
             </div>
           </div>
+          <div className="col-md-3">
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Concurrent Requests</p>
+              <h4 style={{ fontSize: '24px', color: '#fff', fontWeight: '600' }}>100</h4>
+              <span style={{ fontSize: '12px', color: '#00d084' }}>Maximum</span>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Timeout</p>
+              <h4 style={{ fontSize: '24px', color: '#fff', fontWeight: '600' }}>30s</h4>
+              <span style={{ fontSize: '12px', color: '#666' }}>Per request</span>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Support</p>
+              <h4 style={{ fontSize: '24px', color: '#fff', fontWeight: '600' }}>24/7</h4>
+              <span style={{ fontSize: '12px', color: '#00d084' }}>Available</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          background: '#1a1a1a',
+          borderRadius: '6px',
+          padding: '12px',
+          marginTop: '20px'
+        }}>
+          <p style={{ fontSize: '12px', color: '#999', margin: 0 }}>
+            <strong style={{ color: '#fff' }}>Security Tips:</strong><br/>
+            • Never share your API key publicly or commit it to version control<br/>
+            • Use environment variables to store your keys in production<br/>
+            • Rotate your keys regularly for better security<br/>
+            • Monitor your API usage for any unusual activity
+          </p>
         </div>
       </div>
     </>
