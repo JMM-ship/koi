@@ -16,13 +16,13 @@ const IndependentCredits = () => {
       background: '#0a0a0a',
       border: '1px solid #1a1a1a',
       borderRadius: '0.75rem',
-      padding: '1.25rem',
+      padding: '1.5rem',
       display: 'flex',
       flexDirection: 'column',
       transition: 'all 0.3s',
       height: '100%'
     }}>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '1.5rem' }}>
         <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#fff', margin: 0 }}>
           Independent Credits
         </h3>
@@ -33,14 +33,15 @@ const IndependentCredits = () => {
           fontWeight: '600',
           color: '#000',
           background: '#ffa500',
-          textTransform: 'uppercase'
+          textTransform: 'uppercase',
+          marginLeft: "0.5rem"
         }}>
           ACTIVE
         </span>
       </div>
 
-      <div style={{ marginBottom: '1.25rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.75rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1rem' }}>
           <div>
             <span style={{ fontSize: '1.75rem', fontWeight: 'bold', color: '#fff' }}>
               {creditsData.remaining.toLocaleString()}
@@ -49,12 +50,12 @@ const IndependentCredits = () => {
               Credits Remaining
             </span>
           </div>
-          <span style={{ fontSize: '0.875rem', color: '#ffa500' }}>
+          <span style={{ fontSize: '0.875rem', color: '#ffa500', marginLeft: "0.5rem" }}>
             {creditsData.percentage}%
           </span>
         </div>
 
-        <div style={{ marginBottom: '0.75rem' }}>
+        <div style={{ marginBottom: '1rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
             <span style={{ fontSize: '0.75rem', color: '#6b7280' }}>
               {creditsData.used.toLocaleString()} used
@@ -81,23 +82,17 @@ const IndependentCredits = () => {
         </div>
       </div>
 
-      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '0.75rem', marginBottom: '0.75rem' }}>
-        <div className="d-flex justify-content-between" style={{ marginBottom: '0.5rem' }}>
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '1.25rem', marginBottom: '1.25rem' }}>
+        <div className="d-flex justify-content-between" style={{ marginBottom: '0.75rem' }}>
           <span style={{ fontSize: '0.75rem', color: '#999' }}>Last Purchase</span>
-          <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: '500' }}>
+          <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: '500', marginLeft: "0.5rem" }}>
             {creditsData.lastPurchase}
           </span>
         </div>
-        <div className="d-flex justify-content-between" style={{ marginBottom: '0.5rem' }}>
+        <div className="d-flex justify-content-between" style={{ marginBottom: '0.75rem' }}>
           <span style={{ fontSize: '0.75rem', color: '#999' }}>Purchase Amount</span>
           <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: '500' }}>
             {creditsData.purchaseAmount.toLocaleString()} Credits
-          </span>
-        </div>
-        <div className="d-flex justify-content-between">
-          <span style={{ fontSize: '0.75rem', color: '#999' }}>Expires On</span>
-          <span style={{ fontSize: '0.75rem', color: '#ffa500', fontWeight: '500' }}>
-            {creditsData.expiryDate}
           </span>
         </div>
       </div>
