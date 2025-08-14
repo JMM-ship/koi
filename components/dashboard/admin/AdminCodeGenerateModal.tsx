@@ -68,11 +68,44 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
     }
   };
 
-  const copyToClipboard = () => {
+  const copyToClipboard = async () => {
     const text = generatedCodes.join('\n');
-    navigator.clipboard.writeText(text).then(() => {
-      showSuccess('Codes copied to clipboard');
-    });
+    
+    try {
+      // 优先使用 navigator.clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        showSuccess('卡密已复制到剪贴板');
+      } else {
+        // 降级方案：使用传统的 execCommand
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          if (successful) {
+            showSuccess('卡密已复制到剪贴板');
+          } else {
+            showError('复制失败，请手动选择复制');
+          }
+        } catch (err) {
+          console.error('复制失败:', err);
+          showError('复制失败，请手动选择复制');
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
+    } catch (err) {
+      console.error('复制到剪贴板失败:', err);
+      // 最后的降级方案：显示文本让用户手动复制
+      showError('自动复制失败，请手动选择文本复制');
+    }
   };
 
   const downloadCodes = () => {
@@ -225,13 +258,32 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
                   
                   <div className="mb-3">
                     <label className="form-label">生成的卡密列表</label>
-                    <div className="border rounded p-3" style={{ maxHeight: '300px', overflowY: 'auto', backgroundColor: '#f8f9fa' }}>
-                      {generatedCodes.map((code, index) => (
-                        <div key={index} className="font-monospace">
-                          {code}
-                        </div>
-                      ))}
+                    <div 
+                      className="border rounded p-3" 
+                      style={{ 
+                        maxHeight: '300px', 
+                        overflowY: 'auto', 
+                        backgroundColor: '#f8f9fa',
+                        userSelect: 'text',
+                        cursor: 'text'
+                      }}
+                    >
+                      <textarea
+                        className="form-control font-monospace border-0 bg-transparent"
+                        value={generatedCodes.join('\n')}
+                        readOnly
+                        rows={10}
+                        style={{ 
+                          resize: 'none',
+                          userSelect: 'text',
+                          cursor: 'text'
+                        }}
+                        onClick={(e) => {
+                          e.currentTarget.select();
+                        }}
+                      />
                     </div>
+                    <small className="text-muted">提示：点击文本框可全选内容，支持手动复制</small>
                   </div>
 
                   <div className="d-flex gap-2">

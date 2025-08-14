@@ -179,10 +179,31 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token, user }) {
       if (token && token.user) {
-        session.user = {
-          ...token.user,
-          id: token.user.uuid // Add id field for compatibility
-        };
+        // 从数据库获取最新的用户信息，确保角色是最新的
+        try {
+          const latestUser = await findUserByEmail(token.user.email);
+          if (latestUser) {
+            session.user = {
+              ...token.user,
+              id: token.user.uuid, // Add id field for compatibility
+              role: latestUser.role || 'user',
+              status: latestUser.status || 'active',
+              planType: latestUser.planType || 'free',
+              totalCredits: latestUser.totalCredits || 0,
+            };
+          } else {
+            session.user = {
+              ...token.user,
+              id: token.user.uuid // Add id field for compatibility
+            };
+          }
+        } catch (e) {
+          console.error("Failed to get latest user info in session:", e);
+          session.user = {
+            ...token.user,
+            id: token.user.uuid // Add id field for compatibility
+          };
+        }
       }
       return session;
     },
