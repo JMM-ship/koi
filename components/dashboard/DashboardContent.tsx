@@ -33,18 +33,20 @@ export default function DashboardContent() {
 
       {/* 右侧边栏内容 */}
       <div className="side-content">
-        {/* 满意度 */}
-        <div className="side-content-item">
-          <SatisfactionRate />
+        <div className="side-content-top">
+          {/* 满意度 */}
+          <div className="side-content-item">
+            <SatisfactionRate />
+          </div>
+
+          {/* 访问地区统计 */}
+          <div className="side-content-item">
+            <VisitsByLocation />
+          </div>
         </div>
 
-        {/* 访问地区统计 */}
-        <div className="side-content-item">
-          <VisitsByLocation />
-        </div>
-
-        {/* 独立积分卡片 */}
-        <div className="side-content-item">
+        {/* 独立积分卡片 - 与左侧底部对齐 */}
+        <div className="side-content-bottom">
           <IndependentCredits />
         </div>
 

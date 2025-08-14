@@ -17,9 +17,10 @@ const IndependentCredits = () => {
       border: '1px solid #1a1a1a',
       borderRadius: '0.75rem',
       padding: '1.25rem',
-      display: 'block',
+      display: 'flex',
+      flexDirection: 'column',
       transition: 'all 0.3s',
-      marginTop: '1rem'
+      height: '100%'
     }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#fff', margin: 0 }}>
