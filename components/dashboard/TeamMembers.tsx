@@ -12,7 +12,7 @@ const TeamMembers = () => {
         const response = await fetch('/api/dashboard/model-usage?limit=10');
         if (!response.ok) throw new Error('Failed to fetch model usage');
         const result = await response.json();
-        
+
         // 格式化数据
         const formattedData = result.data.map((item: any) => ({
           id: item.id,
@@ -28,7 +28,7 @@ const TeamMembers = () => {
           type: item.usageType,
           status: item.status
         }));
-        
+
         setCreditDetails(formattedData);
       } catch (error) {
         console.error('Error fetching model usage:', error);
@@ -82,53 +82,92 @@ const TeamMembers = () => {
           paddingRight: "0"
         }}
       >
-        {creditDetails.slice(0, 5).map((detail) => (
-          <div key={detail.id} className="team-member">
-            <div className="member-info">
-              <div
-                className="model-badge"
-                style={{
-                  width: "2.5rem",
-                  height: "2.5rem",
-                  borderRadius: "0.5rem",
-                  backgroundColor: getModelColor(detail.model),
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                  fontSize: "0.75rem",
-                  fontWeight: "bold",
-                  flexShrink: 0
-                }}
-              >
-                {detail.model.substring(0, 2).toUpperCase()}
-              </div>
-              <div style={{ marginLeft: "0.75rem", flex: 1 }}>
-                <div className="member-name" style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
-                  {detail.model}
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                  {detail.type} · {detail.timestamp}
-                </div>
-              </div>
+        {creditDetails.length === 0 ? (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "2rem 1rem",
+              color: "#6b7280"
+            }}
+          >
+            <div style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+              No credit usage yet
             </div>
-
-            <div className="member-stats" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <span
-                className="member-value"
-                style={{
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  color: getModelColor(detail.model),
-                  minWidth: "5rem",
-                  textAlign: "right"
-                }}
-              >
-                -{detail.credits} Credits
-              </span>
+            <div style={{ fontSize: "0.875rem", marginBottom: "1rem" }}>
+              You haven’t used any credits yet — try unlocking premium features now!
             </div>
+            <button
+              style={{
+                backgroundColor: "#4f46e5",
+                color: "white",
+                border: "none",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.375rem",
+                cursor: "pointer",
+                fontWeight: 600
+              }}
+              onClick={() => {
+                // Navigate to credits usage page or feature
+              }}
+            >
+              Use Credits Now
+            </button>
           </div>
-        ))}
+        ) : (
+          creditDetails.slice(0, 5).map((detail) => (
+            <div key={detail.id} className="team-member">
+              <div className="member-info">
+                <div
+                  className="model-badge"
+                  style={{
+                    width: "2.5rem",
+                    height: "2.5rem",
+                    borderRadius: "0.5rem",
+                    backgroundColor: getModelColor(detail.model),
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    fontSize: "0.75rem",
+                    fontWeight: "bold",
+                    flexShrink: 0
+                  }}
+                >
+                  {detail.model.substring(0, 2).toUpperCase()}
+                </div>
+                <div style={{ marginLeft: "0.75rem", flex: 1 }}>
+                  <div
+                    className="member-name"
+                    style={{ fontWeight: 600, marginBottom: "0.25rem" }}
+                  >
+                    {detail.model}
+                  </div>
+                  <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
+                    {detail.type} · {detail.timestamp}
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="member-stats"
+                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
+              >
+                <span
+                  className="member-value"
+                  style={{
+                    fontWeight: 600,
+                    fontSize: "1rem",
+                    color: getModelColor(detail.model),
+                    minWidth: "5rem",
+                    textAlign: "right"
+                  }}
+                >
+                  -{detail.credits} Credits
+                </span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

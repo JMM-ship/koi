@@ -13,7 +13,7 @@ const ExchangeBalance = () => {
         const response = await fetch('/api/dashboard');
         if (!response.ok) throw new Error('Failed to fetch dashboard data');
         const result = await response.json();
-        
+
         // 格式化统计数据
         const stats = result.creditStats;
         const formatData = (period: any, color: string) => ({
@@ -22,7 +22,6 @@ const ExchangeBalance = () => {
           trend: period.amount > 0 ? `+${((period.amount / 100) * 10).toFixed(0)}%` : '0%',
           color
         });
-        
         setRankingData({
           today: formatData(stats.today, "#00d084"),
           week: formatData(stats.week, "#00b4d8"),
@@ -59,7 +58,7 @@ const ExchangeBalance = () => {
   return (
     <div className="team-members-card">
       <div className="card-header">
-        <h3 className="card-title">Credits Details</h3>
+        <h3 className="card-title">Credits Consumption Ranking</h3>
         <div className="period-switcher" style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => setSelectedPeriod('today')}
@@ -139,10 +138,10 @@ const ExchangeBalance = () => {
             <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>
               Better than {currentData.percentage}% of users
             </div>
-            <div style={{ 
-              width: '100%', 
-              height: '0.625rem', 
-              backgroundColor: '#1e1f26', 
+            <div style={{
+              width: '100%',
+              height: '0.625rem',
+              backgroundColor: '#1e1f26',
               borderRadius: '0.3125rem',
               overflow: 'hidden'
             }}>
@@ -158,9 +157,9 @@ const ExchangeBalance = () => {
           </div>
         </div>
 
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(2, 1fr)', 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
           gap: '1.25rem',
           paddingTop: '1rem',
           borderTop: '1px solid #2a2b35'
