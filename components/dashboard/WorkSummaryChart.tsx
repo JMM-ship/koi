@@ -6,6 +6,7 @@ import "@/public/assets/css/dashboard-chart.css";
 
 const WorkSummaryChart = () => {
   const [selectedType, setSelectedType] = useState("points");
+  const [chartHeight, setChartHeight] = useState(280);
   const chartRef = useRef<HTMLDivElement>(null);
 
   // 生成最近7天的日期
@@ -33,6 +34,7 @@ const WorkSummaryChart = () => {
       increase: 326,
       percentage: '+2.8%',
       color: '#794aff',
+      glowColor: '#b084ff',
       max: 2500
     },
     money: {
@@ -42,6 +44,7 @@ const WorkSummaryChart = () => {
       increase: 28.50,
       percentage: '+6.6%',
       color: '#00b4d8',
+      glowColor: '#00e5ff',
       max: 100
     },
     tokens: {
@@ -51,9 +54,28 @@ const WorkSummaryChart = () => {
       increase: 52000,
       percentage: '+6.6%',
       color: '#00d084',
+      glowColor: '#00ff9f',
       max: 200000
     }
   };
+
+  // 响应式高度调整
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width <= 480) {
+        setChartHeight(200);
+      } else if (width <= 768) {
+        setChartHeight(240);
+      } else {
+        setChartHeight(280);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -65,9 +87,9 @@ const WorkSummaryChart = () => {
       backgroundColor: 'transparent',
       grid: {
         top: 20,
-        right: 20,
+        right: 10,
         bottom: 40,
-        left: 60,
+        left: 50,
         containLabel: false
       },
       xAxis: {
@@ -118,21 +140,32 @@ const WorkSummaryChart = () => {
           symbolSize: 8,
           sampling: 'average',
           itemStyle: {
-            color: currentData.color,
-            shadowColor: `${currentData.color}88`,
-            shadowBlur: 10
+            color: currentData.glowColor,
+            shadowColor: currentData.glowColor,
+            shadowBlur: 20,
+            borderColor: currentData.glowColor,
+            borderWidth: 2
           },
           lineStyle: {
             width: 3,
-            color: currentData.color,
-            shadowColor: `${currentData.color}88`,
-            shadowBlur: 10
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+              { offset: 0, color: currentData.color },
+              { offset: 0.5, color: currentData.glowColor },
+              { offset: 1, color: currentData.color }
+            ]),
+            shadowColor: currentData.glowColor,
+            shadowBlur: 15,
+            shadowOffsetY: 0
           },
           areaStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
               {
                 offset: 0,
-                color: `${currentData.color}33`
+                color: `${currentData.glowColor}40`
+              },
+              {
+                offset: 0.5,
+                color: `${currentData.color}20`
               },
               {
                 offset: 1,
@@ -174,7 +207,7 @@ const WorkSummaryChart = () => {
       window.removeEventListener('resize', handleResize);
       myChart.dispose();
     };
-  }, [selectedType]);
+  }, [selectedType, chartHeight]);
 
   const currentData = consumptionData[selectedType as keyof typeof consumptionData];
 
@@ -192,7 +225,7 @@ const WorkSummaryChart = () => {
   const getYAxisLabels = () => {
     const max = currentData.max;
     const labels = [];
-    for (let i = 5; i >= 0; i--) {
+    for (let i = 0; i <= 5; i++) {
       const value = (max / 5) * i;
       if (selectedType === 'money') {
         labels.push(`$${value.toFixed(0)}`);
@@ -202,7 +235,7 @@ const WorkSummaryChart = () => {
         labels.push(value.toFixed(0));
       }
     }
-    return labels;
+    return labels.reverse(); // 反转数组，使最大值在顶部
   };
 
   return (
@@ -234,13 +267,13 @@ const WorkSummaryChart = () => {
       <div className="date-range">Last 7 Days</div>
 
       <div className="chart-wrapper">
-        <div className="chart-y-axis">
+        <div className="chart-y-axis" style={{ height: `${chartHeight}px`, paddingTop: '20px', paddingBottom: '40px' }}>
           {getYAxisLabels().map((label, index) => (
-            <span key={index}>{label}</span>
+            <span key={index} style={{ lineHeight: index === 0 ? '0' : '1' }}>{label}</span>
           ))}
         </div>
 
-        <div ref={chartRef} className="echarts-container" style={{ width: '100%', height: '280px' }}></div>
+        <div ref={chartRef} className="echarts-container" style={{ width: '100%', height: `${chartHeight}px`, minHeight: `${chartHeight}px` }}></div>
       </div>
 
       <div className="chart-legends">

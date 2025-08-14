@@ -228,42 +228,13 @@ const SatisfactionRate = () => {
 
   return (
     <div className="satisfaction-card">
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '16px'
       }}>
         <h3 className="card-title" style={{ margin: 0 }}>Credits Balance</h3>
-        <button
-          onClick={() => window.location.href = '/dashboard?tab=plans'}
-          style={{
-            padding: '8px 16px',
-            borderRadius: '6px',
-            border: 'none',
-            background: 'linear-gradient(135deg, #00b4d8 0%, #0090ff 100%)',
-            color: '#fff',
-            fontSize: '12px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.3s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            boxShadow: '0 2px 8px rgba(0, 180, 216, 0.3)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 180, 216, 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 180, 216, 0.3)';
-          }}
-        >
-          <span style={{ fontSize: '16px' }}>💎</span>
-          Buy Credits
-        </button>
       </div>
 
       <div

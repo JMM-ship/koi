@@ -109,17 +109,6 @@ const IndependentCredits = () => {
         }}>
           Purchase More
         </button>
-        <button className="btn btn-sm flex-fill" style={{
-          background: 'transparent',
-          border: '1px solid #ffa500',
-          borderRadius: '0.375rem',
-          padding: '0.5rem 1rem',
-          color: '#ffa500',
-          fontSize: '0.8125rem',
-          fontWeight: '500'
-        }}>
-          View History
-        </button>
       </div>
     </div>
   );

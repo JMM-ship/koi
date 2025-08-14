@@ -468,12 +468,34 @@
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s;
+  position: relative;
+}
+
+.period-tab:hover {
+  color: var(--dashboard-text);
+  background: rgba(121, 74, 255, 0.1);
 }
 
 .period-tab.active {
   background: var(--dashboard-primary);
   color: var(--dashboard-text);
-  box-shadow: 0 2px 10px rgba(121, 74, 255, 0.3);
+  box-shadow: 0 0 20px rgba(121, 74, 255, 0.5),
+              0 0 40px rgba(121, 74, 255, 0.3),
+              inset 0 0 10px rgba(176, 132, 255, 0.2);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(121, 74, 255, 0.5),
+                0 0 40px rgba(121, 74, 255, 0.3),
+                inset 0 0 10px rgba(176, 132, 255, 0.2);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(121, 74, 255, 0.7),
+                0 0 50px rgba(121, 74, 255, 0.4),
+                inset 0 0 15px rgba(176, 132, 255, 0.3);
+  }
 }
 
 .date-range {
