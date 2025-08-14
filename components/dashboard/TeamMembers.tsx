@@ -104,39 +104,39 @@ const TeamMembers = () => {
               <div
                 className="model-badge"
                 style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "8px",
+                  width: "2.5rem",
+                  height: "2.5rem",
+                  borderRadius: "0.5rem",
                   backgroundColor: getModelColor(detail.model),
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   color: "white",
-                  fontSize: "12px",
+                  fontSize: "0.75rem",
                   fontWeight: "bold",
                   flexShrink: 0
                 }}
               >
                 {detail.model.substring(0, 2).toUpperCase()}
               </div>
-              <div style={{ marginLeft: "12px", flex: 1 }}>
-                <div className="member-name" style={{ fontWeight: 600, marginBottom: "4px" }}>
+              <div style={{ marginLeft: "0.75rem", flex: 1 }}>
+                <div className="member-name" style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
                   {detail.model}
                 </div>
-                <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
                   {detail.type} · {detail.timestamp}
                 </div>
               </div>
             </div>
 
-            <div className="member-stats" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <div className="member-stats" style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <span
                 className="member-value"
                 style={{
                   fontWeight: 600,
-                  fontSize: "16px",
+                  fontSize: "1rem",
                   color: getModelColor(detail.model),
-                  minWidth: "80px",
+                  minWidth: "5rem",
                   textAlign: "right"
                 }}
               >

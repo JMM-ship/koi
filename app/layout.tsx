@@ -11,7 +11,7 @@ import "/public/assets/fonts/fontawesome/fontawesome.min.css";
 import "/public/assets/fonts/fontawesome/solid.min.css";
 import "/public/assets/fonts/fontawesome/regular.min.css";
 import "/public/assets/css/main.css";
-
+import "/public/assets/css/responsive-units.css";
 import "/public/assets/css/style.css";
 
 import type { Metadata } from "next";

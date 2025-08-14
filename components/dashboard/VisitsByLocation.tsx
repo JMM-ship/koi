@@ -29,18 +29,18 @@ const CurrentPlan = () => {
     <div className="balance-card" style={{
       background: '#0a0a0a',
       border: '1px solid #1a1a1a',
-      borderRadius: '12px',
-      padding: '20px',
+      borderRadius: '0.75rem',
+      padding: '1.25rem',
       display: 'block',
       transition: 'all 0.3s',
       height: 'auto'
     }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', margin: 0 }}>Current Plan</h3>
+        <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#fff', margin: 0 }}>Current Plan</h3>
         <span style={{
-          padding: '4px 10px',
-          borderRadius: '4px',
-          fontSize: '11px',
+          padding: '0.25rem 0.625rem',
+          borderRadius: '0.25rem',
+          fontSize: '0.6875rem',
           fontWeight: '600',
           color: '#000',
           background: planDetails.statusColor,
@@ -50,50 +50,51 @@ const CurrentPlan = () => {
         </span>
       </div>
 
-      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
-        <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Subscription Period</h5>
-        <div className="d-flex justify-content-between" style={{ marginBottom: '6px' }}>
-          <span style={{ fontSize: '12px', color: '#999' }}>Start Date</span>
-          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.startDate}</span>
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '0.75rem', marginBottom: '0.75rem' }}>
+        <h5 style={{ fontSize: '0.6875rem', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '0.625rem' }}>Subscription Period</h5>
+        <div className="d-flex justify-content-between" style={{ marginBottom: '0.375rem' }}>
+          <span style={{ fontSize: '0.75rem', color: '#999' }}>Start Date</span>
+          <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: '500' }}>{planDetails.startDate}</span>
         </div>
         <div className="d-flex justify-content-between">
-          <span style={{ fontSize: '12px', color: '#999' }}>End Date</span>
-          <span style={{ fontSize: '12px', color: '#fff', fontWeight: '500' }}>{planDetails.endDate}</span>
+          <span style={{ fontSize: '0.75rem', color: '#999' }}>End Date</span>
+          <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: '500' }}>{planDetails.endDate}</span>
         </div>
       </div>
 
-      <div className="mb-3 p-3" style={{
+      <div className="mb-3" style={{
+        padding: '0.75rem',
         background: 'rgba(121, 74, 255, 0.1)',
         border: '1px solid rgba(121, 74, 255, 0.2)',
-        borderRadius: '8px'
+        borderRadius: '0.5rem'
       }}>
         <div className="d-flex justify-content-between align-items-center mb-2">
-          <h4 style={{ fontSize: '15px', fontWeight: '600', color: '#fff', margin: 0 }}>{planDetails.name}</h4>
+          <h4 style={{ fontSize: '0.9375rem', fontWeight: '600', color: '#fff', margin: 0 }}>{planDetails.name}</h4>
           <div className="text-end">
-            <span style={{ fontSize: '24px', fontWeight: '700', color: '#fff' }}>{planDetails.price}</span>
-            <span style={{ color: '#999', fontSize: '13px' }}>/{planDetails.billing}</span>
+            <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#fff' }}>{planDetails.price}</span>
+            <span style={{ color: '#999', fontSize: '0.8125rem' }}>/{planDetails.billing}</span>
           </div>
         </div>
         <div className="d-flex align-items-center">
           <button className="btn btn-sm" style={{
             background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
             border: 'none',
-            borderRadius: '6px',
-            padding: '4px 12px',
+            borderRadius: '0.375rem',
+            padding: '0.25rem 0.75rem',
             color: '#fff',
-            fontSize: '12px',
+            fontSize: '0.75rem',
             fontWeight: '500',
-            marginRight: '2px'
+            marginRight: '0.125rem'
           }}>
             Upgrade
           </button>
           <button className="btn btn-sm" style={{
             background: 'linear-gradient(135deg, #00d084 0%, #00b377 100%)',
             border: 'none',
-            borderRadius: '6px',
-            padding: '4px 12px',
+            borderRadius: '0.375rem',
+            padding: '0.25rem 0.75rem',
             color: '#fff',
-            fontSize: '12px',
+            fontSize: '0.75rem',
             fontWeight: '500'
           }}>
             Renew
@@ -103,21 +104,21 @@ const CurrentPlan = () => {
 
 
 
-      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '12px', marginBottom: '12px' }}>
-        <h5 style={{ fontSize: '11px', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '10px' }}>Features</h5>
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '0.75rem', marginBottom: '0.75rem' }}>
+        <h5 style={{ fontSize: '0.6875rem', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '0.625rem' }}>Features</h5>
         <ul className="list-unstyled" style={{ margin: 0 }}>
           {planDetails.features.map((feature, index) => (
-            <li key={index} className="d-flex align-items-center" style={{ marginBottom: '8px' }}>
+            <li key={index} className="d-flex align-items-center" style={{ marginBottom: '0.5rem' }}>
               <span style={{
-                width: '18px',
-                height: '18px',
+                width: '1.125rem',
+                height: '1.125rem',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 background: feature.included ? '#00d084' : '#4b5563',
-                marginRight: '8px',
-                fontSize: '10px',
+                marginRight: '0.5rem',
+                fontSize: '0.625rem',
                 color: feature.included ? '#000' : '#999',
                 fontWeight: 'bold',
                 flexShrink: 0
@@ -125,7 +126,7 @@ const CurrentPlan = () => {
                 {feature.included ? '✓' : '×'}
               </span>
               <span style={{
-                fontSize: '13px',
+                fontSize: '0.8125rem',
                 color: feature.included ? '#fff' : '#666',
                 textDecoration: feature.included ? 'none' : 'line-through'
               }}>
