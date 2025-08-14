@@ -1,15 +1,85 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 const IndependentCredits = () => {
-  const creditsData = {
+  const [creditsData, setCreditsData] = useState({
     total: 50000,
-    used: 12847,
-    remaining: 37153,
-    percentage: 74.3,
+    used: 0,
+    remaining: 50000,
+    percentage: 100,
     expiryDate: "March 31, 2025",
     lastPurchase: "December 10, 2024",
     purchaseAmount: 10000
-  };
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCreditsData = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const result = await response.json();
+        
+        // 获取独立积分数据
+        const balance = result.creditBalance;
+        const independent = balance?.independentCredits || 0;
+        const totalPurchased = balance?.totalPurchased || 50000;
+        const used = Math.min(balance?.totalUsed || 0, totalPurchased - independent);
+        const percentage = totalPurchased > 0 ? (independent / totalPurchased) * 100 : 0;
+        
+        // 获取最后购买信息
+        const lastOrder = result.userPackage;
+        const lastPurchaseDate = lastOrder?.createdAt 
+          ? new Date(lastOrder.createdAt).toLocaleDateString('en-US', { 
+              month: 'long', 
+              day: 'numeric', 
+              year: 'numeric' 
+            })
+          : "December 10, 2024";
+        
+        setCreditsData({
+          total: totalPurchased,
+          used: used,
+          remaining: independent,
+          percentage: percentage,
+          expiryDate: lastOrder?.endDate 
+            ? new Date(lastOrder.endDate).toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric' 
+              })
+            : "March 31, 2025",
+          lastPurchase: lastPurchaseDate,
+          purchaseAmount: 10000
+        });
+      } catch (error) {
+        console.error('Error fetching credits data:', error);
+        // 使用默认值
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCreditsData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="balance-card" style={{
+        background: '#0a0a0a',
+        border: '1px solid #1a1a1a',
+        borderRadius: '0.75rem',
+        padding: '1.5rem',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <span style={{ color: '#999' }}>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="balance-card" style={{

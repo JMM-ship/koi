@@ -53,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  
+
   // 检查是否为管理员
   const isAdmin = session?.user?.role === 'admin';
 
@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
     { id: 3, icon: FiSlack, label: "API Keys", path: "api-keys", active: activeTab === "api-keys" },
     { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "plans", active: activeTab === "plans" },
   ];
-  
+
   // 管理员菜单项
   const adminItems: MenuItem[] = isAdmin ? [
     { id: 10, icon: FiShield, label: "Admin Panel", path: "admin", active: activeTab === "admin" },
@@ -385,7 +385,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
             {!isCollapsed && (
               <>
                 <div className="user-info" style={{ marginLeft: '12px' }}>
-                  <div className="user-name" style={{ fontSize: '14px', fontWeight: '500' }}>Adam Simpson</div>
+                  <div className="user-name" style={{ fontSize: '14px', fontWeight: '500' }}>{session?.user?.nickname}</div>
                 </div>
                 <button
                   className="logout-btn"

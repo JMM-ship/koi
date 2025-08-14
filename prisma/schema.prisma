@@ -352,3 +352,57 @@ model CreditTransaction {
   @@index([createdAt], map: "idx_credit_transactions_created_at")
   @@map("credit_transactions")
 }
+
+// 消费趋势模型 - 用于存储每日的积分、金钱、代币消费统计
+model ConsumptionTrend {
+  id            String   @id @default(uuid()) @db.Char(36)
+  userUuid      String   @map("user_uuid") @db.VarChar(255)
+  date          DateTime @db.Date
+  pointsUsed    Int      @default(0) @map("points_used")
+  moneyUsed     Decimal  @default(0) @map("money_used") @db.Decimal(10, 2)
+  tokensUsed    Int      @default(0) @map("tokens_used")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([userUuid, date], map: "uk_user_date")
+  @@index([userUuid], map: "idx_consumption_trend_user_uuid")
+  @@index([date], map: "idx_consumption_trend_date")
+  @@map("consumption_trends")
+}
+
+// 模型使用记录 - 记录每次AI模型的使用情况
+model ModelUsage {
+  id            String   @id @default(uuid()) @db.Char(36)
+  userUuid      String   @map("user_uuid") @db.VarChar(255)
+  modelName     String   @map("model_name") @db.VarChar(100) // GPT-4o, Claude 3.5, DALL-E 3, etc.
+  usageType     String   @map("usage_type") @db.VarChar(100) // Text Generation, Code Generation, Image Generation, etc.
+  credits       Int
+  status        String   @default("completed") @db.VarChar(20) // completed, failed, pending
+  timestamp     DateTime @default(now())
+  metadata      Json?    // 存储额外信息
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([userUuid], map: "idx_model_usage_user_uuid")
+  @@index([modelName], map: "idx_model_usage_model_name")
+  @@index([timestamp], map: "idx_model_usage_timestamp")
+  @@index([usageType], map: "idx_model_usage_type")
+  @@map("model_usages")
+}
+
+// 用户地理位置统计 - 用于统计用户访问来源
+model UserLocation {
+  id            String   @id @default(uuid()) @db.Char(36)
+  userUuid      String   @map("user_uuid") @db.VarChar(255)
+  country       String   @db.VarChar(100)
+  region        String?  @db.VarChar(100)
+  city          String?  @db.VarChar(100)
+  visitCount    Int      @default(1) @map("visit_count")
+  lastVisitAt   DateTime @default(now()) @map("last_visit_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([userUuid, country, region, city], map: "uk_user_location")
+  @@index([userUuid], map: "idx_user_location_user_uuid")
+  @@index([country], map: "idx_user_location_country")
+  @@map("user_locations")
+}

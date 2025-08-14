@@ -1,14 +1,53 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as echarts from 'echarts';
 
 const SatisfactionRate = () => {
   const chartRef = useRef<HTMLDivElement>(null);
-  const totalCredits = 10000; // 总积分
-  const usedCredits = 3480; // 已使用积分
-  const remainingCredits = totalCredits - usedCredits; // 剩余积分
-  const percentage = (remainingCredits / totalCredits) * 100; // 剩余百分比
+  const [creditData, setCreditData] = useState({
+    totalCredits: 10000,
+    usedCredits: 0,
+    remainingCredits: 10000,
+    percentage: 100
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCreditBalance = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const result = await response.json();
+
+        // 计算积分数据
+        const balance = result.creditBalance;
+        const userInfo = result.userInfo;
+
+        const total = (balance?.packageCredits || 0) + (balance?.independentCredits || 0) + (userInfo?.totalCredits || 10000);
+        const used = balance?.totalUsed || 0;
+        const remaining = Math.max(0, total - used);
+        const percent = total > 0 ? (remaining / total) * 100 : 0;
+        console.log(total, used, remaining, percent);
+
+        setCreditData({
+          totalCredits: total,
+          usedCredits: used,
+          remainingCredits: remaining,
+          percentage: percent
+        });
+      } catch (error) {
+        console.error('Error fetching credit balance:', error);
+        // 使用默认值
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCreditBalance();
+  }, []);
+
+  const { totalCredits, usedCredits, remainingCredits, percentage } = creditData;
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -224,7 +263,17 @@ const SatisfactionRate = () => {
       window.removeEventListener('resize', handleResize);
       myChart.dispose();
     };
-  }, []);
+  }, [creditData, loading]);
+
+  if (loading) {
+    return (
+      <div className="satisfaction-card">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '250px' }}>
+          <span style={{ color: '#999' }}>Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="satisfaction-card">

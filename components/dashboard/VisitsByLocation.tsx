@@ -1,29 +1,119 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 const CurrentPlan = () => {
-  const planDetails = {
-    name: "Professional",
-    price: "$29",
-    billing: "month",
-    status: "active", // active, expiring_soon, expired
-    statusLabel: "Active",
-    statusColor: "#00d084",
-    startDate: "December 15, 2024",
-    endDate: "January 15, 2025",
-    features: [
-      { name: "Unlimited API Calls", included: true },
-      { name: "Advanced Analytics", included: true },
-      { name: "Priority Support", included: true },
-      { name: "Custom Integrations", included: true },
-      { name: "Team Collaboration", included: false },
-    ],
-    usage: {
-      apiCalls: { used: 8500, limit: "Unlimited" },
-      storage: { used: 3.2, limit: 10, unit: "GB" },
-      users: { used: 3, limit: 5 },
-    },
-    nextBilling: "January 15, 2025",
-  };
+  const [planDetails, setPlanDetails] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlanDetails = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const result = await response.json();
+        
+        const userInfo = result.userInfo;
+        const userPackage = result.userPackage;
+        
+        // 格式化套餐信息
+        const now = new Date();
+        const endDate = userPackage?.endDate || userInfo?.planExpiredAt || new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        const startDate = userPackage?.startDate || new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
+        
+        const planType = userInfo?.planType || 'free';
+        const planNames: any = {
+          'free': 'Free',
+          'basic': 'Basic',
+          'pro': 'Professional',
+          'enterprise': 'Enterprise'
+        };
+        
+        const planPrices: any = {
+          'free': '$0',
+          'basic': '$9',
+          'pro': '$29',
+          'enterprise': '$99'
+        };
+        
+        const isActive = new Date(endDate) > now;
+        const daysRemaining = Math.floor((new Date(endDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const status = isActive ? (daysRemaining < 7 ? 'expiring_soon' : 'active') : 'expired';
+        
+        setPlanDetails({
+          name: planNames[planType] || 'Professional',
+          price: planPrices[planType] || '$29',
+          billing: 'month',
+          status,
+          statusLabel: status === 'active' ? 'Active' : status === 'expiring_soon' ? 'Expiring Soon' : 'Expired',
+          statusColor: status === 'active' ? '#00d084' : status === 'expiring_soon' ? '#ffa500' : '#ff006e',
+          startDate: new Date(startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+          endDate: new Date(endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+          features: [
+            { name: "Unlimited API Calls", included: planType !== 'free' },
+            { name: "Advanced Analytics", included: planType === 'pro' || planType === 'enterprise' },
+            { name: "Priority Support", included: planType === 'pro' || planType === 'enterprise' },
+            { name: "Custom Integrations", included: planType === 'enterprise' },
+            { name: "Team Collaboration", included: planType === 'enterprise' },
+          ],
+          usage: {
+            apiCalls: { used: 8500, limit: "Unlimited" },
+            storage: { used: 3.2, limit: 10, unit: "GB" },
+            users: { used: 3, limit: 5 },
+          },
+          nextBilling: new Date(endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        });
+      } catch (error) {
+        console.error('Error fetching plan details:', error);
+        // 使用默认值
+        setPlanDetails({
+          name: "Professional",
+          price: "$29",
+          billing: "month",
+          status: "active",
+          statusLabel: "Active",
+          statusColor: "#00d084",
+          startDate: "December 15, 2024",
+          endDate: "January 15, 2025",
+          features: [
+            { name: "Unlimited API Calls", included: true },
+            { name: "Advanced Analytics", included: true },
+            { name: "Priority Support", included: true },
+            { name: "Custom Integrations", included: true },
+            { name: "Team Collaboration", included: false },
+          ],
+          usage: {
+            apiCalls: { used: 8500, limit: "Unlimited" },
+            storage: { used: 3.2, limit: 10, unit: "GB" },
+            users: { used: 3, limit: 5 },
+          },
+          nextBilling: "January 15, 2025",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlanDetails();
+  }, []);
+
+  if (loading || !planDetails) {
+    return (
+      <div className="balance-card" style={{
+        background: '#0a0a0a',
+        border: '1px solid #1a1a1a',
+        borderRadius: '0.75rem',
+        padding: '1.25rem',
+        height: 'auto',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '200px'
+      }}>
+        <span style={{ color: '#999' }}>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="balance-card" style={{

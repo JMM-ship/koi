@@ -7,10 +7,60 @@ import "@/public/assets/css/dashboard-chart.css";
 const WorkSummaryChart = () => {
   const [selectedType, setSelectedType] = useState("points");
   const [chartHeight, setChartHeight] = useState(280);
+  const [consumptionData, setConsumptionData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const chartRef = useRef<HTMLDivElement>(null);
 
-  // 生成最近7天的日期
-  const generateDateLabels = () => {
+  // 获取消费趋势数据
+  const fetchConsumptionData = async (type: string) => {
+    try {
+      const response = await fetch(`/api/dashboard/consumption-trends?days=7&type=${type}`);
+      if (!response.ok) throw new Error('Failed to fetch data');
+      const result = await response.json();
+      
+      // 格式化数据以适配图表
+      const chartData = result.data.map((item: any) => item.value);
+      const dateLabels = result.data.map((item: any) => item.date);
+      
+      // 计算最大值
+      const maxValue = Math.max(...chartData) * 1.2; // 留20%空间
+      
+      // 设置颜色方案
+      const colorScheme = {
+        points: { color: '#794aff', glowColor: '#b084ff' },
+        money: { color: '#00b4d8', glowColor: '#00e5ff' },
+        tokens: { color: '#00d084', glowColor: '#00ff9f' }
+      };
+
+      return {
+        data: chartData,
+        dateLabels,
+        unit: result.stats.unit,
+        total: result.stats.total,
+        increase: result.stats.increase,
+        percentage: result.stats.percentage,
+        ...colorScheme[type as keyof typeof colorScheme],
+        max: maxValue || 100
+      };
+    } catch (error) {
+      console.error('Error fetching consumption data:', error);
+      // 返回默认数据
+      return {
+        data: [0, 0, 0, 0, 0, 0, 0],
+        dateLabels: generateDefaultDateLabels(),
+        unit: type === 'money' ? 'USD' : type === 'tokens' ? 'Tokens' : 'Points',
+        total: 0,
+        increase: 0,
+        percentage: '+0%',
+        color: '#794aff',
+        glowColor: '#b084ff',
+        max: 100
+      };
+    }
+  };
+
+  // 生成默认日期标签
+  const generateDefaultDateLabels = () => {
     const dates = [];
     const today = new Date();
     for (let i = 6; i >= 0; i--) {
@@ -23,41 +73,16 @@ const WorkSummaryChart = () => {
     return dates;
   };
 
-  const dateLabels = generateDateLabels();
-
-  // 不同类型的数据
-  const consumptionData = {
-    points: {
-      data: [1200, 1800, 1500, 2100, 1900, 1600, 2200],
-      unit: 'Points',
-      total: 12100,
-      increase: 326,
-      percentage: '+2.8%',
-      color: '#794aff',
-      glowColor: '#b084ff',
-      max: 2500
-    },
-    money: {
-      data: [45.5, 68.2, 52.3, 78.6, 71.4, 60.8, 82.5],
-      unit: 'USD',
-      total: 459.30,
-      increase: 28.50,
-      percentage: '+6.6%',
-      color: '#00b4d8',
-      glowColor: '#00e5ff',
-      max: 100
-    },
-    tokens: {
-      data: [85000, 125000, 95000, 142000, 135000, 108000, 155000],
-      unit: 'Tokens',
-      total: 845000,
-      increase: 52000,
-      percentage: '+6.6%',
-      color: '#00d084',
-      glowColor: '#00ff9f',
-      max: 200000
-    }
-  };
+  // 加载数据
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      const data = await fetchConsumptionData(selectedType);
+      setConsumptionData(data);
+      setLoading(false);
+    };
+    loadData();
+  }, [selectedType]);
 
   // 响应式高度调整
   useEffect(() => {
@@ -78,10 +103,10 @@ const WorkSummaryChart = () => {
   }, []);
 
   useEffect(() => {
-    if (!chartRef.current) return;
+    if (!chartRef.current || !consumptionData || loading) return;
 
     const myChart = echarts.init(chartRef.current);
-    const currentData = consumptionData[selectedType as keyof typeof consumptionData];
+    const currentData = consumptionData;
 
     const option = {
       backgroundColor: 'transparent',
@@ -95,7 +120,7 @@ const WorkSummaryChart = () => {
       xAxis: {
         type: 'category',
         boundaryGap: false,
-        data: dateLabels,
+        data: currentData.dateLabels || [],
         axisLine: {
           lineStyle: {
             color: '#2a2d3a'
@@ -207,9 +232,19 @@ const WorkSummaryChart = () => {
       window.removeEventListener('resize', handleResize);
       myChart.dispose();
     };
-  }, [selectedType, chartHeight]);
+  }, [consumptionData, chartHeight, loading]);
 
-  const currentData = consumptionData[selectedType as keyof typeof consumptionData];
+  if (loading || !consumptionData) {
+    return (
+      <div className="work-summary-card">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+          <span style={{ color: '#999' }}>Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  const currentData = consumptionData;
 
   // 格式化显示的总数
   const formatTotal = () => {
@@ -223,7 +258,7 @@ const WorkSummaryChart = () => {
 
   // 格式化Y轴标签
   const getYAxisLabels = () => {
-    const max = currentData.max;
+    const max = currentData?.max || 100;
     const labels = [];
     for (let i = 0; i <= 5; i++) {
       const value = (max / 5) * i;

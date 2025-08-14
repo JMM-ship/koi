@@ -1,72 +1,46 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 const TeamMembers = () => {
-  const creditDetails = [
-    {
-      id: 1,
-      model: "GPT-4o",
-      credits: 150,
-      timestamp: "2024-12-18 14:32",
-      type: "Text Generation",
-      status: "completed"
-    },
-    {
-      id: 2,
-      model: "Claude 3.5",
-      credits: 200,
-      timestamp: "2024-12-18 13:45",
-      type: "Code Generation",
-      status: "completed"
-    },
-    {
-      id: 3,
-      model: "DALL-E 3",
-      credits: 500,
-      timestamp: "2024-12-18 12:20",
-      type: "Image Generation",
-      status: "completed"
-    },
-    {
-      id: 4,
-      model: "GPT-3.5",
-      credits: 50,
-      timestamp: "2024-12-18 11:15",
-      type: "Chat Conversation",
-      status: "completed"
-    },
-    {
-      id: 5,
-      model: "Midjourney",
-      credits: 800,
-      timestamp: "2024-12-18 10:30",
-      type: "Image Generation",
-      status: "completed"
-    },
-    {
-      id: 6,
-      model: "GPT-4o",
-      credits: 180,
-      timestamp: "2024-12-18 09:45",
-      type: "Document Analysis",
-      status: "completed"
-    },
-    {
-      id: 7,
-      model: "Claude 3.5",
-      credits: 220,
-      timestamp: "2024-12-18 08:30",
-      type: "Code Debugging",
-      status: "completed"
-    },
-    {
-      id: 8,
-      model: "DALL-E 3",
-      credits: 450,
-      timestamp: "2024-12-17 22:10",
-      type: "Image Editing",
-      status: "completed"
-    }
-  ];
+  const [creditDetails, setCreditDetails] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchModelUsage = async () => {
+      try {
+        const response = await fetch('/api/dashboard/model-usage?limit=10');
+        if (!response.ok) throw new Error('Failed to fetch model usage');
+        const result = await response.json();
+        
+        // 格式化数据
+        const formattedData = result.data.map((item: any) => ({
+          id: item.id,
+          model: item.modelName,
+          credits: item.credits,
+          timestamp: new Date(item.timestamp).toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+          type: item.usageType,
+          status: item.status
+        }));
+        
+        setCreditDetails(formattedData);
+      } catch (error) {
+        console.error('Error fetching model usage:', error);
+        // 使用默认数据
+        setCreditDetails([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchModelUsage();
+  }, []);
 
   const getModelColor = (model: string) => {
     const colors: { [key: string]: string } = {
@@ -80,6 +54,16 @@ const TeamMembers = () => {
   };
 
   const totalRecords = creditDetails.length;
+
+  if (loading) {
+    return (
+      <div className="team-members-card">
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '300px' }}>
+          <span style={{ color: '#999' }}>Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="team-members-card">
