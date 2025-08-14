@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     }
 
     // 从数据库获取最新的用户信息
-    const user = await findUserByEmail(session.user.email);
+    const user = await findUserByEmail(session.user.email as any);
     
     if (!user) {
       return NextResponse.json(

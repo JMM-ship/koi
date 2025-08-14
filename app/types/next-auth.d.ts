@@ -12,6 +12,9 @@ declare module "next-auth" {
       avatar_url?: string
       created_at?: string
       role?: string
+      status?: string
+      planType?: string
+      totalCredits?: number
     }
   }
 

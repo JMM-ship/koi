@@ -181,7 +181,7 @@ export const authOptions: NextAuthOptions = {
       if (token && token.user) {
         // 从数据库获取最新的用户信息，确保角色是最新的
         try {
-          const latestUser = await findUserByEmail(token.user.email);
+          const latestUser = await findUserByEmail(token.user.email as any);
           if (latestUser) {
             session.user = {
               ...token.user,
