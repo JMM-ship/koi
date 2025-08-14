@@ -31,7 +31,7 @@ async function seedDashboardData() {
 
       await prisma.consumptionTrend.upsert({
         where: {
-          uk_user_date: {
+          userUuid_date: {
             userUuid,
             date
           }

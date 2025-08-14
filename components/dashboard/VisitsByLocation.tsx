@@ -12,15 +12,15 @@ const CurrentPlan = () => {
         const response = await fetch('/api/dashboard');
         if (!response.ok) throw new Error('Failed to fetch dashboard data');
         const result = await response.json();
-        
+
         const userInfo = result.userInfo;
         const userPackage = result.userPackage;
-        
+
         // 格式化套餐信息
         const now = new Date();
         const endDate = userPackage?.endDate || userInfo?.planExpiredAt || new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
         const startDate = userPackage?.startDate || new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
-        
+
         const planType = userInfo?.planType || 'free';
         const planNames: any = {
           'free': 'Free',
@@ -28,18 +28,18 @@ const CurrentPlan = () => {
           'pro': 'Professional',
           'enterprise': 'Enterprise'
         };
-        
+
         const planPrices: any = {
           'free': '$0',
           'basic': '$9',
           'pro': '$29',
           'enterprise': '$99'
         };
-        
+
         const isActive = new Date(endDate) > now;
         const daysRemaining = Math.floor((new Date(endDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
         const status = isActive ? (daysRemaining < 7 ? 'expiring_soon' : 'active') : 'expired';
-        
+
         setPlanDetails({
           name: planNames[planType] || 'Professional',
           price: planPrices[planType] || '$29',
@@ -197,7 +197,7 @@ const CurrentPlan = () => {
       <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '0.75rem', marginBottom: '0.75rem' }}>
         <h5 style={{ fontSize: '0.6875rem', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '0.625rem' }}>Features</h5>
         <ul className="list-unstyled" style={{ margin: 0 }}>
-          {planDetails.features.map((feature, index) => (
+          {planDetails.features.map((feature: any, index: any) => (
             <li key={index} className="d-flex align-items-center" style={{ marginBottom: '0.5rem' }}>
               <span style={{
                 width: '1.125rem',
