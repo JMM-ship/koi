@@ -250,7 +250,7 @@ export default function PlansContent() {
             Base plan $200 Max account, monthly pricing is 28% of base, best value
           </p>
 
-          {currentPackage && (
+          {/* {currentPackage && (
             <div style={{
               background: 'rgba(0, 208, 132, 0.1)',
               border: '1px solid rgba(0, 208, 132, 0.2)',
@@ -268,7 +268,7 @@ export default function PlansContent() {
                 {currentPackage.remainingDays} days remaining
               </span>
             </div>
-          )}
+          )} */}
 
           <div style={{
             background: 'rgba(255, 193, 7, 0.1)',
