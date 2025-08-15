@@ -11,7 +11,10 @@
         "prisma:migrate": "prisma migrate dev",
         "prisma:studio": "dotenv -e .env.development -- prisma studio",
         "prisma:push": "prisma db push",
-        "studio": "prisma studio"
+        "studio": "prisma studio",
+        "cron": "tsx scripts/cron-scheduler.ts",
+        "cron:once": "tsx scripts/cron-scheduler.ts --once",
+        "reset:credits": "tsx scripts/reset-credits.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.859.0",

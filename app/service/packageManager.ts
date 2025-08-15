@@ -14,6 +14,7 @@ import {
 import { activatePackageCredits, dailyResetCredits } from "./creditManager";
 import { batchCreateResetTransactions } from "@/app/models/creditTransaction";
 import { getCreditBalance, batchResetPackageCredits } from "@/app/models/creditBalance";
+import { prisma } from "@/app/models/db";
 
 export interface PackagePurchaseResult {
   success: boolean;
@@ -286,6 +287,65 @@ export async function checkExpiringPackages(days: number = 3): Promise<{
       expiringPackages: [],
       notificationsSent: 0,
     };
+  }
+}
+
+// 检查并处理已过期的套餐
+export async function checkAndExpirePackages(): Promise<number> {
+  try {
+    // 查找所有已过期但仍然活跃的套餐
+    const now = new Date();
+    const expiredPackages = await prisma.userPackage.findMany({
+      where: {
+        isActive: true,
+        endDate: {
+          lt: now
+        }
+      }
+    });
+    
+    if (expiredPackages.length === 0) {
+      console.log('No expired packages found');
+      return 0;
+    }
+    
+    console.log(`Found ${expiredPackages.length} expired packages to process`);
+    
+    // 批量更新为非活跃状态
+    const result = await prisma.userPackage.updateMany({
+      where: {
+        id: {
+          in: expiredPackages.map(p => p.id)
+        }
+      },
+      data: {
+        isActive: false,
+        updatedAt: now
+      }
+    });
+    
+    // 对每个过期的套餐，清空用户的套餐积分
+    for (const pkg of expiredPackages) {
+      try {
+        await prisma.creditBalance.update({
+          where: { userUuid: pkg.userUuid },
+          data: {
+            packageCredits: 0,
+            packageResetAt: now,
+            updatedAt: now
+          }
+        });
+        
+        console.log(`Expired package for user ${pkg.userUuid}`);
+      } catch (error) {
+        console.error(`Failed to clear package credits for user ${pkg.userUuid}:`, error);
+      }
+    }
+    
+    return result.count;
+  } catch (error) {
+    console.error('Error checking and expiring packages:', error);
+    return 0;
   }
 }
 

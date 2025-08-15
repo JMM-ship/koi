@@ -275,6 +275,30 @@ export async function getAllActivePackageUsers(): Promise<Array<{
   }
 }
 
+// 获取所有活跃套餐（包含详细信息）
+export async function getAllActivePackages(): Promise<UserPackage[]> {
+  try {
+    const now = new Date();
+    
+    const packages = await prisma.userPackage.findMany({
+      where: {
+        isActive: true,
+        endDate: {
+          gte: now,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    
+    return packages.map(pkg => fromPrismaUserPackage(pkg)!).filter(Boolean);
+  } catch (error) {
+    console.error('Error getting all active packages:', error);
+    return [];
+  }
+}
+
 // 根据订单号获取用户套餐
 export async function getUserPackageByOrderNo(orderNo: string): Promise<UserPackage | undefined> {
   try {
