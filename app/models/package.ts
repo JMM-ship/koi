@@ -25,6 +25,7 @@ export interface Package {
   currency: string;
   daily_credits: number;
   valid_days: number;
+  plan_type: string; // basic, pro, enterprise
   features?: PackageFeatures;
   limitations?: PackageLimitations;
   sort_order: number;
@@ -36,7 +37,7 @@ export interface Package {
 }
 
 // 转换函数：将Prisma数据转换为应用层格式
-function fromPrismaPackage(pkg: PrismaPackage | null): Package | undefined {
+function fromPrismaPackage(pkg: any | null): Package | undefined {
   if (!pkg) return undefined;
   
   return {
@@ -50,6 +51,7 @@ function fromPrismaPackage(pkg: PrismaPackage | null): Package | undefined {
     currency: pkg.currency,
     daily_credits: pkg.dailyCredits,
     valid_days: pkg.validDays,
+    plan_type: pkg.planType,
     features: pkg.features as PackageFeatures || undefined,
     limitations: pkg.limitations as PackageLimitations || undefined,
     sort_order: pkg.sortOrder,
@@ -73,6 +75,7 @@ function toPrismaPackage(pkg: Partial<Package>): any {
     currency: pkg.currency || 'CNY',
     dailyCredits: pkg.daily_credits,
     validDays: pkg.valid_days || 30,
+    planType: pkg.plan_type || 'basic',
     features: pkg.features || null,
     limitations: pkg.limitations || null,
     sortOrder: pkg.sort_order || 0,

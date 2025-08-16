@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === 'production') {
   // 开发环境：使用全局单例避免热重载时创建多个实例
   if (!global.prisma) {
     global.prisma = new PrismaClient({
-      log: ['query', 'error', 'warn'],
+      log: [ 'error', 'warn'],
     });
   }
   prisma = global.prisma;

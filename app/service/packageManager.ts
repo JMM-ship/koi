@@ -52,6 +52,7 @@ export async function purchasePackage(
       price: packageInfo.price,
       dailyCredits: packageInfo.daily_credits,
       validDays: packageInfo.valid_days,
+      planType: packageInfo.plan_type,
       features: packageInfo.features,
     };
     
@@ -79,6 +80,20 @@ export async function purchasePackage(
     
     if (!creditResult.success) {
       return { success: false, error: 'Failed to activate package credits' };
+    }
+    
+    // 更新用户的 planType
+    try {
+      await prisma.user.update({
+        where: { uuid: userUuid },
+        data: { 
+          planType: packageInfo.plan_type || 'basic',
+          planExpiredAt: endDate
+        }
+      });
+    } catch (error) {
+      console.error('Failed to update user planType:', error);
+      // 不影响购买流程，继续执行
     }
     
     return {
@@ -119,6 +134,7 @@ export async function renewPackage(
       price: packageInfo.price,
       dailyCredits: packageInfo.daily_credits,
       validDays: packageInfo.valid_days,
+      planType: packageInfo.plan_type,
       features: packageInfo.features,
     };
     

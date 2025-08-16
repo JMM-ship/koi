@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
         // 这里可以添加汇率转换逻辑
       }));
     }
+    console.log(result,"结果");
     
     return NextResponse.json({
       success: true,

@@ -275,6 +275,7 @@ model Package {
   currency      String   @default("CNY") @db.VarChar(10)
   dailyCredits  Int      @map("daily_credits")
   validDays     Int      @default(30) @map("valid_days")
+  planType      String   @default("basic") @map("plan_type") @db.VarChar(50) // basic, pro, enterprise
   features      Json?
   limitations   Json?
   sortOrder     Int      @default(0) @map("sort_order")
