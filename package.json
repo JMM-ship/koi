@@ -11,7 +11,10 @@
         "prisma:migrate": "prisma migrate dev",
         "prisma:studio": "dotenv -e .env.development -- prisma studio",
         "prisma:push": "prisma db push",
-        "studio": "prisma studio"
+        "studio": "prisma studio",
+        "cron": "tsx scripts/cron-scheduler.ts",
+        "cron:once": "tsx scripts/cron-scheduler.ts --once",
+        "reset:credits": "tsx scripts/reset-credits.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.859.0",
@@ -26,9 +29,11 @@
         "gsap": "^3.12.7",
         "https-proxy-agent": "^7.0.2",
         "isotope-layout": "^3.0.6",
+        "lucide-react": "^0.539.0",
         "mysql2": "^3.11.5",
         "next": "^14.2.1",
         "next-auth": "^4.24.11",
+        "node-cron": "^4.2.1",
         "nodemailer": "^6.10.1",
         "react": "^18",
         "react-dom": "^18",

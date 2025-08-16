@@ -202,9 +202,12 @@ export async function handlePaymentSuccess(
       paymentDetails.email || order.user_email,
       JSON.stringify(paymentDetails)
     );
+
     
     // 根据订单类型处理
     if (order.order_type === OrderType.Package) {
+
+      
       // 激活套餐
       const result = await purchasePackage(
         order.user_uuid,

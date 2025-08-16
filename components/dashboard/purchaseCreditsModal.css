@@ -1,0 +1,216 @@
+/* .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+} */
+
+.modal-content-indepent {
+  background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  padding: 24px;
+  width: 95%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out forwards;
+  pointer-events: auto;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.modal-subtitle {
+  color: #aaa;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.package-card {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.package-card:hover:not(.selected) {
+  transform: translateY(-3px);
+  border-color: #666;
+}
+
+.package-card.selected {
+  border-color: #f97316;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+}
+
+.package-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.package-price {
+  margin-bottom: 6px;
+}
+
+.current-price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #f97316;
+  margin-right: 8px;
+}
+
+.original-price {
+  font-size: 14px;
+  color: #777;
+  text-decoration: line-through;
+}
+
+.package-credits {
+  font-size: 14px;
+  color: #aaa;
+}
+
+.checkmark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  color: #f97316;
+  font-size: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.btn.cancel {
+  background: transparent;
+  border: 1px solid #444;
+  color: #bbb;
+}
+
+.btn.cancel:hover {
+  background: #2a2a2a;
+  color: #fff;
+}
+
+.btn.purchase {
+  background: linear-gradient(to right, #f97316, #ea580c);
+  color: #fff;
+  border: none;
+}
+
+.btn.purchase:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(249, 115, 22, 0.4);
+}
+
+.btn.disabled {
+  background: #333 !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px) scale(1);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 防止模态框响应鼠标位置 */
+.modal-overlay * {
+  transition: transform 0.3s ease, opacity 0.3s ease, border-color 0.3s ease;
+}
+
+/* 移动端响应式 */
+@media (max-width: 640px) {
+  .modal-content-indepent {
+    width: 98%;
+    padding: 16px;
+    max-height: 90vh;
+  }
+
+  .package-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

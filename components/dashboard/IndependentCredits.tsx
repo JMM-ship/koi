@@ -1,54 +1,55 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import IndependentPackages from "./IndependentPackages";
 
 const IndependentCredits = () => {
   const [creditsData, setCreditsData] = useState({
-    total: 50000,
+    total: 0,
     used: 0,
-    remaining: 50000,
-    percentage: 100,
+    remaining: 0,
+    percentage: 0,
     expiryDate: "March 31, 2025",
     lastPurchase: "December 10, 2024",
-    purchaseAmount: 10000
+    purchaseAmount: 0
   });
   const [loading, setLoading] = useState(true);
-
+  const [showPackages, setShowPackages] = useState(false);
   useEffect(() => {
     const fetchCreditsData = async () => {
       try {
         const response = await fetch('/api/dashboard');
         if (!response.ok) throw new Error('Failed to fetch dashboard data');
         const result = await response.json();
-        
+
         // 获取独立积分数据
         const balance = result.creditBalance;
         const independent = balance?.independentCredits || 0;
         const totalPurchased = balance?.totalPurchased || 50000;
         const used = Math.min(balance?.totalUsed || 0, totalPurchased - independent);
         const percentage = totalPurchased > 0 ? (independent / totalPurchased) * 100 : 0;
-        
+
         // 获取最后购买信息
         const lastOrder = result.userPackage;
-        const lastPurchaseDate = lastOrder?.createdAt 
-          ? new Date(lastOrder.createdAt).toLocaleDateString('en-US', { 
-              month: 'long', 
-              day: 'numeric', 
-              year: 'numeric' 
-            })
+        const lastPurchaseDate = lastOrder?.createdAt
+          ? new Date(lastOrder.createdAt).toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+          })
           : "December 10, 2024";
-        
+
         setCreditsData({
           total: totalPurchased,
           used: used,
           remaining: independent,
           percentage: percentage,
-          expiryDate: lastOrder?.endDate 
-            ? new Date(lastOrder.endDate).toLocaleDateString('en-US', { 
-                month: 'long', 
-                day: 'numeric', 
-                year: 'numeric' 
-              })
+          expiryDate: lastOrder?.endDate
+            ? new Date(lastOrder.endDate).toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })
             : "March 31, 2025",
           lastPurchase: lastPurchaseDate,
           purchaseAmount: 10000
@@ -79,6 +80,11 @@ const IndependentCredits = () => {
         <span style={{ color: '#999' }}>Loading...</span>
       </div>
     );
+  }
+
+  // Show packages view when button is clicked
+  if (showPackages) {
+    return <IndependentPackages onBack={() => setShowPackages(false)} />;
   }
 
   return (
@@ -175,8 +181,20 @@ const IndependentCredits = () => {
           padding: '0.5rem 1rem',
           color: '#fff',
           fontSize: '0.8125rem',
-          fontWeight: '500'
-        }}>
+          fontWeight: '500',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+          onClick={() => setShowPackages(true)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 165, 0, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+        >
           Purchase More
         </button>
       </div>

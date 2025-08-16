@@ -29,6 +29,17 @@ interface UserPackage {
   remainingDays: number;
 }
 
+function fromApiUserPackage(apiData: any): UserPackage {
+  return {
+    id: apiData?.id,
+    packageId: apiData?.package_id,
+    packageName: apiData?.package_name,
+    endDate: apiData?.end_date,
+    dailyCredits: apiData?.daily_credits,
+    remainingDays: apiData?.remaining_days,
+  };
+}
+
 export default function PlansContent() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -40,71 +51,6 @@ export default function PlansContent() {
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   const [purchasing, setPurchasing] = useState(false);
 
-  // Default packages data (fallback)
-  const defaultPackages: Package[] = [
-    {
-      id: 'pkg_basic',
-      name: 'Monthly',
-      name_en: 'Monthly',
-      price: 399,
-      original_price: undefined,
-      daily_credits: 10800,
-      valid_days: 30,
-      features: [
-        "5 people share one $200 Max account",
-        "Total 10,800 points/day - suitable for daily development",
-        "4 points deducted per morning",
-        "Support Claude 4 Opus & Sonnet",
-        "1v1 engineer service"
-      ],
-      is_recommended: false,
-      currency: 'CNY',
-      tag: undefined
-    },
-    {
-      id: 'pkg_pro',
-      name: 'Large Monthly',
-      name_en: 'Large Monthly',
-      price: 699,
-      original_price: 999,
-      daily_credits: 30000,
-      valid_days: 30,
-      features: [
-        "3 people share one $200 account",
-        "Total 30,000 points/day - high intensity development",
-        "4 points deducted per morning",
-        "Support Claude 4 Opus & Sonnet",
-        "1v1 engineer service",
-        "Priority technical support",
-        "$100 quota worth more than double, only ¥699"
-      ],
-      is_recommended: true,
-      currency: 'CNY',
-      tag: 'HOT'
-    },
-    {
-      id: 'pkg_enterprise',
-      name: 'Exclusive',
-      name_en: 'Exclusive',
-      price: 1799,
-      original_price: undefined,
-      daily_credits: 100000,
-      valid_days: 30,
-      features: [
-        "Exclusive $200 experience",
-        "Exclusive account, ultra experience",
-        "Total 100,000 points/day - professional development",
-        "4 points deducted per morning",
-        "Support Claude 4 Opus & Sonnet",
-        "Dedicated WeChat consulting service",
-        "1v1 engineer service",
-        "Priority technical support"
-      ],
-      is_recommended: false,
-      currency: 'CNY',
-      tag: 'NEW'
-    }
-  ];
 
   // Get packages list
   useEffect(() => {
@@ -114,7 +60,8 @@ export default function PlansContent() {
   const fetchPackages = async () => {
     try {
       const response = await fetch('/api/packages');
-      const data = await response.json();
+      const data = await response.json()
+
 
       if (data.success && data.data?.packages?.length > 0) {
         // Convert price from cents to yuan
@@ -124,15 +71,10 @@ export default function PlansContent() {
           original_price: pkg.original_price ? pkg.original_price / 100 : undefined
         }));
         setPackages(packagesData);
-        setCurrentPackage(data.data.currentPackage);
-      } else {
-        // Use default data if no packages from API
-        setPackages(defaultPackages);
+        setCurrentPackage(fromApiUserPackage(data.data.currentPackage));
       }
     } catch (error) {
       showError('Failed to load packages');
-      // Use default data on error
-      setPackages(defaultPackages);
     } finally {
       setLoading(false);
     }
