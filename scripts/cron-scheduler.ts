@@ -55,7 +55,6 @@ class CronScheduler {
           console.error(`[${new Date().toISOString()}] Error executing task '${config.name}':`, error);
         }
       }, {
-        scheduled: false,
         timezone: process.env.TZ || 'Asia/Shanghai' // 使用中国时区
       });
 

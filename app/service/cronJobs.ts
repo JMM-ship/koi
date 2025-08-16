@@ -7,7 +7,7 @@ export interface CronJobConfig {
   name: string;
   schedule: string; // cron expression
   enabled: boolean;
-  handler: () => Promise<void>;
+  handler: () => Promise<JobExecutionResult>;
 }
 
 // 任务执行结果
