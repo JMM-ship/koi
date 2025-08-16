@@ -86,7 +86,8 @@ const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
       display: 'flex',
       flexDirection: 'column',
       transition: 'all 0.3s',
-      height: '100%'
+      height: '100%',
+      minHeight: '400px'
     }}>
       {/* Header with back button */}
       <div className="d-flex align-items-center" style={{ marginBottom: '1.5rem' }}>
@@ -123,10 +124,12 @@ const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
       {/* Package Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gridTemplateRows: 'repeat(2, minmax(100px, 1fr))',
         gap: '0.75rem',
-        marginBottom: '1.5rem',
-        flex: 1
+        marginBottom: '1rem',
+        flex: 1,
+        minHeight: '250px'
       }}>
         {packages.map((pkg) => (
           <div
@@ -140,14 +143,16 @@ const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
                 ? '2px solid #ffa500' 
                 : '1px solid #2a2a2a',
               borderRadius: '0.5rem',
-              padding: '1rem',
+              padding: '0.75rem',
               cursor: 'pointer',
               transition: 'all 0.3s',
               position: 'relative',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              textAlign: 'center'
+              justifyContent: 'center',
+              textAlign: 'center',
+              minHeight: '100px'
             }}
             onMouseEnter={(e) => {
               if (selectedPackage !== pkg.id) {
