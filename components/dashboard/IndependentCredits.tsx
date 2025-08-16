@@ -1,56 +1,55 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import PurchaseCreditsModal from "./PurchaseCreditsModal";
+import IndependentPackages from "./IndependentPackages";
 
 const IndependentCredits = () => {
   const [creditsData, setCreditsData] = useState({
-    total: 50000,
+    total: 0,
     used: 0,
-    remaining: 50000,
-    percentage: 100,
+    remaining: 0,
+    percentage: 0,
     expiryDate: "March 31, 2025",
     lastPurchase: "December 10, 2024",
-    purchaseAmount: 10000
+    purchaseAmount: 0
   });
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [showPackages, setShowPackages] = useState(false);
   useEffect(() => {
     const fetchCreditsData = async () => {
       try {
         const response = await fetch('/api/dashboard');
         if (!response.ok) throw new Error('Failed to fetch dashboard data');
         const result = await response.json();
-        
+
         // 获取独立积分数据
         const balance = result.creditBalance;
         const independent = balance?.independentCredits || 0;
         const totalPurchased = balance?.totalPurchased || 50000;
         const used = Math.min(balance?.totalUsed || 0, totalPurchased - independent);
         const percentage = totalPurchased > 0 ? (independent / totalPurchased) * 100 : 0;
-        
+
         // 获取最后购买信息
         const lastOrder = result.userPackage;
-        const lastPurchaseDate = lastOrder?.createdAt 
-          ? new Date(lastOrder.createdAt).toLocaleDateString('en-US', { 
-              month: 'long', 
-              day: 'numeric', 
-              year: 'numeric' 
-            })
+        const lastPurchaseDate = lastOrder?.createdAt
+          ? new Date(lastOrder.createdAt).toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+          })
           : "December 10, 2024";
-        
+
         setCreditsData({
           total: totalPurchased,
           used: used,
           remaining: independent,
           percentage: percentage,
-          expiryDate: lastOrder?.endDate 
-            ? new Date(lastOrder.endDate).toLocaleDateString('en-US', { 
-                month: 'long', 
-                day: 'numeric', 
-                year: 'numeric' 
-              })
+          expiryDate: lastOrder?.endDate
+            ? new Date(lastOrder.endDate).toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })
             : "March 31, 2025",
           lastPurchase: lastPurchaseDate,
           purchaseAmount: 10000
@@ -81,6 +80,11 @@ const IndependentCredits = () => {
         <span style={{ color: '#999' }}>Loading...</span>
       </div>
     );
+  }
+
+  // Show packages view when button is clicked
+  if (showPackages) {
+    return <IndependentPackages onBack={() => setShowPackages(false)} />;
   }
 
   return (
@@ -170,42 +174,30 @@ const IndependentCredits = () => {
       </div>
 
       <div className="d-flex gap-2">
-        <button 
-          className="btn btn-sm flex-fill purchase-btn" 
-          onClick={() => setIsModalOpen(true)}
-          style={{
-            background: 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)',
-            border: 'none',
-            borderRadius: '0.375rem',
-            padding: '0.5rem 1rem',
-            color: '#fff',
-            fontSize: '0.8125rem',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: '0 2px 10px rgba(255, 165, 0, 0.2)'
-          }}
+        <button className="btn btn-sm flex-fill" style={{
+          background: 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)',
+          border: 'none',
+          borderRadius: '0.375rem',
+          padding: '0.5rem 1rem',
+          color: '#fff',
+          fontSize: '0.8125rem',
+          fontWeight: '500',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease'
+        }}
+          onClick={() => setShowPackages(true)}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 165, 0, 0.4)';
-            e.currentTarget.style.background = 'linear-gradient(135deg, #ffb732 0%, #ff9500 100%)';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 165, 0, 0.3)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0) scale(1)';
-            e.currentTarget.style.boxShadow = '0 2px 10px rgba(255, 165, 0, 0.2)';
-            e.currentTarget.style.background = 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = 'none';
           }}
         >
           Purchase More
         </button>
       </div>
-      
-      <PurchaseCreditsModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
     </div>
   );
 };
