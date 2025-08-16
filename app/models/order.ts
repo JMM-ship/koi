@@ -9,6 +9,8 @@ export enum OrderStatus {
 
 // 转换函数：将应用层数据转换为Prisma格式
 function toPrismaOrder(order: any): any {
+
+  
   return {
     orderNo: order.order_no,
     userUuid: order.user_uuid || '',
@@ -26,22 +28,30 @@ function toPrismaOrder(order: any): any {
     subPeriodEnd: order.sub_period_end || null,
     subPeriodStart: order.sub_period_start || null,
     subTimes: order.sub_times || null,
-    productId: order.product_id || null,
+    packageId: order.package_id || null,
     productName: order.product_name || null,
     validMonths: order.valid_months || null,
     orderDetail: order.order_detail || null,
     paidAt: order.paid_at ? new Date(order.paid_at) : null,
     paidEmail: order.paid_email || null,
     paidDetail: order.paid_detail || null,
+    orderType: order.order_type,
+    creditAmount: order.credit_amount || null,
+    packageSnapshot: order.package_snapshot || null,
+    startDate: order.start_date ? new Date(order.start_date) : null,
+    endDate: order.end_date ? new Date(order.end_date) : null,
+    discountAmount: order.discount_amount || 0,
+    couponCode: order.coupon_code || null,
+    paymentMethod: order.payment_method || null
   };
 }
 
 // 转换函数：将Prisma数据转换为应用层格式
 function fromPrismaOrder(order: PrismaOrder | null): any | undefined {
   if (!order) return undefined;
-  
   return {
     id: order.id,
+    order_type: order.orderType,
     order_no: order.orderNo,
     created_at: order.createdAt.toISOString(),
     user_uuid: order.userUuid,
@@ -59,7 +69,7 @@ function fromPrismaOrder(order: PrismaOrder | null): any | undefined {
     sub_period_end: order.subPeriodEnd,
     sub_period_start: order.subPeriodStart,
     sub_times: order.subTimes,
-    product_id: order.productId,
+    package_id: order.packageId,
     product_name: order.productName,
     valid_months: order.validMonths,
     order_detail: order.orderDetail,
@@ -70,6 +80,8 @@ function fromPrismaOrder(order: PrismaOrder | null): any | undefined {
 }
 
 export async function insertOrder(order: any) {
+  console.log("出版人",order);
+  
   try {
     const data = await prisma.order.create({
       data: toPrismaOrder(order),
@@ -87,6 +99,7 @@ export async function findOrderByOrderNo(
     const order = await prisma.order.findUnique({
       where: { orderNo: order_no },
     });
+    
     return fromPrismaOrder(order);
   } catch (error) {
     return undefined;

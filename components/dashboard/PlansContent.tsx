@@ -79,7 +79,6 @@ export default function PlansContent() {
       setLoading(false);
     }
   };
-  console.log(packages);
 
   // Handle purchase button click
   const handlePurchase = (pkg: Package) => {
@@ -181,7 +180,6 @@ export default function PlansContent() {
       </div>
     );
   }
-  console.log(packages, "55");
 
   return (
     <>
