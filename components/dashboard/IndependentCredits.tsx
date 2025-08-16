@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import PurchaseCreditsModal from "./PurchaseCreditsModal";
 
 const IndependentCredits = () => {
   const [creditsData, setCreditsData] = useState({
@@ -13,6 +14,7 @@ const IndependentCredits = () => {
     purchaseAmount: 10000
   });
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCreditsData = async () => {
@@ -168,18 +170,42 @@ const IndependentCredits = () => {
       </div>
 
       <div className="d-flex gap-2">
-        <button className="btn btn-sm flex-fill" style={{
-          background: 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)',
-          border: 'none',
-          borderRadius: '0.375rem',
-          padding: '0.5rem 1rem',
-          color: '#fff',
-          fontSize: '0.8125rem',
-          fontWeight: '500'
-        }}>
+        <button 
+          className="btn btn-sm flex-fill purchase-btn" 
+          onClick={() => setIsModalOpen(true)}
+          style={{
+            background: 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)',
+            border: 'none',
+            borderRadius: '0.375rem',
+            padding: '0.5rem 1rem',
+            color: '#fff',
+            fontSize: '0.8125rem',
+            fontWeight: '500',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 2px 10px rgba(255, 165, 0, 0.2)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 165, 0, 0.4)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, #ffb732 0%, #ff9500 100%)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+            e.currentTarget.style.boxShadow = '0 2px 10px rgba(255, 165, 0, 0.2)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)';
+          }}
+        >
           Purchase More
         </button>
       </div>
+      
+      <PurchaseCreditsModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 };
