@@ -29,6 +29,17 @@ interface UserPackage {
   remainingDays: number;
 }
 
+function fromApiUserPackage(apiData: any): UserPackage {
+  return {
+    id: apiData.id,
+    packageId: apiData.package_id,
+    packageName: apiData.package_name,
+    endDate: apiData.end_date,
+    dailyCredits: apiData.daily_credits,
+    remainingDays: apiData.remaining_days,
+  };
+}
+
 export default function PlansContent() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -114,7 +125,8 @@ export default function PlansContent() {
   const fetchPackages = async () => {
     try {
       const response = await fetch('/api/packages');
-      const data = await response.json();
+      const data = await response.json()
+      console.log(data, "当前");
 
       if (data.success && data.data?.packages?.length > 0) {
         // Convert price from cents to yuan
@@ -124,7 +136,7 @@ export default function PlansContent() {
           original_price: pkg.original_price ? pkg.original_price / 100 : undefined
         }));
         setPackages(packagesData);
-        setCurrentPackage(data.data.currentPackage);
+        setCurrentPackage(fromApiUserPackage(data.data.currentPackage));
       } else {
         // Use default data if no packages from API
         setPackages(defaultPackages);
@@ -238,6 +250,7 @@ export default function PlansContent() {
       </div>
     );
   }
+  console.log(packages, "55");
 
   return (
     <>

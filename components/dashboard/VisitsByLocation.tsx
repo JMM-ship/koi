@@ -41,8 +41,8 @@ const CurrentPlan = () => {
         const status = isActive ? (daysRemaining < 7 ? 'expiring_soon' : 'active') : 'expired';
 
         setPlanDetails({
-          name: planNames[planType] || 'Professional',
-          price: planPrices[planType] || '$29',
+          name: planNames[planType],
+          price: planPrices[planType],
           billing: 'month',
           status,
           statusLabel: status === 'active' ? 'Active' : status === 'expiring_soon' ? 'Expiring Soon' : 'Expired',

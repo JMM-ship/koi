@@ -6,10 +6,10 @@ import * as echarts from 'echarts';
 const SatisfactionRate = () => {
   const chartRef = useRef<HTMLDivElement>(null);
   const [creditData, setCreditData] = useState({
-    totalCredits: 10000,
+    totalCredits: 0,
     usedCredits: 0,
-    remainingCredits: 10000,
-    percentage: 100
+    remainingCredits: 0,
+    percentage: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +24,7 @@ const SatisfactionRate = () => {
         const balance = result.creditBalance;
         const userInfo = result.userInfo;
 
-        const total = (balance?.packageCredits || 0) + (balance?.independentCredits || 0) + (userInfo?.totalCredits || 10000);
+        const total = (balance?.packageCredits || 0) + (balance?.independentCredits || 0) + (userInfo?.totalCredits || 0);
         const used = balance?.totalUsed || 0;
         const remaining = Math.max(0, total - used);
         const percent = total > 0 ? (remaining / total) * 100 : 0;
