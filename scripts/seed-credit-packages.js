@@ -4,16 +4,16 @@ const prisma = new PrismaClient();
 
 const creditPackages = [
   {
-    name: '10K积分包',
+    name: '10K Credits Pack',
     nameEn: '10K Credits',
     version: 'credits_v1',
-    description: '10,000积分，适合轻度使用',
-    price: 999, // 9.99元 (以分为单位)
+    description: '10,000 credits for light usage',
+    price: 999, // 9.99 CNY (in cents)
     originalPrice: null,
     currency: 'CNY',
-    dailyCredits: 10000, // 总积分数量
-    validDays: 0, // 0表示永久有效
-    planType: 'credits', // 标识为积分套餐
+    dailyCredits: 10000, // Total credits amount
+    validDays: 0, // 0 means never expires
+    planType: 'credits', // Identifies as credit package
     features: {
       totalCredits: 10000,
       type: 'independent',
@@ -25,14 +25,14 @@ const creditPackages = [
     tag: null,
   },
   {
-    name: '50K积分包',
+    name: '50K Credits Pack',
     nameEn: '50K Credits',
     version: 'credits_v1',
-    description: '50,000积分，最受欢迎的选择',
-    price: 3999, // 39.99元
-    originalPrice: 4999, // 原价49.99元
+    description: '50,000 credits - Most popular choice',
+    price: 3999, // 39.99 CNY
+    originalPrice: 4999, // Original price 49.99 CNY
     currency: 'CNY',
-    dailyCredits: 50000, // 总积分数量
+    dailyCredits: 50000, // Total credits amount
     validDays: 0,
     planType: 'credits',
     features: {
@@ -47,14 +47,14 @@ const creditPackages = [
     tag: 'Popular',
   },
   {
-    name: '100K积分包',
+    name: '100K Credits Pack',
     nameEn: '100K Credits',
     version: 'credits_v1',
-    description: '100,000积分，专业用户的选择',
-    price: 6999, // 69.99元
-    originalPrice: 9999, // 原价99.99元
+    description: '100,000 credits for professional users',
+    price: 6999, // 69.99 CNY
+    originalPrice: 9999, // Original price 99.99 CNY
     currency: 'CNY',
-    dailyCredits: 100000, // 总积分数量
+    dailyCredits: 100000, // Total credits amount
     validDays: 0,
     planType: 'credits',
     features: {
@@ -69,14 +69,14 @@ const creditPackages = [
     tag: 'Save 30%',
   },
   {
-    name: '500K积分包',
+    name: '500K Credits Pack',
     nameEn: '500K Credits',
     version: 'credits_v1',
-    description: '500,000积分，企业级容量',
-    price: 29999, // 299.99元
-    originalPrice: 49999, // 原价499.99元
+    description: '500,000 credits for enterprise scale',
+    price: 29999, // 299.99 CNY
+    originalPrice: 49999, // Original price 499.99 CNY
     currency: 'CNY',
-    dailyCredits: 500000, // 总积分数量
+    dailyCredits: 500000, // Total credits amount
     validDays: 0,
     planType: 'credits',
     features: {
@@ -94,9 +94,9 @@ const creditPackages = [
 
 async function seedCreditPackages() {
   try {
-    console.log('开始插入积分套餐数据...\n');
+    console.log('Starting to insert credit package data...\n');
     
-    // 检查并删除旧的积分套餐
+    // Check and delete old credit packages
     const oldCredits = await prisma.package.deleteMany({
       where: {
         planType: 'credits'
@@ -104,29 +104,29 @@ async function seedCreditPackages() {
     });
     
     if (oldCredits.count > 0) {
-      console.log(`删除了 ${oldCredits.count} 个旧的积分套餐\n`);
+      console.log(`Deleted ${oldCredits.count} old credit package(s)\n`);
     }
     
-    // 插入新的积分套餐数据
+    // Insert new credit package data
     for (const pkg of creditPackages) {
       const created = await prisma.package.create({
         data: pkg,
       });
       
-      console.log(`创建积分套餐: ${created.name}`);
-      console.log(`  - 积分数量: ${created.dailyCredits.toLocaleString()}`);
-      console.log(`  - 价格: ¥${(created.price/100).toFixed(2)}`);
+      console.log(`Created credit package: ${created.name}`);
+      console.log(`  - Credits amount: ${created.dailyCredits.toLocaleString()}`);
+      console.log(`  - Price: ¥${(created.price/100).toFixed(2)}`);
       if (created.originalPrice) {
-        console.log(`  - 原价: ¥${(created.originalPrice/100).toFixed(2)}`);
+        console.log(`  - Original price: ¥${(created.originalPrice/100).toFixed(2)}`);
         const savings = Math.round((1 - created.price/created.originalPrice) * 100);
-        console.log(`  - 优惠: ${savings}%`);
+        console.log(`  - Discount: ${savings}%`);
       }
       console.log('');
     }
     
-    console.log('积分套餐数据插入完成！\n');
+    console.log('Credit package data insertion completed!\n');
     
-    // 显示所有积分套餐
+    // Display all credit packages
     const allCreditPackages = await prisma.package.findMany({
       where: {
         planType: 'credits'
@@ -134,18 +134,18 @@ async function seedCreditPackages() {
       orderBy: { sortOrder: 'asc' },
     });
     
-    console.log('当前所有积分套餐:');
+    console.log('Current credit packages:');
     console.log('='.repeat(60));
     allCreditPackages.forEach(pkg => {
       const price = (pkg.price/100).toFixed(2);
       const credits = pkg.dailyCredits.toLocaleString();
       const pricePerK = (pkg.price / pkg.dailyCredits * 1000 / 100).toFixed(3);
-      console.log(`${pkg.name.padEnd(15)} | ${credits.padStart(10)} 积分 | ¥${price.padStart(8)} | ¥${pricePerK}/1K积分`);
+      console.log(`${pkg.name.padEnd(20)} | ${credits.padStart(10)} credits | ¥${price.padStart(8)} | ¥${pricePerK}/1K credits`);
     });
     console.log('='.repeat(60));
     
   } catch (error) {
-    console.error('插入积分套餐数据失败:', error);
+    console.error('Failed to insert credit package data:', error);
   } finally {
     await prisma.$disconnect();
   }

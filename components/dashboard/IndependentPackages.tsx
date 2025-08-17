@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ArrowLeft, Check } from "lucide-react";
+import { useToast } from "@/hooks/useToast";
 
 interface Package {
   id: string;
@@ -20,13 +21,14 @@ interface IndependentPackagesProps {
 }
 
 const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
+  const { showSuccess, showError, showLoading, dismiss } = useToast();
   const [packages, setPackages] = useState<Package[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 获取积分套餐列表
+    // Fetch credit packages list
     const fetchPackages = async () => {
       try {
         const response = await fetch('/api/packages/credits');
@@ -51,11 +53,17 @@ const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
     if (!selectedPackage) return;
 
     setIsProcessing(true);
+    const loadingToast = showLoading('Processing purchase request...');
+    
     try {
       const selected = packages.find(pkg => pkg.id === selectedPackage);
-      if (!selected) return;
+      if (!selected) {
+        dismiss(loadingToast);
+        showError('Please select a credit package');
+        return;
+      }
 
-      // 创建订单
+      // Create order
       const createOrderResponse = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
@@ -75,7 +83,11 @@ const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
         throw new Error(orderData.error?.message || 'Failed to create order');
       }
 
-      // 模拟支付
+      // Update loading message
+      dismiss(loadingToast);
+      const paymentToast = showLoading('Completing payment...');
+
+      // Mock payment
       const payResponse = await fetch('/api/orders/pay/mock', {
         method: 'POST',
         headers: {
@@ -91,17 +103,26 @@ const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
       });
 
       const payData = await payResponse.json();
+      dismiss(paymentToast);
 
       if (!payData.success) {
         throw new Error(payData.error?.message || 'Payment failed');
       }
 
-      // 支付成功，返回积分页面
-      alert(`成功购买 ${selected.credits.toLocaleString()} 积分！`);
-      onBack();
+      // Payment successful
+      showSuccess(`Successfully purchased ${selected.credits.toLocaleString()} credits!`, {
+        duration: 4000,
+        icon: '🎉',
+      });
+      
+      // Short delay before returning to let user see success message
+      setTimeout(() => {
+        onBack();
+      }, 1500);
     } catch (error) {
+      dismiss();
       console.error("Purchase failed:", error);
-      alert('购买失败：' + (error instanceof Error ? error.message : 'Unknown error'));
+      showError(error instanceof Error ? error.message : 'Purchase failed, please try again later');
     } finally {
       setIsProcessing(false);
     }
