@@ -66,7 +66,7 @@ export default function DashboardContent() {
       </div>
 
       {/* Credit Test Button */}
-      <CreditTestButton onCreditsUsed={handleCreditsUsed} />
+      {/* <CreditTestButton onCreditsUsed={handleCreditsUsed} /> */}
     </div>
   );
 }
