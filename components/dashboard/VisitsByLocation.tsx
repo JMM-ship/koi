@@ -1,10 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/useToast";
+import { FiX } from "react-icons/fi";
 
 const CurrentPlan = () => {
   const [planDetails, setPlanDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showRenewModal, setShowRenewModal] = useState(false);
+  const [selectedMonths, setSelectedMonths] = useState(1);
+  const [isRenewing, setIsRenewing] = useState(false);
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     const fetchPlanDetails = async () => {
@@ -97,6 +103,43 @@ const CurrentPlan = () => {
     fetchPlanDetails();
   }, []);
 
+  const handleRenew = () => {
+    setShowRenewModal(true);
+  };
+
+  const confirmRenew = async () => {
+    if (isRenewing) return;
+    
+    setIsRenewing(true);
+    
+    try {
+      const response = await fetch('/api/packages/renew', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          months: selectedMonths
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showSuccess(`Package renewed successfully for ${selectedMonths} month(s)!`);
+        setShowRenewModal(false);
+        // Refresh plan details
+        window.location.reload();
+      } else {
+        showError(data.error?.message || 'Failed to renew package');
+      }
+    } catch (error) {
+      showError('Renewal failed, please try again');
+    } finally {
+      setIsRenewing(false);
+    }
+  };
+
   if (loading || !planDetails) {
     return (
       <div className="balance-card" style={{
@@ -178,15 +221,19 @@ const CurrentPlan = () => {
           }}>
             Upgrade
           </button>
-          <button className="btn btn-sm" style={{
-            background: 'linear-gradient(135deg, #00d084 0%, #00b377 100%)',
-            border: 'none',
-            borderRadius: '0.375rem',
-            padding: '0.25rem 0.75rem',
-            color: '#fff',
-            fontSize: '0.75rem',
-            fontWeight: '500'
-          }}>
+          <button 
+            onClick={handleRenew}
+            className="btn btn-sm" 
+            style={{
+              background: 'linear-gradient(135deg, #00d084 0%, #00b377 100%)',
+              border: 'none',
+              borderRadius: '0.375rem',
+              padding: '0.25rem 0.75rem',
+              color: '#fff',
+              fontSize: '0.75rem',
+              fontWeight: '500',
+              cursor: 'pointer'
+            }}>
             Renew
           </button>
         </div>
@@ -283,6 +330,146 @@ const CurrentPlan = () => {
           Manage Billing
         </button>
       </div> */}
+
+      {/* Renewal Modal */}
+      {showRenewModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: '#1a1a1a',
+            borderRadius: '12px',
+            padding: '32px',
+            maxWidth: '450px',
+            width: '90%',
+            position: 'relative',
+            border: '1px solid #333'
+          }}>
+            <button
+              onClick={() => setShowRenewModal(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'transparent',
+                border: 'none',
+                color: '#666',
+                cursor: 'pointer',
+                padding: '4px'
+              }}
+            >
+              <FiX size={20} />
+            </button>
+
+            <h3 style={{ color: '#fff', marginBottom: '24px' }}>Renew Your Package</h3>
+
+            <div style={{
+              background: '#0a0a0a',
+              borderRadius: '8px',
+              padding: '20px',
+              marginBottom: '24px'
+            }}>
+              <p style={{ color: '#999', marginBottom: '16px' }}>
+                How many months would you like to renew?
+              </p>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                {[1, 3, 6, 12].map((months) => (
+                  <button
+                    key={months}
+                    onClick={() => setSelectedMonths(months)}
+                    style={{
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: selectedMonths === months ? '2px solid #00d084' : '1px solid #333',
+                      background: selectedMonths === months ? 'rgba(0, 208, 132, 0.1)' : 'transparent',
+                      color: selectedMonths === months ? '#00d084' : '#fff',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {months} {months === 1 ? 'Month' : 'Months'}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{
+                marginTop: '20px',
+                padding: '12px',
+                background: 'rgba(121, 74, 255, 0.1)',
+                border: '1px solid rgba(121, 74, 255, 0.2)',
+                borderRadius: '8px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: '#999', fontSize: '14px' }}>Selected Duration:</span>
+                  <span style={{ color: '#fff', fontSize: '16px', fontWeight: '600' }}>
+                    {selectedMonths} {selectedMonths === 1 ? 'Month' : 'Months'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                  <span style={{ color: '#999', fontSize: '14px' }}>New Expiry Date:</span>
+                  <span style={{ color: '#00d084', fontSize: '14px', fontWeight: '500' }}>
+                    {(() => {
+                      const currentEnd = new Date(planDetails.endDate);
+                      const newEnd = new Date(currentEnd);
+                      newEnd.setMonth(newEnd.getMonth() + selectedMonths);
+                      return newEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                    })()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => setShowRenewModal(false)}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: '1px solid #333',
+                  background: 'transparent',
+                  color: '#999',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmRenew}
+                disabled={isRenewing}
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #00d084 0%, #00b377 100%)',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: isRenewing ? 'not-allowed' : 'pointer',
+                  opacity: isRenewing ? 0.6 : 1
+                }}
+              >
+                {isRenewing ? 'Processing...' : 'Confirm Renewal'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
