@@ -90,14 +90,45 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       };
     } else if (params.orderType === OrderType.Credits) {
       // 积分订单
-      if (!params.creditAmount || params.creditAmount <= 0) {
-        return { success: false, error: 'Credit amount is required' };
+      // 如果提供了packageId，说明是购买积分套餐
+      if (params.packageId) {
+        const packageInfo = await getPackageById(params.packageId);
+        if (!packageInfo) {
+          return { success: false, error: 'Package not found' };
+        }
+        
+        if (!packageInfo.is_active) {
+          return { success: false, error: 'Package is not active' };
+        }
+        
+        if (packageInfo.plan_type !== 'credits') {
+          return { success: false, error: 'Invalid package type for credits order' };
+        }
+        
+        amount = packageInfo.price;
+        credits = packageInfo.daily_credits; // 对于积分套餐，daily_credits存储的是总积分数
+        productName = packageInfo.name;
+        params.creditAmount = credits; // 设置creditAmount用于后续处理
+        
+        // 创建套餐快照
+        packageSnapshot = {
+          id: packageInfo.id,
+          name: packageInfo.name,
+          version: packageInfo.version,
+          price: packageInfo.price,
+          originalPrice: packageInfo.original_price,
+          totalCredits: packageInfo.daily_credits,
+          features: packageInfo.features,
+        };
+      } else if (params.creditAmount && params.creditAmount > 0) {
+        // 直接指定积分数量购买（保留旧逻辑）
+        credits = params.creditAmount;
+        // 计算价格（示例：1积分 = 0.01元）
+        amount = Math.round(credits * 1); // 1积分 = 1分钱
+        productName = `${credits} 积分`;
+      } else {
+        return { success: false, error: 'Credit amount or package ID is required' };
       }
-      
-      credits = params.creditAmount;
-      // 计算价格（示例：1积分 = 0.01元）
-      amount = Math.round(credits * 1); // 1积分 = 1分钱
-      productName = `${credits} 积分`;
     } else {
       return { success: false, error: 'Invalid order type' };
     }
@@ -222,9 +253,17 @@ export async function handlePaymentSuccess(
       }
     } else if (order.order_type === OrderType.Credits) {
       // 增加积分
+      // 使用 credit_amount 或 credits 字段（向后兼容）
+      const creditAmount = order.credit_amount || order.credits;
+      
+      if (!creditAmount || creditAmount <= 0) {
+        console.error('Invalid credit amount in order:', order);
+        return { success: false, error: 'Invalid credit amount' };
+      }
+      
       const result = await purchaseCredits(
         order.user_uuid,
-        order.credit_amount,
+        creditAmount,
         orderNo
       );
       

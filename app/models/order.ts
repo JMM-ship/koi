@@ -76,6 +76,13 @@ function fromPrismaOrder(order: PrismaOrder | null): any | undefined {
     paid_at: order.paidAt?.toISOString(),
     paid_email: order.paidEmail,
     paid_detail: order.paidDetail,
+    credit_amount: order.creditAmount,
+    package_snapshot: order.packageSnapshot,
+    start_date: order.startDate?.toISOString(),
+    end_date: order.endDate?.toISOString(),
+    discount_amount: order.discountAmount,
+    coupon_code: order.couponCode,
+    payment_method: order.paymentMethod,
   };
 }
 

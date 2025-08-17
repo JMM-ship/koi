@@ -111,6 +111,11 @@ export async function addIndependentCredits(
   amount: number
 ): Promise<CreditBalance | undefined> {
   try {
+    // 确保 amount 是有效的数字
+    if (!amount || amount <= 0) {
+      throw new Error(`Invalid credit amount: ${amount}`);
+    }
+    
     const balance = await prisma.creditBalance.upsert({
       where: { userUuid },
       update: {
