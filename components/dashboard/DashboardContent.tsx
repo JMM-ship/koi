@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import WorkSummaryChart from "@/components/dashboard/WorkSummaryChart";
 import VisitsByLocation from "@/components/dashboard/VisitsByLocation";
 import CreditCard from "@/components/dashboard/CreditCard";
@@ -7,8 +8,16 @@ import ExchangeBalance from "@/components/dashboard/ExchangeBalance";
 import TeamMembers from "@/components/dashboard/TeamMembers";
 import SatisfactionRate from "@/components/dashboard/SatisfactionRate";
 import IndependentCredits from "@/components/dashboard/IndependentCredits";
+import CreditTestButton from "@/components/dashboard/CreditTestButton";
 
 export default function DashboardContent() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Refresh dashboard data after credits are used
+  const handleCreditsUsed = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
   return (
     <div className="dashboard-grid">
       {/* 左侧主要内容区 */}
@@ -46,7 +55,7 @@ export default function DashboardContent() {
         </div>
 
         {/* 独立积分卡片 - 与左侧底部对齐 */}
-        <div className="side-content-bottom">
+        <div className="side-content-bottom" key={refreshKey}>
           <IndependentCredits />
         </div>
 
@@ -55,6 +64,9 @@ export default function DashboardContent() {
           <CreditCard />
         </div> */}
       </div>
+
+      {/* Credit Test Button */}
+      <CreditTestButton onCreditsUsed={handleCreditsUsed} />
     </div>
   );
 }

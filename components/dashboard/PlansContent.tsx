@@ -18,6 +18,7 @@ interface Package {
   tag?: string;
   is_recommended: boolean;
   currency: string;
+  plan_type: string
 }
 
 interface UserPackage {
@@ -232,173 +233,175 @@ export default function PlansContent() {
       </div>
 
       <div className="row justify-content-center">
-        {packages.map((pkg) => (
-          <div key={pkg.id} className="col-lg-4 mb-4">
-            <div className="balance-card" style={{
-              background: '#0a0a0a',
-              border: pkg.is_recommended ? '2px solid #ff4444' : '1px solid #1a1a1a',
-              borderRadius: '12px',
-              padding: '24px',
-              position: 'relative',
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'all 0.3s',
-              ...(pkg.is_recommended && {
-                transform: 'scale(1.05)',
-                boxShadow: '0 8px 24px rgba(255, 68, 68, 0.2)'
-              })
-            }}>
-              {pkg.is_recommended && (
-                <div style={{
-                  position: 'absolute',
-                  top: '-14px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  background: '#ff4444',
-                  color: '#fff',
-                  padding: '6px 24px',
-                  borderRadius: '20px',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  whiteSpace: 'nowrap'
-                }}>
-                  🔥 Most Popular
-                </div>
-              )}
-
-              {pkg.tag && (
-                <div style={{
-                  position: 'absolute',
-                  top: '16px',
-                  right: '16px',
-                  background: pkg.tag === 'HOT'
-                    ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
-                    : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                  color: '#fff',
-                  padding: '6px 14px',
-                  borderRadius: '6px',
-                  fontSize: '11px',
-                  fontWeight: '600'
-                }}>
-                  {pkg.tag}
-                </div>
-              )}
-
-              <div className="text-center mb-4" style={{ paddingTop: pkg.is_recommended ? '20px' : '0' }}>
-                <h3 style={{
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#999',
-                  marginBottom: '20px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}>
-                  {pkg.name_en || pkg.name}
-                </h3>
-
-                <div style={{ marginBottom: '24px' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
-                    <span style={{ fontSize: '52px', fontWeight: '700', color: '#fff', lineHeight: 1 }}>
-                      ¥{pkg.price}
-                    </span>
-                    <span style={{ fontSize: '16px', color: '#666' }}>
-                      /month
-                    </span>
+        {packages.map((pkg) => {
+          return pkg.plan_type !== "credits" ? (
+            <div key={pkg.id} className="col-lg-4 mb-4">
+              <div className="balance-card" style={{
+                background: '#0a0a0a',
+                border: pkg.is_recommended ? '2px solid #ff4444' : '1px solid #1a1a1a',
+                borderRadius: '12px',
+                padding: '24px',
+                position: 'relative',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'all 0.3s',
+                ...(pkg.is_recommended && {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 8px 24px rgba(255, 68, 68, 0.2)'
+                })
+              }}>
+                {pkg.is_recommended && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '-14px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#ff4444',
+                    color: '#fff',
+                    padding: '6px 24px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    🔥 Most Popular
                   </div>
-                  {pkg.original_price && (
-                    <div style={{ marginTop: '8px' }}>
-                      <span style={{ fontSize: '14px', color: '#666', textDecoration: 'line-through' }}>
-                        Original ¥{pkg.original_price}/month
-                      </span>
-                      <span style={{
-                        fontSize: '12px',
-                        color: '#ff4444',
-                        marginLeft: '8px',
-                        fontWeight: '600',
-                        background: 'rgba(255, 68, 68, 0.1)',
-                        padding: '2px 8px',
-                        borderRadius: '4px'
-                      }}>
-                        Save {Math.round((1 - pkg.price / pkg.original_price) * 100)}%
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
+                )}
 
-              <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px' }}>
-                {formatFeatures(pkg).map((feature, index) => (
-                  <li key={index} className="d-flex align-items-start" style={{ marginBottom: '14px' }}>
-                    <span style={{
-                      width: '18px',
-                      height: '18px',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'rgba(0, 208, 132, 0.15)',
-                      marginRight: '10px',
-                      flexShrink: 0,
-                      marginTop: '2px'
-                    }}>
-                      <FiCheck style={{
-                        fontSize: '11px',
-                        color: '#00d084',
-                        fontWeight: 'bold'
-                      }} />
-                    </span>
-                    <span style={{
-                      fontSize: '13px',
-                      color: '#e0e0e0',
-                      lineHeight: '1.5'
-                    }}>
-                      {feature}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => handlePurchase(pkg)}
-                disabled={currentPackage?.packageId === pkg.id}
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: currentPackage?.packageId === pkg.id
-                    ? '#333'
-                    : pkg.is_recommended
+                {pkg.tag && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '16px',
+                    right: '16px',
+                    background: pkg.tag === 'HOT'
                       ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
                       : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                  color: '#fff',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: currentPackage?.packageId === pkg.id ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}
-                onMouseEnter={(e) => {
-                  if (currentPackage?.packageId !== pkg.id) {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                {currentPackage?.packageId === pkg.id ? 'Current Plan' : 'Choose Plan'}
-              </button>
+                    color: '#fff',
+                    padding: '6px 14px',
+                    borderRadius: '6px',
+                    fontSize: '11px',
+                    fontWeight: '600'
+                  }}>
+                    {pkg.tag}
+                  </div>
+                )}
+
+                <div className="text-center mb-4" style={{ paddingTop: pkg.is_recommended ? '20px' : '0' }}>
+                  <h3 style={{
+                    fontSize: '18px',
+                    fontWeight: '600',
+                    color: '#999',
+                    marginBottom: '20px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}>
+                    {pkg.name_en || pkg.name}
+                  </h3>
+
+                  <div style={{ marginBottom: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
+                      <span style={{ fontSize: '52px', fontWeight: '700', color: '#fff', lineHeight: 1 }}>
+                        ¥{pkg.price}
+                      </span>
+                      <span style={{ fontSize: '16px', color: '#666' }}>
+                        /month
+                      </span>
+                    </div>
+                    {pkg.original_price && (
+                      <div style={{ marginTop: '8px' }}>
+                        <span style={{ fontSize: '14px', color: '#666', textDecoration: 'line-through' }}>
+                          Original ¥{pkg.original_price}/month
+                        </span>
+                        <span style={{
+                          fontSize: '12px',
+                          color: '#ff4444',
+                          marginLeft: '8px',
+                          fontWeight: '600',
+                          background: 'rgba(255, 68, 68, 0.1)',
+                          padding: '2px 8px',
+                          borderRadius: '4px'
+                        }}>
+                          Save {Math.round((1 - pkg.price / pkg.original_price) * 100)}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px' }}>
+                  {formatFeatures(pkg).map((feature, index) => (
+                    <li key={index} className="d-flex align-items-start" style={{ marginBottom: '14px' }}>
+                      <span style={{
+                        width: '18px',
+                        height: '18px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'rgba(0, 208, 132, 0.15)',
+                        marginRight: '10px',
+                        flexShrink: 0,
+                        marginTop: '2px'
+                      }}>
+                        <FiCheck style={{
+                          fontSize: '11px',
+                          color: '#00d084',
+                          fontWeight: 'bold'
+                        }} />
+                      </span>
+                      <span style={{
+                        fontSize: '13px',
+                        color: '#e0e0e0',
+                        lineHeight: '1.5'
+                      }}>
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handlePurchase(pkg)}
+                  disabled={currentPackage?.packageId === pkg.id}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: currentPackage?.packageId === pkg.id
+                      ? '#333'
+                      : pkg.is_recommended
+                        ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
+                        : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                    color: '#fff',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: currentPackage?.packageId === pkg.id ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPackage?.packageId !== pkg.id) {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  {currentPackage?.packageId === pkg.id ? 'Current Plan' : 'Choose Plan'}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ) : null
+        })}
       </div>
 
       <div className="text-center mt-5">

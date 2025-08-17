@@ -168,8 +168,13 @@ async function calculateCreditStats(userUuid: string) {
     u => (u._sum.amount || 0) < userWeekTotal
   ).length;
   const totalUsers = allUsersWeekUsage.length || 1;
-  const betterThanPercentage = Math.round((usersWithLessUsage / totalUsers) * 100);
-
+  
+  let betterThanPercentage;
+  if (totalUsers === 1) {
+    betterThanPercentage = 100;
+  } else {
+    betterThanPercentage = Math.round((usersWithLessUsage / totalUsers) * 100);
+  }
   return {
     today: {
       amount: todayUsage._sum.amount || 0,

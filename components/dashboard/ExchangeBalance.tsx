@@ -16,6 +16,8 @@ const ExchangeBalance = () => {
 
         // 格式化统计数据
         const stats = result.creditStats;
+
+
         const formatData = (period: any, color: string) => ({
           points: period.amount.toLocaleString(),
           percentage: period.percentage,
