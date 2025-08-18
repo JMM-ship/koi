@@ -34,7 +34,7 @@ function fromApiUserPackage(apiData: any): UserPackage {
   return {
     id: apiData?.id,
     packageId: apiData?.package_id,
-    packageName: apiData?.package_name,
+    packageName: apiData?.package_snapshot?.name || apiData?.package_name,
     endDate: apiData?.end_date,
     dailyCredits: apiData?.daily_credits,
     remainingDays: apiData?.remaining_days,
@@ -62,14 +62,24 @@ export default function PlansContent() {
   // Get package level from name
   const getPackageLevel = (packageName: string): number => {
     const lowerName = packageName?.toLowerCase();
+
+    // Check for English names
     if (lowerName?.includes('basic')) return packageHierarchy.basic;
     if (lowerName?.includes('professional')) return packageHierarchy.professional;
     if (lowerName?.includes('enterprise')) return packageHierarchy.enterprise;
+
+    // Check for Chinese names
+    if (packageName?.includes('基础版')) return packageHierarchy.basic;
+    if (packageName?.includes('专业版')) return packageHierarchy.professional;
+    if (packageName?.includes('企业版')) return packageHierarchy.enterprise;
+
     return 0;
   };
 
   // Determine button text based on package comparison
   const getButtonText = (pkg: Package): string => {
+
+
     if (!currentPackage) return 'Choose Plan';
 
     if (currentPackage.packageId === pkg.id) {
@@ -78,6 +88,7 @@ export default function PlansContent() {
 
     const currentLevel = getPackageLevel(currentPackage.packageName);
     const targetLevel = getPackageLevel(pkg.name);
+    console.log(targetLevel, currentLevel);
 
     if (targetLevel > currentLevel) {
       return 'Upgrade';
@@ -88,7 +99,7 @@ export default function PlansContent() {
 
   // Determine if button should be disabled
   const isButtonDisabled = (pkg: Package): boolean => {
-    return false; // Allow all actions including renewal
+    return false; // No packages are disabled, all can be selected
   };
 
 
@@ -111,6 +122,8 @@ export default function PlansContent() {
           original_price: pkg.original_price ? pkg.original_price / 100 : undefined
         }));
         setPackages(packagesData);
+        console.log(data.data.currentPackage);
+
         setCurrentPackage(fromApiUserPackage(data.data.currentPackage));
       }
     } catch (error) {
@@ -310,6 +323,8 @@ export default function PlansContent() {
 
       <div className="row justify-content-center">
         {packages.map((pkg) => {
+
+
           return pkg.plan_type !== "credits" ? (
             <div key={pkg.id} className="col-lg-4 mb-4">
               <div className="balance-card" style={{
