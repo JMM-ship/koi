@@ -10,7 +10,11 @@ import SatisfactionRate from "@/components/dashboard/SatisfactionRate";
 import IndependentCredits from "@/components/dashboard/IndependentCredits";
 import CreditTestButton from "@/components/dashboard/CreditTestButton";
 
-export default function DashboardContent() {
+interface DashboardContentProps {
+  onNavigateToPlans?: () => void;
+}
+
+export default function DashboardContent({ onNavigateToPlans }: DashboardContentProps) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Refresh dashboard data after credits are used
@@ -50,7 +54,7 @@ export default function DashboardContent() {
 
           {/* 访问地区统计 */}
           <div className="side-content-item">
-            <VisitsByLocation />
+            <VisitsByLocation onUpgradeClick={onNavigateToPlans} />
           </div>
         </div>
 

@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/useToast";
 import ModalPortal from "@/components/common/ModalPortal";
 
-const CurrentPlan = () => {
+interface CurrentPlanProps {
+  onUpgradeClick?: () => void;
+}
+
+const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
   const [planDetails, setPlanDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showRenewModal, setShowRenewModal] = useState(false);
@@ -209,7 +213,10 @@ const CurrentPlan = () => {
           </div>
         </div>
         <div className="d-flex align-items-center">
-          <button className="btn btn-sm" style={{
+          <button 
+            onClick={onUpgradeClick}
+            className="btn btn-sm" 
+            style={{
             background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
             border: 'none',
             borderRadius: '0.375rem',
@@ -217,7 +224,8 @@ const CurrentPlan = () => {
             color: '#fff',
             fontSize: '0.75rem',
             fontWeight: '500',
-            marginRight: '0.125rem'
+            marginRight: '0.125rem',
+            cursor: 'pointer'
           }}>
             Upgrade
           </button>

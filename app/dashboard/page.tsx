@@ -19,7 +19,7 @@ export default function Dashboard() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardContent />;
+        return <DashboardContent onNavigateToPlans={() => setActiveTab('plans')} />;
       case 'subscription':
         return <SubscriptionContent />;
       case 'api-keys':
