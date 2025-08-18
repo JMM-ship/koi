@@ -52,6 +52,45 @@ export default function PlansContent() {
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   const [purchasing, setPurchasing] = useState(false);
 
+  // Define package hierarchy
+  const packageHierarchy: { [key: string]: number } = {
+    'basic': 1,
+    'professional': 2,
+    'enterprise': 3
+  };
+
+  // Get package level from name
+  const getPackageLevel = (packageName: string): number => {
+    const lowerName = packageName?.toLowerCase();
+    if (lowerName?.includes('basic')) return packageHierarchy.basic;
+    if (lowerName?.includes('professional')) return packageHierarchy.professional;
+    if (lowerName?.includes('enterprise')) return packageHierarchy.enterprise;
+    return 0;
+  };
+
+  // Determine button text based on package comparison
+  const getButtonText = (pkg: Package): string => {
+    if (!currentPackage) return 'Choose Plan';
+
+    if (currentPackage.packageId === pkg.id) {
+      return 'Renew';
+    }
+
+    const currentLevel = getPackageLevel(currentPackage.packageName);
+    const targetLevel = getPackageLevel(pkg.name);
+
+    if (targetLevel > currentLevel) {
+      return 'Upgrade';
+    }
+
+    return 'Choose Plan';
+  };
+
+  // Determine if button should be disabled
+  const isButtonDisabled = (pkg: Package): boolean => {
+    return false; // Allow all actions including renewal
+  };
+
 
   // Get packages list
   useEffect(() => {
@@ -89,8 +128,45 @@ export default function PlansContent() {
       return;
     }
 
-    setSelectedPackage(pkg);
-    setShowConfirmModal(true);
+    const buttonText = getButtonText(pkg);
+
+    if (buttonText === 'Renew') {
+      // Handle renewal - could redirect to renewal flow or show renewal modal
+      handleRenewal(pkg);
+    } else {
+      // Handle upgrade or new purchase
+      setSelectedPackage(pkg);
+      setShowConfirmModal(true);
+    }
+  };
+
+  // Handle package renewal
+  const handleRenewal = async (pkg: Package) => {
+    setPurchasing(true);
+    try {
+      const response = await fetch('/api/packages/renew', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          months: 1 // Default to 1 month renewal, you can make this configurable
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showSuccess('Package renewed successfully!');
+        await fetchPackages();
+      } else {
+        showError(data.error?.message || 'Failed to renew package');
+      }
+    } catch (error) {
+      showError('Renewal failed, please try again');
+    } finally {
+      setPurchasing(false);
+    }
   };
 
   // Confirm purchase
@@ -366,27 +442,34 @@ export default function PlansContent() {
 
                 <button
                   onClick={() => handlePurchase(pkg)}
-                  disabled={currentPackage?.packageId === pkg.id}
+                  disabled={isButtonDisabled(pkg)}
                   style={{
                     width: '100%',
                     padding: '14px',
                     borderRadius: '8px',
                     border: 'none',
-                    background: currentPackage?.packageId === pkg.id
-                      ? '#333'
-                      : pkg.is_recommended
-                        ? 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)'
-                        : 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                    background: (() => {
+                      const buttonText = getButtonText(pkg);
+                      if (buttonText === 'Renew') {
+                        return 'linear-gradient(135deg, #00d084 0%, #00b377 100%)';
+                      } else if (buttonText === 'Upgrade') {
+                        return 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)';
+                      } else if (pkg.is_recommended) {
+                        return 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)';
+                      } else {
+                        return 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)';
+                      }
+                    })(),
                     color: '#fff',
                     fontSize: '14px',
                     fontWeight: '600',
-                    cursor: currentPackage?.packageId === pkg.id ? 'not-allowed' : 'pointer',
+                    cursor: isButtonDisabled(pkg) ? 'not-allowed' : 'pointer',
                     transition: 'all 0.3s',
                     textTransform: 'uppercase',
                     letterSpacing: '0.5px'
                   }}
                   onMouseEnter={(e) => {
-                    if (currentPackage?.packageId !== pkg.id) {
+                    if (!isButtonDisabled(pkg)) {
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
                     }
@@ -396,7 +479,7 @@ export default function PlansContent() {
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  {currentPackage?.packageId === pkg.id ? 'Current Plan' : 'Choose Plan'}
+                  {getButtonText(pkg)}
                 </button>
               </div>
             </div>
@@ -466,7 +549,9 @@ export default function PlansContent() {
               <FiX size={20} />
             </button>
 
-            <h3 style={{ color: '#fff', marginBottom: '24px' }}>Confirm Purchase</h3>
+            <h3 style={{ color: '#fff', marginBottom: '24px' }}>
+              {selectedPackage && getButtonText(selectedPackage) === 'Upgrade' ? 'Confirm Upgrade' : 'Confirm Purchase'}
+            </h3>
 
             <div style={{
               background: '#0a0a0a',
