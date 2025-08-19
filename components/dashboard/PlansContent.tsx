@@ -5,6 +5,7 @@ import { FiCheck, FiAlertTriangle, FiX } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
+import ModalPortal from "@/components/common/ModalPortal";
 
 interface Package {
   id: string;
@@ -51,6 +52,10 @@ export default function PlansContent() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   const [purchasing, setPurchasing] = useState(false);
+  const [showRenewModal, setShowRenewModal] = useState(false);
+  const [selectedMonths, setSelectedMonths] = useState(1);
+  const [isRenewing, setIsRenewing] = useState(false);
+  const [renewPackage, setRenewPackage] = useState<Package | null>(null);
 
   // Define package hierarchy
   const packageHierarchy: { [key: string]: number } = {
@@ -153,9 +158,19 @@ export default function PlansContent() {
     }
   };
 
-  // Handle package renewal
-  const handleRenewal = async (pkg: Package) => {
-    setPurchasing(true);
+  // Handle package renewal - show renewal modal
+  const handleRenewal = (pkg: Package) => {
+    setRenewPackage(pkg);
+    setShowRenewModal(true);
+    setSelectedMonths(1);
+  };
+
+  // Confirm renewal and process the renewal
+  const confirmRenew = async () => {
+    if (isRenewing || !renewPackage) return;
+    
+    setIsRenewing(true);
+    
     try {
       const response = await fetch('/api/packages/renew', {
         method: 'POST',
@@ -163,14 +178,16 @@ export default function PlansContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          months: 1 // Default to 1 month renewal, you can make this configurable
+          months: selectedMonths
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        showSuccess('Package renewed successfully!');
+        showSuccess(`Package renewed successfully for ${selectedMonths} month(s)!`);
+        setShowRenewModal(false);
+        // Refresh packages data
         await fetchPackages();
       } else {
         showError(data.error?.message || 'Failed to renew package');
@@ -178,7 +195,7 @@ export default function PlansContent() {
     } catch (error) {
       showError('Renewal failed, please try again');
     } finally {
-      setPurchasing(false);
+      setIsRenewing(false);
     }
   };
 
@@ -630,6 +647,183 @@ export default function PlansContent() {
           </div>
         </div>
       )}
+
+      {/* Renewal Modal */}
+      <ModalPortal
+        isOpen={showRenewModal}
+        onClose={() => setShowRenewModal(false)}
+        title="Renew Your Package"
+        maxWidth="480px"
+      >
+        <div style={{
+          background: 'rgba(0, 0, 0, 0.3)',
+          borderRadius: '12px',
+          padding: '24px',
+          marginBottom: '24px',
+          border: '1px solid rgba(255, 255, 255, 0.05)'
+        }}>
+          <p style={{ 
+            color: '#b3b3b3', 
+            marginBottom: '20px',
+            fontSize: '15px',
+            textAlign: 'center'
+          }}>
+            Select your renewal period
+          </p>
+          
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(2, 1fr)', 
+            gap: '12px',
+            marginBottom: '20px'
+          }}>
+            {[1, 3, 6, 12].map((months) => (
+              <button
+                key={months}
+                onClick={() => setSelectedMonths(months)}
+                className={`renewal-month-btn ${selectedMonths === months ? 'selected' : ''}`}
+                style={{
+                  padding: '16px',
+                  borderRadius: '10px',
+                  border: selectedMonths === months 
+                    ? '2px solid #00d084' 
+                    : '1px solid rgba(255, 255, 255, 0.1)',
+                  background: selectedMonths === months 
+                    ? 'linear-gradient(135deg, rgba(0, 208, 132, 0.15) 0%, rgba(0, 208, 132, 0.05) 100%)' 
+                    : 'rgba(255, 255, 255, 0.02)',
+                  color: selectedMonths === months ? '#00d084' : '#fff',
+                  cursor: 'pointer',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  transition: 'all 0.3s',
+                  position: 'relative',
+                  overflow: 'hidden'
+                }}
+              >
+                <div style={{ fontSize: '20px', marginBottom: '4px' }}>
+                  {months}
+                </div>
+                <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                  {months === 1 ? 'Month' : 'Months'}
+                </div>
+                {months === 6 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    background: 'linear-gradient(135deg, #ff4444, #ff6666)',
+                    color: '#fff',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '10px',
+                    fontWeight: 'bold'
+                  }}>
+                    POPULAR
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div style={{
+            padding: '16px',
+            background: 'linear-gradient(135deg, rgba(121, 74, 255, 0.1) 0%, rgba(121, 74, 255, 0.05) 100%)',
+            border: '1px solid rgba(121, 74, 255, 0.2)',
+            borderRadius: '10px'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginBottom: '12px'
+            }}>
+              <span style={{ color: '#999', fontSize: '14px' }}>
+                Selected Duration
+              </span>
+              <span style={{ 
+                color: '#fff', 
+                fontSize: '18px', 
+                fontWeight: '700',
+                background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
+                {selectedMonths} {selectedMonths === 1 ? 'Month' : 'Months'}
+              </span>
+            </div>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              paddingTop: '12px',
+              borderTop: '1px solid rgba(255, 255, 255, 0.05)'
+            }}>
+              <span style={{ color: '#999', fontSize: '14px' }}>
+                New Expiry Date
+              </span>
+              <span style={{ 
+                color: '#00d084', 
+                fontSize: '15px', 
+                fontWeight: '600'
+              }}>
+                {(() => {
+                  const currentEnd = currentPackage?.endDate ? new Date(currentPackage.endDate) : new Date();
+                  const newEnd = new Date(currentEnd);
+                  newEnd.setMonth(newEnd.getMonth() + selectedMonths);
+                  return newEnd.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                  });
+                })()}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            onClick={() => setShowRenewModal(false)}
+            className="modal-cancel-btn"
+            style={{
+              flex: 1,
+              padding: '14px',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'transparent',
+              color: '#999',
+              fontSize: '15px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={confirmRenew}
+            disabled={isRenewing}
+            className="modal-confirm-btn"
+            style={{
+              flex: 1,
+              padding: '14px',
+              borderRadius: '10px',
+              border: 'none',
+              background: 'linear-gradient(135deg, #00d084 0%, #00b377 100%)',
+              color: '#fff',
+              fontSize: '15px',
+              fontWeight: '600',
+              cursor: isRenewing ? 'not-allowed' : 'pointer',
+              opacity: isRenewing ? 0.6 : 1,
+              transition: 'all 0.2s',
+              boxShadow: '0 4px 15px rgba(0, 208, 132, 0.3)'
+            }}
+          >
+            {isRenewing ? 'Processing...' : 'Confirm Renewal'}
+          </button>
+        </div>
+      </ModalPortal>
     </>
   );
 }
