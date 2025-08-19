@@ -40,8 +40,6 @@ function fromApiUserPackage(apiData: any): UserPackage {
     const diffMs = end.getTime() - start.getTime(); // 毫秒差
     diffDays = diffMs / (1000 * 60 * 60 * 24); // 转换成天数
 
-    console.log("时间差（毫秒）:", diffMs);
-    console.log("时间差（天数）:", diffDays);
   }
   return {
     id: apiData?.id,
