@@ -32,13 +32,24 @@ interface UserPackage {
 }
 
 function fromApiUserPackage(apiData: any): UserPackage {
+  let diffDays = 0
+  if (apiData?.start_date && apiData?.end_date) {
+    const start = new Date(apiData.start_date);
+    const end = new Date(apiData.end_date);
+
+    const diffMs = end.getTime() - start.getTime(); // 毫秒差
+    diffDays = diffMs / (1000 * 60 * 60 * 24); // 转换成天数
+
+    console.log("时间差（毫秒）:", diffMs);
+    console.log("时间差（天数）:", diffDays);
+  }
   return {
     id: apiData?.id,
     packageId: apiData?.package_id,
     packageName: apiData?.package_snapshot?.name || apiData?.package_name,
     endDate: apiData?.end_date,
     dailyCredits: apiData?.daily_credits,
-    remainingDays: apiData?.remaining_days,
+    remainingDays: diffDays,
   };
 }
 
@@ -56,6 +67,7 @@ export default function PlansContent() {
   const [selectedMonths, setSelectedMonths] = useState(1);
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewPackage, setRenewPackage] = useState<Package | null>(null);
+  const [upgradeDiscount, setUpgradeDiscount] = useState<{ amount: number, days: number } | null>(null);
 
   // Define package hierarchy
   const packageHierarchy: { [key: string]: number } = {
@@ -93,7 +105,7 @@ export default function PlansContent() {
 
     const currentLevel = getPackageLevel(currentPackage.packageName);
     const targetLevel = getPackageLevel(pkg.name);
-    console.log(targetLevel, currentLevel);
+
 
     if (targetLevel > currentLevel) {
       return 'Upgrade';
@@ -127,7 +139,7 @@ export default function PlansContent() {
           original_price: pkg.original_price ? pkg.original_price / 100 : undefined
         }));
         setPackages(packagesData);
-        console.log(data.data.currentPackage);
+        console.log(data.data, "获取数据");
 
         setCurrentPackage(fromApiUserPackage(data.data.currentPackage));
       }
@@ -136,6 +148,56 @@ export default function PlansContent() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Calculate upgrade discount based on remaining days
+  const calculateUpgradeDiscount = (targetPackage: Package) => {
+    if (!currentPackage || !targetPackage) return null;
+
+    console.log("=== 开始计算升级优惠 ===");
+    console.log("目标套餐:", targetPackage);
+
+    const currentLevel = getPackageLevel(currentPackage.packageName);
+    const targetLevel = getPackageLevel(targetPackage.name);
+    console.log("当前套餐等级:", currentLevel, "目标套餐等级:", targetLevel);
+
+    // 只对升级生效
+    if (targetLevel <= currentLevel) {
+      console.log("目标套餐不高于当前套餐 → 不适用优惠");
+      return null;
+    }
+
+    const remainingDays = currentPackage.remainingDays || 0;
+    console.log("剩余天数:", remainingDays);
+
+    if (remainingDays <= 0) {
+      console.log("剩余天数 <= 0 → 不适用优惠");
+      return null;
+    }
+
+    const currentPkg = packages.find(p => p.id === currentPackage.packageId);
+    if (!currentPkg) {
+      console.log("未找到当前套餐详情 → 不适用优惠");
+      return null;
+    }
+
+    console.log("当前套餐详情:", currentPkg);
+
+    const dailyRate = currentPkg.price / 30;
+    console.log("当前套餐日均价格:", dailyRate);
+
+    const remainingValue = Math.floor(dailyRate * remainingDays);
+    console.log("剩余价值:", remainingValue);
+
+    const discountAmount = Math.min(remainingValue * 0.5, targetPackage.price * 0.2);
+    console.log("计算出的优惠金额:", discountAmount);
+
+    console.log("=== 计算完成 ===");
+
+    return {
+      amount: Math.floor(discountAmount),
+      days: remainingDays
+    };
   };
 
   // Handle purchase button click
@@ -151,8 +213,18 @@ export default function PlansContent() {
     if (buttonText === 'Renew') {
       // Handle renewal - could redirect to renewal flow or show renewal modal
       handleRenewal(pkg);
+    } else if (buttonText === 'Upgrade') {
+      // Calculate discount for upgrade
+      console.log(buttonText);
+
+      const discount = calculateUpgradeDiscount(pkg);
+      setUpgradeDiscount(discount);
+
+      setSelectedPackage(pkg);
+      setShowConfirmModal(true);
     } else {
-      // Handle upgrade or new purchase
+      // Handle new purchase
+      setUpgradeDiscount(null);
       setSelectedPackage(pkg);
       setShowConfirmModal(true);
     }
@@ -168,9 +240,9 @@ export default function PlansContent() {
   // Confirm renewal and process the renewal
   const confirmRenew = async () => {
     if (isRenewing || !renewPackage) return;
-    
+
     setIsRenewing(true);
-    
+
     try {
       const response = await fetch('/api/packages/renew', {
         method: 'POST',
@@ -215,7 +287,8 @@ export default function PlansContent() {
         body: JSON.stringify({
           orderType: 'package',
           packageId: selectedPackage.id,
-          paymentMethod: 'mock' // Mock payment
+          paymentMethod: 'mock', // Mock payment
+          upgradeDiscount: upgradeDiscount ? upgradeDiscount.amount : 0
         }),
       });
 
@@ -595,9 +668,45 @@ export default function PlansContent() {
                 {selectedPackage.name_en || selectedPackage.name}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <span style={{ color: '#999' }}>Price</span>
+                <span style={{ color: '#999' }}>Original Price</span>
                 <span style={{ color: '#fff', fontWeight: 'bold' }}>¥{selectedPackage.price}</span>
               </div>
+
+              {upgradeDiscount && (
+                <>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '12px',
+                    padding: '8px',
+                    background: 'rgba(0, 208, 132, 0.1)',
+                    borderRadius: '6px',
+                    border: '1px solid rgba(0, 208, 132, 0.2)'
+                  }}>
+                    <span style={{ color: '#00d084', fontSize: '14px' }}>
+                      Upgrade Discount ({upgradeDiscount.days} days remaining)
+                    </span>
+                    <span style={{ color: '#00d084', fontWeight: 'bold' }}>-¥{upgradeDiscount.amount}</span>
+                  </div>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '12px',
+                    paddingTop: '12px',
+                    borderTop: '1px solid #333'
+                  }}>
+                    <span style={{ color: '#fff', fontWeight: '600' }}>Final Price</span>
+                    <span style={{
+                      color: '#00d084',
+                      fontWeight: 'bold',
+                      fontSize: '20px'
+                    }}>
+                      ¥{selectedPackage.price - upgradeDiscount.amount}
+                    </span>
+                  </div>
+                </>
+              )}
+
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <span style={{ color: '#999' }}>Daily Credits</span>
                 <span style={{ color: '#fff' }}>{selectedPackage.daily_credits.toLocaleString()}</span>
@@ -607,6 +716,24 @@ export default function PlansContent() {
                 <span style={{ color: '#fff' }}>{selectedPackage.valid_days} days</span>
               </div>
             </div>
+
+            {upgradeDiscount && (
+              <div style={{
+                background: 'rgba(255, 193, 7, 0.1)',
+                border: '1px solid rgba(255, 193, 7, 0.2)',
+                borderRadius: '8px',
+                padding: '12px',
+                marginBottom: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <FiAlertTriangle style={{ color: '#ffc107', fontSize: '16px', flexShrink: 0 }} />
+                <span style={{ fontSize: '12px', color: '#ffc107' }}>
+                  Your remaining {upgradeDiscount.days} days from current plan has been converted to a discount
+                </span>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
@@ -662,18 +789,18 @@ export default function PlansContent() {
           marginBottom: '24px',
           border: '1px solid rgba(255, 255, 255, 0.05)'
         }}>
-          <p style={{ 
-            color: '#b3b3b3', 
+          <p style={{
+            color: '#b3b3b3',
             marginBottom: '20px',
             fontSize: '15px',
             textAlign: 'center'
           }}>
             Select your renewal period
           </p>
-          
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(2, 1fr)', 
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '12px',
             marginBottom: '20px'
           }}>
@@ -685,11 +812,11 @@ export default function PlansContent() {
                 style={{
                   padding: '16px',
                   borderRadius: '10px',
-                  border: selectedMonths === months 
-                    ? '2px solid #00d084' 
+                  border: selectedMonths === months
+                    ? '2px solid #00d084'
                     : '1px solid rgba(255, 255, 255, 0.1)',
-                  background: selectedMonths === months 
-                    ? 'linear-gradient(135deg, rgba(0, 208, 132, 0.15) 0%, rgba(0, 208, 132, 0.05) 100%)' 
+                  background: selectedMonths === months
+                    ? 'linear-gradient(135deg, rgba(0, 208, 132, 0.15) 0%, rgba(0, 208, 132, 0.05) 100%)'
                     : 'rgba(255, 255, 255, 0.02)',
                   color: selectedMonths === months ? '#00d084' : '#fff',
                   cursor: 'pointer',
@@ -731,18 +858,18 @@ export default function PlansContent() {
             border: '1px solid rgba(121, 74, 255, 0.2)',
             borderRadius: '10px'
           }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
               marginBottom: '12px'
             }}>
               <span style={{ color: '#999', fontSize: '14px' }}>
                 Selected Duration
               </span>
-              <span style={{ 
-                color: '#fff', 
-                fontSize: '18px', 
+              <span style={{
+                color: '#fff',
+                fontSize: '18px',
                 fontWeight: '700',
                 background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
                 WebkitBackgroundClip: 'text',
@@ -752,9 +879,9 @@ export default function PlansContent() {
                 {selectedMonths} {selectedMonths === 1 ? 'Month' : 'Months'}
               </span>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
               paddingTop: '12px',
               borderTop: '1px solid rgba(255, 255, 255, 0.05)'
@@ -762,19 +889,19 @@ export default function PlansContent() {
               <span style={{ color: '#999', fontSize: '14px' }}>
                 New Expiry Date
               </span>
-              <span style={{ 
-                color: '#00d084', 
-                fontSize: '15px', 
+              <span style={{
+                color: '#00d084',
+                fontSize: '15px',
                 fontWeight: '600'
               }}>
                 {(() => {
                   const currentEnd = currentPackage?.endDate ? new Date(currentPackage.endDate) : new Date();
                   const newEnd = new Date(currentEnd);
                   newEnd.setMonth(newEnd.getMonth() + selectedMonths);
-                  return newEnd.toLocaleDateString('en-US', { 
-                    month: 'long', 
-                    day: 'numeric', 
-                    year: 'numeric' 
+                  return newEnd.toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
                   });
                 })()}
               </span>
