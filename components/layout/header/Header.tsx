@@ -5,6 +5,7 @@ import MobileMenu from "../MobileMenu";
 import MainMenu from "../MainMenu";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import DashboardLinkButton from "@/components/elements/DashboardLinkButton";
 
 export default function Header({ scroll, isMobileMenu, handleMobileMenu }: any) {
     const { data: session, status } = useSession();
@@ -25,9 +26,7 @@ export default function Header({ scroll, isMobileMenu, handleMobileMenu }: any) 
                         </div>
                         <div className="d-flex align-items-center gap-4">
                             {user?.uuid ?
-                                (<Link href="/dashboard" className="btn btn-linear hover-up d-none d-md-flex">
-                                    <span>dashboard</span>
-                                </Link>) :
+                                (<DashboardLinkButton />) :
                                 (<Link href="/auth/signin" className="btn btn-linear hover-up d-none d-md-flex">
                                     <span>sign in</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" fill="none">
