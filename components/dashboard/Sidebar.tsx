@@ -27,6 +27,7 @@ import {
   FiLogOut,
   FiKey
 } from "react-icons/fi";
+import { useToast } from "@/hooks/useToast";
 
 interface MenuItem {
   id: number;
@@ -53,9 +54,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
+  const { showConfirm } = useToast()
   // 检查是否为管理员
   const isAdmin = session?.user?.role === 'admin';
+
+
 
   const menuItems: MenuItem[] = [
     { id: 1, icon: FiGrid, label: "Dashboard", path: "dashboard", active: activeTab === "dashboard" },
@@ -94,9 +97,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
-
-    const confirmed = window.confirm('确定要退出登录吗？');
-    if (!confirmed) return;
 
     setIsLoggingOut(true);
 
@@ -402,7 +402,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
                     transition: 'all 0.2s ease',
                     opacity: isLoggingOut ? 0.6 : 1,
                   }}
-                  onClick={handleLogout}
+                  onClick={() => showConfirm("sure want to logout", handleLogout)}
                   disabled={isLoggingOut}
                   title="退出登录"
                   onMouseEnter={(e) => !isLoggingOut && (e.currentTarget.style.transform = 'scale(1.1)')}
