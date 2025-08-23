@@ -60,7 +60,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
   const isAdmin = session?.user?.role === 'admin';
 
 
-
   const menuItems: MenuItem[] = [
     { id: 1, icon: FiGrid, label: "Dashboard", path: "dashboard", active: activeTab === "dashboard" },
     { id: 2, icon: FiUser, label: "My Subscription", path: "subscription", active: activeTab === "subscription" },
@@ -376,13 +375,16 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
             alignItems: 'center',
             justifyContent: isCollapsed ? 'center' : 'flex-start'
           }}>
-            <Image
-              src="/assets/img/team/team-1.jpg"
-              alt="User"
-              className="user-avatar rounded-full object-cover"
-              width={40}
-              height={40}
-            />
+            {session?.user?.avatar_url && (
+              <Image
+                src={session?.user?.avatar_url}
+                alt="User"
+                className="user-avatar rounded-full object-cover"
+                width={40}
+                height={40}
+                unoptimized={session?.user?.avatar_url as any && (session?.user?.avatar_url.startsWith("http://") || session?.user?.avatar_url.startsWith("https://"))}
+              />
+            )}
             {!isCollapsed && (
               <>
                 <div className="user-info" style={{ marginLeft: '12px' }}>

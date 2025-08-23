@@ -49,7 +49,7 @@ export default function ProfileContent() {
 
   const handleSaveProfile = async () => {
     setLoading(true);
-    
+
     try {
       const response = await fetch("/api/profile/update", {
         method: "POST",
@@ -148,7 +148,7 @@ export default function ProfileContent() {
             <FiUser className="profile-card-icon" />
             <h3 className="profile-card-title">Personal Information</h3>
           </div>
-          
+
           <p className="profile-card-description">
             Update your personal information and avatar
           </p>
@@ -164,7 +164,7 @@ export default function ProfileContent() {
                   width={60}
                   height={60}
                   style={{ objectFit: 'cover' }}
-                  unoptimized={avatarUrl && (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))}
+                  unoptimized={avatarUrl as any && (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))}
                 />
               </div>
               <div className="profile-avatar-input-wrapper">
@@ -240,7 +240,7 @@ export default function ProfileContent() {
             <FiLock className="profile-card-icon" />
             <h3 className="profile-card-title">Password Settings</h3>
           </div>
-          
+
           <p className="profile-card-description">
             Change your login password to protect account security
           </p>

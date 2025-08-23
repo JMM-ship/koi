@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
         { status: 404 }
       );
     }
-
+    
     // 返回最新的用户信息
     return NextResponse.json({
       success: true,
@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
         status: user.status,
         planType: user.planType,
         totalCredits: user.totalCredits,
+        avatorUrl : user.avatar_url
       },
       message: 'Session refreshed. Please refresh the page to apply changes.'
     });

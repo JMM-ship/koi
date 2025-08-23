@@ -215,7 +215,7 @@ export const authOptions: NextAuthOptions = {
             uuid: getUuid(),
             email: user.email,
             nickname: user.name || "",
-            avatar_url: user.image || "",
+            avatar_url: user.avatar_url || "",
             signin_type: account.type,
             signin_provider: account.provider,
             signin_openid: account.providerAccountId,
@@ -248,7 +248,8 @@ export const authOptions: NextAuthOptions = {
                 status: latestUser.status || 'active',
                 planType: latestUser.planType || 'free',
                 totalCredits: latestUser.totalCredits || 0,
-              };
+                avatar_url: latestUser.avatar_url || token.user.avatar_url,
+              }; 
             }
           } catch (e) {
             console.error("update user info failed:", e);
