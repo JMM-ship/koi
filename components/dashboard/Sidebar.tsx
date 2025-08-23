@@ -27,7 +27,8 @@ import {
   FiLogOut,
   FiKey
 } from "react-icons/fi";
-import { useToast } from "@/hooks/useToast";
+import { useConfirm } from "@/hooks/useConfirm";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface MenuItem {
   id: number;
@@ -54,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { showConfirm } = useToast()
+  const { confirmState, showConfirm } = useConfirm();
   // 检查是否为管理员
   const isAdmin = session?.user?.role === 'admin';
 
@@ -415,6 +416,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
           </div>
         </div>
       </div>
+      <ConfirmDialog {...confirmState} />
     </>
   );
 };

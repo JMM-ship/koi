@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2, FiKey } from "react-icons/fi";
 import { useToast } from "@/hooks/useToast";
+import { useConfirm } from "@/hooks/useConfirm";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function ApiKeysContent() {
   const [showKey, setShowKey] = useState<{ [key: string]: boolean }>({});
@@ -13,7 +15,8 @@ export default function ApiKeysContent() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newKeyTitle, setNewKeyTitle] = useState('');
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
-  const { showSuccess, showInfo, showConfirm, showError } = useToast();
+  const { showSuccess, showInfo, showError } = useToast();
+  const { confirmState, showConfirm } = useConfirm();
 
   // 获取 API 密钥列表
   const fetchApiKeys = async () => {
@@ -167,6 +170,7 @@ export default function ApiKeysContent() {
   };
 
   return (
+
     <>
       <div className="dashboard-header mb-4">
         <div className="d-flex justify-content-between align-items-center">
@@ -505,6 +509,7 @@ export default function ApiKeysContent() {
           </p>
         </div>
       </div>
+      <ConfirmDialog {...confirmState} />
     </>
   );
 }

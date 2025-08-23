@@ -7,9 +7,12 @@ import { formatCodeStatus, formatCodeType } from "@/app/lib/admin/utils";
 import AdminCodeGenerateModal from "./AdminCodeGenerateModal";
 import { FiPlus, FiSearch, FiRefreshCw, FiDownload, FiX } from "react-icons/fi";
 import { useToast } from "@/hooks/useToast";
+import { useConfirm } from "@/hooks/useConfirm";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function AdminCodeManagement() {
-  const { showSuccess, showError, showConfirm } = useToast();
+  const { showSuccess, showError } = useToast();
+  const { confirmState, showConfirm } = useConfirm();
   const [codes, setCodes] = useState<RedemptionCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -397,6 +400,7 @@ export default function AdminCodeManagement() {
           />
         )}
       </div>
+      <ConfirmDialog {...confirmState} />
     </AdminGuard>
   );
 }

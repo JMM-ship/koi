@@ -74,49 +74,6 @@ export const useToast = () => {
     });
   };
 
-  const showConfirm = (
-    message: string,
-    onConfirm: () => void,
-    onCancel?: () => void
-  ) => {
-    return toast.custom(
-      (t: Toast) => (
-        <div
-          className={`${t.visible ? 'animate-enter' : 'animate-leave'
-            } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
-        >
-          <div className="flex-1 w-0 p-4">
-            <div className="flex items-start">
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">{message}</p>
-                <div className="mt-3 flex space-x-2">
-                  <button
-                    onClick={() => {
-                      toast.dismiss(t.id);
-                      onConfirm();
-                    }}
-                    className="btn btn-sm btn-primary"
-                  >
-                    Confirm
-                  </button>
-                  <button
-                    onClick={() => {
-                      toast.dismiss(t.id);
-                      onCancel?.();
-                    }}
-                    className="btn btn-sm btn-secondary"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-      { duration: Infinity }
-    );
-  };
 
   return {
     showMessage,
@@ -127,7 +84,6 @@ export const useToast = () => {
     showLoading,
     showPromise,
     showCustom,
-    showConfirm,
     dismiss,
   };
 };

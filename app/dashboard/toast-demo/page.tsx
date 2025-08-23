@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/useToast';
+import { useConfirm } from '@/hooks/useConfirm';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 export default function ToastDemoPage() {
   const { 
@@ -12,9 +14,9 @@ export default function ToastDemoPage() {
     showWarning, 
     showLoading, 
     showPromise,
-    showConfirm,
     dismiss 
   } = useToast();
+  const { confirmState, showConfirm } = useConfirm();
   
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -179,9 +181,10 @@ const {
   showWarning,    // 警告提示
   showLoading,    // 加载状态
   showPromise,    // Promise处理
-  showConfirm,    // 确认对话框
   dismiss         // 关闭消息
 } = useToast();
+
+const { showConfirm } = useConfirm(); // 确认对话框使用独立的hook
 
 // 基础用法
 showSuccess('操作成功');
@@ -202,7 +205,8 @@ showPromise(
   }
 );
 
-// 确认对话框
+// 确认对话框（使用独立的 useConfirm hook）
+const { showConfirm } = useConfirm();
 showConfirm(
   '确认删除？',
   () => console.log('已确认'),
@@ -228,6 +232,7 @@ showConfirm(
           </div>
         </div>
       </div>
+      <ConfirmDialog {...confirmState} />
     </div>
   );
 }
