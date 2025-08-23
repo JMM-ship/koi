@@ -18,13 +18,13 @@ export default function SignInPage() {
     const [verificationSent, setVerificationSent] = useState(false)
     const [countdown, setCountdown] = useState(0)
 
-    // 登录表单
+    // Login form
     const [loginData, setLoginData] = useState({
         email: '',
         password: ''
     })
 
-    // 注册表单
+    // Register form
     const [registerData, setRegisterData] = useState({
         username: '',
         email: '',
@@ -32,10 +32,10 @@ export default function SignInPage() {
         verificationCode: ''
     })
 
-    // 发送验证码
+    // Send verification code
     const sendVerificationCode = async () => {
         if (!registerData.email) {
-            setError('请输入邮箱地址')
+            setError('Please enter email address')
             showError('Please enter email address')
             return
         }
@@ -53,7 +53,7 @@ export default function SignInPage() {
             const data = await response.json()
 
             if (!response.ok) {
-                setError(data.error || '发送验证码失败')
+                setError(data.error || 'Failed to send verification code')
                 showError(data.error || 'Failed to send verification code')
                 if (data.remainingSeconds) {
                     setCountdown(data.remainingSeconds)
@@ -66,14 +66,14 @@ export default function SignInPage() {
                 showSuccess('Verification code sent to your email')
             }
         } catch (err) {
-            setError('发送验证码时发生错误')
+            setError('Error sending verification code')
             showError('Error sending verification code')
         } finally {
             setLoading(false)
         }
     }
 
-    // 倒计时
+    // Countdown
     const startCountdown = (seconds: number) => {
         const timer = setInterval(() => {
             setCountdown((prev) => {
@@ -86,7 +86,7 @@ export default function SignInPage() {
         }, 1000)
     }
 
-    // 处理登录
+    // Handle login
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -100,7 +100,7 @@ export default function SignInPage() {
             })
 
             if (result?.error) {
-                setError('邮箱或密码错误')
+                setError('Invalid email or password')
                 showError('Invalid email or password')
             } else if (result?.ok) {
                 showSuccess('Login successful!')
@@ -108,14 +108,14 @@ export default function SignInPage() {
                 router.refresh()
             }
         } catch (err) {
-            setError('登录时发生错误')
+            setError('Error during login')
             showError('Error during login')
         } finally {
             setLoading(false)
         }
     }
 
-    // 处理注册
+    // Handle registration
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -131,11 +131,11 @@ export default function SignInPage() {
             const data = await response.json()
 
             if (!response.ok) {
-                setError(data.error || '注册失败')
+                setError(data.error || 'Registration failed')
                 showError(data.error || 'Registration failed')
             } else {
                 showSuccess('Registration successful! Logging in...')
-                // 注册成功后自动登录
+                // Auto login after successful registration
                 const result = await signIn('credentials', {
                     email: registerData.email,
                     password: registerData.password,
@@ -148,14 +148,14 @@ export default function SignInPage() {
                 }
             }
         } catch (err) {
-            setError('注册时发生错误')
+            setError('Error during registration')
             showError('Error during registration')
         } finally {
             setLoading(false)
         }
     }
 
-    // Google登录
+    // Google login
     const handleGoogleSignIn = () => {
         signIn('google', { callbackUrl })
     }
@@ -179,14 +179,14 @@ export default function SignInPage() {
                                     </Link>
                                 </div>
 
-                                {/* Tab切换 */}
+                                {/* Tab switcher */}
                                 <ul className="nav nav-pills nav-fill mb-4">
                                     <li className="nav-item">
                                         <button
                                             className={`nav-link text-white ${isLogin ? 'active bg-gradient' : ''}`}
                                             onClick={() => { setIsLogin(true); setError('') }}
                                         >
-                                            登录
+                                            Login
                                         </button>
                                     </li>
                                     <li className="nav-item">
@@ -194,23 +194,23 @@ export default function SignInPage() {
                                             className={`nav-link text-white ${!isLogin ? 'active bg-gradient' : ''}`}
                                             onClick={() => { setIsLogin(false); setError('') }}
                                         >
-                                            注册
+                                            Register
                                         </button>
                                     </li>
                                 </ul>
 
-                                {/* 错误提示 */}
+                                {/* Error message */}
                                 {error && (
                                     <div className="alert alert-danger py-2" role="alert">
                                         {error}
                                     </div>
                                 )}
 
-                                {/* 登录表单 */}
+                                {/* Login form */}
                                 {isLogin ? (
                                     <form onSubmit={handleLogin}>
                                         <div className="mb-3">
-                                            <label className="form-label text-white">邮箱</label>
+                                            <label className="form-label text-white">Email</label>
                                             <input
                                                 type="email"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -220,7 +220,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-4">
-                                            <label className="form-label text-white">密码</label>
+                                            <label className="form-label text-white">Password</label>
                                             <input
                                                 type="password"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -234,14 +234,14 @@ export default function SignInPage() {
                                             className="btn btn-linear w-100 mb-3"
                                             disabled={loading}
                                         >
-                                            {loading ? '登录中...' : '登录'}
+                                            {loading ? 'Logging in...' : 'Login'}
                                         </button>
                                     </form>
                                 ) : (
-                                    /* 注册表单 */
+                                    /* Register form */
                                     <form onSubmit={handleRegister}>
                                         <div className="mb-3">
-                                            <label className="form-label text-white">用户名</label>
+                                            <label className="form-label text-white">Username</label>
                                             <input
                                                 type="text"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -252,7 +252,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label text-white">邮箱</label>
+                                            <label className="form-label text-white">Email</label>
                                             <input
                                                 type="email"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -262,7 +262,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label text-white">密码</label>
+                                            <label className="form-label text-white">Password</label>
                                             <input
                                                 type="password"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -273,7 +273,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-4">
-                                            <label className="form-label text-white">验证码</label>
+                                            <label className="form-label text-white">Verification Code</label>
                                             <div className="input-group">
                                                 <input
                                                     type="text"
@@ -288,7 +288,7 @@ export default function SignInPage() {
                                                     onClick={sendVerificationCode}
                                                     disabled={loading || countdown > 0}
                                                 >
-                                                    {countdown > 0 ? `${countdown}s` : '发送验证码'}
+                                                    {countdown > 0 ? `${countdown}s` : 'Send Code'}
                                                 </button>
                                             </div>
                                         </div>
@@ -297,19 +297,19 @@ export default function SignInPage() {
                                             className="btn btn-linear w-100 mb-3"
                                             disabled={loading}
                                         >
-                                            {loading ? '注册中...' : '注册'}
+                                            {loading ? 'Registering...' : 'Register'}
                                         </button>
                                     </form>
                                 )}
 
-                                {/* 分隔线 */}
+                                {/* Divider */}
                                 <div className="d-flex align-items-center my-4">
                                     <hr className="flex-grow-1 text-secondary" />
-                                    <span className="px-3 text-white">或</span>
+                                    <span className="px-3 text-white">or</span>
                                     <hr className="flex-grow-1 text-secondary" />
                                 </div>
 
-                                {/* Google登录 */}
+                                {/* Google login */}
                                 <button
                                     type="button"
                                     className="btn text-white btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2"
@@ -321,7 +321,7 @@ export default function SignInPage() {
                                         <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
                                         <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
                                     </svg>
-                                    使用 Google 登录
+                                    Sign in with Google
                                 </button>
                             </div>
                         </div>

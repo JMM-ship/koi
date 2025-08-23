@@ -159,11 +159,12 @@ export default function ProfileContent() {
             <div className="profile-avatar-container">
               <div className="profile-avatar">
                 <Image
-                  src={avatarUrl || "/assets/img/team/team-1.jpg"}
+                  src={avatarUrl && avatarUrl.trim() !== "" ? avatarUrl : "/assets/img/team/team-1.jpg"}
                   alt="Avatar"
                   width={60}
                   height={60}
                   style={{ objectFit: 'cover' }}
+                  unoptimized={avatarUrl && (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))}
                 />
               </div>
               <div className="profile-avatar-input-wrapper">
