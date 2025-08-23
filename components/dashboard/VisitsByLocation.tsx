@@ -11,6 +11,8 @@ interface CurrentPlanProps {
 const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
   const [planDetails, setPlanDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [dailyCredit, setDailyCredit] = useState(0)
+  const [packageCredits, setPackageCredits] = useState(0)
   const router = useRouter();
   const { showSuccess, showError } = useToast();
 
@@ -20,10 +22,10 @@ const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
         const response = await fetch('/api/dashboard');
         if (!response.ok) throw new Error('Failed to fetch dashboard data');
         const result = await response.json();
-
         const userInfo = result.userInfo;
         const userPackage = result.userPackage;
-
+        setDailyCredit(result?.creditBalance?.packageCredits)
+        setPackageCredits(userPackage.dailyCredits)
         // 格式化套餐信息
         const now = new Date();
         const endDate = userPackage?.endDate || userInfo?.planExpiredAt || new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -151,6 +153,15 @@ const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
         }}>
           {planDetails.statusLabel}
         </span>
+      </div>
+
+      {/* Daily Credits Display */}
+      <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '0.75rem', marginBottom: '0.75rem' }}>
+        <h5 style={{ fontSize: '0.6875rem', textTransform: 'uppercase', color: '#666', fontWeight: '600', marginBottom: '0.625rem' }}>Credit</h5>
+        <div className="d-flex justify-content-between" style={{ marginBottom: '0.375rem' }}>
+          <span style={{ fontSize: '0.75rem', color: '#999' }}>Daily Credit</span>
+          <span style={{ fontSize: '0.75rem', color: '#fff', fontWeight: '500' }}>{dailyCredit} / {packageCredits}</span>
+        </div>
       </div>
 
       <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '0.75rem', marginBottom: '0.75rem' }}>
