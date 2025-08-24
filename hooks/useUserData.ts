@@ -37,10 +37,16 @@ export function useUserData() {
   // Update user profile
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     try {
+      // Map avatar_url to avatarUrl for API compatibility
+      const apiData = {
+        nickname: updates.nickname,
+        avatarUrl: updates.avatar_url || updates.avatarUrl,
+      };
+      
       const response = await fetch('/api/profile/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
+        body: JSON.stringify(apiData),
       });
 
       if (!response.ok) {
@@ -49,15 +55,21 @@ export function useUserData() {
 
       const updatedUser = await response.json();
       
+      // Normalize the data structure
+      const normalizedUser = {
+        ...updatedUser,
+        avatar_url: updatedUser.avatarUrl || updatedUser.avatar_url,
+      };
+      
       // Update SWR cache
-      await mutate(updatedUser, false);
+      await mutate(normalizedUser, false);
       
       // Update NextAuth session
       await updateSession({
         ...session,
         user: {
           ...session?.user,
-          ...updatedUser,
+          ...normalizedUser,
         },
       });
 

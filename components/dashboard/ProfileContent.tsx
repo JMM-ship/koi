@@ -5,10 +5,13 @@ import { FiUser, FiMail, FiLock, FiShield, FiCopy, FiEye, FiEyeOff } from "react
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/useToast";
+import { useUserData } from "@/hooks/useUserData";
 
 export default function ProfileContent() {
   const { data: session } = useSession();
   const { showSuccess, showError, showInfo } = useToast();
+  const { user, isLoading: userLoading, updateProfile, refreshUserData } = useUserData();
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -20,25 +23,17 @@ export default function ProfileContent() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [dataInitialized, setDataInitialized] = useState(false);
 
-  // 获取用户信息
+  // Initialize form data from user data only once
   useEffect(() => {
-    fetchProfile();
-  }, [session]);
-
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch("/api/profile");
-      if (response.ok) {
-        const data = await response.json();
-        setNickname(data.nickname || "");
-        setAvatarUrl(data.avatarUrl || "");
-        setEmail(data.email || "");
-      }
-    } catch (error) {
-      showError("Failed to fetch profile");
+    if (user && !userLoading && !dataInitialized) {
+      setNickname(user.nickname || "");
+      setAvatarUrl(user.avatar_url || "");
+      setEmail(user.email || "");
+      setDataInitialized(true);
     }
-  };
+  }, [user, userLoading, dataInitialized]);
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(avatarUrl);
@@ -51,26 +46,16 @@ export default function ProfileContent() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/profile/update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nickname,
-          avatarUrl,
-        }),
+      // Use the updateProfile from useUserData hook
+      await updateProfile({
+        nickname,
+        avatar_url: avatarUrl,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        showSuccess("Profile updated successfully!");
-      } else {
-        showError(data.error || "Failed to update profile");
-      }
+      showSuccess("Profile updated successfully!");
+      // The user data will be automatically updated through SWR
     } catch (error) {
-      showError("An error occurred while updating profile");
+      showError(error instanceof Error ? error.message : "An error occurred while updating profile");
     } finally {
       setLoading(false);
     }
@@ -158,21 +143,35 @@ export default function ProfileContent() {
             <label className="profile-label">Avatar URL</label>
             <div className="profile-avatar-container">
               <div className="profile-avatar">
-                <Image
-                  src={avatarUrl && avatarUrl.trim() !== "" ? avatarUrl : ""}
-                  alt="Avatar"
-                  width={60}
-                  height={60}
-                  style={{ objectFit: 'cover' }}
-                  unoptimized={avatarUrl as any && (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://"))}
-                />
+                {avatarUrl && /^https?:\/\//.test(avatarUrl) ? (
+                  <Image
+                    src={avatarUrl}
+                    alt="Avatar"
+                    width={60}
+                    height={60}
+                    style={{ objectFit: "cover", borderRadius: "50%" }}
+                    unoptimized
+                  />
+                ) : (
+                  <Image
+                    src="/default-avatar.png"
+                    alt="Default Avatar"
+                    width={60}
+                    height={60}
+                    style={{ objectFit: "cover", borderRadius: "50%" }}
+                  />
+                )}
               </div>
               <div className="profile-avatar-input-wrapper">
                 <div className="profile-input-group">
                   <input
                     type="text"
                     value={avatarUrl}
-                    onChange={(e) => setAvatarUrl(e.target.value)}
+                    onChange={(e) => {
+                      console.log(e.target.value, "头像");
+
+                      setAvatarUrl(e.target.value)
+                    }}
                     className="profile-input"
                     placeholder="Enter avatar URL"
                   />
