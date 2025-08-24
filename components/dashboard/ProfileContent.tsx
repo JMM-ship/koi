@@ -28,8 +28,10 @@ export default function ProfileContent() {
   // Initialize form data from user data only once
   useEffect(() => {
     if (user && !userLoading && !dataInitialized) {
+      console.log(user, "sss");
+
       setNickname(user.nickname || "");
-      setAvatarUrl(user.avatar_url || "");
+      setAvatarUrl(user.avatarUrl || "");
       setEmail(user.email || "");
       setDataInitialized(true);
     }
@@ -49,7 +51,7 @@ export default function ProfileContent() {
       // Use the updateProfile from useUserData hook
       await updateProfile({
         nickname,
-        avatar_url: avatarUrl,
+        avatarUrl: avatarUrl,
       });
 
       showSuccess("Profile updated successfully!");
@@ -154,7 +156,7 @@ export default function ProfileContent() {
                   />
                 ) : (
                   <Image
-                    src="/default-avatar.png"
+                    src="/assets/default-avatar.png"
                     alt="Default Avatar"
                     width={60}
                     height={60}
@@ -168,7 +170,6 @@ export default function ProfileContent() {
                     type="text"
                     value={avatarUrl}
                     onChange={(e) => {
-                      console.log(e.target.value, "头像");
 
                       setAvatarUrl(e.target.value)
                     }}

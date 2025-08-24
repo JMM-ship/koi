@@ -32,21 +32,25 @@ export async function sendVerificationEmail(to, code) {
   const transporter = getEmailTransporter();
 
   const mailOptions = {
-    from: `"${process.env.SMTP_FROM_NAME || 'Eye Color Editor'}" <${process.env.SMTP_USER || 'noreply@eye-color-editor.com'}>`,
+    from: `"${process.env.SMTP_FROM_NAME || 'KOI'}" <${process.env.SMTP_USER || 'noreply@koi.com'}>`,
     to: to,
-    subject: '邮箱验证码 - Eye Color Editor',
+    subject: 'Email Verification Code - KOI',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333; text-align: center;">邮箱验证码</h2>
-        <p style="color: #666; font-size: 16px;">您好！</p>
-        <p style="color: #666; font-size: 16px;">您正在注册 Eye Color Editor 账号，请使用以下验证码完成注册：</p>
+        <h2 style="color: #333; text-align: center;">Email Verification</h2>
+        <p style="color: #666; font-size: 16px;">Hello,</p>
+        <p style="color: #666; font-size: 16px;">
+          You are registering for a KOI account. Please use the following verification code to complete your registration:
+        </p>
         <div style="background-color: #f0f0f0; padding: 20px; text-align: center; margin: 20px 0;">
           <span style="font-size: 32px; font-weight: bold; color: #333; letter-spacing: 5px;">${code}</span>
         </div>
-        <p style="color: #666; font-size: 14px;">验证码有效期为10分钟。如果您没有请求此验证码，请忽略此邮件。</p>
+        <p style="color: #666; font-size: 14px;">
+          This code is valid for 10 minutes. If you did not request this code, please ignore this email.
+        </p>
         <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
         <p style="color: #999; font-size: 12px; text-align: center;">
-          此邮件由系统自动发送，请勿回复。
+          This is an automated message. Please do not reply.
         </p>
       </div>
     `,

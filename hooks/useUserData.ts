@@ -13,7 +13,7 @@ export interface UserProfile {
   uuid: string;
   email: string;
   nickname: string;
-  avatar_url: string;
+  avatarUrl: string;
   role: string;
   status: string;
   planType: string;
@@ -37,10 +37,10 @@ export function useUserData() {
   // Update user profile
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     try {
-      // Map avatar_url to avatarUrl for API compatibility
+      // Map avatarUrl for API compatibility
       const apiData = {
         nickname: updates.nickname,
-        avatarUrl: updates.avatar_url,
+        avatarUrl: updates.avatarUrl,
       };
       
       const response = await fetch('/api/profile/update', {
@@ -58,7 +58,7 @@ export function useUserData() {
       // Normalize the data structure
       const normalizedUser = {
         ...updatedUser,
-        avatar_url: updatedUser.avatarUrl || updatedUser.avatar_url,
+        avatarUrl: updatedUser.avatarUrl || updatedUser.avatar_url || "",
       };
       
       // Update SWR cache
@@ -82,7 +82,7 @@ export function useUserData() {
 
   // Update avatar
   const updateAvatar = useCallback(async (avatarUrl: string) => {
-    return updateProfile({ avatar_url: avatarUrl });
+    return updateProfile({ avatarUrl: avatarUrl });
   }, [updateProfile]);
 
   // Refresh user data

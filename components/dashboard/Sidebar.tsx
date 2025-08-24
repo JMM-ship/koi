@@ -374,14 +374,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
             alignItems: 'center',
             justifyContent: isCollapsed ? 'center' : 'flex-start'
           }}>
-            {session?.user?.avatar_url && (
+            {session?.user?.avatarUrl && (
               <Image
-                src={session?.user?.avatar_url}
+                src={session?.user?.avatarUrl}
                 alt="User"
                 className="user-avatar rounded-full object-cover"
                 width={40}
                 height={40}
-                unoptimized={session?.user?.avatar_url as any && (session?.user?.avatar_url.startsWith("http://") || session?.user?.avatar_url.startsWith("https://"))}
+                unoptimized={session?.user?.avatarUrl as any && (session?.user?.avatarUrl.startsWith("http://") || session?.user?.avatarUrl.startsWith("https://"))}
               />
             )}
             {!isCollapsed && (

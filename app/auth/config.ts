@@ -197,7 +197,7 @@ export const authOptions: NextAuthOptions = {
               status: latestUser.status || 'active',
               planType: latestUser.planType || 'free',
               totalCredits: latestUser.totalCredits || 0,
-              avatar_url: latestUser.avatar_url || token.user.avatar_url,
+              avatarUrl: latestUser.avatar_url || token.user.avatarUrl,
             };
           } else {
             session.user = {
@@ -238,7 +238,7 @@ export const authOptions: NextAuthOptions = {
               uuid: savedUser.uuid,
               email: savedUser.email,
               nickname: savedUser.nickname,
-              avatar_url: savedUser.avatar_url || savedUser.avatarUrl,
+              avatarUrl: savedUser.avatar_url || savedUser.avatarUrl,
               created_at: savedUser.created_at || savedUser.createdAt,
               role: savedUser.role || 'user',
             };
@@ -256,7 +256,7 @@ export const authOptions: NextAuthOptions = {
                 status: latestUser.status || 'active',
                 planType: latestUser.planType || 'free',
                 totalCredits: latestUser.totalCredits || 0,
-                avatar_url: latestUser.avatar_url || token.user.avatar_url,
+                avatarUrl: latestUser.avatar_url || token.user.avatarUrl,
               }; 
             }
           } catch (e) {
