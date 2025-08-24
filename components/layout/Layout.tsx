@@ -17,6 +17,7 @@ import BackToTop from '../elements/BackToTop'
 import Breadcrumb from './Breadcrumb'
 import Footer from './footer/Footer'
 import Header from "./header/Header"
+import GoogleOneTapWrapper from '../auth/GoogleOneTapWrapper'
 
 // Define the props interface (same as above)
 interface BootstrapComponentsProps { }
@@ -79,6 +80,7 @@ export default function Layout({ headerStyle, footerStyle, breadcrumbTitle, chil
 		<>
 			<div id="top" />
 			<BootstrapComponents />
+			<GoogleOneTapWrapper />
 			<Header scroll={scroll} isMobileMenu={isMobileMenu} handleMobileMenu={handleMobileMenu} />
 
 			<main>

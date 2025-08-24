@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useToast } from '@/hooks/useToast'
+import GoogleOneTap from '@/components/auth/GoogleOneTap'
 
 export default function SignInPage() {
     const router = useRouter()
@@ -165,6 +166,11 @@ export default function SignInPage() {
 
     return (
         <section className="ai-solutions-home-section-1 position-relative overflow-hidden min-vh-100 d-flex align-items-center">
+            {/* Google One Tap Component */}
+            {process.env.NEXT_PUBLIC_AUTH_GOOGLE_ONE_TAP_ENABLED === 'true' && (
+                <GoogleOneTap callbackUrl={callbackUrl} />
+            )}
+            
             <div className="position-absolute top-50 start-50 translate-middle opacity-25">
                 <img className="ribbonRotate" src="/assets/imgs/pages/ai-solutions/page-home/home-section-1/wave-circle-img.png" alt="background" />
             </div>
