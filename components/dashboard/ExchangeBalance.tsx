@@ -1,21 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useDashboard, useCreditStats } from "@/contexts/DashboardContext";
 
 const ExchangeBalance = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('today');
   const [rankingData, setRankingData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  
+  // Get data from context
+  const { data, isLoading } = useDashboard();
+  const creditStats = useCreditStats();
 
   useEffect(() => {
-    const fetchCreditStats = async () => {
-      try {
-        const response = await fetch('/api/dashboard');
-        if (!response.ok) throw new Error('Failed to fetch dashboard data');
-        const result = await response.json();
-
-        // 格式化统计数据
-        const stats = result.creditStats;
+    if (data && creditStats) {
+      const processCreditStats = () => {
+        try {
+          // 格式化统计数据
+          const stats = creditStats;
 
 
         const formatData = (period: any, color: string) => ({
@@ -30,22 +31,21 @@ const ExchangeBalance = () => {
           month: formatData(stats.month, "#ffa500")
         });
       } catch (error) {
-        console.error('Error fetching credit stats:', error);
+        console.error('Error processing credit stats:', error);
         // 使用默认数据
         setRankingData({
           today: { points: "0", percentage: 0, trend: "+0%", color: "#00d084" },
           week: { points: "0", percentage: 0, trend: "+0%", color: "#00b4d8" },
           month: { points: "0", percentage: 0, trend: "+0%", color: "#ffa500" }
         });
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchCreditStats();
-  }, []);
+    processCreditStats();
+    }
+  }, [data, creditStats]);
 
-  if (loading || !rankingData) {
+  if (isLoading || !rankingData) {
     return (
       <div className="team-members-card">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '300px' }}>

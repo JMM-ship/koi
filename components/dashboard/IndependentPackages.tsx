@@ -18,9 +18,10 @@ interface Package {
 
 interface IndependentPackagesProps {
   onBack: () => void;
+  onPurchase?: () => void;
 }
 
-const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
+const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) => {
   const { showSuccess, showError, showLoading, dismiss } = useToast();
   const [packages, setPackages] = useState<Package[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
@@ -116,9 +117,13 @@ const IndependentPackages = ({ onBack }: IndependentPackagesProps) => {
       });
       
       // Short delay before returning to let user see success message
-      setTimeout(() => {
-        onBack();
-      }, 1500);
+      if (onPurchase) {
+        onPurchase();
+      } else {
+        setTimeout(() => {
+          onBack();
+        }, 1500);
+      }
     } catch (error) {
       dismiss();
       console.error("Purchase failed:", error);

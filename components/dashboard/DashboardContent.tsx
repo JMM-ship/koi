@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DashboardProvider } from "@/contexts/DashboardContext";
 import WorkSummaryChart from "@/components/dashboard/WorkSummaryChart";
 import VisitsByLocation from "@/components/dashboard/VisitsByLocation";
 import CreditCard from "@/components/dashboard/CreditCard";
@@ -23,7 +24,8 @@ export default function DashboardContent({ onNavigateToPlans }: DashboardContent
   };
 
   return (
-    <div className="dashboard-grid">
+    <DashboardProvider>
+      <div className="dashboard-grid">
       {/* 左侧主要内容区 */}
       <div className="main-content">
         {/* 消耗趋势图 */}
@@ -72,5 +74,6 @@ export default function DashboardContent({ onNavigateToPlans }: DashboardContent
       {/* Credit Test Button */}
       {/* <CreditTestButton onCreditsUsed={handleCreditsUsed} /> */}
     </div>
+    </DashboardProvider>
   );
 }

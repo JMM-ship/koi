@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import IndependentPackages from "./IndependentPackages";
+import { useDashboard, useCreditBalance, useUserPackage } from "@/contexts/DashboardContext";
 
 const IndependentCredits = () => {
   const [creditsData, setCreditsData] = useState({
@@ -13,24 +14,25 @@ const IndependentCredits = () => {
     lastPurchase: "December 10, 2024",
     purchaseAmount: 0
   });
-  const [loading, setLoading] = useState(true);
   const [showPackages, setShowPackages] = useState(false);
+  
+  // Get data from context
+  const { data, isLoading, refreshData } = useDashboard();
+  const creditBalance = useCreditBalance();
+  const userPackage = useUserPackage();
   useEffect(() => {
-    const fetchCreditsData = async () => {
-      try {
-        const response = await fetch('/api/dashboard');
-        if (!response.ok) throw new Error('Failed to fetch dashboard data');
-        const result = await response.json();
+    if (data && creditBalance) {
+      const processCreditsData = () => {
+        try {
+          // 获取独立积分数据
+          const balance = creditBalance;
+          const independent = balance?.independentCredits || 0;
+          const totalPurchased = balance?.totalPurchased || 50000;
+          const used = Math.min(balance?.totalUsed || 0, totalPurchased - independent);
+          const percentage = totalPurchased > 0 ? (independent / totalPurchased) * 100 : 0;
 
-        // 获取独立积分数据
-        const balance = result.creditBalance;
-        const independent = balance?.independentCredits || 0;
-        const totalPurchased = balance?.totalPurchased || 50000;
-        const used = Math.min(balance?.totalUsed || 0, totalPurchased - independent);
-        const percentage = totalPurchased > 0 ? (independent / totalPurchased) * 100 : 0;
-
-        // 获取最后购买信息
-        const lastOrder = result.userPackage;
+          // 获取最后购买信息
+          const lastOrder = userPackage;
         const lastPurchaseDate = lastOrder?.createdAt
           ? new Date(lastOrder.createdAt).toLocaleDateString('en-US', {
             month: 'long',
@@ -55,17 +57,16 @@ const IndependentCredits = () => {
           purchaseAmount: 10000
         });
       } catch (error) {
-        console.error('Error fetching credits data:', error);
+        console.error('Error processing credits data:', error);
         // 使用默认值
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchCreditsData();
-  }, []);
+    processCreditsData();
+    }
+  }, [data, creditBalance, userPackage]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="balance-card" style={{
         background: '#0a0a0a',
@@ -84,7 +85,10 @@ const IndependentCredits = () => {
 
   // Show packages view when button is clicked
   if (showPackages) {
-    return <IndependentPackages onBack={() => setShowPackages(false)} />;
+    return <IndependentPackages onBack={() => setShowPackages(false)} onPurchase={() => {
+      setShowPackages(false);
+      setTimeout(() => refreshData(), 1500);
+    }} />;
   }
 
   return (

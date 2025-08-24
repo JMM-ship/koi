@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as echarts from 'echarts';
+import { useDashboard, useCreditBalance, useUserInfo } from "@/contexts/DashboardContext";
 
 const SatisfactionRate = () => {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -11,41 +12,40 @@ const SatisfactionRate = () => {
     remainingCredits: 0,
     percentage: 0
   });
-  const [loading, setLoading] = useState(true);
+
+  // Get data from context
+  const { data, isLoading } = useDashboard();
+  const creditBalance = useCreditBalance();
+  const userInfo = useUserInfo();
 
   useEffect(() => {
-    const fetchCreditBalance = async () => {
-      try {
-        const response = await fetch('/api/dashboard');
-        if (!response.ok) throw new Error('Failed to fetch dashboard data');
-        const result = await response.json();
+    if (data && creditBalance && userInfo) {
+      const processCreditBalance = () => {
+        try {
+          // 计算积分数据
+          const balance = creditBalance;
 
-        // 计算积分数据
-        const balance = result.creditBalance;
-        const userInfo = result.userInfo;
+          const total = (balance?.packageCredits || 0) + (balance?.independentCredits || 0) + (userInfo?.totalCredits || 0);
+          const used = balance?.totalUsed || 0;
+          const remaining = Math.max(0, total - used);
+          const percent = total > 0 ? (remaining / total) * 100 : 0;
+          console.log(total, used, remaining, percent);
 
-        const total = (balance?.packageCredits || 0) + (balance?.independentCredits || 0) + (userInfo?.totalCredits || 0);
-        const used = balance?.totalUsed || 0;
-        const remaining = Math.max(0, total - used);
-        const percent = total > 0 ? (remaining / total) * 100 : 0;
-        console.log(total, used, remaining, percent);
+          setCreditData({
+            totalCredits: total,
+            usedCredits: used,
+            remainingCredits: remaining,
+            percentage: percent
+          });
+        } catch (error) {
+          console.error('Error processing credit balance:', error);
+          // 使用默认值
+        }
+      };
 
-        setCreditData({
-          totalCredits: total,
-          usedCredits: used,
-          remainingCredits: remaining,
-          percentage: percent
-        });
-      } catch (error) {
-        console.error('Error fetching credit balance:', error);
-        // 使用默认值
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCreditBalance();
-  }, []);
+      processCreditBalance();
+    }
+  }, [data, creditBalance, userInfo]);
 
   const { totalCredits, usedCredits, remainingCredits, percentage } = creditData;
 
@@ -263,9 +263,9 @@ const SatisfactionRate = () => {
       window.removeEventListener('resize', handleResize);
       myChart.dispose();
     };
-  }, [creditData, loading]);
+  }, [creditData, isLoading]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="satisfaction-card">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '250px' }}>
