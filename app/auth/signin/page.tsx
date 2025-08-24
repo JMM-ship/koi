@@ -157,7 +157,10 @@ export default function SignInPage() {
 
     // Google login
     const handleGoogleSignIn = () => {
-        signIn('google', { callbackUrl })
+        signIn('google', { 
+            callbackUrl,
+            prompt: 'select_account'
+        })
     }
 
     return (
