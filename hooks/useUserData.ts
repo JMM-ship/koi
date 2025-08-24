@@ -40,7 +40,7 @@ export function useUserData() {
       // Map avatar_url to avatarUrl for API compatibility
       const apiData = {
         nickname: updates.nickname,
-        avatarUrl: updates.avatar_url || updates.avatarUrl,
+        avatarUrl: updates.avatar_url,
       };
       
       const response = await fetch('/api/profile/update', {
