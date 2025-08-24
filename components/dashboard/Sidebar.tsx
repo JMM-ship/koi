@@ -29,6 +29,7 @@ import {
 } from "react-icons/fi";
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useToast } from '@/hooks/useToast'
 
 interface MenuItem {
   id: number;
@@ -56,6 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { confirmState, showConfirm } = useConfirm();
+  const { showError } = useToast()
   // 检查是否为管理员
   const isAdmin = session?.user?.role === 'admin';
 
@@ -122,15 +124,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
           .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
       });
 
-      // 5. 显示退出成功提示
-      console.log('退出登录成功');
 
       // 6. 重定向到登录页面
       router.push('/auth/signin');
 
     } catch (error) {
-      console.error('退出登录失败:', error);
-      alert('退出登录失败，请重试');
+      showError("logout failed,please retry")
       setIsLoggingOut(false);
     }
   };
@@ -407,7 +406,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
                   }}
                   onClick={() => showConfirm("sure want to logout", handleLogout)}
                   disabled={isLoggingOut}
-                  title="退出登录"
+                  title="logout"
                   onMouseEnter={(e) => !isLoggingOut && (e.currentTarget.style.transform = 'scale(1.1)')}
                   onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 >
