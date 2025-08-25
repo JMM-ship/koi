@@ -22,7 +22,8 @@ export default function SignInPage() {
     // Login form
     const [loginData, setLoginData] = useState({
         email: '',
-        password: ''
+        password: '',
+        rememberMe: true
     })
 
     // Register form
@@ -97,6 +98,7 @@ export default function SignInPage() {
             const result = await signIn('credentials', {
                 email: loginData.email,
                 password: loginData.password,
+                rememberMe: loginData.rememberMe.toString(),
                 redirect: false
             })
 
@@ -237,6 +239,18 @@ export default function SignInPage() {
                                                 onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                                                 required
                                             />
+                                        </div>
+                                        <div className="form-check mb-4">
+                                            <input
+                                                type="checkbox"
+                                                className="form-check-input"
+                                                id="rememberMe"
+                                                checked={loginData.rememberMe}
+                                                onChange={(e) => setLoginData({ ...loginData, rememberMe: e.target.checked })}
+                                            />
+                                            <label className="form-check-label text-white" htmlFor="rememberMe">
+                                                Remember me for 30 days
+                                            </label>
                                         </div>
                                         <button
                                             type="submit"

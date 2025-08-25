@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import {
   FiGrid,
   FiFolder,
@@ -103,33 +103,22 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
     setIsLoggingOut(true);
 
     try {
-      // 1. 调用退出 API（如果有的话）
-      // await fetch('/api/auth/logout', { 
-      //   method: 'POST',
-      //   credentials: 'include'
-      // });
-
-      // 2. 清除本地存储的用户信息
+      // 清除本地存储的用户信息
       localStorage.removeItem('userToken');
       localStorage.removeItem('userData');
       localStorage.removeItem('refreshToken');
 
-      // 3. 清除会话存储
+      // 清除会话存储
       sessionStorage.clear();
 
-      // 4. 清除所有 cookies（如果需要）
-      document.cookie.split(";").forEach((c) => {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      // 使用 NextAuth 的 signOut 方法，直接重定向
+      await signOut({
+        redirect: true,
+        callbackUrl: '/auth/signin'
       });
 
-
-      // 6. 重定向到登录页面
-      router.push('/auth/signin');
-
     } catch (error) {
-      showError("logout failed,please retry")
+      showError("Logout failed, please retry")
       setIsLoggingOut(false);
     }
   };

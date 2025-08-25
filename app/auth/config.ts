@@ -122,6 +122,7 @@ providers.push(
     credentials: {
       email: { label: "邮箱", type: "email" },
       password: { label: "密码", type: "password" },
+      rememberMe: { label: "记住我", type: "text" },
     },
     async authorize(credentials) {
       if (!credentials?.email || !credentials?.password) {
@@ -149,6 +150,7 @@ providers.push(
         name: user.nickname,
         image: user.avatar_url,
         role: user.role || 'user',
+        rememberMe: credentials.rememberMe === 'true',
       };
     },
   })
@@ -164,6 +166,15 @@ export const authOptions: NextAuthOptions = {
   providers,
   pages: {
     signIn: "/auth/signin",
+    signOut: "/auth/signin",
+    error: "/auth/signin",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
@@ -218,6 +229,12 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       // Persist the OAuth access_token and or the user id to the token right after signin
       try {
+        // 处理记住我选项，动态设置过期时间
+        if (user && (user as any).rememberMe !== undefined) {
+          const rememberMe = (user as any).rememberMe;
+          token.exp = Math.floor(Date.now() / 1000) + (rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60); // 30天或1天
+        }
+        
         if (user && user.email && account) {
           const dbUser = {
             uuid: getUuid(),
