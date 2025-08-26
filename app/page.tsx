@@ -20,7 +20,7 @@ export default function Home() {
                 <Section6 />
                 <Section7 />
                 <Section8 />
-                <Section9 bordertop="border-top" />
+                {/* <Section9 bordertop="border-top" /> */}
             </Layout>
         </>
     );

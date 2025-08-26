@@ -9,7 +9,7 @@ export default function Footer() {
                     <img className="position-absolute bottom-0 end-0" data-aos="fade-left" data-aos-delay={400} src="assets/imgs/pages/ai-solutions/page-home/home-section-7/bg-bottom.png" alt="AstraX" />
                     <div className="container-fluid">
                         <div className="container position-relative z-2">
-                            <div className="py-120 d-flex flex-wrap gap-4 justify-content-between">
+                            {/* <div className="py-120 d-flex flex-wrap gap-4 justify-content-between">
                                 <div>
                                     <h3 className="text-primary btn-text pb-3">popular promt</h3>
                                     <div className="d-flex flex-column align-items-start">
@@ -96,16 +96,16 @@ export default function Footer() {
                                         </div>
                                     </form>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="d-flex flex-column flex-lg-row gap-3 align-items-center py-4 border-top justify-content-between">
                                 <p className="m-0 text-center">
                                     Copyright &amp; design by
                                     <Link href="/contact" className=" ">
-                                        <span className="text-white fw-medium">©Alithemes</span>
+                                        <span className="text-white fw-medium">©KOI</span>
                                     </Link>
                                     2025, All Rights Reserved
                                 </p>
-                                <ul className="list-unstyled d-flex mb-0 justify-content-center ms-lg-auto">
+                                {/* <ul className="list-unstyled d-flex mb-0 justify-content-center ms-lg-auto">
                                     <li>
                                         <Link href="#">
                                             <span className="icon">
@@ -142,7 +142,7 @@ export default function Footer() {
                                             </span>
                                         </Link>
                                     </li>
-                                </ul>
+                                </ul> */}
                             </div>
                         </div>
                     </div>

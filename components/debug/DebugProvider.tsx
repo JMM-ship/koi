@@ -20,11 +20,11 @@ interface DebugProviderProps {
  */
 export default function DebugProvider({ children, enabled = true }: DebugProviderProps) {
   const [showPanel, setShowPanel] = useState(false);
-  
+
   useEffect(() => {
     // 在客户端检查是否应该显示调试面板
     setShowPanel(enabled && shouldShowDebugPanel());
-    
+
     // 添加热键支持
     if (debugConfig.hotkey) {
       const handleHotkey = (e: KeyboardEvent) => {
@@ -33,7 +33,7 @@ export default function DebugProvider({ children, enabled = true }: DebugProvide
         const shift = keys.includes('shift');
         const alt = keys.includes('alt');
         const key = keys[keys.length - 1];
-        
+
         if (
           (ctrl ? e.ctrlKey : true) &&
           (shift ? e.shiftKey : true) &&
@@ -44,17 +44,17 @@ export default function DebugProvider({ children, enabled = true }: DebugProvide
           setShowPanel(prev => !prev);
         }
       };
-      
+
       window.addEventListener('keydown', handleHotkey);
       return () => window.removeEventListener('keydown', handleHotkey);
     }
   }, [enabled]);
-  
+
   return (
     <>
       {children}
       {/* 调试面板 - 生产环境可以直接注释掉这一行或在配置中禁用 */}
-      {showPanel && <DebugPanel />}
+      {/* {showPanel && <DebugPanel />} */}
     </>
   );
 }
