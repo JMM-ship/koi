@@ -27,7 +27,7 @@ export default function Section1() {
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-lg-6 mx-auto mt-5 text-center">         
+                        <div className="col-lg-6 mx-auto mt-5 text-center">
                             <button className="btn btn-linear m-2 fs-7 fw-bold" type="submit" aria-label="generate" data-aos="fade-zoom-in" data-aos-delay={100}>
                                 Get Started
                             </button>
@@ -44,7 +44,7 @@ export default function Section1() {
                         </Link>
                     </div>
                 </div>
-                <div className="socials-group position-absolute top-50 end-0 translate-middle-y d-none d-md-block z-2">
+                {/* <div className="socials-group position-absolute top-50 end-0 translate-middle-y d-none d-md-block z-2">
                     <div className="socials rotate-90 px-3 py-2 rounded-pill d-inline-flex d-flex align-items-center justify-content-center">
                         <p className="text-white mb-0">Follow us:</p>
                         <ul className="list-unstyled d-flex mb-0">
@@ -86,7 +86,7 @@ export default function Section1() {
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> */}
             </section>
         </>
     );
