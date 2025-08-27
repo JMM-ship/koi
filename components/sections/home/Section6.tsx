@@ -36,7 +36,7 @@ export default function Section6() {
                                 <div className="text-center text-white mt-4">
                                     <h4 className="mb-3">KOI</h4>
                                     <div className="d-flex justify-content-center align-items-baseline mb-2">
-                                        <h1 className="display-4 mb-0">¥399</h1>
+                                        <h1 className="display-4 mb-0">$75</h1>
                                         <span className="fs-5">/month</span>
                                     </div>
                                     <span className="badge bg-white text-primary px-4 py-2 rounded-pill mb-4">Save 72%</span>
