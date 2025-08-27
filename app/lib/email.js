@@ -18,8 +18,6 @@ export function getEmailTransporter() {
       // 添加调试选项
       logger: true,
       debug: true,
-      // Gmail 特定设置
-      service: 'gmail',
       tls: {
         rejectUnauthorized: false
       }
