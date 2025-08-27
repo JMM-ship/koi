@@ -11,8 +11,8 @@ export default function Section1() {
                 <div className="container position-relative z-1">
                     <div className="row align-items-center">
                         <div className="col-10 mx-auto">
-                            <h1 className="text-white fs-120 mb-0 text-anime-style-2">Claude Code</h1>
-                            <h1 className="text-white fs-120 mb-0 text-lg-end text-anime-style-1">Official Mirror</h1>
+                            <h1 className="text-white fs-120 mb-0 text-lg-center text-anime-style-2">KOI</h1>
+                            <h1 className="text-white fs-120 mb-0 text-lg-center text-anime-style-1">Your Coding Assistant</h1>
                         </div>
                     </div>
                     <div className="row">
@@ -28,13 +28,13 @@ export default function Section1() {
                     </div>
                     <div className="row">
                         <div className="col-lg-6 mx-auto mt-5 text-center">
-                            <button className="btn btn-linear m-2 fs-7 fw-bold" type="submit" aria-label="generate" data-aos="fade-zoom-in" data-aos-delay={100}>
+                            <Link href="/auth/signin" className="btn btn-linear m-2 fs-7 fw-bold" type="submit" aria-label="generate" data-aos="fade-zoom-in" data-aos-delay={100}>
                                 Get Started
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
-                <div className="info-group position-absolute top-50 start-0 translate-middle-y d-none d-md-block">
+                {/* <div className="info-group position-absolute top-50 start-0 translate-middle-y d-none d-md-block">
                     <div className="d-flex align-items-center justify-content-center gap-4 rotate-90">
                         <Link href="#" className="fs-7 text-white">
                             info@astrax.com
@@ -43,7 +43,7 @@ export default function Section1() {
                             +(123) 456 789 00
                         </Link>
                     </div>
-                </div>
+                </div> */}
                 {/* <div className="socials-group position-absolute top-50 end-0 translate-middle-y d-none d-md-block z-2">
                     <div className="socials rotate-90 px-3 py-2 rounded-pill d-inline-flex d-flex align-items-center justify-content-center">
                         <p className="text-white mb-0">Follow us:</p>
