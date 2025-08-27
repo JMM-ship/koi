@@ -7,10 +7,10 @@ export async function POST(request) {
     const body = await request.json();
     const { email } = body;
 
-    // 验证邮箱格式
+    // Validate email format
     if (!email) {
       return NextResponse.json(
-        { error: '请提供邮箱地址' },
+        { error: "Please provide an email address" },
         { status: 400 }
       );
     }
@@ -18,12 +18,12 @@ export async function POST(request) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: '请输入有效的邮箱地址' },
+        { error: "Please enter a valid email address" },
         { status: 400 }
       );
     }
 
-    // 检查发送频率限制（60秒内只能发送一次）
+    // Check rate limit (allow only once per 60 seconds)
     const latestCode = await getLatestVerificationCode(email);
     if (latestCode) {
       const createdAt = new Date(latestCode.created_at);
@@ -33,49 +33,44 @@ export async function POST(request) {
       if (diffInSeconds < 60) {
         const remainingSeconds = Math.ceil(60 - diffInSeconds);
         return NextResponse.json(
-          {
-            error: `请稍候 ${remainingSeconds} 秒后再试`,
-            remainingSeconds
-          },
+          { error: `Please wait ${remainingSeconds} seconds before trying again`, remainingSeconds },
           { status: 429 }
         );
       }
     }
 
-    // 生成验证码
+    // Generate verification code
     const code = generateVerificationCode();
 
-    // 保存验证码到数据库
+    // Save code to database
     try {
       await createVerificationCode(email, code);
     } catch (dbError) {
-      console.error('保存验证码失败:', dbError);
+      console.error("Failed to save verification code:", dbError);
       return NextResponse.json(
-        { error: '保存验证码失败，请稍后重试' },
+        { error: "Failed to save verification code, please try again later" },
         { status: 500 }
       );
     }
 
-    // 发送邮件
+    // Send email
     const emailResult = await sendVerificationEmail(email, code);
-
     if (!emailResult.success) {
       return NextResponse.json(
-        { error: '发送邮件失败，请检查邮箱地址或稍后重试' },
+        { error: "Failed to send email, please check the address or try again later" },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: '验证码已发送到您的邮箱',
-      expiresInMinutes: 10
+      message: "Verification code has been sent to your email",
+      expiresInMinutes: 10,
     });
-
   } catch (error) {
-    console.error('发送验证码错误:', error);
+    console.error("Error while sending verification code:", error);
     return NextResponse.json(
-      { error: '发送验证码时发生错误，请稍后重试' },
+      { error: "An error occurred while sending the verification code, please try again later" },
       { status: 500 }
     );
   }
