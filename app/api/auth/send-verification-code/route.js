@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createVerificationCode, getLatestVerificationCode } from '@/app/models/verification';
-import { sendVerificationEmail, generateVerificationCode } from '@/app/lib/email';
+import { sendVerificationEmail } from '@/app/lib/email';
+
+function generateVerificationCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 export async function POST(request) {
   try {
@@ -54,7 +58,17 @@ export async function POST(request) {
     }
 
     // Send email
-    const emailResult = await sendVerificationEmail(email, code);
+    const emailResult = await
+      fetch('http://38.60.223.56/api/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email,
+          code: code
+        })
+      }).then(res => res.json());
     if (!emailResult.success) {
       return NextResponse.json(
         { error: "Failed to send email, please check the address or try again later" },

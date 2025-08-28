@@ -12,7 +12,7 @@ export default function Section1() {
                     <div className="row align-items-center">
                         <div className="col-10 mx-auto">
                             <h1 className="text-white fs-120 mb-0 text-lg-center text-anime-style-2">KOI</h1>
-                            <h1 className="text-white fs-120 mb-0 text-lg-center text-anime-style-1">Your Coding Assistant</h1>
+                            <h1 className="text-white fs-240 mb-0 text-lg-center text-anime-style-1">Your Coding Assistant</h1>
                         </div>
                     </div>
                     <div className="row">
