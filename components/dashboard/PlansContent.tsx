@@ -484,7 +484,7 @@ export default function PlansContent() {
                   <div style={{ marginBottom: '24px' }}>
                     <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
                       <span style={{ fontSize: '52px', fontWeight: '700', color: '#fff', lineHeight: 1 }}>
-                        ¥{pkg.price}
+                        ${pkg.price}
                       </span>
                       <span style={{ fontSize: '16px', color: '#666' }}>
                         /month
@@ -493,7 +493,7 @@ export default function PlansContent() {
                     {pkg.original_price && (
                       <div style={{ marginTop: '8px' }}>
                         <span style={{ fontSize: '14px', color: '#666', textDecoration: 'line-through' }}>
-                          Original ¥{pkg.original_price}/month
+                          Original ${pkg.original_price}/month
                         </span>
                         <span style={{
                           fontSize: '12px',
@@ -667,7 +667,7 @@ export default function PlansContent() {
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <span style={{ color: '#999' }}>Original Price</span>
-                <span style={{ color: '#fff', fontWeight: 'bold' }}>¥{selectedPackage.price}</span>
+                <span style={{ color: '#fff', fontWeight: 'bold' }}>${selectedPackage.price}</span>
               </div>
 
               {upgradeDiscount && (
@@ -684,7 +684,7 @@ export default function PlansContent() {
                     <span style={{ color: '#00d084', fontSize: '14px' }}>
                       Upgrade Discount ({upgradeDiscount.days} days remaining)
                     </span>
-                    <span style={{ color: '#00d084', fontWeight: 'bold' }}>-¥{upgradeDiscount.amount}</span>
+                    <span style={{ color: '#00d084', fontWeight: 'bold' }}>-${upgradeDiscount.amount}</span>
                   </div>
                   <div style={{
                     display: 'flex',
@@ -699,7 +699,7 @@ export default function PlansContent() {
                       fontWeight: 'bold',
                       fontSize: '20px'
                     }}>
-                      ¥{selectedPackage.price - upgradeDiscount.amount}
+                      ${selectedPackage.price - upgradeDiscount.amount}
                     </span>
                   </div>
                 </>

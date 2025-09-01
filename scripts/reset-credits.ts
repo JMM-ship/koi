@@ -19,7 +19,7 @@ import {
   shouldResetCredits,
   getLastResetTime,
   getTodayResetCount
-} from '@/annotation/service/creditResetService';
+} from '@/app/service/creditResetService';
 import { getUserActivePackage } from '@/app/models/userPackage';
 import { getCreditBalance } from '@/app/models/creditBalance';
 import { prisma } from '@/app/models/db';

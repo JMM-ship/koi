@@ -34,16 +34,16 @@ export default function Section1() {
                         </div>
                     </div>
                 </div>
-                {/* <div className="info-group position-absolute top-50 start-0 translate-middle-y d-none d-md-block">
+                <div className="info-group position-absolute top-50 start-0 translate-middle-y d-none d-md-block">
                     <div className="d-flex align-items-center justify-content-center gap-4 rotate-90">
                         <Link href="#" className="fs-7 text-white">
-                            info@astrax.com
+                            lau@koi.codes
                         </Link>
                         <Link href="telto:(123) 456 789 00" className="fs-7 text-white">
-                            +(123) 456 789 00
+                            +(852) 658 663 66
                         </Link>
                     </div>
-                </div> */}
+                </div>
                 {/* <div className="socials-group position-absolute top-50 end-0 translate-middle-y d-none d-md-block z-2">
                     <div className="socials rotate-90 px-3 py-2 rounded-pill d-inline-flex d-flex align-items-center justify-content-center">
                         <p className="text-white mb-0">Follow us:</p>

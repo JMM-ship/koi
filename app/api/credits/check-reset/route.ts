@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
-import { checkAndResetUserCredits } from '@/annotation/service/cronJobs';
-import { getUserCreditInfo } from '@/annotation/service/creditManager';
+import { checkAndResetUserCredits } from '@/app/service/cronJobs';
+import { getUserCreditInfo } from '@/app/service/creditManager';
 
 // GET /api/credits/check-reset - 检查并重置当前用户的积分
 export async function GET(request: NextRequest) {

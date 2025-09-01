@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
-import { createOrder, OrderType } from '@/annotation/service/orderProcessor';
+import { createOrder, OrderType } from '@/app/service/orderProcessor';
 
 // POST /api/orders/create - 创建订单
 export async function POST(request: NextRequest) {
