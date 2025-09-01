@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
-import { handlePaymentSuccess } from '@/app/service/orderProcessor';
+import { handlePaymentSuccess } from '@/annotation/service/orderProcessor';
 
 // POST /api/orders/pay/mock - 模拟支付成功（开发环境使用）
 export async function POST(request: NextRequest) {

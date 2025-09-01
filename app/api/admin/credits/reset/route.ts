@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
-import { resetAllPackageCredits, resetUserPackageCredits } from '@/app/service/creditResetService';
-import { checkAndResetUserCredits } from '@/app/service/cronJobs';
+import { resetAllPackageCredits, resetUserPackageCredits } from '@/annotation/service/creditResetService';
+import { checkAndResetUserCredits } from '@/annotation/service/cronJobs';
 
 // POST /api/admin/credits/reset - 手动触发积分重置
 export async function POST(request: NextRequest) {
@@ -144,10 +144,10 @@ export async function GET(request: NextRequest) {
 
     if (userUuid) {
       // 检查特定用户是否需要重置
-      const { shouldResetCredits } = await import('@/app/service/creditResetService');
+      const { shouldResetCredits } = await import('@/annotation/service/creditResetService');
       const needsReset = await shouldResetCredits(userUuid);
       
-      const { getLastResetTime } = await import('@/app/service/creditResetService');
+      const { getLastResetTime } = await import('@/annotation/service/creditResetService');
       const lastResetTime = await getLastResetTime(userUuid);
 
       return NextResponse.json({
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 获取今日重置统计
-    const { getTodayResetCount } = await import('@/app/service/creditResetService');
+    const { getTodayResetCount } = await import('@/annotation/service/creditResetService');
     const todayResetCount = await getTodayResetCount();
 
     return NextResponse.json({

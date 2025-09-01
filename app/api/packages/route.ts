@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
 import { getActivePackages, getPackageById } from '@/app/models/package';
-import { getPackagesWithUserStatus } from '@/app/service/packageManager';
+import { getPackagesWithUserStatus } from '@/annotation/service/packageManager';
 
 // GET /api/packages - 获取套餐列表
 export async function GET(request: NextRequest) {

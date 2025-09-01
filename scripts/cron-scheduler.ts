@@ -16,7 +16,7 @@ import {
   packageExpiryCheckJob,
   expiredOrderCleanupJob,
   getCronJobConfigs
-} from '@/app/service/cronJobs';
+} from '@/annotation/service/cronJobs';
 
 // 任务调度器类
 class CronScheduler {

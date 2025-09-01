@@ -509,6 +509,211 @@ export default function ApiKeysContent() {
           </p>
         </div>
       </div>
+
+      {/* Quick Start Guide */}
+      <div style={{
+        background: '#0a0a0a',
+        border: '1px solid #1a1a1a',
+        borderRadius: '12px',
+        padding: '20px',
+        marginTop: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'center'
+      }}>
+        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '20px' }}>
+          🚀 Quick Start
+        </h3>
+
+        <div style={{ marginBottom: '24px', width: "100%" }}>
+          <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#794aff', marginBottom: '12px' }}>
+            📦 Claude Code CLI Installation Guide
+          </h4>
+          <p style={{ fontSize: '12px', color: '#999', marginBottom: '16px' }}>
+            Three steps to complete the installation and start building AI-powered applications
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{
+              background: '#1a1a1a',
+              borderRadius: '8px',
+              padding: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{
+                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  color: '#fff',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}>1</span>
+                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                  Install Node.js
+                </h5>
+              </div>
+              <p style={{ fontSize: '18px', color: '#999', marginBottom: '12px' }}>
+                Ensure Node.js is installed on your system
+              </p>
+              <p style={{ fontSize: '16px', color: '#fff' }}>
+                1: Visit <a href="https://nodejs.org" style={{ color: '#794aff', textDecoration: 'none' }}>https://nodejs.org</a><br />
+                2: Download LTS version installer<br />
+                3: Double-click to run the installation program and keep the default Settings
+              </p>
+
+              <p style={{ fontSize: '16px', color: '#fff' }}>
+                check the installation of node.js
+              </p>
+
+              <div style={{
+                background: '#000',
+                borderRadius: '4px',
+                padding: '8px',
+                marginBottom: '8px'
+              }}>
+                <code style={{ fontSize: '16px', color: '#00d084' }}>node --version</code>
+              </div>
+            </div>
+
+            <div style={{
+              background: '#1a1a1a',
+              borderRadius: '8px',
+              padding: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{
+                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  color: '#fff',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}>2</span>
+                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                  Install Claude Code CLI
+                </h5>
+              </div>
+              <div style={{
+                background: '#000',
+                borderRadius: '4px',
+                padding: '8px',
+                marginBottom: '8px'
+              }}>
+                <code style={{ fontSize: '16px', color: '#00d084' }}>npm install -g @anthropic-ai/claude-code</code>
+              </div>
+              <p style={{ fontSize: '16px', color: '#fff' }}>
+                💡 If permission issues occur, run PowerShell as administrator
+              </p>
+            </div>
+
+            <div style={{
+              background: '#1a1a1a',
+              borderRadius: '8px',
+              padding: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{
+                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  color: '#fff',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}>3</span>
+                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                  Configure Environment
+                </h5>
+              </div>
+              <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                PowerShell Temporary Setting (Current Session)
+              </p>
+              <div style={{
+                background: '#000',
+                borderRadius: '4px',
+                padding: '8px',
+                marginBottom: '8px'
+              }}>
+                <code style={{ fontSize: '16px', color: '#00d084' }}>$env:ANTHROPIC_BASE_URL = "https://api.jiuwanliguoxue.com"</code>
+              </div>
+              <div style={{
+                background: '#000',
+                borderRadius: '4px',
+                padding: '8px',
+                marginBottom: '8px'
+              }}>
+                <code style={{ fontSize: '16px', color: '#00d084' }}>$env:ANTHROPIC_AUTH_TOKEN = "sk-acw-f7a5b160-2dc2f7b449254ce4"</code>
+              </div>
+              <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                Permanent Setting (Recommend)
+              </p>
+              <div style={{
+                background: '#000',
+                borderRadius: '4px',
+                padding: '8px',
+                marginBottom: '8px'
+              }}>
+                <code style={{ fontSize: '16px', color: '#00d084' }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://api.jiuwanliguoxue.com", [System.EnvironmentVariableTarget]::User)</code>
+              </div>
+              <div style={{
+                background: '#000',
+                borderRadius: '4px',
+                padding: '8px',
+                marginBottom: '8px'
+              }}>
+                <code style={{ fontSize: '16px', color: '#00d084' }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "sk-acw-f7a5b160-2dc2f7b449254ce4", [System.EnvironmentVariableTarget]::User)</code>
+              </div>
+            </div>
+
+            <div style={{
+              background: '#1a1a1a',
+              borderRadius: '8px',
+              padding: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <span style={{
+                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                  color: '#fff',
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  fontWeight: '600'
+                }}>4</span>
+                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                  Get Started
+                </h5>
+
+              </div>
+              <div style={{
+                background: '#000',
+                borderRadius: '4px',
+                padding: '8px',
+                marginBottom: '8px'
+              }}>
+                <code style={{ fontSize: '16px', color: '#00d084' }}>claude</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
       <ConfirmDialog {...confirmState} />
     </>
   );

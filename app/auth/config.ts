@@ -7,7 +7,7 @@ import { Provider } from "next-auth/providers/index";
 import { getClientIp } from "@/app/lib/ip";
 import { getIsoTimestr } from "@/app/lib/time";
 import { getUuid } from "@/app/lib/hash";
-import { saveUser } from "@/app/service/user";
+import { saveUser } from "@/annotation/service/user";
 import { findUserByEmail } from "@/app/models/user";
 import bcrypt from "bcryptjs";
 import { getHttpOptions } from "@/app/lib/http-client";

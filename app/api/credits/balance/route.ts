@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
-import { getUserCreditInfo } from '@/app/service/creditManager';
+import { getUserCreditInfo } from '@/annotation/service/creditManager';
 
 // GET /api/credits/balance - 获取积分余额
 export async function GET(request: NextRequest) {

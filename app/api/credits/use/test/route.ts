@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
-import { useCredits } from '@/app/service/creditManager';
+import { useCredits } from '@/annotation/service/creditManager';
 
 // POST /api/credits/use/test - Test endpoint to consume credits
 export async function POST(request: NextRequest) {
