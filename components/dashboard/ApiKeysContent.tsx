@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2, FiKey } from "react-icons/fi";
+import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2, FiKey, FiMonitor, FiTerminal } from "react-icons/fi";
+import { FaApple, FaWindows, FaLinux } from "react-icons/fa";
 import { useToast } from "@/hooks/useToast";
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -15,6 +16,7 @@ export default function ApiKeysContent() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newKeyTitle, setNewKeyTitle] = useState('');
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'windows' | 'macos' | 'linux'>('windows');
   const { showSuccess, showInfo, showError } = useToast();
   const { confirmState, showConfirm } = useConfirm();
 
@@ -531,187 +533,661 @@ export default function ApiKeysContent() {
             📦 Claude Code CLI Installation Guide
           </h4>
           <p style={{ fontSize: '12px', color: '#999', marginBottom: '16px' }}>
-            Three steps to complete the installation and start building AI-powered applications
+            Select your operating system and follow the steps to complete the installation
           </p>
 
+          {/* Tab buttons */}
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            marginBottom: '20px',
+            borderBottom: '2px solid #1a1a1a',
+            paddingBottom: '0'
+          }}>
+            <button
+              onClick={() => setActiveTab('windows')}
+              style={{
+                background: activeTab === 'windows' ? 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)' : 'transparent',
+                color: activeTab === 'windows' ? '#fff' : '#999',
+                border: 'none',
+                borderRadius: '8px 8px 0 0',
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <FaWindows /> Windows
+            </button>
+            <button
+              onClick={() => setActiveTab('macos')}
+              style={{
+                background: activeTab === 'macos' ? 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)' : 'transparent',
+                color: activeTab === 'macos' ? '#fff' : '#999',
+                border: 'none',
+                borderRadius: '8px 8px 0 0',
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <FaApple /> macOS
+            </button>
+            <button
+              onClick={() => setActiveTab('linux')}
+              style={{
+                background: activeTab === 'linux' ? 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)' : 'transparent',
+                color: activeTab === 'linux' ? '#fff' : '#999',
+                border: 'none',
+                borderRadius: '8px 8px 0 0',
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <FaLinux /> Linux
+            </button>
+          </div>
+
+          {/* Tab content */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{
-              background: '#1a1a1a',
-              borderRadius: '8px',
-              padding: '16px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{
-                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                  color: '#fff',
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: '600'
-                }}>1</span>
-                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
-                  Install Node.js
-                </h5>
-              </div>
-              <p style={{ fontSize: '18px', color: '#999', marginBottom: '12px' }}>
-                Ensure Node.js is installed on your system
-              </p>
-              <p style={{ fontSize: '16px', color: '#fff' }}>
-                1: Visit <a href="https://nodejs.org" style={{ color: '#794aff', textDecoration: 'none' }}>https://nodejs.org</a><br />
-                2: Download LTS version installer<br />
-                3: Double-click to run the installation program and keep the default Settings
-              </p>
+            {/* Windows Installation */}
+            {activeTab === 'windows' && (
+              <>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>1</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Install Node.js
+                    </h5>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#999', marginBottom: '12px' }}>
+                    Ensure Node.js is installed on your system
+                  </p>
+                  <p style={{ fontSize: '16px', color: '#fff' }}>
+                    1: Visit <a href="https://nodejs.org" style={{ color: '#794aff', textDecoration: 'none' }}>https://nodejs.org</a><br />
+                    2: Download LTS version installer<br />
+                    3: Double-click to run the installation program and keep the default Settings
+                  </p>
+                  <p style={{ fontSize: '16px', color: '#fff', marginTop: '12px' }}>
+                    Check the installation of Node.js:
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>node --version</code>
+                  </div>
+                </div>
 
-              <p style={{ fontSize: '16px', color: '#fff' }}>
-                check the installation of node.js
-              </p>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>2</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Install Claude Code CLI
+                    </h5>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>npm install -g @anthropic-ai/claude-code</code>
+                  </div>
+                  <p style={{ fontSize: '16px', color: '#fff' }}>
+                    💡 If permission issues occur, run PowerShell as administrator
+                  </p>
+                </div>
 
-              <div style={{
-                background: '#000',
-                borderRadius: '4px',
-                padding: '8px',
-                marginBottom: '8px'
-              }}>
-                <code style={{ fontSize: '16px', color: '#00d084' }}>node --version</code>
-              </div>
-            </div>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>3</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Configure Environment
+                    </h5>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                    PowerShell Temporary Setting (Current Session)
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>$env:ANTHROPIC_BASE_URL = "https://api.jiuwanliguoxue.com"</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>$env:ANTHROPIC_AUTH_TOKEN = "Your Token"</code>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                    Permanent Setting (Recommended)
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://api.jiuwanliguoxue.com", [System.EnvironmentVariableTarget]::User)</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "Your Token", [System.EnvironmentVariableTarget]::User)</code>
+                  </div>
+                </div>
 
-            <div style={{
-              background: '#1a1a1a',
-              borderRadius: '8px',
-              padding: '16px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{
-                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                  color: '#fff',
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: '600'
-                }}>2</span>
-                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
-                  Install Claude Code CLI
-                </h5>
-              </div>
-              <div style={{
-                background: '#000',
-                borderRadius: '4px',
-                padding: '8px',
-                marginBottom: '8px'
-              }}>
-                <code style={{ fontSize: '16px', color: '#00d084' }}>npm install -g @anthropic-ai/claude-code</code>
-              </div>
-              <p style={{ fontSize: '16px', color: '#fff' }}>
-                💡 If permission issues occur, run PowerShell as administrator
-              </p>
-            </div>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>4</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Get Started
+                    </h5>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>claude</code>
+                  </div>
+                </div>
+              </>
+            )}
 
-            <div style={{
-              background: '#1a1a1a',
-              borderRadius: '8px',
-              padding: '16px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{
-                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                  color: '#fff',
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: '600'
-                }}>3</span>
-                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
-                  Configure Environment
-                </h5>
-              </div>
-              <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
-                PowerShell Temporary Setting (Current Session)
-              </p>
-              <div style={{
-                background: '#000',
-                borderRadius: '4px',
-                padding: '8px',
-                marginBottom: '8px'
-              }}>
-                <code style={{ fontSize: '16px', color: '#00d084' }}>$env:ANTHROPIC_BASE_URL = "https://api.jiuwanliguoxue.com"</code>
-              </div>
-              <div style={{
-                background: '#000',
-                borderRadius: '4px',
-                padding: '8px',
-                marginBottom: '8px'
-              }}>
-                <code style={{ fontSize: '16px', color: '#00d084' }}>$env:ANTHROPIC_AUTH_TOKEN = "sk-acw-f7a5b160-2dc2f7b449254ce4"</code>
-              </div>
-              <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
-                Permanent Setting (Recommend)
-              </p>
-              <div style={{
-                background: '#000',
-                borderRadius: '4px',
-                padding: '8px',
-                marginBottom: '8px'
-              }}>
-                <code style={{ fontSize: '16px', color: '#00d084' }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://api.jiuwanliguoxue.com", [System.EnvironmentVariableTarget]::User)</code>
-              </div>
-              <div style={{
-                background: '#000',
-                borderRadius: '4px',
-                padding: '8px',
-                marginBottom: '8px'
-              }}>
-                <code style={{ fontSize: '16px', color: '#00d084' }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "sk-acw-f7a5b160-2dc2f7b449254ce4", [System.EnvironmentVariableTarget]::User)</code>
-              </div>
-            </div>
+            {/* macOS Installation */}
+            {activeTab === 'macos' && (
+              <>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>1</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Install Node.js
+                    </h5>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#999', marginBottom: '12px' }}>
+                    Install Node.js using Homebrew or download from nodejs.org
+                  </p>
+                  <p style={{ fontSize: '16px', color: '#fff', marginBottom: '12px' }}>
+                    Option 1: Using Homebrew (Recommended)
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '12px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>brew install node</code>
+                  </div>
+                  <p style={{ fontSize: '16px', color: '#fff', marginBottom: '12px' }}>
+                    Option 2: Download from <a href="https://nodejs.org" style={{ color: '#794aff', textDecoration: 'none' }}>https://nodejs.org</a>
+                  </p>
+                  <p style={{ fontSize: '16px', color: '#fff', marginTop: '12px' }}>
+                    Verify installation:
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>node --version</code>
+                  </div>
+                </div>
 
-            <div style={{
-              background: '#1a1a1a',
-              borderRadius: '8px',
-              padding: '16px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{
-                  background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
-                  color: '#fff',
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '12px',
-                  fontWeight: '600'
-                }}>4</span>
-                <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
-                  Get Started
-                </h5>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>2</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Install Claude Code CLI
+                    </h5>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>npm install -g @anthropic-ai/claude-code</code>
+                  </div>
+                  <p style={{ fontSize: '16px', color: '#fff' }}>
+                    💡 If permission issues occur, use sudo: <code style={{ color: '#794aff' }}>sudo npm install -g @anthropic-ai/claude-code</code>
+                  </p>
+                </div>
 
-              </div>
-              <div style={{
-                background: '#000',
-                borderRadius: '4px',
-                padding: '8px',
-                marginBottom: '8px'
-              }}>
-                <code style={{ fontSize: '16px', color: '#00d084' }}>claude</code>
-              </div>
-            </div>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>3</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Configure Environment
+                    </h5>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                    Temporary Setting (Current Session)
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>export ANTHROPIC_AUTH_TOKEN="Your API Token"</code>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                    Permanent Setting (Add to ~/.zshrc or ~/.bash_profile)
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>echo 'export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"' &gt;&gt; ~/.zshrc</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>echo 'export ANTHROPIC_AUTH_TOKEN="Your API Token"' &gt;&gt; ~/.zshrc</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>source ~/.zshrc</code>
+                  </div>
+                </div>
+
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>4</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Get Started
+                    </h5>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>claude</code>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Linux Installation */}
+            {activeTab === 'linux' && (
+              <>
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>1</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Install Node.js
+                    </h5>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#999', marginBottom: '12px' }}>
+                    Install Node.js using your distribution's package manager
+                  </p>
+                  <p style={{ fontSize: '16px', color: '#fff', marginBottom: '12px' }}>
+                    Ubuntu/Debian:
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '12px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>sudo apt update && sudo apt install nodejs npm</code>
+                  </div>
+                  <p style={{ fontSize: '16px', color: '#fff', marginBottom: '12px' }}>
+                    Fedora/RHEL/CentOS:
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '12px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>sudo dnf install nodejs npm</code>
+                  </div>
+                  <p style={{ fontSize: '16px', color: '#fff', marginBottom: '12px' }}>
+                    Arch Linux:
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '12px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>sudo pacman -S nodejs npm</code>
+                  </div>
+                  <p style={{ fontSize: '16px', color: '#fff', marginTop: '12px' }}>
+                    Verify installation:
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>node --version</code>
+                  </div>
+                </div>
+
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>2</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Install Claude Code CLI
+                    </h5>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>sudo npm install -g @anthropic-ai/claude-code</code>
+                  </div>
+                  <p style={{ fontSize: '16px', color: '#fff' }}>
+                    💡 Make sure npm has the correct permissions configured
+                  </p>
+                </div>
+
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>3</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Configure Environment
+                    </h5>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                    Temporary Setting (Current Session)
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>export ANTHROPIC_AUTH_TOKEN="Your API Token"</code>
+                  </div>
+                  <p style={{ fontSize: '18px', color: '#fff', marginBottom: '12px' }}>
+                    Permanent Setting (Add to ~/.bashrc)
+                  </p>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>echo 'export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"' &gt;&gt; ~/.bashrc</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>echo 'export ANTHROPIC_AUTH_TOKEN="Your API Token"' &gt;&gt; ~/.bashrc</code>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>source ~/.bashrc</code>
+                  </div>
+                </div>
+
+                <div style={{
+                  background: '#1a1a1a',
+                  borderRadius: '8px',
+                  padding: '16px'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{
+                      background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)',
+                      color: '#fff',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      fontWeight: '600'
+                    }}>4</span>
+                    <h5 style={{ fontSize: '22px', fontWeight: '600', color: '#fff', margin: 0 }}>
+                      Get Started
+                    </h5>
+                  </div>
+                  <div style={{
+                    background: '#000',
+                    borderRadius: '4px',
+                    padding: '8px',
+                    marginBottom: '8px'
+                  }}>
+                    <code style={{ fontSize: '16px', color: '#00d084' }}>claude</code>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
-
       </div>
 
       <ConfirmDialog {...confirmState} />
