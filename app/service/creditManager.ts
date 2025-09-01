@@ -115,7 +115,7 @@ export async function purchaseCredits(
   orderNo: string
 ): Promise<CreditPurchaseResult> {
   try {
-    // 使用事务处理
+    // 使用事务处理，增加超时时间到30秒
     const result = await prisma.$transaction(async (tx) => {
       // 获取当前余额
       const currentBalance = await getCreditBalance(userUuid);
@@ -149,6 +149,9 @@ export async function purchaseCredits(
         balance: newBalance,
         transaction,
       };
+    }, {
+      maxWait: 30000, // 最大等待时间30秒  
+      timeout: 30000, // 事务超时时间30秒
     });
     
     return {
@@ -173,7 +176,7 @@ export async function activatePackageCredits(
   orderNo: string
 ): Promise<CreditPurchaseResult> {
   try {
-    // 使用事务处理
+    // 使用事务处理，增加超时时间到30秒
     const result = await prisma.$transaction(async (tx) => {
       // 获取当前余额
       const currentBalance = await getCreditBalance(userUuid);
@@ -208,6 +211,9 @@ export async function activatePackageCredits(
         balance: newBalance,
         transaction,
       };
+    }, {
+      maxWait: 30000, // 最大等待时间30秒
+      timeout: 30000, // 事务超时时间30秒
     });
     
     return {
