@@ -39,9 +39,6 @@ export default function Section1() {
                         <Link href="#" className="fs-7 text-white">
                             lau@koi.codes
                         </Link>
-                        <Link href="telto:(123) 456 789 00" className="fs-7 text-white">
-                            +(852) 658 663 66
-                        </Link>
                     </div>
                 </div>
                 {/* <div className="socials-group position-absolute top-50 end-0 translate-middle-y d-none d-md-block z-2">
