@@ -44,14 +44,14 @@ export interface CreditPurchaseResult {
 
 // 使用积分
 export async function useCredits(
-  userUuid: string,
+  userId: string,
   amount: number,
   service: string,
   metadata?: any
 ): Promise<CreditUsageResult> {
   try {
     // 获取当前余额
-    const currentBalance = await getCreditBalance(userUuid);
+    const currentBalance = await getCreditBalance(userId);
     if (!currentBalance) {
       return { success: false, error: 'User balance not found' };
     }
@@ -59,7 +59,7 @@ export async function useCredits(
     const beforeBalance = currentBalance.package_credits + currentBalance.independent_credits;
     
     // 使用积分（带乐观锁）
-    const result = await useCreditBalance(userUuid, amount);
+    const result = await useCreditBalance(userId, amount);
     if (!result.success) {
       return { success: false, error: result.error };
     }
@@ -76,7 +76,7 @@ export async function useCredits(
     
     // 创建流水记录
     const transaction = await createCreditTransaction({
-      user_uuid: userUuid,
+      user_id: userId,
       type: TransactionType.Expense,
       credit_type: creditType,
       amount,
@@ -110,7 +110,7 @@ export async function useCredits(
 
 // 购买独立积分
 export async function purchaseCredits(
-  userUuid: string,
+  userId: string,
   amount: number,
   orderNo: string
 ): Promise<CreditPurchaseResult> {
@@ -118,20 +118,20 @@ export async function purchaseCredits(
     // 使用事务处理，增加超时时间到30秒
     const result = await prisma.$transaction(async (tx) => {
       // 获取当前余额
-      const currentBalance = await getCreditBalance(userUuid);
+      const currentBalance = await getCreditBalance(userId);
       const beforeBalance = currentBalance 
         ? currentBalance.package_credits + currentBalance.independent_credits 
         : 0;
       
       // 增加独立积分
-      const newBalance = await addIndependentCredits(userUuid, amount);
+      const newBalance = await addIndependentCredits(userId, amount);
       if (!newBalance) {
         throw new Error('Failed to add credits');
       }
       
       // 创建流水记录
       const transaction = await createCreditTransaction({
-        user_uuid: userUuid,
+        user_id: userId,
         type: TransactionType.Income,
         credit_type: CreditType.Independent,
         amount,
@@ -171,7 +171,7 @@ export async function purchaseCredits(
 
 // 激活套餐积分
 export async function activatePackageCredits(
-  userUuid: string,
+  userId: string,
   dailyCredits: number,
   orderNo: string
 ): Promise<CreditPurchaseResult> {
@@ -179,20 +179,20 @@ export async function activatePackageCredits(
     // 使用事务处理，增加超时时间到30秒
     const result = await prisma.$transaction(async (tx) => {
       // 获取当前余额
-      const currentBalance = await getCreditBalance(userUuid);
+      const currentBalance = await getCreditBalance(userId);
       const beforeBalance = currentBalance 
         ? currentBalance.package_credits + currentBalance.independent_credits 
         : 0;
       
       // 更新套餐积分
-      const newBalance = await updatePackageCredits(userUuid, dailyCredits);
+      const newBalance = await updatePackageCredits(userId, dailyCredits);
       if (!newBalance) {
         throw new Error('Failed to update package credits');
       }
       
       // 创建流水记录
       const transaction = await createCreditTransaction({
-        user_uuid: userUuid,
+        user_id: userId,
         type: TransactionType.Income,
         credit_type: CreditType.Package,
         amount: dailyCredits,
@@ -232,16 +232,16 @@ export async function activatePackageCredits(
 }
 
 // 每日重置套餐积分
-export async function dailyResetCredits(userUuid: string): Promise<boolean> {
+export async function dailyResetCredits(userId: string): Promise<boolean> {
   try {
     // 获取用户活跃套餐
-    const activePackage = await getUserActivePackage(userUuid);
+    const activePackage = await getUserActivePackage(userId);
     if (!activePackage) {
       return false;
     }
     
     // 获取当前余额
-    const currentBalance = await getCreditBalance(userUuid);
+    const currentBalance = await getCreditBalance(userId);
     if (!currentBalance) {
       return false;
     }
@@ -249,14 +249,14 @@ export async function dailyResetCredits(userUuid: string): Promise<boolean> {
     const beforeBalance = currentBalance.package_credits + currentBalance.independent_credits;
     
     // 重置套餐积分
-    const newBalance = await resetPackageCredits(userUuid, activePackage.daily_credits);
+    const newBalance = await resetPackageCredits(userId, activePackage.daily_credits);
     if (!newBalance) {
       return false;
     }
     
     // 创建重置流水
     await createCreditTransaction({
-      user_uuid: userUuid,
+      user_id: userId,
       type: TransactionType.Reset,
       credit_type: CreditType.Package,
       amount: activePackage.daily_credits,
@@ -278,7 +278,7 @@ export async function dailyResetCredits(userUuid: string): Promise<boolean> {
 }
 
 // 获取用户积分信息
-export async function getUserCreditInfo(userUuid: string): Promise<{
+export async function getUserCreditInfo(userId: string): Promise<{
   balance: {
     packageCredits: number;
     independentCredits: number;
@@ -298,19 +298,19 @@ export async function getUserCreditInfo(userUuid: string): Promise<{
 } | undefined> {
   try {
     // 获取余额信息
-    const balance = await getCreditBalance(userUuid);
+    const balance = await getCreditBalance(userId);
     if (!balance) {
       return undefined;
     }
     
     // 获取使用统计
     const [todayUsed, monthUsed] = await Promise.all([
-      getTodayUsage(userUuid),
-      getMonthlyUsage(userUuid),
+      getTodayUsage(userId),
+      getMonthlyUsage(userId),
     ]);
     
     // 获取套餐信息
-    const activePackage = await getUserActivePackage(userUuid);
+    const activePackage = await getUserActivePackage(userId);
     
     const result: any = {
       balance: {
@@ -347,11 +347,11 @@ export async function getUserCreditInfo(userUuid: string): Promise<{
 
 // 检查积分是否充足
 export async function checkCreditSufficient(
-  userUuid: string,
+  userId: string,
   requiredAmount: number
 ): Promise<{ sufficient: boolean; available: number }> {
   try {
-    const balance = await getCreditBalance(userUuid);
+    const balance = await getCreditBalance(userId);
     if (!balance) {
       return { sufficient: false, available: 0 };
     }
@@ -369,13 +369,13 @@ export async function checkCreditSufficient(
 
 // 退款处理 - 扣减积分
 export async function refundCredits(
-  userUuid: string,
+  userId: string,
   amount: number,
   orderNo: string,
   refundType: 'package' | 'independent'
 ): Promise<boolean> {
   try {
-    const currentBalance = await getCreditBalance(userUuid);
+    const currentBalance = await getCreditBalance(userId);
     if (!currentBalance) {
       return false;
     }
@@ -385,10 +385,10 @@ export async function refundCredits(
     // 根据退款类型处理
     if (refundType === 'package') {
       // 套餐退款，清空套餐积分
-      await updatePackageCredits(userUuid, 0);
+      await updatePackageCredits(userId, 0);
     } else {
       // 独立积分退款，扣减独立积分
-      const result = await useCreditBalance(userUuid, amount);
+      const result = await useCreditBalance(userId, amount);
       if (!result.success) {
         return false;
       }
@@ -396,7 +396,7 @@ export async function refundCredits(
     
     // 创建退款流水
     await createCreditTransaction({
-      user_uuid: userUuid,
+      user_id: userId,
       type: TransactionType.Expense,
       credit_type: refundType === 'package' ? CreditType.Package : CreditType.Independent,
       amount,

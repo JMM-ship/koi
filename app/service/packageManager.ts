@@ -24,7 +24,7 @@ export interface PackagePurchaseResult {
 
 // 购买套餐
 export async function purchasePackage(
-  userUuid: string,
+  userId: string,
   packageId: string,
   orderNo: string
 ): Promise<PackagePurchaseResult> {
@@ -58,7 +58,7 @@ export async function purchasePackage(
     
     // 创建用户套餐
     const userPackage = await createUserPackage({
-      user_uuid: userUuid,
+      user_id: userId,
       package_id: packageId,
       order_no: orderNo,
       start_date: startDate,
@@ -73,7 +73,7 @@ export async function purchasePackage(
     
     // 激活套餐积分
     const creditResult = await activatePackageCredits(
-      userUuid,
+      userId,
       packageInfo.daily_credits,
       orderNo
     );
@@ -85,7 +85,7 @@ export async function purchasePackage(
     // 更新用户的 planType
     try {
       await prisma.user.update({
-        where: { uuid: userUuid },
+        where: { id: userId },
         data: { 
           planType: packageInfo.plan_type || 'basic',
           planExpiredAt: endDate
@@ -111,7 +111,7 @@ export async function purchasePackage(
 
 // 续费套餐
 export async function renewPackage(
-  userUuid: string,
+  userId: string,
   packageId: string,
   orderNo: string
 ): Promise<PackagePurchaseResult> {
@@ -140,7 +140,7 @@ export async function renewPackage(
     
     // 续费套餐
     const userPackage = await renewUserPackage(
-      userUuid,
+      userId,
       packageId,
       orderNo,
       packageInfo.valid_days,
@@ -166,15 +166,15 @@ export async function renewPackage(
 }
 
 // 获取套餐列表（带用户状态）
-export async function getPackagesWithUserStatus(userUuid?: string) {
+export async function getPackagesWithUserStatus(userId?: string) {
   try {
     // 获取所有激活的套餐
     const packages = await getActivePackages();
     
     // 如果提供了用户ID，获取用户当前套餐
     let userPackage = null;
-    if (userUuid) {
-      userPackage = await getUserActivePackage(userUuid);
+    if (userId) {
+      userPackage = await getUserActivePackage(userId);
     }
     
     // 标记用户当前套餐
@@ -221,7 +221,7 @@ export async function dailyResetTask(): Promise<{
     
     // 3. 准备批量重置数据
     const resetData: Array<{
-      userUuid: string;
+      userId: string;
       amount: number;
       beforeBalance: number;
       afterBalance: number;
@@ -230,24 +230,24 @@ export async function dailyResetTask(): Promise<{
     // 4. 获取每个用户的当前余额
     for (const user of activeUsers) {
       try {
-        const balance = await getCreditBalance(user.userUuid);
+        const balance = await getCreditBalance(user.userId);
         if (balance) {
           resetData.push({
-            userUuid: user.userUuid,
+            userId: user.userId,
             amount: user.dailyCredits,
             beforeBalance: balance.package_credits + balance.independent_credits,
             afterBalance: user.dailyCredits + balance.independent_credits,
           });
         }
       } catch (error) {
-        errors.push(`Failed to get balance for user ${user.userUuid}: ${error}`);
+        errors.push(`Failed to get balance for user ${user.userId}: ${error}`);
       }
     }
     
     // 5. 批量重置积分
     const resetResult = await batchResetPackageCredits(
       activeUsers.map(u => ({
-        userUuid: u.userUuid,
+        userId: u.userId,
         dailyCredits: u.dailyCredits,
       }))
     );
@@ -289,7 +289,7 @@ export async function checkExpiringPackages(days: number = 3): Promise<{
     
     for (const pkg of expiringPackages) {
       // 发送通知逻辑
-      console.log(`Package expiring for user ${pkg.user_uuid} on ${pkg.end_date}`);
+      console.log(`Package expiring for user ${pkg.user_id} on ${pkg.end_date}`);
       notificationsSent++;
     }
     
@@ -343,8 +343,8 @@ export async function checkAndExpirePackages(): Promise<number> {
     // 对每个过期的套餐，清空用户的套餐积分
     for (const pkg of expiredPackages) {
       try {
-        await prisma.creditBalance.update({
-          where: { userUuid: pkg.userUuid },
+        await prisma.wallet.update({
+          where: { userId: pkg.userId },
           data: {
             packageCredits: 0,
             packageResetAt: now,
@@ -352,9 +352,9 @@ export async function checkAndExpirePackages(): Promise<number> {
           }
         });
         
-        console.log(`Expired package for user ${pkg.userUuid}`);
+        console.log(`Expired package for user ${pkg.userId}`);
       } catch (error) {
-        console.error(`Failed to clear package credits for user ${pkg.userUuid}:`, error);
+        console.error(`Failed to clear package credits for user ${pkg.userId}:`, error);
       }
     }
     
@@ -366,18 +366,18 @@ export async function checkAndExpirePackages(): Promise<number> {
 }
 
 // 获取套餐推荐
-export async function getPackageRecommendations(userUuid?: string): Promise<any[]> {
+export async function getPackageRecommendations(userId?: string): Promise<any[]> {
   try {
     // 获取推荐套餐
     const recommendedPackages = await getRecommendedPackages();
     
-    if (!userUuid) {
+    if (!userId) {
       return recommendedPackages;
     }
     
     // 获取用户当前套餐和使用情况
-    const userPackage = await getUserActivePackage(userUuid);
-    const creditBalance = await getCreditBalance(userUuid);
+    const userPackage = await getUserActivePackage(userId);
+    const creditBalance = await getCreditBalance(userId);
     
     // 根据用户使用情况调整推荐
     // TODO: 实现更智能的推荐算法
@@ -391,7 +391,7 @@ export async function getPackageRecommendations(userUuid?: string): Promise<any[
 
 // 计算套餐升级/降级差价
 export async function calculatePackageChange(
-  userUuid: string,
+  userId: string,
   newPackageId: string
 ): Promise<{
   canChange: boolean;
@@ -403,7 +403,7 @@ export async function calculatePackageChange(
 }> {
   try {
     // 获取当前套餐
-    const currentPackage = await getUserActivePackage(userUuid);
+    const currentPackage = await getUserActivePackage(userId);
     if (!currentPackage) {
       return { canChange: false, error: 'No active package found' };
     }

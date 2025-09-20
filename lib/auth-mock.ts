@@ -37,7 +37,7 @@ export async function getMockAuth() {
   }
 
   return {
-    uuid: user.uuid,
+    uuid: user.id,
     email: user.email,
     name: user.nickname,
     image: user.avatarUrl,

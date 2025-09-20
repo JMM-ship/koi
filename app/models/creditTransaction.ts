@@ -16,7 +16,7 @@ export enum CreditType {
 export interface CreditTransaction {
   id: string;
   trans_no: string;
-  user_uuid: string;
+  user_id: string;
   type: TransactionType;
   credit_type: CreditType;
   amount: number;
@@ -35,7 +35,7 @@ function fromPrismaCreditTransaction(trans: PrismaCreditTransaction | null): Cre
   return {
     id: trans.id,
     trans_no: trans.transNo,
-    user_uuid: trans.userUuid,
+    user_id: trans.userId,
     type: trans.type as TransactionType,
     credit_type: trans.creditType as CreditType,
     amount: trans.amount,
@@ -60,7 +60,7 @@ function generateTransNo(): string {
 
 // 创建积分流水记录
 export async function createCreditTransaction(data: {
-  user_uuid: string;
+  user_id: string;
   type: TransactionType;
   credit_type: CreditType;
   amount: number;
@@ -74,7 +74,7 @@ export async function createCreditTransaction(data: {
     const trans = await prisma.creditTransaction.create({
       data: {
         transNo: generateTransNo(),
-        userUuid: data.user_uuid,
+        userId: data.user_id,
         type: data.type,
         creditType: data.credit_type,
         amount: data.amount,
@@ -94,7 +94,7 @@ export async function createCreditTransaction(data: {
 
 // 获取用户积分流水
 export async function getCreditTransactions(
-  userUuid: string,
+  userId: string,
   options?: {
     type?: TransactionType;
     creditType?: CreditType;
@@ -109,7 +109,7 @@ export async function getCreditTransactions(
     const pageSize = options?.pageSize || 20;
     const skip = (page - 1) * pageSize;
     
-    const where: any = { userUuid };
+    const where: any = { userId };
     
     if (options?.type) {
       where.type = options.type;
@@ -150,14 +150,14 @@ export async function getCreditTransactions(
 }
 
 // 获取今日使用量
-export async function getTodayUsage(userUuid: string): Promise<number> {
+export async function getTodayUsage(userId: string): Promise<number> {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
     const result = await prisma.creditTransaction.aggregate({
       where: {
-        userUuid,
+        userId,
         type: TransactionType.Expense,
         createdAt: {
           gte: today,
@@ -176,14 +176,14 @@ export async function getTodayUsage(userUuid: string): Promise<number> {
 }
 
 // 获取月度使用量
-export async function getMonthlyUsage(userUuid: string): Promise<number> {
+export async function getMonthlyUsage(userId: string): Promise<number> {
   try {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
     const result = await prisma.creditTransaction.aggregate({
       where: {
-        userUuid,
+        userId,
         type: TransactionType.Expense,
         createdAt: {
           gte: startOfMonth,
@@ -203,7 +203,7 @@ export async function getMonthlyUsage(userUuid: string): Promise<number> {
 
 // 获取用户积分统计
 export async function getCreditStatsByDateRange(
-  userUuid: string,
+  userId: string,
   startDate: Date,
   endDate: Date
 ): Promise<{
@@ -215,7 +215,7 @@ export async function getCreditStatsByDateRange(
   try {
     const transactions = await prisma.creditTransaction.findMany({
       where: {
-        userUuid,
+        userId,
         createdAt: {
           gte: startDate,
           lte: endDate,
@@ -265,7 +265,7 @@ export async function getCreditStatsByDateRange(
 // 批量创建积分重置流水
 export async function batchCreateResetTransactions(
   resets: Array<{
-    userUuid: string;
+    userId: string;
     amount: number;
     beforeBalance: number;
     afterBalance: number;
@@ -274,7 +274,7 @@ export async function batchCreateResetTransactions(
   try {
     const transactions = resets.map(reset => ({
       transNo: generateTransNo(),
-      userUuid: reset.userUuid,
+      userId: reset.userId,
       type: TransactionType.Reset,
       creditType: CreditType.Package,
       amount: reset.amount,
@@ -297,12 +297,12 @@ export async function batchCreateResetTransactions(
 
 // 获取最近的交易记录
 export async function getRecentTransactions(
-  userUuid: string,
+  userId: string,
   limit: number = 10
 ): Promise<CreditTransaction[]> {
   try {
     const transactions = await prisma.creditTransaction.findMany({
-      where: { userUuid },
+      where: { userId },
       orderBy: { createdAt: 'desc' },
       take: limit,
     });

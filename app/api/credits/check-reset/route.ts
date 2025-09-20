@@ -22,13 +22,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userUuid = session.user.uuid;
+    const userId = session.user.id;
 
     // 检查并重置积分（如果需要）
-    const wasReset = await checkAndResetUserCredits(userUuid);
+    const wasReset = await checkAndResetUserCredits(userId);
 
     // 获取最新的积分信息
-    const creditInfo = await getUserCreditInfo(userUuid);
+    const creditInfo = await getUserCreditInfo(userId);
 
     if (!creditInfo) {
       return NextResponse.json(

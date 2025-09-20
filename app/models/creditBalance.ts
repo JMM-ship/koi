@@ -1,9 +1,9 @@
 import { prisma } from "@/app/models/db";
-import { CreditBalance as PrismaCreditBalance } from "@prisma/client";
+import { Wallet as PrismaWallet } from "@prisma/client";
 
 export interface CreditBalance {
   id: string;
-  user_uuid: string;
+  user_id: string;
   package_credits: number;
   package_reset_at?: string;
   independent_credits: number;
@@ -14,278 +14,199 @@ export interface CreditBalance {
   updated_at: string;
 }
 
-// 转换函数：将Prisma数据转换为应用层格式
-function fromPrismaCreditBalance(balance: PrismaCreditBalance | null): CreditBalance | undefined {
-  if (!balance) return undefined;
-  
-  return {
-    id: balance.id,
-    user_uuid: balance.userUuid,
-    package_credits: balance.packageCredits,
-    package_reset_at: balance.packageResetAt?.toISOString(),
-    independent_credits: balance.independentCredits,
-    total_used: balance.totalUsed,
-    total_purchased: balance.totalPurchased,
-    version: balance.version,
-    created_at: balance.createdAt.toISOString(),
-    updated_at: balance.updatedAt.toISOString(),
-  };
-}
+// 转换函数：将Prisma Wallet转换为应用层CreditBalance格式（兼容旧代码）
+function fromPrismaWallet(wallet: PrismaWallet | null): CreditBalance | undefined {
+  if (!wallet) return undefined;
 
-// 转换函数：将应用层数据转换为Prisma格式
-function toPrismaCreditBalance(balance: Partial<CreditBalance>): any {
   return {
-    userUuid: balance.user_uuid,
-    packageCredits: balance.package_credits || 0,
-    packageResetAt: balance.package_reset_at ? new Date(balance.package_reset_at) : null,
-    independentCredits: balance.independent_credits || 0,
-    totalUsed: balance.total_used || 0,
-    totalPurchased: balance.total_purchased || 0,
-    version: balance.version || 0,
+    id: wallet.userId,  // 使用userId作为id
+    user_id: wallet.userId,
+    package_credits: Number(wallet.packageTokensRemaining),
+    package_reset_at: wallet.packageResetAt?.toISOString(),
+    independent_credits: Number(wallet.independentTokens),
+    total_used: 0,  // 新模型中没有此字段，返回默认值
+    total_purchased: 0,  // 新模型中没有此字段，返回默认值
+    version: wallet.version,
+    created_at: wallet.createdAt.toISOString(),
+    updated_at: wallet.updatedAt.toISOString(),
   };
 }
 
 // 获取用户积分余额
-export async function getCreditBalance(userUuid: string): Promise<CreditBalance | undefined> {
+export async function getCreditBalance(userId: string): Promise<CreditBalance | undefined> {
   try {
-    const balance = await prisma.creditBalance.findUnique({
-      where: { userUuid },
+    const wallet = await prisma.wallet.findUnique({
+      where: { userId },
     });
-    
-    // 如果不存在，创建新的余额记录
-    if (!balance) {
-      const newBalance = await prisma.creditBalance.create({
+
+    // 如果不存在，创建新的钱包记录
+    if (!wallet) {
+      const newWallet = await prisma.wallet.create({
         data: {
-          userUuid,
-          packageCredits: 0,
-          independentCredits: 0,
-          totalUsed: 0,
-          totalPurchased: 0,
+          userId,
+          packageDailyQuotaTokens: BigInt(0),
+          packageTokensRemaining: BigInt(0),
+          independentTokens: BigInt(0),
+          lockedTokens: BigInt(0),
           version: 0,
         },
       });
-      return fromPrismaCreditBalance(newBalance);
+      return fromPrismaWallet(newWallet);
     }
-    
-    return fromPrismaCreditBalance(balance);
+
+    return fromPrismaWallet(wallet);
   } catch (error) {
-    console.error('Error getting credit balance:', error);
+    console.error('Error getting wallet:', error);
     return undefined;
   }
 }
 
 // 更新套餐积分
 export async function updatePackageCredits(
-  userUuid: string, 
+  userId: string,
   credits: number,
   resetAt?: Date
 ): Promise<CreditBalance | undefined> {
   try {
-    // 使用upsert确保记录存在
-    const balance = await prisma.creditBalance.upsert({
-      where: { userUuid },
+    const wallet = await prisma.wallet.upsert({
+      where: { userId },
       update: {
-        packageCredits: credits,
+        packageTokensRemaining: BigInt(credits),
         packageResetAt: resetAt || new Date(),
       },
       create: {
-        userUuid,
-        packageCredits: credits,
+        userId,
+        packageDailyQuotaTokens: BigInt(credits),
+        packageTokensRemaining: BigInt(credits),
         packageResetAt: resetAt || new Date(),
-        independentCredits: 0,
-        totalUsed: 0,
-        totalPurchased: 0,
+        independentTokens: BigInt(0),
+        lockedTokens: BigInt(0),
         version: 0,
       },
     });
-    return fromPrismaCreditBalance(balance);
+
+    return fromPrismaWallet(wallet);
   } catch (error) {
     console.error('Error updating package credits:', error);
-    throw error;
+    return undefined;
   }
 }
 
-// 增加独立积分
+// 添加独立积分
 export async function addIndependentCredits(
-  userUuid: string, 
-  amount: number
+  userId: string,
+  credits: number,
+  orderNo?: string
 ): Promise<CreditBalance | undefined> {
   try {
-    // 确保 amount 是有效的数字
-    if (!amount || amount <= 0) {
-      throw new Error(`Invalid credit amount: ${amount}`);
-    }
-    
-    const balance = await prisma.creditBalance.upsert({
-      where: { userUuid },
-      update: {
-        independentCredits: {
-          increment: amount,
+    const wallet = await prisma.wallet.update({
+      where: { userId },
+      data: {
+        independentTokens: {
+          increment: BigInt(credits),
         },
-        totalPurchased: {
-          increment: amount,
-        },
-      },
-      create: {
-        userUuid,
-        packageCredits: 0,
-        independentCredits: amount,
-        totalUsed: 0,
-        totalPurchased: amount,
-        version: 0,
       },
     });
-    return fromPrismaCreditBalance(balance);
+
+    return fromPrismaWallet(wallet);
   } catch (error) {
     console.error('Error adding independent credits:', error);
-    throw error;
+    return undefined;
   }
 }
 
 // 使用积分（带乐观锁）
 export async function useCredits(
-  userUuid: string,
+  userId: string,
   amount: number
 ): Promise<{ success: boolean; balance?: CreditBalance; error?: string }> {
   try {
-    // 获取当前余额
-    const currentBalance = await prisma.creditBalance.findUnique({
-      where: { userUuid },
+    const wallet = await prisma.$transaction(async (tx) => {
+      const current = await tx.wallet.findUnique({
+        where: { userId },
+      });
+
+      if (!current) {
+        throw new Error('Wallet not found');
+      }
+
+      const totalAvailable = Number(current.packageTokensRemaining) + Number(current.independentTokens);
+      if (totalAvailable < amount) {
+        throw new Error('Insufficient credits');
+      }
+
+      // 优先使用套餐积分
+      let packageToUse = Math.min(amount, Number(current.packageTokensRemaining));
+      let independentToUse = amount - packageToUse;
+
+      const updated = await tx.wallet.update({
+        where: {
+          userId,
+          version: current.version,  // 乐观锁
+        },
+        data: {
+          packageTokensRemaining: {
+            decrement: BigInt(packageToUse),
+          },
+          independentTokens: {
+            decrement: BigInt(independentToUse),
+          },
+          version: {
+            increment: 1,
+          },
+        },
+      });
+
+      return updated;
     });
-    
-    if (!currentBalance) {
-      return { success: false, error: 'Balance not found' };
-    }
-    
-    // 计算可用积分
-    const totalAvailable = currentBalance.packageCredits + currentBalance.independentCredits;
-    if (totalAvailable < amount) {
-      return { success: false, error: 'Insufficient credits' };
-    }
-    
-    // 计算扣减逻辑
-    let packageDeduction = 0;
-    let independentDeduction = 0;
-    
-    if (currentBalance.packageCredits >= amount) {
-      // 套餐积分足够
-      packageDeduction = amount;
-    } else {
-      // 需要使用独立积分
-      packageDeduction = currentBalance.packageCredits;
-      independentDeduction = amount - packageDeduction;
-    }
-    
-    // 使用乐观锁更新
-    const updatedBalance = await prisma.creditBalance.update({
-      where: { 
-        userUuid,
-        version: currentBalance.version, // 乐观锁检查
-      },
-      data: {
-        packageCredits: {
-          decrement: packageDeduction,
-        },
-        independentCredits: {
-          decrement: independentDeduction,
-        },
-        totalUsed: {
-          increment: amount,
-        },
-        version: {
-          increment: 1,
-        },
-      },
-    });
-    
-    return { 
-      success: true, 
-      balance: fromPrismaCreditBalance(updatedBalance) 
+
+    return {
+      success: true,
+      balance: fromPrismaWallet(wallet),
     };
   } catch (error: any) {
-    if (error.code === 'P2025') {
-      // 乐观锁冲突，版本号不匹配
-      return { success: false, error: 'Concurrent update detected, please retry' };
-    }
-    console.error('Error using credits:', error);
-    return { success: false, error: 'Failed to use credits' };
+    return {
+      success: false,
+      error: error.message,
+    };
   }
 }
 
 // 重置套餐积分
 export async function resetPackageCredits(
-  userUuid: string,
+  userId: string,
   dailyCredits: number
 ): Promise<CreditBalance | undefined> {
   try {
-    const balance = await prisma.creditBalance.update({
-      where: { userUuid },
+    const wallet = await prisma.wallet.update({
+      where: { userId },
       data: {
-        packageCredits: dailyCredits,
+        packageTokensRemaining: BigInt(dailyCredits),
         packageResetAt: new Date(),
       },
     });
-    return fromPrismaCreditBalance(balance);
+
+    return fromPrismaWallet(wallet);
   } catch (error) {
     console.error('Error resetting package credits:', error);
     return undefined;
   }
 }
 
-// 获取用户积分统计
-export async function getCreditStats(userUuid: string): Promise<{
-  totalAvailable: number;
-  packageCredits: number;
-  independentCredits: number;
-  totalUsed: number;
-  totalPurchased: number;
-  todayUsed?: number;
-} | undefined> {
-  try {
-    const balance = await getCreditBalance(userUuid);
-    if (!balance) return undefined;
-    
-    // 获取今日使用量（需要从流水表查询，这里先返回0）
-    const todayUsed = 0; // TODO: 实现从CreditTransaction表查询
-    
-    return {
-      totalAvailable: balance.package_credits + balance.independent_credits,
-      packageCredits: balance.package_credits,
-      independentCredits: balance.independent_credits,
-      totalUsed: balance.total_used,
-      totalPurchased: balance.total_purchased,
-      todayUsed,
-    };
-  } catch (error) {
-    console.error('Error getting credit stats:', error);
-    return undefined;
-  }
+// 获取积分统计
+export async function getCreditStats(userId: string) {
+  const balance = await getCreditBalance(userId);
+  if (!balance) return null;
+
+  return {
+    packageCredits: balance.package_credits,
+    independentCredits: balance.independent_credits,
+    totalAvailable: balance.package_credits + balance.independent_credits,
+    lastResetAt: balance.package_reset_at,
+  };
 }
 
-// 批量重置所有用户的套餐积分
-export async function batchResetPackageCredits(
-  userPackages: Array<{ userUuid: string; dailyCredits: number }>
-): Promise<number> {
-  try {
-    let successCount = 0;
-    
-    // 使用事务批量更新
-    await prisma.$transaction(async (tx) => {
-      for (const pkg of userPackages) {
-        await tx.creditBalance.update({
-          where: { userUuid: pkg.userUuid },
-          data: {
-            packageCredits: pkg.dailyCredits,
-            packageResetAt: new Date(),
-          },
-        });
-        successCount++;
-      }
-    });
-    
-    return successCount;
-  } catch (error) {
-    console.error('Error batch resetting package credits:', error);
-    return 0;
-  }
-}
+// 导出兼容的函数名
+export { getCreditBalance as getUserBalance };
+export { updatePackageCredits as setPackageCredits };
+export { addIndependentCredits as purchaseCredits };

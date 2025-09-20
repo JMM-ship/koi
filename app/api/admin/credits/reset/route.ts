@@ -38,11 +38,11 @@ export async function POST(request: NextRequest) {
 
     // 解析请求体
     const body = await request.json();
-    const { userUuid, resetAll = false } = body;
+    const { userId, resetAll = false } = body;
 
     // 如果指定了用户UUID，只重置该用户
-    if (userUuid && !resetAll) {
-      const result = await resetUserPackageCredits(userUuid);
+    if (userId && !resetAll) {
+      const result = await resetUserPackageCredits(userId);
       
       if (!result.success) {
         return NextResponse.json(
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: {
-          userUuid: result.userUuid,
+          userId: result.userId,
           dailyCredits: result.dailyCredits,
           message: 'User credits reset successfully',
         },
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: {
           code: 'INVALID_PARAMS',
-          message: 'Please specify userUuid or set resetAll to true',
+          message: 'Please specify userId or set resetAll to true',
         },
       },
       { status: 400 }
@@ -140,20 +140,20 @@ export async function GET(request: NextRequest) {
 
     // 获取查询参数
     const { searchParams } = new URL(request.url);
-    const userUuid = searchParams.get('userUuid');
+    const userId = searchParams.get('userId');
 
-    if (userUuid) {
+    if (userId) {
       // 检查特定用户是否需要重置
       const { shouldResetCredits } = await import('@/app/service/creditResetService');
-      const needsReset = await shouldResetCredits(userUuid);
+      const needsReset = await shouldResetCredits(userId);
       
       const { getLastResetTime } = await import('@/app/service/creditResetService');
-      const lastResetTime = await getLastResetTime(userUuid);
+      const lastResetTime = await getLastResetTime(userId);
 
       return NextResponse.json({
         success: true,
         data: {
-          userUuid,
+          userId,
           needsReset,
           lastResetTime: lastResetTime?.toISOString() || null,
         },

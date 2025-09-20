@@ -1,62 +1,41 @@
 import { User } from "@/app/types/user";
-import { getIsoTimestr } from "@/app/lib/time";
 import { prisma } from "./db";
-import { getUuid } from "@/app/lib/hash";
 import bcrypt from "bcryptjs";
 import { User as PrismaUser } from "@prisma/client";
 
 // 转换Prisma User到应用User类型
-function toPrismaUser(user: User): any {
-  return {
-    uuid: user.uuid,
-    email: user.email,
-    nickname: user.nickname || null,
-    avatarUrl: user.avatar_url || null,
-    locale: user.locale || null,
-    signinType: user.signin_type || null,
-    signinIp: user.signin_ip || null,
-    signinProvider: user.signin_provider || null,
-    signinOpenid: user.signin_openid || null,
-    inviteCode: user.invite_code || '',
-    invitedBy: user.invited_by || '',
-    isAffiliate: user.is_affiliate || false,
-    password: user.password || null,
-  };
-}
-
-// 转换Prisma User到应用User类型
 function fromPrismaUser(user: PrismaUser | null): User | undefined {
   if (!user) return undefined;
-  
+
   return {
-    id: user.id,
-    uuid: user.uuid,
+    id: user.id,  // 现在id就是UUID
     email: user.email,
     created_at: user.createdAt.toISOString(),
     nickname: user.nickname || undefined,
     avatar_url: user.avatarUrl || undefined,
     locale: user.locale || undefined,
-    signin_type: user.signinType || undefined,
-    signin_ip: user.signinIp || undefined,
-    signin_provider: user.signinProvider || undefined,
-    signin_openid: user.signinOpenid || undefined,
-    invite_code: user.inviteCode || undefined,
     updated_at: user.updatedAt.toISOString(),
-    invited_by: user.invitedBy || undefined,
-    is_affiliate: user.isAffiliate || undefined,
-    password: user.password || undefined,
     role: user.role || 'user',
     status: user.status || 'active',
-    planType: user.planType || 'free',
-    planExpiredAt: user.planExpiredAt?.toISOString() || undefined,
-    totalCredits: user.totalCredits || 0,
   };
 }
 
-export async function insertUser(user: User) {
+// 转换应用User到Prisma创建数据
+function toPrismaCreateData(user: Partial<User>) {
+  return {
+    email: user.email!,
+    nickname: user.nickname || null,
+    avatarUrl: user.avatar_url || null,
+    locale: user.locale || null,
+    role: user.role || 'user',
+    status: user.status || 'active',
+  };
+}
+
+export async function insertUser(user: Partial<User>) {
   try {
     const data = await prisma.user.create({
-      data: toPrismaUser(user),
+      data: toPrismaCreateData(user),
     });
     return fromPrismaUser(data);
   } catch (error) {
@@ -65,15 +44,11 @@ export async function insertUser(user: User) {
 }
 
 export async function findUserByEmail(
-  email: string,
-  provider?: string
+  email: string
 ): Promise<User | undefined> {
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        email,
-        ...(provider && { signinProvider: provider }),
-      },
+    const user = await prisma.user.findUnique({
+      where: { email },
     });
     return fromPrismaUser(user);
   } catch (error) {
@@ -81,15 +56,20 @@ export async function findUserByEmail(
   }
 }
 
-export async function findUserByUuid(uuid: string): Promise<User | undefined> {
+export async function findUserById(id: string): Promise<User | undefined> {
   try {
     const user = await prisma.user.findUnique({
-      where: { uuid },
+      where: { id },
     });
     return fromPrismaUser(user);
   } catch (error) {
     return undefined;
   }
+}
+
+// 兼容旧代码：将 findUserByUuid 重定向到 findUserById
+export async function findUserByUuid(uuid: string): Promise<User | undefined> {
+  return findUserById(uuid);
 }
 
 export async function getUsers(
@@ -115,48 +95,12 @@ export async function getUsers(
   }
 }
 
-export async function updateUserInviteCode(
-  user_uuid: string,
-  invite_code: string
-) {
-  try {
-    const data = await prisma.user.update({
-      where: { uuid: user_uuid },
-      data: {
-        inviteCode: invite_code,
-        updatedAt: new Date(),
-      },
-    });
-    return fromPrismaUser(data);
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function updateUserInvitedBy(
-  user_uuid: string,
-  invited_by: string
-) {
-  try {
-    const data = await prisma.user.update({
-      where: { uuid: user_uuid },
-      data: {
-        invitedBy: invited_by,
-        updatedAt: new Date(),
-      },
-    });
-    return fromPrismaUser(data);
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function getUsersByUuids(user_uuids: string[]): Promise<User[]> {
+export async function getUsersByIds(userIds: string[]): Promise<User[]> {
   try {
     const users = await prisma.user.findMany({
       where: {
-        uuid: {
-          in: user_uuids,
+        id: {
+          in: userIds,
         },
       },
     });
@@ -166,27 +110,26 @@ export async function getUsersByUuids(user_uuids: string[]): Promise<User[]> {
   }
 }
 
-export async function findUserByInviteCode(invite_code: string) {
-  try {
-    const user = await prisma.user.findFirst({
-      where: { inviteCode: invite_code },
-    });
-    return fromPrismaUser(user);
-  } catch (error) {
-    return undefined;
-  }
+// 兼容旧代码
+export async function getUsersByUuids(user_uuids: string[]): Promise<User[]> {
+  return getUsersByIds(user_uuids);
 }
 
-export async function getUserUuidsByEmail(email: string) {
+export async function getUserIdsByEmail(email: string) {
   try {
     const users = await prisma.user.findMany({
       where: { email },
-      select: { uuid: true },
+      select: { id: true },
     });
-    return users.map((user) => user.uuid);
+    return users.map((user) => user.id);
   } catch (error) {
     return [];
   }
+}
+
+// 兼容旧代码
+export async function getUserUuidsByEmail(email: string) {
+  return getUserIdsByEmail(email);
 }
 
 export async function getUsersTotal(): Promise<number | undefined> {
@@ -236,26 +179,58 @@ export async function createUserWithPassword(
 ): Promise<User> {
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
-  
-  const newUser = {
-    uuid: getUuid(),
-    email,
-    password: hashedPassword,
-    nickname,
-    signinProvider: "credentials",
-    signinType: "credentials",
-    inviteCode: '',
-    invitedBy: '',
-    isAffiliate: false,
-  };
-  
+
   try {
     const data = await prisma.user.create({
-      data: newUser,
+      data: {
+        email,
+        nickname,
+        role: 'user',
+        status: 'active',
+        // Note: 密码字段在新架构中移除了，如果需要可以在单独的auth表中管理
+      },
     });
-    
+
     return fromPrismaUser(data) as User;
   } catch (error) {
     throw error;
   }
+}
+
+// 新增的辅助函数
+export async function updateUser(
+  id: string,
+  data: Partial<User>
+): Promise<User | undefined> {
+  try {
+    const updated = await prisma.user.update({
+      where: { id },
+      data: {
+        nickname: data.nickname,
+        avatarUrl: data.avatar_url,
+        locale: data.locale,
+        role: data.role,
+        status: data.status,
+      },
+    });
+    return fromPrismaUser(updated);
+  } catch (error) {
+    return undefined;
+  }
+}
+
+// 以下函数在新架构中已不需要，但为兼容性暂时保留空实现
+export async function updateUserInviteCode(user_uuid: string, invite_code: string) {
+  // 新架构中没有 inviteCode 字段
+  return findUserById(user_uuid);
+}
+
+export async function updateUserInvitedBy(user_uuid: string, invited_by: string) {
+  // 新架构中没有 invitedBy 字段
+  return findUserById(user_uuid);
+}
+
+export async function findUserByInviteCode(invite_code: string) {
+  // 新架构中没有 inviteCode 字段
+  return undefined;
 }

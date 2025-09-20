@@ -17,7 +17,7 @@ async function testApiKey() {
     // 检查是否已有 API 密钥
     const existingKey = await prisma.apiKey.findFirst({
       where: {
-        userUuid: user.uuid,
+        userId: user.id,
         status: 'active'
       }
     });
@@ -34,7 +34,7 @@ async function testApiKey() {
         data: {
           apiKey: `sk-test-${Date.now()}-${Math.random().toString(36).substring(7)}`,
           title: 'Test API Key',
-          userUuid: user.uuid,
+          userId: user.id,
           status: 'active'
         }
       });

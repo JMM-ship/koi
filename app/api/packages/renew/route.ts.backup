@@ -1,0 +1,115 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/auth/config';
+import prisma from '@/lib/prisma';
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.uuid) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: { message: 'Unauthorized' }
+        },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { months } = body;
+
+    if (!months || months < 1 || months > 12) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: { message: 'Invalid renewal period. Please select between 1 and 12 months.' }
+        },
+        { status: 400 }
+      );
+    }
+
+    const userUuid = session.user.uuid;
+
+    // Get the user's current active package
+    const currentPackage = await prisma.userPackage.findFirst({
+      where: {
+        userUuid,
+        isActive: true
+      },
+      orderBy: {
+        endDate: 'desc'
+      }
+    });
+
+    if (!currentPackage) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: { message: 'No active package found to renew' }
+        },
+        { status: 404 }
+      );
+    }
+
+    // Calculate new end date
+    const currentEndDate = new Date(currentPackage.endDate);
+    const newEndDate = new Date(currentEndDate);
+    newEndDate.setMonth(newEndDate.getMonth() + months);
+
+    // Update the package end date
+    const updatedPackage = await prisma.userPackage.update({
+      where: {
+        id: currentPackage.id
+      },
+      data: {
+        endDate: newEndDate,
+        updatedAt: new Date()
+      }
+    });
+
+    // Log the renewal transaction
+    await prisma.creditTransaction.create({
+      data: {
+        transNo: `RENEW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userUuid,
+        type: 'income',
+        creditType: 'package',
+        amount: 0,
+        beforeBalance: 0,
+        afterBalance: 0,
+        description: `Package renewed for ${months} month(s)`,
+        createdAt: new Date()
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        package: {
+          id: updatedPackage.id,
+          packageId: updatedPackage.packageId,
+          startDate: updatedPackage.startDate,
+          endDate: updatedPackage.endDate,
+          dailyCredits: updatedPackage.dailyCredits,
+          isActive: updatedPackage.isActive,
+          renewedMonths: months
+        },
+        message: `Package renewed successfully for ${months} month(s)`
+      }
+    });
+
+  } catch (error) {
+    console.error('Package renewal error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          message: 'Failed to renew package',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        }
+      },
+      { status: 500 }
+    );
+  }
+}

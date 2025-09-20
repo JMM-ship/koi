@@ -3,11 +3,11 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // 模拟 activatePackageCredits 函数的逻辑
-async function activatePackageCredits(userUuid, dailyCredits, orderNo) {
+async function activatePackageCredits(userId, dailyCredits, orderNo) {
   try {
     // 获取当前余额
     const currentBalance = await prisma.creditBalance.findUnique({
-      where: { userUuid }
+      where: { userId }
     });
     
     const beforeBalance = currentBalance 
@@ -16,13 +16,13 @@ async function activatePackageCredits(userUuid, dailyCredits, orderNo) {
     
     // 使用 upsert 更新或创建积分余额
     const newBalance = await prisma.creditBalance.upsert({
-      where: { userUuid },
+      where: { userId },
       update: {
         packageCredits: dailyCredits,
         packageResetAt: new Date(),
       },
       create: {
-        userUuid,
+        userId,
         packageCredits: dailyCredits,
         packageResetAt: new Date(),
         independentCredits: 0,
@@ -36,7 +36,7 @@ async function activatePackageCredits(userUuid, dailyCredits, orderNo) {
     const transaction = await prisma.creditTransaction.create({
       data: {
         transNo: `TRANS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        userUuid: userUuid,
+        userId: userId,
         type: 'income',
         creditType: 'package',
         amount: dailyCredits,
@@ -64,7 +64,7 @@ async function activatePackageCredits(userUuid, dailyCredits, orderNo) {
 }
 
 // 模拟完整的套餐购买流程
-async function purchasePackage(userUuid, packageId, orderNo) {
+async function purchasePackage(userId, packageId, orderNo) {
   try {
     // 获取套餐信息
     const packageInfo = await prisma.package.findUnique({
@@ -94,7 +94,7 @@ async function purchasePackage(userUuid, packageId, orderNo) {
     // 创建用户套餐
     const userPackage = await prisma.userPackage.create({
       data: {
-        userUuid: userUuid,
+        userId: userId,
         packageId: packageId,
         orderNo: orderNo,
         startDate: startDate,
@@ -110,7 +110,7 @@ async function purchasePackage(userUuid, packageId, orderNo) {
     
     // 激活套餐积分
     const creditResult = await activatePackageCredits(
-      userUuid,
+      userId,
       packageInfo.dailyCredits,
       orderNo
     );
@@ -173,7 +173,7 @@ async function testCompletePurchase() {
     // 3. 检查购买前的积分余额
     console.log('\n3. 检查购买前的积分余额...');
     let creditBalance = await prisma.creditBalance.findUnique({
-      where: { userUuid: testUser.uuid }
+      where: { userId: testUser.uuid }
     });
     
     if (creditBalance) {
@@ -197,7 +197,7 @@ async function testCompletePurchase() {
       // 5. 验证购买后的积分余额
       console.log('\n5. 验证购买后的积分余额...');
       creditBalance = await prisma.creditBalance.findUnique({
-        where: { userUuid: testUser.uuid }
+        where: { userId: testUser.uuid }
       });
       
       if (creditBalance) {
@@ -220,7 +220,7 @@ async function testCompletePurchase() {
       console.log('\n6. 查看用户套餐记录...');
       const userPackage = await prisma.userPackage.findFirst({
         where: { 
-          userUuid: testUser.uuid,
+          userId: testUser.uuid,
           isActive: true 
         },
         orderBy: { createdAt: 'desc' }
@@ -238,7 +238,7 @@ async function testCompletePurchase() {
       // 7. 查看交易记录
       console.log('\n7. 查看最新交易记录...');
       const latestTransaction = await prisma.creditTransaction.findFirst({
-        where: { userUuid: testUser.uuid },
+        where: { userId: testUser.uuid },
         orderBy: { createdAt: 'desc' }
       });
       

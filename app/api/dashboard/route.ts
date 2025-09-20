@@ -18,14 +18,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userUuid = user.uuid;
+    const userId = user.id;
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     // 获取最近7天的消费趋势
     const consumptionTrends = await prisma.consumptionTrend.findMany({
       where: {
-        userUuid,
+        userId,
         date: {
           gte: sevenDaysAgo,
           lte: now
@@ -39,14 +39,14 @@ export async function GET(request: Request) {
     // 获取用户积分余额信息
     const creditBalance = await prisma.creditBalance.findUnique({
       where: {
-        userUuid
+        userId
       }
     });
 
     // 获取最近的模型使用记录
     const modelUsages = await prisma.modelUsage.findMany({
       where: {
-        userUuid
+        userId
       },
       orderBy: {
         timestamp: 'desc'
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
     // 获取用户套餐信息
     const userPackage = await prisma.userPackage.findFirst({
       where: {
-        userUuid,
+        userId,
         isActive: true,
         endDate: {
           gte: now
@@ -70,8 +70,7 @@ export async function GET(request: Request) {
 
     // 获取用户信息
     const userInfo = await prisma.user.findUnique({
-      where: {
-        uuid: userUuid
+      where: { id: userId
       },
       select: {
         planType: true,
@@ -81,7 +80,7 @@ export async function GET(request: Request) {
     });
 
     // 计算积分消耗统计
-    const creditStats = await calculateCreditStats(userUuid);
+    const creditStats = await calculateCreditStats(userId);
 
     return NextResponse.json({
       consumptionTrends,
@@ -101,7 +100,7 @@ export async function GET(request: Request) {
 }
 
 // 计算积分消耗统计
-async function calculateCreditStats(userUuid: string) {
+async function calculateCreditStats(userId: string) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -110,7 +109,7 @@ async function calculateCreditStats(userUuid: string) {
   // 今日消耗
   const todayUsage = await prisma.creditTransaction.aggregate({
     where: {
-      userUuid,
+      userId,
       type: 'expense',
       createdAt: {
         gte: today
@@ -124,7 +123,7 @@ async function calculateCreditStats(userUuid: string) {
   // 本周消耗
   const weekUsage = await prisma.creditTransaction.aggregate({
     where: {
-      userUuid,
+      userId,
       type: 'expense',
       createdAt: {
         gte: weekAgo
@@ -138,7 +137,7 @@ async function calculateCreditStats(userUuid: string) {
   // 本月消耗
   const monthUsage = await prisma.creditTransaction.aggregate({
     where: {
-      userUuid,
+      userId,
       type: 'expense',
       createdAt: {
         gte: monthAgo
@@ -151,7 +150,7 @@ async function calculateCreditStats(userUuid: string) {
 
   // 获取所有用户的消耗排名（用于计算百分比）
   const allUsersWeekUsage = await prisma.creditTransaction.groupBy({
-    by: ['userUuid'],
+    by: ['userId'],
     where: {
       type: 'expense',
       createdAt: {

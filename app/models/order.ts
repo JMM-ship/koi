@@ -13,7 +13,7 @@ function toPrismaOrder(order: any): any {
   
   return {
     orderNo: order.order_no,
-    userUuid: order.user_uuid || '',
+    userId: order.user_id || '',
     userEmail: order.user_email || '',
     amount: order.amount,
     interval: order.interval || null,
@@ -54,7 +54,7 @@ function fromPrismaOrder(order: PrismaOrder | null): any | undefined {
     order_type: order.orderType,
     order_no: order.orderNo,
     created_at: order.createdAt.toISOString(),
-    user_uuid: order.userUuid,
+    user_id: order.userId,
     user_email: order.userEmail,
     amount: order.amount,
     interval: order.interval,
@@ -114,12 +114,12 @@ export async function findOrderByOrderNo(
 }
 
 export async function getFirstPaidOrderByUserUuid(
-  user_uuid: string
+  user_id: string
 ): Promise<any | undefined> {
   try {
     const order = await prisma.order.findFirst({
       where: {
-        userUuid: user_uuid,
+        userId: user_id,
         status: "paid",
       },
       orderBy: {
@@ -229,12 +229,12 @@ export async function updateOrderSubscription(
 }
 
 export async function getOrdersByUserUuid(
-  user_uuid: string
+  user_id: string
 ): Promise<any[] | undefined> {
   try {
     const orders = await prisma.order.findMany({
       where: {
-        userUuid: user_uuid,
+        userId: user_id,
         status: "paid",
       },
       orderBy: {

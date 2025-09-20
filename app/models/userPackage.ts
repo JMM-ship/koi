@@ -3,7 +3,7 @@ import { UserPackage as PrismaUserPackage } from "@prisma/client";
 
 export interface UserPackage {
   id: string;
-  user_uuid: string;
+  user_id: string;
   package_id: string;
   order_no: string;
   start_date: string;
@@ -22,7 +22,7 @@ function fromPrismaUserPackage(userPkg: PrismaUserPackage | null): UserPackage |
   
   return {
     id: userPkg.id,
-    user_uuid: userPkg.userUuid,
+    user_id: userPkg.userId,
     package_id: userPkg.packageId,
     order_no: userPkg.orderNo,
     start_date: userPkg.startDate.toISOString(),
@@ -37,12 +37,12 @@ function fromPrismaUserPackage(userPkg: PrismaUserPackage | null): UserPackage |
 }
 
 // 获取用户当前活跃套餐
-export async function getUserActivePackage(userUuid: string): Promise<UserPackage | undefined> {
+export async function getUserActivePackage(userId: string): Promise<UserPackage | undefined> {
   try {
     const now = new Date();
     const userPackage = await prisma.userPackage.findFirst({
       where: {
-        userUuid,
+        userId,
         isActive: true,
         endDate: {
           gte: now,
@@ -62,7 +62,7 @@ export async function getUserActivePackage(userUuid: string): Promise<UserPackag
 
 // 创建用户套餐
 export async function createUserPackage(data: {
-  user_uuid: string;
+  user_id: string;
   package_id: string;
   order_no: string;
   start_date: Date;
@@ -75,7 +75,7 @@ export async function createUserPackage(data: {
     // 先将当前活跃的套餐设为非活跃
     await prisma.userPackage.updateMany({
       where: {
-        userUuid: data.user_uuid,
+        userId: data.user_id,
         isActive: true,
       },
       data: {
@@ -86,7 +86,7 @@ export async function createUserPackage(data: {
     // 创建新套餐
     const userPackage = await prisma.userPackage.create({
       data: {
-        userUuid: data.user_uuid,
+        userId: data.user_id,
         packageId: data.package_id,
         orderNo: data.order_no,
         startDate: data.start_date,
@@ -143,7 +143,7 @@ export async function updateAutoRenewStatus(
 
 // 获取用户所有套餐历史
 export async function getUserPackageHistory(
-  userUuid: string,
+  userId: string,
   page: number = 1,
   pageSize: number = 20
 ): Promise<{ packages: UserPackage[]; total: number }> {
@@ -152,13 +152,13 @@ export async function getUserPackageHistory(
     
     const [packages, total] = await Promise.all([
       prisma.userPackage.findMany({
-        where: { userUuid },
+        where: { userId },
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
       }),
       prisma.userPackage.count({
-        where: { userUuid },
+        where: { userId },
       }),
     ]);
     
@@ -246,7 +246,7 @@ export async function deactivateExpiredPackages(): Promise<number> {
 
 // 获取所有活跃套餐用户（用于每日重置）
 export async function getAllActivePackageUsers(): Promise<Array<{
-  userUuid: string;
+  userId: string;
   dailyCredits: number;
 }>> {
   try {
@@ -260,13 +260,13 @@ export async function getAllActivePackageUsers(): Promise<Array<{
         },
       },
       select: {
-        userUuid: true,
+        userId: true,
         dailyCredits: true,
       },
     });
     
     return packages.map(pkg => ({
-      userUuid: pkg.userUuid,
+      userId: pkg.userId,
       dailyCredits: pkg.dailyCredits,
     }));
   } catch (error) {
@@ -315,7 +315,7 @@ export async function getUserPackageByOrderNo(orderNo: string): Promise<UserPack
 
 // 续费套餐
 export async function renewUserPackage(
-  userUuid: string,
+  userId: string,
   packageId: string,
   orderNo: string,
   validDays: number,
@@ -324,7 +324,7 @@ export async function renewUserPackage(
 ): Promise<UserPackage | undefined> {
   try {
     // 获取当前套餐
-    const currentPackage = await getUserActivePackage(userUuid);
+    const currentPackage = await getUserActivePackage(userId);
     
     let startDate: Date;
     let endDate: Date;
@@ -342,7 +342,7 @@ export async function renewUserPackage(
     }
     
     return createUserPackage({
-      user_uuid: userUuid,
+      user_id: userId,
       package_id: packageId,
       order_no: orderNo,
       start_date: startDate,

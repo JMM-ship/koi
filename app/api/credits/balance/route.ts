@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    const userUuid = session.user.uuid;
+    const userId = session.user.id;
     
     // 获取用户积分信息
-    const creditInfo = await getUserCreditInfo(userUuid);
+    const creditInfo = await getUserCreditInfo(userId);
     
     if (!creditInfo) {
       return NextResponse.json(

@@ -14,13 +14,13 @@ export async function GET(request: NextRequest) {
     
     // 获取用户会话（可选）
     const session = await getServerSession(authOptions);
-    const userUuid = session?.user?.uuid;
+    const userId = session?.user?.uuid;
     
     // 获取套餐列表
     let result;
-    if (userUuid) {
+    if (userId) {
       // 如果有用户登录，返回带用户状态的套餐列表
-      result = await getPackagesWithUserStatus(userUuid);
+      result = await getPackagesWithUserStatus(userId);
     } else {
       // 未登录用户，只返回套餐列表
       const packages = await getActivePackages();

@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     // 创建模型使用记录
     const modelUsage = await prisma.modelUsage.create({
       data: {
-        userUuid: user.uuid,
+        userId: user.id,
         modelName,
         usageType,
         credits,
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
     const existingTrend = await prisma.consumptionTrend.findFirst({
       where: {
-        userUuid: user.uuid,
+        userId: user.id,
         date: today
       }
     });
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     } else {
       await prisma.consumptionTrend.create({
         data: {
-          userUuid: user.uuid,
+          userId: user.id,
           date: today,
           pointsUsed: credits
         }
@@ -97,7 +97,7 @@ export async function GET(request: Request) {
 
     const modelUsages = await prisma.modelUsage.findMany({
       where: {
-        userUuid: user.uuid
+        userId: user.id
       },
       orderBy: {
         timestamp: 'desc'
@@ -108,7 +108,7 @@ export async function GET(request: Request) {
 
     const total = await prisma.modelUsage.count({
       where: {
-        userUuid: user.uuid
+        userId: user.id
       }
     });
 

@@ -62,7 +62,7 @@ async function testCreditPurchase() {
     console.log('4. 初始化用户积分余额...');
     const initialBalance = await prisma.creditBalance.create({
       data: {
-        userUuid: testUserUuid,
+        userId: testUserUuid,
         packageCredits: 0,
         independentCredits: 0,
         totalUsed: 0,
@@ -78,7 +78,7 @@ async function testCreditPurchase() {
     const order = await prisma.order.create({
       data: {
         orderNo: orderNo,
-        userUuid: testUserUuid,
+        userId: testUserUuid,
         userEmail: testUserEmail,
         amount: testPackage.price,
         status: 'pending',
@@ -122,7 +122,7 @@ async function testCreditPurchase() {
     // 7. 增加独立积分
     console.log('7. 增加独立积分...');
     const updatedBalance = await prisma.creditBalance.update({
-      where: { userUuid: testUserUuid },
+      where: { userId: testUserUuid },
       data: {
         independentCredits: {
           increment: testPackage.dailyCredits,
@@ -142,7 +142,7 @@ async function testCreditPurchase() {
     const transaction = await prisma.creditTransaction.create({
       data: {
         transNo: `TRANS_${Date.now()}`,
-        userUuid: testUserUuid,
+        userId: testUserUuid,
         type: 'income',
         creditType: 'independent',
         amount: testPackage.dailyCredits,
@@ -163,7 +163,7 @@ async function testCreditPurchase() {
     // 9. 验证最终状态
     console.log('9. 验证最终状态...');
     const finalBalance = await prisma.creditBalance.findUnique({
-      where: { userUuid: testUserUuid },
+      where: { userId: testUserUuid },
     });
     const paidOrder = await prisma.order.findUnique({
       where: { orderNo: orderNo },
@@ -182,10 +182,10 @@ async function testCreditPurchase() {
     
     // 清理测试数据（可选）
     console.log('\n清理测试数据...');
-    await prisma.creditTransaction.deleteMany({ where: { userUuid: testUserUuid } });
-    await prisma.creditBalance.delete({ where: { userUuid: testUserUuid } });
+    await prisma.creditTransaction.deleteMany({ where: { userId: testUserUuid } });
+    await prisma.creditBalance.delete({ where: { userId: testUserUuid } });
     await prisma.order.delete({ where: { orderNo: orderNo } });
-    await prisma.user.delete({ where: { uuid: testUserUuid } });
+    await prisma.user.delete({ where: { id: testUserUuid } });
     console.log('✅ 测试数据已清理');
     
   } catch (error) {

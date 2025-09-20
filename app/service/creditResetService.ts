@@ -5,7 +5,7 @@ import { createCreditTransaction, TransactionType, CreditType } from "@/app/mode
 
 // 重置结果接口
 export interface ResetResult {
-  userUuid: string;
+  userId: string;
   success: boolean;
   dailyCredits?: number;
   error?: string;
@@ -20,14 +20,14 @@ export interface ResetSummary {
 }
 
 // 重置单个用户的套餐积分
-export async function resetUserPackageCredits(userUuid: string): Promise<ResetResult> {
+export async function resetUserPackageCredits(userId: string): Promise<ResetResult> {
   try {
     // 获取用户当前活跃的套餐
-    const activePackage = await getUserActivePackage(userUuid);
+    const activePackage = await getUserActivePackage(userId);
     
     if (!activePackage) {
       return {
-        userUuid,
+        userId,
         success: false,
         error: 'No active package found'
       };
@@ -39,27 +39,27 @@ export async function resetUserPackageCredits(userUuid: string): Promise<ResetRe
     
     if (now > endDate) {
       return {
-        userUuid,
+        userId,
         success: false,
         error: 'Package has expired'
       };
     }
     
     // 获取当前余额（用于记录流水）
-    const currentBalance = await prisma.creditBalance.findUnique({
-      where: { userUuid }
+    const currentBalance = await prisma.wallet.findUnique({
+      where: { userId }
     });
     
     const beforeBalance = currentBalance 
-      ? currentBalance.packageCredits + currentBalance.independentCredits 
+      ? currentBalance.packageTokensRemaining + currentBalance.independentTokens 
       : 0;
     
     // 重置套餐积分
-    const newBalance = await resetPackageCredits(userUuid, activePackage.daily_credits);
+    const newBalance = await resetPackageCredits(userId, activePackage.daily_credits);
     
     if (!newBalance) {
       return {
-        userUuid,
+        userId,
         success: false,
         error: 'Failed to reset credits'
       };
@@ -67,7 +67,7 @@ export async function resetUserPackageCredits(userUuid: string): Promise<ResetRe
     
     // 创建重置流水记录
     await createCreditTransaction({
-      user_uuid: userUuid,
+      user_id: userId,
       type: TransactionType.Reset,
       credit_type: CreditType.Package,
       amount: activePackage.daily_credits,
@@ -84,14 +84,14 @@ export async function resetUserPackageCredits(userUuid: string): Promise<ResetRe
     });
     
     return {
-      userUuid,
+      userId,
       success: true,
       dailyCredits: activePackage.daily_credits
     };
   } catch (error) {
-    console.error(`Error resetting credits for user ${userUuid}:`, error);
+    console.error(`Error resetting credits for user ${userId}:`, error);
     return {
-      userUuid,
+      userId,
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
     };
@@ -119,7 +119,7 @@ export async function resetAllPackageCredits(): Promise<ResetSummary> {
     
     // 批量处理每个用户
     for (const userPackage of activePackages) {
-      const result = await resetUserPackageCredits(userPackage.user_uuid);
+      const result = await resetUserPackageCredits(userPackage.user_id);
       results.push(result);
     }
     
@@ -150,10 +150,10 @@ export async function resetAllPackageCredits(): Promise<ResetSummary> {
 }
 
 // 检查用户是否需要重置积分
-export async function shouldResetCredits(userUuid: string): Promise<boolean> {
+export async function shouldResetCredits(userId: string): Promise<boolean> {
   try {
-    const balance = await prisma.creditBalance.findUnique({
-      where: { userUuid }
+    const balance = await prisma.wallet.findUnique({
+      where: { userId }
     });
     
     if (!balance || !balance.packageResetAt) {
@@ -205,10 +205,10 @@ async function logResetOperation(operation: {
 }
 
 // 获取上次重置时间
-export async function getLastResetTime(userUuid: string): Promise<Date | null> {
+export async function getLastResetTime(userId: string): Promise<Date | null> {
   try {
-    const balance = await prisma.creditBalance.findUnique({
-      where: { userUuid },
+    const balance = await prisma.wallet.findUnique({
+      where: { userId },
       select: { packageResetAt: true }
     });
     
@@ -225,7 +225,7 @@ export async function getTodayResetCount(): Promise<number> {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     
-    const count = await prisma.creditBalance.count({
+    const count = await prisma.wallet.count({
       where: {
         packageResetAt: {
           gte: todayStart

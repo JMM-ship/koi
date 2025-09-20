@@ -83,7 +83,7 @@ async function testPurchase() {
     try {
       const newUserPackage = await prisma.userPackage.create({
         data: {
-          userUuid: testUser.uuid,
+          userId: testUser.uuid,
           packageId: testPackage.id,
           orderNo: 'TEST_' + Date.now(),
           startDate: startDate,
@@ -110,7 +110,7 @@ async function testPurchase() {
     
     // 先检查是否已有记录
     let creditBalance = await prisma.creditBalance.findUnique({
-      where: { userUuid: testUser.uuid }
+      where: { userId: testUser.uuid }
     });
     
     if (!creditBalance) {
@@ -118,13 +118,13 @@ async function testPurchase() {
       
       // 使用 upsert 创建或更新积分余额
       creditBalance = await prisma.creditBalance.upsert({
-        where: { userUuid: testUser.uuid },
+        where: { userId: testUser.uuid },
         update: {
           packageCredits: testPackage.dailyCredits,
           packageResetAt: new Date(),
         },
         create: {
-          userUuid: testUser.uuid,
+          userId: testUser.uuid,
           packageCredits: testPackage.dailyCredits,
           packageResetAt: new Date(),
           independentCredits: 0,
@@ -140,7 +140,7 @@ async function testPurchase() {
       await prisma.creditTransaction.create({
         data: {
           transNo: `TRANS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          userUuid: testUser.uuid,
+          userId: testUser.uuid,
           type: 'income',
           creditType: 'package',
           amount: testPackage.dailyCredits,

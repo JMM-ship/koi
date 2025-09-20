@@ -24,9 +24,9 @@ export async function GET(request: Request) {
     }
 
     // 获取用户的 API 密钥
-    const apiKeys = await prisma.apiKey.findMany({
+    const apiKeys = await prisma.keyHash.findMany({
       where: {
-        userUuid: user.uuid
+        userId: user.id
       },
       orderBy: {
         createdAt: 'desc'
@@ -37,8 +37,8 @@ export async function GET(request: Request) {
     const formattedKeys = apiKeys.map(key => ({
       id: key.id,
       title: key.title || 'Untitled Key',
-      apiKey: maskApiKey(key.apiKey), // 默认隐藏大部分密钥
-      fullKey: key.apiKey, // 完整密钥（前端控制显示）
+      apiKey: maskApiKey(key.keyHash), // 默认隐藏大部分密钥
+      fullKey: key.keyHash, // 完整密钥（前端控制显示）
       createdAt: key.createdAt,
       status: key.status || 'active'
     }));
@@ -69,9 +69,9 @@ export async function POST(request: Request) {
     const { title } = body;
 
     // 检查用户是否已有 API 密钥（每用户限制一个）
-    const existingKey = await prisma.apiKey.findFirst({
+    const existingKey = await prisma.keyHash.findFirst({
       where: {
-        userUuid: user.uuid,
+        userId: user.id,
         status: 'active'
       }
     });
@@ -87,11 +87,11 @@ export async function POST(request: Request) {
     const newApiKey = generateApiKey();
 
     // 保存到数据库
-    const apiKey = await prisma.apiKey.create({
+    const apiKey = await prisma.keyHash.create({
       data: {
         apiKey: newApiKey,
         title: title || 'My API Key',
-        userUuid: user.uuid,
+        userId: user.id,
         status: 'active'
       }
     });
@@ -139,10 +139,10 @@ export async function DELETE(request: Request) {
     }
 
     // 验证密钥属于当前用户
-    const apiKey = await prisma.apiKey.findFirst({
+    const apiKey = await prisma.keyHash.findFirst({
       where: {
         id: parseInt(keyId),
-        userUuid: user.uuid
+        userId: user.id
       }
     });
 
@@ -154,7 +154,7 @@ export async function DELETE(request: Request) {
     }
 
     // 删除密钥（软删除，更新状态为 deleted）
-    await prisma.apiKey.update({
+    await prisma.keyHash.update({
       where: {
         id: parseInt(keyId)
       },

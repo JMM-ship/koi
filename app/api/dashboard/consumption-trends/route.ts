@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     // 获取指定时间范围的消费趋势
     const trends = await prisma.consumptionTrend.findMany({
       where: {
-        userUuid: user.uuid,
+        userId: user.id,
         date: {
           gte: startDate,
           lte: now
@@ -74,7 +74,7 @@ export async function GET(request: Request) {
     const previousStartDate = new Date(startDate.getTime() - days * 24 * 60 * 60 * 1000);
     const previousTrends = await prisma.consumptionTrend.findMany({
       where: {
-        userUuid: user.uuid,
+        userId: user.id,
         date: {
           gte: previousStartDate,
           lt: startDate

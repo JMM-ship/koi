@@ -12,7 +12,7 @@ async function seedDashboardData() {
       return;
     }
 
-    const userUuid = user.uuid;
+    const userId = user.id;
     console.log(`使用用户: ${user.email}`);
 
     // 1. 创建消费趋势数据 (最近7天)
@@ -31,8 +31,8 @@ async function seedDashboardData() {
 
       await prisma.consumptionTrend.upsert({
         where: {
-          userUuid_date: {
-            userUuid,
+          userId_date: {
+            userId,
             date
           }
         },
@@ -42,7 +42,7 @@ async function seedDashboardData() {
           tokensUsed
         },
         create: {
-          userUuid,
+          userId,
           date,
           pointsUsed,
           moneyUsed,
@@ -70,7 +70,7 @@ async function seedDashboardData() {
 
       await prisma.modelUsage.create({
         data: {
-          userUuid,
+          userId,
           modelName: model.name,
           usageType,
           credits,
@@ -84,7 +84,7 @@ async function seedDashboardData() {
     console.log('创建积分余额数据...');
     await prisma.creditBalance.upsert({
       where: {
-        userUuid
+        userId
       },
       update: {
         packageCredits: 5000,
@@ -94,7 +94,7 @@ async function seedDashboardData() {
         packageResetAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7天后重置
       },
       create: {
-        userUuid,
+        userId,
         packageCredits: 5000,
         independentCredits: 37153,
         totalUsed: 12847,
@@ -121,7 +121,7 @@ async function seedDashboardData() {
       await prisma.creditTransaction.create({
         data: {
           transNo,
-          userUuid,
+          userId,
           type,
           creditType,
           amount,
@@ -136,8 +136,7 @@ async function seedDashboardData() {
     // 5. 更新用户信息
     console.log('更新用户信息...');
     await prisma.user.update({
-      where: {
-        uuid: userUuid
+      where: { id: userId
       },
       data: {
         planType: 'pro',

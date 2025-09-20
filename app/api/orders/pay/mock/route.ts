@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       // 添加模拟支付的标记
       metadata: {
         environment: 'development',
-        userId: session.user.uuid,
+        userId: session.user.id,
         ...paymentDetails
       }
     };

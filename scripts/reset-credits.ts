@@ -42,25 +42,25 @@ const log = {
 };
 
 // 重置单个用户的积分
-async function resetSingleUser(userUuid: string) {
-  log.info(`Resetting credits for user: ${userUuid}`);
+async function resetSingleUser(userId: string) {
+  log.info(`Resetting credits for user: ${userId}`);
   
   try {
     // 检查用户是否存在
     const user = await prisma.user.findUnique({
-      where: { uuid: userUuid },
+      where: { id: userId },
       select: { email: true, nickname: true },
     });
     
     if (!user) {
-      log.error(`User not found: ${userUuid}`);
+      log.error(`User not found: ${userId}`);
       return;
     }
     
     log.info(`User found: ${user.email} (${user.nickname || 'No nickname'})`);
     
     // 获取用户当前套餐
-    const activePackage = await getUserActivePackage(userUuid);
+    const activePackage = await getUserActivePackage(userId);
     if (!activePackage) {
       log.warn('User has no active package');
       return;
@@ -69,14 +69,14 @@ async function resetSingleUser(userUuid: string) {
     log.info(`Active package: ${activePackage.daily_credits} credits/day, expires ${activePackage.end_date}`);
     
     // 获取当前积分余额
-    const balanceBefore = await getCreditBalance(userUuid);
+    const balanceBefore = await getCreditBalance(userId);
     log.info(`Current balance: Package=${balanceBefore?.package_credits || 0}, Independent=${balanceBefore?.independent_credits || 0}`);
     
     // 检查是否需要重置
-    const needsReset = await shouldResetCredits(userUuid);
+    const needsReset = await shouldResetCredits(userId);
     if (!needsReset) {
       log.warn('Credits already reset today');
-      const lastReset = await getLastResetTime(userUuid);
+      const lastReset = await getLastResetTime(userId);
       if (lastReset) {
         log.info(`Last reset: ${lastReset.toISOString()}`);
       }
@@ -84,13 +84,13 @@ async function resetSingleUser(userUuid: string) {
     }
     
     // 执行重置
-    const result = await resetUserPackageCredits(userUuid);
+    const result = await resetUserPackageCredits(userId);
     
     if (result.success) {
       log.success(`Credits reset successfully! Daily credits: ${result.dailyCredits}`);
       
       // 获取重置后的余额
-      const balanceAfter = await getCreditBalance(userUuid);
+      const balanceAfter = await getCreditBalance(userId);
       log.info(`New balance: Package=${balanceAfter?.package_credits || 0}, Independent=${balanceAfter?.independent_credits || 0}`);
     } else {
       log.error(`Failed to reset credits: ${result.error}`);
@@ -124,7 +124,7 @@ async function resetAllUsers() {
       summary.results
         .filter(r => !r.success)
         .forEach(r => {
-          log.error(`  ${r.userUuid}: ${r.error}`);
+          log.error(`  ${r.userId}: ${r.error}`);
         });
     }
     
@@ -135,7 +135,7 @@ async function resetAllUsers() {
         .filter(r => r.success)
         .slice(0, 10) // 只显示前10个
         .forEach(r => {
-          log.success(`  ${r.userUuid}: ${r.dailyCredits} credits`);
+          log.success(`  ${r.userId}: ${r.dailyCredits} credits`);
         });
       
       if (summary.successCount > 10) {
@@ -231,14 +231,14 @@ async function main() {
   try {
     if (args.includes('--user')) {
       const userIndex = args.indexOf('--user');
-      const userUuid = args[userIndex + 1];
+      const userId = args[userIndex + 1];
       
-      if (!userUuid) {
+      if (!userId) {
         log.error('Please provide a user UUID');
         process.exit(1);
       }
       
-      await resetSingleUser(userUuid);
+      await resetSingleUser(userId);
     } else if (args.includes('--all')) {
       await resetAllUsers();
     } else if (args.includes('--check')) {

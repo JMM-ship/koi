@@ -15,7 +15,7 @@ export async function getAuth(request?: Request) {
   // session.user 应该包含 uuid, email, nickname, avatar_url 等字段
   const user = session.user as any;
   return {
-    uuid: user.uuid || user.id || user.email, // 优先使用 uuid
+    uuid: user.id || user.id || user.email, // 优先使用 uuid
     email: user.email,
     name: user.nickname || user.name,
     image: user.avatar_url || user.image,

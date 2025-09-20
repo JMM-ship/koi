@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const userUuid = session.user.uuid;
+    const userId = session.user.id;
     
     // 解析请求体
     const body = await request.json();
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 使用积分
-    const result = await useCredits(userUuid, amount, service, metadata);
+    const result = await useCredits(userId, amount, service, metadata);
     
     if (!result.success) {
       // 根据错误类型返回不同的状态码

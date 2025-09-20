@@ -16,14 +16,14 @@ export async function saveUser(user:any) {
 
       // increase credits for new user, expire in one year
       await increaseCredits({
-        user_uuid: user.uuid || "",
+        user_id: user.id || "",
         trans_type: CreditsTransType.NewUser,
         credits: CreditsAmount.NewUserGet,
         expired_at: getOneYearLaterTimestr(),
       });
     } else {
       user.id = existUser.id;
-      user.uuid = existUser.uuid;
+      user.id = existUser.uuid;
       user.created_at = existUser.created_at;
     }
 
@@ -35,25 +35,25 @@ export async function saveUser(user:any) {
 }
 
 export async function getUserUuid() {
-  let user_uuid = "";
+  let user_id = "";
 
   const token = await getBearerToken();
 
   if (token) {
     // api key
     if (token.startsWith("sk-")) {
-      const user_uuid = await getUserUuidByApiKey(token);
+      const user_id = await getUserUuidByApiKey(token);
 
-      return user_uuid || "";
+      return user_id || "";
     }
   }
 
   const session = await auth();
-  if (session && session.user && session.user.uuid) {
-    user_uuid = session.user.uuid;
+  if (session && session.user && session.user.id) {
+    user_id = session.user.id;
   }
 
-  return user_uuid;
+  return user_id;
 }
 
 export async function getBearerToken() {
@@ -78,13 +78,13 @@ export async function getUserEmail() {
 }
 
 export async function getUserInfo() {
-  let user_uuid = await getUserUuid();
+  let user_id = await getUserUuid();
 
-  if (!user_uuid) {
+  if (!user_id) {
     return;
   }
 
-  const user = await findUserByUuid(user_uuid);
+  const user = await findUserByUuid(user_id);
 
   return user;
 }

@@ -19,7 +19,7 @@ export enum OrderStatus {
 }
 
 export interface CreateOrderParams {
-  userUuid: string;
+  userId: string;
   userEmail: string;
   orderType: OrderType;
   packageId?: string;
@@ -157,7 +157,7 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
     const orderData = {
       order_no: orderNo,
       created_at: now.toISOString(),
-      user_uuid: params.userUuid,
+      user_id: params.userId,
       user_email: params.userEmail,
       amount: amount,
       status: OrderStatus.Pending,
@@ -241,7 +241,7 @@ export async function handlePaymentSuccess(
       
       // 激活套餐
       const result = await purchasePackage(
-        order.user_uuid,
+        order.user_id,
         order.package_id,
         orderNo
       );
@@ -262,7 +262,7 @@ export async function handlePaymentSuccess(
       }
       
       const result = await purchaseCredits(
-        order.user_uuid,
+        order.user_id,
         creditAmount,
         orderNo
       );
@@ -397,7 +397,7 @@ export async function batchCheckExpiredOrders(): Promise<number> {
 
 // 计算订单统计
 export async function calculateOrderStats(
-  userUuid?: string,
+  userId?: string,
   startDate?: Date,
   endDate?: Date
 ): Promise<{

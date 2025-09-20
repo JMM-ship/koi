@@ -74,7 +74,7 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
     // 转换用户数据类型
     const adminUsers: AdminUser[] = users.map(user => ({
       id: user.id,
-      uuid: user.uuid,
+      uuid: user.id,
       email: user.email,
       nickname: user.nickname,
       avatarUrl: user.avatarUrl,

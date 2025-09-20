@@ -29,12 +29,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userUuid = session.user.uuid;
+    const userId = session.user.id;
 
     // Get the user's current active package
     const currentPackage = await prisma.userPackage.findFirst({
       where: {
-        userUuid,
+        userId,
         isActive: true
       },
       orderBy: {
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
     await prisma.creditTransaction.create({
       data: {
         transNo: `RENEW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        userUuid,
+        userId,
         type: 'income',
         creditType: 'package',
         amount: 0,

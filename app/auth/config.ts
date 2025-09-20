@@ -145,7 +145,7 @@ providers.push(
       }
 
       return {
-        id: user.uuid,
+        id: user.id,
         email: user.email,
         name: user.nickname,
         image: user.avatar_url,
@@ -203,7 +203,7 @@ export const authOptions: NextAuthOptions = {
           if (latestUser) {
             session.user = {
               ...token.user,
-              id: token.user.uuid, // Add id field for compatibility
+              id: token.user.id, // Add id field for compatibility
               role: latestUser.role || 'user',
               status: latestUser.status || 'active',
               planType: latestUser.planType || 'free',
@@ -213,14 +213,14 @@ export const authOptions: NextAuthOptions = {
           } else {
             session.user = {
               ...token.user,
-              id: token.user.uuid // Add id field for compatibility
+              id: token.user.id // Add id field for compatibility
             };
           }
         } catch (e) {
           console.error("Failed to get latest user info in session:", e);
           session.user = {
             ...token.user,
-            id: token.user.uuid // Add id field for compatibility
+            id: token.user.id // Add id field for compatibility
           };
         }
       }
