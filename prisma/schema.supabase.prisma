@@ -1,6 +1,9 @@
-// PostgreSQL Schema for Supabase
+// Supabase (PostgreSQL) Schema
+// 这是与Supabase兼容的新数据库架构
+
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client-supabase"
 }
 
 datasource db {
