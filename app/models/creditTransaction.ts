@@ -31,19 +31,23 @@ export interface CreditTransaction {
 // 转换函数：将Prisma数据转换为应用层格式
 function fromPrismaCreditTransaction(trans: PrismaCreditTransaction | null): CreditTransaction | undefined {
   if (!trans) return undefined;
-  
+
+  // 计算 before_balance 和 after_balance
+  const beforeBalance = Number(trans.beforePackageTokens || 0) + Number(trans.beforeIndependentTokens || 0);
+  const afterBalance = Number(trans.afterPackageTokens || 0) + Number(trans.afterIndependentTokens || 0);
+
   return {
     id: trans.id,
-    trans_no: trans.transNo,
+    trans_no: trans.id, // 使用 id 作为交易号
     user_id: trans.userId,
     type: trans.type as TransactionType,
-    credit_type: trans.creditType as CreditType,
-    amount: trans.amount,
-    before_balance: trans.beforeBalance,
-    after_balance: trans.afterBalance,
-    order_no: trans.orderNo || undefined,
-    description: trans.description || undefined,
-    metadata: trans.metadata,
+    credit_type: trans.bucket as CreditType, // bucket 对应 credit_type
+    amount: trans.points, // 使用 points 作为 amount
+    before_balance: beforeBalance,
+    after_balance: afterBalance,
+    order_no: trans.orderId || undefined,
+    description: trans.reason || undefined,
+    metadata: trans.meta,
     created_at: trans.createdAt.toISOString(),
   };
 }
@@ -73,16 +77,18 @@ export async function createCreditTransaction(data: {
   try {
     const trans = await prisma.creditTransaction.create({
       data: {
-        transNo: generateTransNo(),
         userId: data.user_id,
         type: data.type,
-        creditType: data.credit_type,
-        amount: data.amount,
-        beforeBalance: data.before_balance,
-        afterBalance: data.after_balance,
-        orderNo: data.order_no || null,
-        description: data.description || null,
-        metadata: data.metadata || null,
+        bucket: data.credit_type, // credit_type 映射到 bucket
+        tokens: data.amount, // 使用 tokens 字段
+        points: data.amount, // 使用 points 字段
+        beforePackageTokens: data.credit_type === CreditType.Package ? BigInt(data.before_balance) : BigInt(0),
+        afterPackageTokens: data.credit_type === CreditType.Package ? BigInt(data.after_balance) : BigInt(0),
+        beforeIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.before_balance) : BigInt(0),
+        afterIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.after_balance) : BigInt(0),
+        orderId: data.order_no || null,
+        reason: data.description || null,
+        meta: data.metadata || {},
       },
     });
     return fromPrismaCreditTransaction(trans);
@@ -116,7 +122,7 @@ export async function getCreditTransactions(
     }
     
     if (options?.creditType) {
-      where.creditType = options.creditType;
+      where.bucket = options.creditType; // creditType 映射到 bucket
     }
     
     if (options?.startDate || options?.endDate) {
@@ -164,11 +170,11 @@ export async function getTodayUsage(userId: string): Promise<number> {
         },
       },
       _sum: {
-        amount: true,
+        points: true, // 使用 points 字段
       },
     });
     
-    return result._sum.amount || 0;
+    return result._sum.points || 0;
   } catch (error) {
     console.error('Error getting today usage:', error);
     return 0;
@@ -190,11 +196,11 @@ export async function getMonthlyUsage(userId: string): Promise<number> {
         },
       },
       _sum: {
-        amount: true,
+        points: true, // 使用 points 字段
       },
     });
     
-    return result._sum.amount || 0;
+    return result._sum.points || 0;
   } catch (error) {
     console.error('Error getting monthly usage:', error);
     return 0;
@@ -223,7 +229,7 @@ export async function getCreditStatsByDateRange(
       },
       select: {
         type: true,
-        amount: true,
+        points: true,
       },
     });
     
@@ -234,13 +240,13 @@ export async function getCreditStatsByDateRange(
     transactions.forEach(trans => {
       switch (trans.type) {
         case TransactionType.Income:
-          totalIncome += trans.amount;
+          totalIncome += trans.points;
           break;
         case TransactionType.Expense:
-          totalExpense += trans.amount;
+          totalExpense += trans.points;
           break;
         case TransactionType.Reset:
-          totalReset += trans.amount;
+          totalReset += trans.points;
           break;
       }
     });
@@ -273,15 +279,17 @@ export async function batchCreateResetTransactions(
 ): Promise<number> {
   try {
     const transactions = resets.map(reset => ({
-      transNo: generateTransNo(),
       userId: reset.userId,
       type: TransactionType.Reset,
-      creditType: CreditType.Package,
-      amount: reset.amount,
-      beforeBalance: reset.beforeBalance,
-      afterBalance: reset.afterBalance,
-      description: '每日积分重置',
-      metadata: { autoReset: true },
+      bucket: CreditType.Package, // creditType 映射到 bucket
+      tokens: reset.amount,
+      points: reset.amount,
+      beforePackageTokens: BigInt(reset.beforeBalance),
+      afterPackageTokens: BigInt(reset.afterBalance),
+      beforeIndependentTokens: BigInt(0),
+      afterIndependentTokens: BigInt(0),
+      reason: '每日积分重置',
+      meta: { autoReset: true },
     }));
     
     const result = await prisma.creditTransaction.createMany({
@@ -318,7 +326,7 @@ export async function getRecentTransactions(
 export async function getTransactionsByOrderNo(orderNo: string): Promise<CreditTransaction[]> {
   try {
     const transactions = await prisma.creditTransaction.findMany({
-      where: { orderNo },
+      where: { orderId: orderNo }, // orderNo -> orderId
       orderBy: { createdAt: 'desc' },
     });
     

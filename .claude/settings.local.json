@@ -38,7 +38,8 @@
       "Bash(cmd /c:*)",
       "Bash(del:*)",
       "Bash(npm run build:*)",
-      "Bash(dir)"
+      "Bash(dir)",
+      "Bash(dir prisma)"
     ],
     "deny": []
   }

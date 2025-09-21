@@ -76,8 +76,9 @@ export async function POST(request: NextRequest) {
     }
     
     // 创建订单
+    const userId = session.user.uuid || session.user.id;
     const result = await createOrder({
-      userId: session.user.id,
+      userId: userId!,
       userEmail: session.user.email,
       orderType,
       packageId,

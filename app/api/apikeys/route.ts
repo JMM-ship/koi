@@ -23,10 +23,13 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 获取用户ID
+    const userId = user.uuid;
+
     // 获取用户的 API 密钥
-    const apiKeys = await prisma.keyHash.findMany({
+    const apiKeys = await prisma.apiKey.findMany({
       where: {
-        userId: user.id
+        ownerUserId: userId
       },
       orderBy: {
         createdAt: 'desc'
@@ -34,9 +37,9 @@ export async function GET(request: Request) {
     });
 
     // 格式化返回数据，隐藏部分密钥
-    const formattedKeys = apiKeys.map(key => ({
+    const formattedKeys = apiKeys.map((key: any) => ({
       id: key.id,
-      title: key.title || 'Untitled Key',
+      title: key.name || 'Untitled Key',
       apiKey: maskApiKey(key.keyHash), // 默认隐藏大部分密钥
       fullKey: key.keyHash, // 完整密钥（前端控制显示）
       createdAt: key.createdAt,
@@ -68,10 +71,13 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { title } = body;
 
+    // 获取用户ID
+    const userId = user.uuid;
+
     // 检查用户是否已有 API 密钥（每用户限制一个）
-    const existingKey = await prisma.keyHash.findFirst({
+    const existingKey = await prisma.apiKey.findFirst({
       where: {
-        userId: user.id,
+        ownerUserId: userId,
         status: 'active'
       }
     });
@@ -85,13 +91,15 @@ export async function POST(request: Request) {
 
     // 生成新的 API 密钥
     const newApiKey = generateApiKey();
+    const prefix = newApiKey.substring(0, 7); // 前缀用于快速查找
 
     // 保存到数据库
-    const apiKey = await prisma.keyHash.create({
+    const apiKey = await prisma.apiKey.create({
       data: {
-        apiKey: newApiKey,
-        title: title || 'My API Key',
-        userId: user.id,
+        keyHash: newApiKey,
+        prefix: prefix,
+        name: title || 'My API Key',
+        ownerUserId: userId,
         status: 'active'
       }
     });
@@ -100,7 +108,7 @@ export async function POST(request: Request) {
       success: true,
       apiKey: {
         id: apiKey.id,
-        title: apiKey.title,
+        title: apiKey.name || 'My API Key',
         apiKey: newApiKey, // 创建时返回完整密钥
         createdAt: apiKey.createdAt,
         status: apiKey.status
@@ -138,11 +146,14 @@ export async function DELETE(request: Request) {
       );
     }
 
+    // 获取用户ID
+    const userId = user.uuid;
+
     // 验证密钥属于当前用户
-    const apiKey = await prisma.keyHash.findFirst({
+    const apiKey = await prisma.apiKey.findFirst({
       where: {
-        id: parseInt(keyId),
-        userId: user.id
+        id: keyId,
+        ownerUserId: userId
       }
     });
 
@@ -154,9 +165,9 @@ export async function DELETE(request: Request) {
     }
 
     // 删除密钥（软删除，更新状态为 deleted）
-    await prisma.keyHash.update({
+    await prisma.apiKey.update({
       where: {
-        id: parseInt(keyId)
+        id: keyId
       },
       data: {
         status: 'deleted'

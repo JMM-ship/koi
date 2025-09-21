@@ -16,36 +16,44 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
-        nameEn: true,
         description: true,
-        price: true,
-        originalPrice: true,
+        priceCents: true,
         currency: true,
-        dailyCredits: true, // 对于积分套餐，这个字段存储总积分数
+        dailyPoints: true, // 对于积分套餐，这个字段存储总积分数
         features: true,
-        tag: true,
-        isRecommended: true,
+        sortOrder: true,
       },
     });
 
     // 转换数据格式，使前端更容易使用
-    const packages = creditPackages.map(pkg => ({
-      id: pkg.id,
-      name: pkg.name,
-      nameEn: pkg.nameEn,
-      description: pkg.description,
-      credits: pkg.dailyCredits, // 重命名为更直观的字段
-      price: pkg.price,
-      originalPrice: pkg.originalPrice,
-      currency: pkg.currency,
-      popular: pkg.isRecommended,
-      tag: pkg.tag,
-      features: pkg.features,
-      // 计算优惠百分比
-      savings: pkg.originalPrice 
-        ? `Save ${Math.round((1 - pkg.price / pkg.originalPrice) * 100)}%`
-        : null,
-    }));
+    const packages = creditPackages.map(pkg => {
+      // 从features中提取tag和isRecommended等信息
+      const features = typeof pkg.features === 'object' && pkg.features !== null
+        ? pkg.features as any
+        : {};
+
+      // 计算价格（分转元）
+      const price = pkg.priceCents / 100;
+      const originalPrice = features.originalPrice || null;
+
+      return {
+        id: pkg.id,
+        name: pkg.name,
+        nameEn: features.nameEn || pkg.name, // 如果有英文名则使用，否则用默认名
+        description: pkg.description,
+        credits: pkg.dailyPoints, // 重命名为更直观的字段
+        price: price,
+        originalPrice: originalPrice,
+        currency: pkg.currency,
+        popular: features.isRecommended || false,
+        tag: features.tag || null,
+        features: features.list || [],
+        // 计算优惠百分比
+        savings: originalPrice && originalPrice > price
+          ? `Save ${Math.round((1 - price / originalPrice) * 100)}%`
+          : null,
+      };
+    });
 
     return NextResponse.json({
       success: true,

@@ -19,18 +19,21 @@ export interface UserPackage {
 // 转换函数：将Prisma数据转换为应用层格式
 function fromPrismaUserPackage(userPkg: PrismaUserPackage | null): UserPackage | undefined {
   if (!userPkg) return undefined;
-  
+
+  // 从 packageSnapshot 中提取额外信息
+  const snapshot = (userPkg.packageSnapshot as any) || {};
+
   return {
     id: userPkg.id,
     user_id: userPkg.userId,
     package_id: userPkg.packageId,
-    order_no: userPkg.orderNo,
-    start_date: userPkg.startDate.toISOString(),
-    end_date: userPkg.endDate.toISOString(),
-    daily_credits: userPkg.dailyCredits,
+    order_no: userPkg.orderId || '', // orderId 对应 order_no
+    start_date: userPkg.startAt.toISOString(), // startAt 对应 start_date
+    end_date: userPkg.endAt.toISOString(), // endAt 对应 end_date
+    daily_credits: userPkg.dailyPoints, // dailyPoints 对应 daily_credits
     package_snapshot: userPkg.packageSnapshot,
     is_active: userPkg.isActive,
-    is_auto_renew: userPkg.isAutoRenew,
+    is_auto_renew: snapshot.isAutoRenew || false, // 从 snapshot 中获取
     created_at: userPkg.createdAt.toISOString(),
     updated_at: userPkg.updatedAt.toISOString(),
   };
@@ -44,12 +47,12 @@ export async function getUserActivePackage(userId: string): Promise<UserPackage 
       where: {
         userId,
         isActive: true,
-        endDate: {
+        endAt: { // endDate -> endAt
           gte: now,
         },
       },
       orderBy: {
-        endDate: 'desc',
+        endAt: 'desc', // endDate -> endAt
       },
     });
     
@@ -88,13 +91,16 @@ export async function createUserPackage(data: {
       data: {
         userId: data.user_id,
         packageId: data.package_id,
-        orderNo: data.order_no,
-        startDate: data.start_date,
-        endDate: data.end_date,
-        dailyCredits: data.daily_credits,
-        packageSnapshot: data.package_snapshot || null,
+        orderId: data.order_no, // orderNo -> orderId
+        startAt: data.start_date, // startDate -> startAt
+        endAt: data.end_date, // endDate -> endAt
+        dailyPoints: data.daily_credits, // dailyCredits -> dailyPoints
+        dailyQuotaTokens: BigInt(data.daily_credits * 1000), // 添加 dailyQuotaTokens
+        packageSnapshot: data.package_snapshot ? {
+          ...data.package_snapshot,
+          isAutoRenew: data.is_auto_renew || false
+        } : { isAutoRenew: data.is_auto_renew || false },
         isActive: true,
-        isAutoRenew: data.is_auto_renew || false,
       },
     });
     
@@ -129,11 +135,26 @@ export async function updateAutoRenewStatus(
   isAutoRenew: boolean
 ): Promise<UserPackage | undefined> {
   try {
+    // 先获取当前套餐
+    const currentPackage = await prisma.userPackage.findUnique({
+      where: { id },
+    });
+
+    if (!currentPackage) return undefined;
+
+    const currentSnapshot = (currentPackage.packageSnapshot as any) || {};
+
+    // 更新 packageSnapshot 中的自动续费状态
     const userPackage = await prisma.userPackage.update({
       where: { id },
-      data: { isAutoRenew },
+      data: {
+        packageSnapshot: {
+          ...currentSnapshot,
+          isAutoRenew,
+        },
+      },
     });
-    
+
     return fromPrismaUserPackage(userPackage);
   } catch (error) {
     console.error('Error updating auto renew status:', error);
@@ -182,13 +203,13 @@ export async function getExpiringPackages(days: number = 3): Promise<UserPackage
     const packages = await prisma.userPackage.findMany({
       where: {
         isActive: true,
-        endDate: {
+        endAt: { // endDate -> endAt
           gte: now,
           lte: expiryDate,
         },
       },
       orderBy: {
-        endDate: 'asc',
+        endAt: 'asc', // endDate -> endAt
       },
     });
     
@@ -207,7 +228,7 @@ export async function getExpiredPackages(): Promise<UserPackage[]> {
     const packages = await prisma.userPackage.findMany({
       where: {
         isActive: true,
-        endDate: {
+        endAt: { // endDate -> endAt
           lt: now,
         },
       },
@@ -228,7 +249,7 @@ export async function deactivateExpiredPackages(): Promise<number> {
     const result = await prisma.userPackage.updateMany({
       where: {
         isActive: true,
-        endDate: {
+        endAt: { // endDate -> endAt
           lt: now,
         },
       },
@@ -255,19 +276,19 @@ export async function getAllActivePackageUsers(): Promise<Array<{
     const packages = await prisma.userPackage.findMany({
       where: {
         isActive: true,
-        endDate: {
+        endAt: { // endDate -> endAt
           gte: now,
         },
       },
       select: {
         userId: true,
-        dailyCredits: true,
+        dailyPoints: true, // dailyCredits -> dailyPoints
       },
     });
     
     return packages.map(pkg => ({
       userId: pkg.userId,
-      dailyCredits: pkg.dailyCredits,
+      dailyCredits: pkg.dailyPoints, // dailyCredits -> dailyPoints
     }));
   } catch (error) {
     console.error('Error getting all active package users:', error);
@@ -283,7 +304,7 @@ export async function getAllActivePackages(): Promise<UserPackage[]> {
     const packages = await prisma.userPackage.findMany({
       where: {
         isActive: true,
-        endDate: {
+        endAt: { // endDate -> endAt
           gte: now,
         },
       },
@@ -303,7 +324,7 @@ export async function getAllActivePackages(): Promise<UserPackage[]> {
 export async function getUserPackageByOrderNo(orderNo: string): Promise<UserPackage | undefined> {
   try {
     const userPackage = await prisma.userPackage.findFirst({
-      where: { orderNo },
+      where: { orderId: orderNo }, // orderNo -> orderId
     });
     
     return fromPrismaUserPackage(userPackage);

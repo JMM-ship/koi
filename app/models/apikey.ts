@@ -9,22 +9,23 @@ export enum ApikeyStatus {
 // 转换函数：将应用层数据转换为Prisma格式
 function toPrismaApiKey(apikey: any): any {
   return {
-    apiKey: apikey.api_key,
-    title: apikey.title || null,
-    userUuid: apikey.user_uuid,
-    status: apikey.status || null,
+    keyHash: apikey.api_key,
+    prefix: apikey.api_key ? apikey.api_key.substring(0, 7) : '',
+    name: apikey.title || null,
+    ownerUserId: apikey.user_uuid,
+    status: apikey.status || 'active',
   };
 }
 
 // 转换函数：将Prisma数据转换为应用层格式
 function fromPrismaApiKey(apikey: PrismaApiKey | null): any | undefined {
   if (!apikey) return undefined;
-  
+
   return {
     id: apikey.id,
-    api_key: apikey.apiKey,
-    title: apikey.title,
-    user_uuid: apikey.userUuid,
+    api_key: apikey.keyHash,
+    title: apikey.name,
+    user_uuid: apikey.ownerUserId,
     created_at: apikey.createdAt.toISOString(),
     status: apikey.status,
   };
@@ -51,7 +52,7 @@ export async function getUserApikeys(
   try {
     const apikeys = await prisma.apiKey.findMany({
       where: {
-        userUuid: user_uuid,
+        ownerUserId: user_uuid,
         NOT: {
           status: ApikeyStatus.Deleted,
         },
@@ -74,14 +75,14 @@ export async function getUserUuidByApiKey(
   try {
     const data = await prisma.apiKey.findFirst({
       where: {
-        apiKey: apiKey,
-        status: ApikeyStatus.Created,
+        keyHash: apiKey,
+        status: 'active',
       },
       select: {
-        userUuid: true,
+        ownerUserId: true,
       },
     });
-    return data?.userUuid;
+    return data?.ownerUserId;
   } catch (error) {
     return undefined;
   }

@@ -156,14 +156,21 @@ export async function deletePackage(id: string): Promise<boolean> {
 // 获取推荐套餐
 export async function getRecommendedPackages(): Promise<Package[]> {
   try {
+    // isRecommended 信息可能存储在 features JSON 中
     const packages = await prisma.package.findMany({
-      where: { 
+      where: {
         isActive: true,
-        isRecommended: true 
       },
       orderBy: { sortOrder: 'asc' },
     });
-    return packages.map(pkg => fromPrismaPackage(pkg)!);
+
+    // 过滤出推荐的套餐
+    const recommendedPackages = packages.filter(pkg => {
+      const features = (pkg.features as any) || {};
+      return features.isRecommended === true;
+    });
+
+    return recommendedPackages.map(pkg => fromPrismaPackage(pkg)!);
   } catch (error) {
     console.error('Error getting recommended packages:', error);
     return [];

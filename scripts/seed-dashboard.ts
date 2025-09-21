@@ -6,7 +6,7 @@ async function seedDashboardData() {
   try {
     // 获取第一个用户作为测试用户
     const user = await prisma.user.findFirst();
-    
+
     if (!user) {
       console.error('没有找到用户，请先创建用户');
       return;
@@ -15,143 +15,85 @@ async function seedDashboardData() {
     const userId = user.id;
     console.log(`使用用户: ${user.email}`);
 
-    // 1. 创建消费趋势数据 (最近7天)
-    console.log('创建消费趋势数据...');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // 注意：ConsumptionTrend, ModelUsage 和 CreditBalance 模型在新数据库架构中已被移除
+    // Dashboard 数据现在通过以下模型生成：
+    // - CreditTransaction: 积分交易历史
+    // - UsageRecord: 使用记录
+    // - Wallet: 钱包余额
 
-    for (let i = 6; i >= 0; i--) {
+    // 1. 创建一些测试的积分交易记录
+    console.log('创建积分交易记录...');
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      
-      // 生成随机数据
-      const pointsUsed = Math.floor(Math.random() * 2000) + 500;
-      const moneyUsed = parseFloat((Math.random() * 100 + 20).toFixed(2));
-      const tokensUsed = Math.floor(Math.random() * 150000) + 50000;
 
-      await prisma.consumptionTrend.upsert({
-        where: {
-          userId_date: {
-            userId,
-            date
-          }
-        },
-        update: {
-          pointsUsed,
-          moneyUsed,
-          tokensUsed
-        },
-        create: {
-          userId,
-          date,
-          pointsUsed,
-          moneyUsed,
-          tokensUsed
-        }
-      });
-    }
-
-    // 2. 创建模型使用记录
-    console.log('创建模型使用记录...');
-    const models = [
-      { name: 'GPT-4o', types: ['Text Generation', 'Code Generation', 'Document Analysis'] },
-      { name: 'Claude 3.5', types: ['Code Generation', 'Code Debugging', 'Text Analysis'] },
-      { name: 'DALL-E 3', types: ['Image Generation', 'Image Editing'] },
-      { name: 'GPT-3.5', types: ['Chat Conversation', 'Simple Tasks'] },
-      { name: 'Midjourney', types: ['Image Generation', 'Art Creation'] }
-    ];
-
-    const now = new Date();
-    for (let i = 0; i < 20; i++) {
-      const model = models[Math.floor(Math.random() * models.length)];
-      const usageType = model.types[Math.floor(Math.random() * model.types.length)];
-      const credits = Math.floor(Math.random() * 500) + 50;
-      const timestamp = new Date(now.getTime() - i * 2 * 60 * 60 * 1000); // 每2小时一条
-
-      await prisma.modelUsage.create({
-        data: {
-          userId,
-          modelName: model.name,
-          usageType,
-          credits,
-          timestamp,
-          status: 'completed'
-        }
-      });
-    }
-
-    // 3. 创建或更新积分余额
-    console.log('创建积分余额数据...');
-    await prisma.creditBalance.upsert({
-      where: {
-        userId
-      },
-      update: {
-        packageCredits: 5000,
-        independentCredits: 37153,
-        totalUsed: 12847,
-        totalPurchased: 50000,
-        packageResetAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) // 7天后重置
-      },
-      create: {
-        userId,
-        packageCredits: 5000,
-        independentCredits: 37153,
-        totalUsed: 12847,
-        totalPurchased: 50000,
-        packageResetAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-      }
-    });
-
-    // 4. 创建积分交易记录
-    console.log('创建积分交易记录...');
-    const transactionTypes = ['expense', 'income'];
-    const creditTypes = ['package', 'independent'];
-    
-    for (let i = 0; i < 30; i++) {
-      const type = i % 3 === 0 ? 'income' : 'expense'; // 1/3 概率是收入
-      const creditType = creditTypes[Math.floor(Math.random() * creditTypes.length)];
-      const amount = type === 'income' 
-        ? Math.floor(Math.random() * 10000) + 1000 
-        : Math.floor(Math.random() * 500) + 50;
-      
-      const transNo = `TRANS-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-      const createdAt = new Date(now.getTime() - i * 24 * 60 * 60 * 1000); // 每天一条
+      // 创建每日使用记录
+      const points = Math.floor(Math.random() * 100) + 10;
 
       await prisma.creditTransaction.create({
         data: {
-          transNo,
           userId,
-          type,
-          creditType,
-          amount,
-          beforeBalance: 50000 - (i * 100),
-          afterBalance: 50000 - (i * 100) + (type === 'income' ? amount : -amount),
-          description: type === 'income' ? '积分充值' : `使用 ${creditType === 'package' ? '套餐' : '独立'} 积分`,
-          createdAt
+          type: 'use',
+          bucket: 'independent',
+          points,
+          tokens: points * 100, // tokens field is required
+          beforeIndependentTokens: BigInt(1000),
+          afterIndependentTokens: BigInt(1000 - points),
+          reason: `API 调用消费`,
+          createdAt: date
         }
       });
     }
 
-    // 5. 更新用户信息
-    console.log('更新用户信息...');
-    await prisma.user.update({
-      where: { id: userId
+    // 2. 创建使用记录
+    console.log('创建使用记录...');
+    const models = ['gpt-4o', 'claude-3-5', 'dalle-3', 'gpt-3.5-turbo'];
+
+    for (let i = 0; i < 20; i++) {
+      const modelName = models[Math.floor(Math.random() * models.length)];
+      const tokens = Math.floor(Math.random() * 5000) + 500;
+      const timestamp = new Date(today.getTime() - i * 2 * 60 * 60 * 1000); // 每2小时一条
+
+      await prisma.usageRecord.create({
+        data: {
+          requestId: `req_${Date.now()}_${i}`, // requestId is required and must be unique
+          userId,
+          provider: 'openai', // provider is required
+          model: modelName,
+          promptTokens: Math.floor(tokens * 0.7),
+          completionTokens: Math.floor(tokens * 0.3),
+          totalTokens: tokens,
+          status: 'success', // status is required
+          createdAt: timestamp
+        }
+      });
+    }
+
+    // 3. 确保用户有钱包记录
+    console.log('创建或更新钱包余额...');
+    await prisma.wallet.upsert({
+      where: { userId },
+      update: {
+        packageTokensRemaining: BigInt(5000),
+        independentTokens: BigInt(1000),
       },
-      data: {
-        planType: 'pro',
-        planExpiredAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000), // 30天后过期
-        totalCredits: 10000
+      create: {
+        userId,
+        packageDailyQuotaTokens: BigInt(10000),
+        packageTokensRemaining: BigInt(5000),
+        independentTokens: BigInt(1000),
       }
     });
 
-    console.log('Dashboard 测试数据初始化完成！');
+    console.log('✅ Dashboard 测试数据创建成功！');
+
   } catch (error) {
-    console.error('初始化数据失败:', error);
+    console.error('创建测试数据时出错:', error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-// 运行脚本
 seedDashboardData();

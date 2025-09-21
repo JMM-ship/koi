@@ -29,7 +29,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
+    const userId = session.user.uuid || session.user.id;
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: { message: 'User ID not found' }
+        },
+        { status: 401 }
+      );
+    }
 
     // Get the user's current active package
     const currentPackage = await prisma.userPackage.findFirst({
@@ -38,7 +47,7 @@ export async function POST(request: NextRequest) {
         isActive: true
       },
       orderBy: {
-        endDate: 'desc'
+        endAt: 'desc'
       }
     });
 
@@ -53,7 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate new end date
-    const currentEndDate = new Date(currentPackage.endDate);
+    const currentEndDate = new Date(currentPackage.endAt);
     const newEndDate = new Date(currentEndDate);
     newEndDate.setMonth(newEndDate.getMonth() + months);
 
@@ -63,7 +72,7 @@ export async function POST(request: NextRequest) {
         id: currentPackage.id
       },
       data: {
-        endDate: newEndDate,
+        endAt: newEndDate,
         updatedAt: new Date()
       }
     });
@@ -71,14 +80,21 @@ export async function POST(request: NextRequest) {
     // Log the renewal transaction
     await prisma.creditTransaction.create({
       data: {
-        transNo: `RENEW_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         userId,
         type: 'income',
-        creditType: 'package',
-        amount: 0,
-        beforeBalance: 0,
-        afterBalance: 0,
-        description: `Package renewed for ${months} month(s)`,
+        bucket: 'package',
+        tokens: 0,
+        points: 0,
+        beforePackageTokens: BigInt(0),
+        afterPackageTokens: BigInt(0),
+        beforeIndependentTokens: BigInt(0),
+        afterIndependentTokens: BigInt(0),
+        reason: `Package renewed for ${months} month(s)`,
+        meta: {
+          action: 'renew',
+          months: months,
+          packageId: currentPackage.packageId
+        },
         createdAt: new Date()
       }
     });
@@ -89,9 +105,9 @@ export async function POST(request: NextRequest) {
         package: {
           id: updatedPackage.id,
           packageId: updatedPackage.packageId,
-          startDate: updatedPackage.startDate,
-          endDate: updatedPackage.endDate,
-          dailyCredits: updatedPackage.dailyCredits,
+          startDate: updatedPackage.startAt,
+          endDate: updatedPackage.endAt,
+          dailyCredits: updatedPackage.dailyPoints,
           isActive: updatedPackage.isActive,
           renewedMonths: months
         },

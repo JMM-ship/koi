@@ -164,16 +164,16 @@ async function checkStatus() {
     const activePackagesCount = await prisma.userPackage.count({
       where: {
         isActive: true,
-        endDate: {
+        endAt: {
           gte: new Date(),
         },
       },
     });
-    
+
     const expiredPackagesCount = await prisma.userPackage.count({
       where: {
         isActive: true,
-        endDate: {
+        endAt: {
           lt: new Date(),
         },
       },

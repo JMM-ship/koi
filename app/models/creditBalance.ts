@@ -193,6 +193,38 @@ export async function resetPackageCredits(
   }
 }
 
+// 批量重置套餐积分
+export async function batchResetPackageCredits(
+  users: Array<{ userId: string; dailyCredits: number }>
+): Promise<number> {
+  try {
+    let successCount = 0;
+
+    // 使用事务批量更新
+    await prisma.$transaction(async (tx) => {
+      for (const user of users) {
+        try {
+          await tx.wallet.update({
+            where: { userId: user.userId },
+            data: {
+              packageTokensRemaining: BigInt(user.dailyCredits),
+              packageResetAt: new Date(),
+            },
+          });
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to reset credits for user ${user.userId}:`, error);
+        }
+      }
+    });
+
+    return successCount;
+  } catch (error) {
+    console.error('Error in batch reset package credits:', error);
+    return 0;
+  }
+}
+
 // 获取积分统计
 export async function getCreditStats(userId: string) {
   const balance = await getCreditBalance(userId);

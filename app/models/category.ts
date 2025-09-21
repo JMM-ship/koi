@@ -1,5 +1,5 @@
-import { prisma } from "./db";
-import { Category as PrismaCategory } from "@prisma/client";
+// Category 功能在新数据库架构中已被移除
+// 此文件保留为存根以避免破坏可能的依赖
 
 export interface Category {
   id: string;
@@ -18,75 +18,23 @@ export interface CreateCategoryInput {
   sort_order?: number;
 }
 
-// 转换函数：将Prisma数据转换为应用层格式
-function fromPrismaCategory(category: PrismaCategory | null): Category | null {
-  if (!category) return null;
-  
-  return {
-    id: category.id,
-    user_id: category.userId,
-    name: category.name,
-    color: category.color,
-    sort_order: category.sortOrder,
-    created_at: category.createdAt.toISOString(),
-    updated_at: category.updatedAt.toISOString(),
-  };
-}
-
 export const CategoryModel = {
   // 创建分类
   async create(data: CreateCategoryInput): Promise<Category> {
-    try {
-      const category = await prisma.category.create({
-        data: {
-          userId: data.user_id,
-          name: data.name,
-          color: data.color || 'blue',
-          sortOrder: data.sort_order || 0,
-        },
-      });
-      
-      const result = fromPrismaCategory(category);
-      if (!result) throw new Error("Failed to create category");
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    console.warn('Category feature is disabled in the new database architecture');
+    throw new Error('Category feature is disabled');
   },
 
   // 获取用户的所有分类
   async getByUserId(userId: string): Promise<Category[]> {
-    try {
-      const categories = await prisma.category.findMany({
-        where: {
-          userId: userId,
-        },
-        orderBy: [
-          { sortOrder: 'asc' },
-          { createdAt: 'asc' },
-        ],
-      });
-      
-      return categories.map(fromPrismaCategory).filter(Boolean) as Category[];
-    } catch (error) {
-      throw error;
-    }
+    console.warn('Category feature is disabled in the new database architecture');
+    return [];
   },
 
   // 获取单个分类
   async getById(id: string, userId: string): Promise<Category | null> {
-    try {
-      const category = await prisma.category.findFirst({
-        where: {
-          id: id,
-          userId: userId,
-        },
-      });
-      
-      return fromPrismaCategory(category);
-    } catch (error) {
-      return null;
-    }
+    console.warn('Category feature is disabled in the new database architecture');
+    return null;
   },
 
   // 更新分类
@@ -95,55 +43,19 @@ export const CategoryModel = {
     userId: string,
     data: Partial<CreateCategoryInput>
   ): Promise<Category> {
-    try {
-      const updateData: any = {};
-      if (data.name !== undefined) updateData.name = data.name;
-      if (data.color !== undefined) updateData.color = data.color;
-      if (data.sort_order !== undefined) updateData.sortOrder = data.sort_order;
-      
-      const category = await prisma.category.update({
-        where: {
-          id: id,
-          userId: userId,
-        },
-        data: updateData,
-      });
-      
-      const result = fromPrismaCategory(category);
-      if (!result) throw new Error("Failed to update category");
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    console.warn('Category feature is disabled in the new database architecture');
+    throw new Error('Category feature is disabled');
   },
 
   // 删除分类
   async delete(id: string, userId: string): Promise<boolean> {
-    try {
-      await prisma.category.delete({
-        where: {
-          id: id,
-          userId: userId,
-        },
-      });
-      return true;
-    } catch (error) {
-      throw error;
-    }
+    console.warn('Category feature is disabled in the new database architecture');
+    return false;
   },
 
   // 获取分类下的图片数量
   async getImageCount(categoryId: string, userId: string): Promise<number> {
-    try {
-      const count = await prisma.image.count({
-        where: {
-          categoryId: categoryId,
-          userId: userId,
-        },
-      });
-      return count;
-    } catch (error) {
-      throw error;
-    }
+    console.warn('Category feature is disabled in the new database architecture');
+    return 0;
   },
 };

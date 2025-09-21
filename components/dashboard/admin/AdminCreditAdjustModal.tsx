@@ -35,7 +35,7 @@ export default function AdminCreditAdjustModal({ user, onClose, onSuccess }: Adm
     setError(null);
 
     try {
-      const response = await fetch(`/api/admin/users/${user.uuid}/credits`, {
+      const response = await fetch(`/api/admin/users/${user.id}/credits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

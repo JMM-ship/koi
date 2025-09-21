@@ -82,19 +82,8 @@ export async function purchasePackage(
       return { success: false, error: 'Failed to activate package credits' };
     }
     
-    // 更新用户的 planType
-    try {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { 
-          planType: packageInfo.plan_type || 'basic',
-          planExpiredAt: endDate
-        }
-      });
-    } catch (error) {
-      console.error('Failed to update user planType:', error);
-      // 不影响购买流程，继续执行
-    }
+    // 注：用户的 plan_type 信息现在通过 UserPackage 管理
+    // User 模型中不再有 plan_type 字段
     
     return {
       success: true,
@@ -314,7 +303,7 @@ export async function checkAndExpirePackages(): Promise<number> {
     const expiredPackages = await prisma.userPackage.findMany({
       where: {
         isActive: true,
-        endDate: {
+        endAt: {  // endDate -> endAt
           lt: now
         }
       }
@@ -346,7 +335,7 @@ export async function checkAndExpirePackages(): Promise<number> {
         await prisma.wallet.update({
           where: { userId: pkg.userId },
           data: {
-            packageCredits: 0,
+            packageTokensRemaining: BigInt(0),
             packageResetAt: now,
             updatedAt: now
           }

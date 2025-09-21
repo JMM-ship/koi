@@ -21,9 +21,22 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
-    
-    const userId = session.user.id;
-    
+
+    const userId = session.user.uuid || session.user.id;
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'AUTH_REQUIRED',
+            message: 'User ID not found',
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: 401 }
+      );
+    }
+
     // 解析请求体
     const body = await request.json();
     const { amount, service, metadata } = body;

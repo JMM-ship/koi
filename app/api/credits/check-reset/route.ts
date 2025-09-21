@@ -22,7 +22,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const userId = session.user.id;
+    const userId = session.user.uuid || session.user.id;
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'AUTH_REQUIRED',
+            message: 'User ID not found',
+          },
+        },
+        { status: 401 }
+      );
+    }
 
     // 检查并重置积分（如果需要）
     const wasReset = await checkAndResetUserCredits(userId);

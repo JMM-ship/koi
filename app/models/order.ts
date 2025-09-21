@@ -9,80 +9,86 @@ export enum OrderStatus {
 
 // 转换函数：将应用层数据转换为Prisma格式
 function toPrismaOrder(order: any): any {
-
-  
-  return {
-    orderNo: order.order_no,
-    userId: order.user_id || '',
+  // 将额外信息存储在 details JSON 中
+  const details: any = {
     userEmail: order.user_email || '',
-    amount: order.amount,
     interval: order.interval || null,
-    expiredAt: order.expired_at ? new Date(order.expired_at) : null,
-    status: order.status,
-    stripeSessionId: order.stripe_session_id || null,
-    credits: order.credits,
-    currency: order.currency || null,
+    expiredAt: order.expired_at || null,
     subId: order.sub_id || null,
     subIntervalCount: order.sub_interval_count || null,
     subCycleAnchor: order.sub_cycle_anchor || null,
     subPeriodEnd: order.sub_period_end || null,
     subPeriodStart: order.sub_period_start || null,
     subTimes: order.sub_times || null,
-    packageId: order.package_id || null,
     productName: order.product_name || null,
     validMonths: order.valid_months || null,
     orderDetail: order.order_detail || null,
-    paidAt: order.paid_at ? new Date(order.paid_at) : null,
     paidEmail: order.paid_email || null,
     paidDetail: order.paid_detail || null,
-    orderType: order.order_type,
-    creditAmount: order.credit_amount || null,
     packageSnapshot: order.package_snapshot || null,
-    startDate: order.start_date ? new Date(order.start_date) : null,
-    endDate: order.end_date ? new Date(order.end_date) : null,
+    startDate: order.start_date || null,
+    endDate: order.end_date || null,
     discountAmount: order.discount_amount || 0,
     couponCode: order.coupon_code || null,
-    paymentMethod: order.payment_method || null
+  };
+
+  return {
+    orderNo: order.order_no,
+    userId: order.user_id || '',
+    status: order.status,
+    amountCents: Math.round((order.amount || 0) * 100), // 元转分
+    currency: order.currency || 'USD',
+    productType: order.order_type || 'unknown',
+    packageId: order.package_id || null,
+    creditsPoints: order.credits || order.credit_amount || null,
+    paymentProvider: order.payment_method || null,
+    paymentSessionId: order.stripe_session_id || null,
+    paidAt: order.paid_at ? new Date(order.paid_at) : null,
+    details: details,
   };
 }
 
 // 转换函数：将Prisma数据转换为应用层格式
 function fromPrismaOrder(order: PrismaOrder | null): any | undefined {
   if (!order) return undefined;
+
+  // 从 details JSON 中提取额外信息
+  const details = (order.details as any) || {};
+
   return {
     id: order.id,
-    order_type: order.orderType,
+    order_type: order.productType, // productType 对应 order_type
     order_no: order.orderNo,
     created_at: order.createdAt.toISOString(),
     user_id: order.userId,
-    user_email: order.userEmail,
-    amount: order.amount,
-    interval: order.interval,
-    expired_at: order.expiredAt?.toISOString(),
+    user_email: details.userEmail || '', // 从 details 中获取
+    amount: order.amountCents / 100, // 分转元
+    interval: details.interval || null,
+    expired_at: details.expiredAt || null,
     status: order.status,
-    stripe_session_id: order.stripeSessionId,
-    credits: order.credits,
+    stripe_session_id: order.paymentSessionId,
+    credits: order.creditsPoints,
     currency: order.currency,
-    sub_id: order.subId,
-    sub_interval_count: order.subIntervalCount,
-    sub_cycle_anchor: order.subCycleAnchor,
-    sub_period_end: order.subPeriodEnd,
-    sub_period_start: order.subPeriodStart,
-    sub_times: order.subTimes,
+    sub_id: details.subId || null,
+    sub_interval_count: details.subIntervalCount || null,
+    sub_cycle_anchor: details.subCycleAnchor || null,
+    sub_period_end: details.subPeriodEnd || null,
+    sub_period_start: details.subPeriodStart || null,
+    sub_times: details.subTimes || null,
     package_id: order.packageId,
-    product_name: order.productName,
-    valid_months: order.validMonths,
-    order_detail: order.orderDetail,
+    product_name: details.productName || null,
+    valid_months: details.validMonths || null,
+    order_detail: details.orderDetail || null,
     paid_at: order.paidAt?.toISOString(),
-    paid_email: order.paidEmail,
-    paid_detail: order.paidDetail,
-    credit_amount: order.creditAmount,
-    package_snapshot: order.packageSnapshot,
-    start_date: order.startDate?.toISOString(),
-    end_date: order.endDate?.toISOString(),
-    discount_amount: order.discountAmount,
-    coupon_code: order.couponCode,
-    payment_method: order.paymentMethod,
+    paid_email: details.paidEmail || null,
+    paid_detail: details.paidDetail || null,
+    credit_amount: order.creditsPoints || null,
+    package_snapshot: details.packageSnapshot || null,
+    start_date: details.startDate || null,
+    end_date: details.endDate || null,
+    discount_amount: details.discountAmount || 0,
+    coupon_code: details.couponCode || null,
+    payment_method: order.paymentProvider || null,
   };
 }
 
@@ -136,16 +142,23 @@ export async function getFirstPaidOrderByUserEmail(
   user_email: string
 ): Promise<any | undefined> {
   try {
-    const order = await prisma.order.findFirst({
+    // 由于 userEmail 现在存储在 details JSON 中，需要使用不同的查询方法
+    const orders = await prisma.order.findMany({
       where: {
-        userEmail: user_email,
         status: "paid",
       },
       orderBy: {
         createdAt: 'asc',
       },
     });
-    return fromPrismaOrder(order);
+
+    // 过滤出匹配的 email
+    const matchingOrder = orders.find(order => {
+      const details = (order.details as any) || {};
+      return details.userEmail === user_email;
+    });
+
+    return fromPrismaOrder(matchingOrder || null);
   } catch (error) {
     return undefined;
   }
@@ -159,13 +172,23 @@ export async function updateOrderStatus(
   paid_detail: string
 ) {
   try {
+    // 获取当前订单以保留现有 details
+    const currentOrder = await prisma.order.findUnique({
+      where: { orderNo: order_no }
+    });
+
+    const currentDetails = (currentOrder?.details as any) || {};
+
     const data = await prisma.order.update({
       where: { orderNo: order_no },
       data: {
         status,
         paidAt: new Date(paid_at),
-        paidEmail: paid_email,
-        paidDetail: paid_detail,
+        details: {
+          ...currentDetails,
+          paidEmail: paid_email,
+          paidDetail: paid_detail,
+        },
       },
     });
     return fromPrismaOrder(data);
@@ -180,11 +203,21 @@ export async function updateOrderSession(
   order_detail: string
 ) {
   try {
+    // 获取当前订单以保留现有 details
+    const currentOrder = await prisma.order.findUnique({
+      where: { orderNo: order_no }
+    });
+
+    const currentDetails = (currentOrder?.details as any) || {};
+
     const data = await prisma.order.update({
       where: { orderNo: order_no },
       data: {
-        stripeSessionId: stripe_session_id,
-        orderDetail: order_detail,
+        paymentSessionId: stripe_session_id, // stripeSessionId -> paymentSessionId
+        details: {
+          ...currentDetails,
+          orderDetail: order_detail,
+        },
       },
     });
     return fromPrismaOrder(data);
@@ -207,19 +240,29 @@ export async function updateOrderSubscription(
   paid_detail: string
 ) {
   try {
+    // 获取当前订单以保留现有 details
+    const currentOrder = await prisma.order.findUnique({
+      where: { orderNo: order_no }
+    });
+
+    const currentDetails = (currentOrder?.details as any) || {};
+
     const data = await prisma.order.update({
       where: { orderNo: order_no },
       data: {
-        subId: sub_id,
-        subIntervalCount: sub_interval_count,
-        subCycleAnchor: sub_cycle_anchor,
-        subPeriodEnd: sub_period_end,
-        subPeriodStart: sub_period_start,
         status,
         paidAt: new Date(paid_at),
-        subTimes: sub_times,
-        paidEmail: paid_email,
-        paidDetail: paid_detail,
+        details: {
+          ...currentDetails,
+          subId: sub_id,
+          subIntervalCount: sub_interval_count,
+          subCycleAnchor: sub_cycle_anchor,
+          subPeriodEnd: sub_period_end,
+          subPeriodStart: sub_period_start,
+          subTimes: sub_times,
+          paidEmail: paid_email,
+          paidDetail: paid_detail,
+        },
       },
     });
     return fromPrismaOrder(data);
@@ -251,16 +294,23 @@ export async function getOrdersByUserEmail(
   user_email: string
 ): Promise<any[] | undefined> {
   try {
+    // 由于 userEmail 现在存储在 details JSON 中，需要使用不同的查询方法
     const orders = await prisma.order.findMany({
       where: {
-        userEmail: user_email,
         status: "paid",
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
-    return orders.map(fromPrismaOrder);
+
+    // 过滤出匹配的 email
+    const matchingOrders = orders.filter(order => {
+      const details = (order.details as any) || {};
+      return details.userEmail === user_email;
+    });
+
+    return matchingOrders.map(fromPrismaOrder);
   } catch (error) {
     return undefined;
   }
@@ -270,16 +320,23 @@ export async function getOrdersByPaidEmail(
   paid_email: string
 ): Promise<any[] | undefined> {
   try {
+    // paidEmail 现在存储在 details JSON 中
     const orders = await prisma.order.findMany({
       where: {
-        paidEmail: paid_email,
         status: "paid",
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
-    return orders.map(fromPrismaOrder);
+
+    // 过滤出匹配的 paid email
+    const matchingOrders = orders.filter(order => {
+      const details = (order.details as any) || {};
+      return details.paidEmail === paid_email;
+    });
+
+    return matchingOrders.map(fromPrismaOrder);
   } catch (error) {
     return undefined;
   }

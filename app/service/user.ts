@@ -16,7 +16,7 @@ export async function saveUser(user:any) {
 
       // increase credits for new user, expire in one year
       await increaseCredits({
-        user_id: user.id || "",
+        user_uuid: user.id || "",
         trans_type: CreditsTransType.NewUser,
         credits: CreditsAmount.NewUserGet,
         expired_at: getOneYearLaterTimestr(),

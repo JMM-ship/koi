@@ -187,7 +187,7 @@ export default function AdminUserManagement() {
                           <tr key={user.id}>
                             <td>
                               <small className="text-muted">
-                                {user.uuid.substring(0, 8)}...
+                                {user.id.substring(0, 8)}...
                               </small>
                             </td>
                             <td>{user.email}</td>

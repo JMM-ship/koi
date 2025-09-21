@@ -2,70 +2,70 @@ import { NextResponse } from 'next/server';
 import { getAuth } from '@/lib/auth';
 import { getMockAuth } from '@/lib/auth-mock';
 import prisma from '@/lib/prisma';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: Request) {
   try {
     // 尝试获取真实用户，如果失败则使用模拟用户（仅用于开发）
     let user = await getAuth(request);
-    
+
     // 在开发环境下，如果没有配置认证，使用模拟认证
     if (!user && process.env.NODE_ENV === 'development') {
       console.log('Using mock auth for development');
       user = await getMockAuth();
     }
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const { modelName, usageType, credits, metadata } = body;
+    const { modelName, usageType, credits, tokens = 0, metadata } = body;
 
-    // 创建模型使用记录
-    const modelUsage = await prisma.modelUsage.create({
+    // 获取用户ID
+    const userId = user.uuid;
+
+    // 创建使用记录
+    const usageRecord = await prisma.usageRecord.create({
       data: {
-        userId: user.id,
-        modelName,
-        usageType,
-        credits,
-        metadata,
-        status: 'completed'
+        requestId: uuidv4(),
+        userId: userId,
+        provider: metadata?.provider || 'openai',
+        model: modelName,
+        promptTokens: tokens,
+        completionTokens: 0,
+        totalTokens: tokens,
+        tokensCharged: tokens,
+        pointsCharged: credits,
+        bucketPackageTokens: 0,
+        bucketIndependentTokens: tokens,
+        status: 'completed',
+        meta: metadata || {},
       }
     });
 
-    // 更新今日消费趋势
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const existingTrend = await prisma.consumptionTrend.findFirst({
-      where: {
-        userId: user.id,
-        date: today
+    // 创建积分交易记录
+    await prisma.creditTransaction.create({
+      data: {
+        userId: userId,
+        type: 'expense',
+        bucket: 'independent',
+        tokens: tokens,
+        points: credits,
+        beforePackageTokens: BigInt(0),
+        afterPackageTokens: BigInt(0),
+        beforeIndependentTokens: BigInt(0),
+        afterIndependentTokens: BigInt(0),
+        reason: `${modelName} usage`,
+        meta: {
+          modelName,
+          usageType,
+          ...metadata
+        }
       }
     });
 
-    if (existingTrend) {
-      await prisma.consumptionTrend.update({
-        where: {
-          id: existingTrend.id
-        },
-        data: {
-          pointsUsed: {
-            increment: credits
-          }
-        }
-      });
-    } else {
-      await prisma.consumptionTrend.create({
-        data: {
-          userId: user.id,
-          date: today,
-          pointsUsed: credits
-        }
-      });
-    }
-
-    return NextResponse.json({ success: true, modelUsage });
+    return NextResponse.json({ success: true, usageRecord });
   } catch (error) {
     console.error('Error recording model usage:', error);
     return NextResponse.json(
@@ -80,13 +80,13 @@ export async function GET(request: Request) {
   try {
     // 尝试获取真实用户，如果失败则使用模拟用户（仅用于开发）
     let user = await getAuth(request);
-    
+
     // 在开发环境下，如果没有配置认证，使用模拟认证
     if (!user && process.env.NODE_ENV === 'development') {
       console.log('Using mock auth for development');
       user = await getMockAuth();
     }
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -95,25 +95,41 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const modelUsages = await prisma.modelUsage.findMany({
+    // 获取用户ID
+    const userId = user.uuid;
+
+    // 获取使用记录
+    const usageRecords = await prisma.usageRecord.findMany({
       where: {
-        userId: user.id
+        userId: userId
       },
       orderBy: {
-        timestamp: 'desc'
+        createdAt: 'desc'
       },
       take: limit,
       skip: offset
     });
 
-    const total = await prisma.modelUsage.count({
+    const total = await prisma.usageRecord.count({
       where: {
-        userId: user.id
+        userId: userId
       }
     });
 
+    // 格式化数据以兼容前端
+    const formattedData = usageRecords.map(record => ({
+      id: record.id,
+      userId: record.userId,
+      modelName: record.model,
+      usageType: 'api_call',
+      credits: record.pointsCharged,
+      metadata: record.meta,
+      status: record.status,
+      timestamp: record.createdAt
+    }));
+
     return NextResponse.json({
-      data: modelUsages,
+      data: formattedData,
       total,
       limit,
       offset

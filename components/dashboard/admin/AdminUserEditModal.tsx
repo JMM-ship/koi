@@ -26,7 +26,7 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
     setError(null);
 
     try {
-      const response = await fetch(`/api/admin/users/${user.uuid}`, {
+      const response = await fetch(`/api/admin/users/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">用户UUID</label>
-                    <input type="text" className="form-control" value={user.uuid} disabled />
+                    <input type="text" className="form-control" value={user.id} disabled />
                   </div>
                 </div>
 

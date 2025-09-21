@@ -7,13 +7,13 @@ export async function GET(request: Request) {
   try {
     // 尝试获取真实用户，如果失败则使用模拟用户（仅用于开发）
     let user = await getAuth(request);
-    
+
     // 在开发环境下，如果没有配置认证，使用模拟认证
     if (!user && process.env.NODE_ENV === 'development') {
       console.log('Using mock auth for development');
       user = await getMockAuth();
     }
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -25,57 +25,69 @@ export async function GET(request: Request) {
     const now = new Date();
     const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-    // 获取指定时间范围的消费趋势
-    const trends = await prisma.consumptionTrend.findMany({
+    // 获取用户ID
+    const userId = user.uuid;
+
+    // 从 creditTransaction 表获取消费数据
+    const transactions = await prisma.creditTransaction.findMany({
       where: {
-        userId: user.id,
-        date: {
+        userId: userId,
+        type: 'expense', // 只获取消费记录
+        createdAt: {
           gte: startDate,
           lte: now
         }
       },
       orderBy: {
-        date: 'asc'
+        createdAt: 'asc'
       }
     });
 
-    // 填充缺失的日期数据
-    const filledTrends = fillMissingDates(trends, startDate, now);
+    // 按日期分组聚合数据
+    const dailyData = new Map<string, number>();
 
-    // 根据类型返回相应的数据
-    const formattedData = filledTrends.map(trend => {
-      const date = new Date(trend.date);
-      const dateLabel = `${date.getMonth() + 1}/${date.getDate()}`;
-      
+    transactions.forEach(transaction => {
+      const date = new Date(transaction.createdAt);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
       let value = 0;
       switch (type) {
         case 'points':
-          value = trend.pointsUsed;
-          break;
-        case 'money':
-          value = parseFloat(trend.moneyUsed?.toString() || '0');
+          value = transaction.points;
           break;
         case 'tokens':
-          value = trend.tokensUsed;
+          value = transaction.tokens;
+          break;
+        case 'money':
+          // 如果需要货币数据，可以从 order 表获取
+          value = 0; // 暂时返回0，因为creditTransaction不包含货币信息
           break;
       }
 
-      return {
-        date: dateLabel,
-        value
-      };
+      const currentValue = dailyData.get(dateStr) || 0;
+      dailyData.set(dateStr, currentValue + value);
     });
+
+    // 填充缺失的日期数据
+    const filledData = fillMissingDates(dailyData, startDate, now);
+
+    // 格式化数据
+    const formattedData = filledData.map(item => ({
+      date: `${new Date(item.date).getMonth() + 1}/${new Date(item.date).getDate()}`,
+      value: item.value
+    }));
 
     // 计算统计数据
     const total = formattedData.reduce((sum, item) => sum + item.value, 0);
     const average = total / formattedData.length;
-    
+
     // 计算增长率（对比前一周期）
     const previousStartDate = new Date(startDate.getTime() - days * 24 * 60 * 60 * 1000);
-    const previousTrends = await prisma.consumptionTrend.findMany({
+    const previousTransactions = await prisma.creditTransaction.findMany({
       where: {
-        userId: user.id,
-        date: {
+        userId: userId,
+        type: 'expense',
+        createdAt: {
           gte: previousStartDate,
           lt: startDate
         }
@@ -83,22 +95,19 @@ export async function GET(request: Request) {
     });
 
     let previousTotal = 0;
-    previousTrends.forEach(trend => {
+    previousTransactions.forEach(transaction => {
       switch (type) {
         case 'points':
-          previousTotal += trend.pointsUsed;
-          break;
-        case 'money':
-          previousTotal += parseFloat(trend.moneyUsed?.toString() || '0');
+          previousTotal += transaction.points;
           break;
         case 'tokens':
-          previousTotal += trend.tokensUsed;
+          previousTotal += transaction.tokens;
           break;
       }
     });
 
     const increase = total - previousTotal;
-    const percentage = previousTotal > 0 
+    const percentage = previousTotal > 0
       ? ((increase / previousTotal) * 100).toFixed(1)
       : '0';
 
@@ -123,36 +132,21 @@ export async function GET(request: Request) {
 
 // 填充缺失的日期数据
 function fillMissingDates(
-  trends: any[],
+  dailyData: Map<string, number>,
   startDate: Date,
   endDate: Date
-) {
+): { date: string; value: number }[] {
   const filledData = [];
-  const trendMap = new Map();
 
-  // 创建日期到趋势的映射
-  trends.forEach(trend => {
-    const dateStr = trend.date.toISOString().split('T')[0];
-    trendMap.set(dateStr, trend);
-  });
-
-  // 填充所有日期
+  // 生成所有日期
   const currentDate = new Date(startDate);
   while (currentDate <= endDate) {
-    const dateStr = currentDate.toISOString().split('T')[0];
-    const existingTrend = trendMap.get(dateStr);
+    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
 
-    if (existingTrend) {
-      filledData.push(existingTrend);
-    } else {
-      // 创建空数据
-      filledData.push({
-        date: new Date(currentDate),
-        pointsUsed: 0,
-        moneyUsed: 0,
-        tokensUsed: 0
-      });
-    }
+    filledData.push({
+      date: dateStr,
+      value: dailyData.get(dateStr) || 0
+    });
 
     currentDate.setDate(currentDate.getDate() + 1);
   }

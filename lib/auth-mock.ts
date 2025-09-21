@@ -15,24 +15,20 @@ export async function getMockAuth() {
     // 如果没有用户，创建一个测试用户
     const testUser = await prisma.user.create({
       data: {
-        uuid: 'test-user-' + Date.now(),
         email: 'test@example.com',
         nickname: 'Test User',
         role: 'user',
         status: 'active',
-        planType: 'pro',
-        totalCredits: 10000,
-        inviteCode: 'TEST123'
       }
     });
     return {
-      uuid: testUser.uuid,
+      uuid: testUser.id,
       email: testUser.email,
       name: testUser.nickname,
       image: testUser.avatarUrl,
       role: testUser.role,
-      planType: testUser.planType,
-      totalCredits: testUser.totalCredits
+      planType: 'basic',
+      totalCredits: 0
     };
   }
 
@@ -42,7 +38,7 @@ export async function getMockAuth() {
     name: user.nickname,
     image: user.avatarUrl,
     role: user.role,
-    planType: user.planType,
-    totalCredits: user.totalCredits
+    planType: 'basic',
+    totalCredits: 0
   };
 }

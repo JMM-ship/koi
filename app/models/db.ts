@@ -32,4 +32,4 @@ export function getPrismaClient() {
 export { prisma };
 
 // 导出Prisma类型，方便在其他文件中使用
-export type { User, Order, ApiKey, Credit, Post, Affiliate, Feedback, Category, Image, EmailVerificationCode } from '@prisma/client';
+export type { User, Order, ApiKey, Wallet, CreditTransaction, Package, UserPackage, UsageRecord } from '@prisma/client';

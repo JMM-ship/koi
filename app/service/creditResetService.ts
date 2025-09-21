@@ -50,8 +50,8 @@ export async function resetUserPackageCredits(userId: string): Promise<ResetResu
       where: { userId }
     });
     
-    const beforeBalance = currentBalance 
-      ? currentBalance.packageTokensRemaining + currentBalance.independentTokens 
+    const beforeBalance = currentBalance
+      ? Number(currentBalance.packageTokensRemaining) + Number(currentBalance.independentTokens)
       : 0;
     
     // 重置套餐积分
@@ -72,7 +72,7 @@ export async function resetUserPackageCredits(userId: string): Promise<ResetResu
       credit_type: CreditType.Package,
       amount: activePackage.daily_credits,
       before_balance: beforeBalance,
-      after_balance: newBalance.package_credits + newBalance.independent_credits,
+      after_balance: Number(newBalance.package_credits + newBalance.independent_credits),
       description: '每日积分重置',
       metadata: {
         packageId: activePackage.package_id,

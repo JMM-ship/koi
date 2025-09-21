@@ -21,8 +21,21 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
-    
-    const userId = session.user.id;
+
+    const userId = session.user.uuid || session.user.id;
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'AUTH_REQUIRED',
+            message: 'User ID not found',
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: 401 }
+      );
+    }
     
     // 获取用户积分信息
     const creditInfo = await getUserCreditInfo(userId);

@@ -47,43 +47,36 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
       prisma.order.count({ where: { status: 'pending' } }),
       prisma.order.aggregate({
         where: { status: 'paid' },
-        _sum: { amount: true },
+        _sum: { amountCents: true },  // 修正字段名
       }),
       prisma.order.aggregate({
         where: {
           status: 'paid',
           paidAt: { gte: today },
         },
-        _sum: { amount: true },
+        _sum: { amountCents: true },  // 修正字段名
       }),
     ]);
 
-    // 查询卡密统计
-    const [
-      totalGenerated,
-      totalUsed,
-      activeCount,
-      expiredCount,
-    ] = await Promise.all([
-      prisma.redemptionCode.count(),
-      prisma.redemptionCode.count({ where: { status: 'used' } }),
-      prisma.redemptionCode.count({ where: { status: 'active' } }),
-      prisma.redemptionCode.count({ where: { status: 'expired' } }),
-    ]);
+    // 卡密功能已禁用，返回默认值
+    const totalGenerated = 0;
+    const totalUsed = 0;
+    const activeCount = 0;
+    const expiredCount = 0;
 
     // 查询积分统计
     const [creditIssued, creditConsumed] = await Promise.all([
-      prisma.credit.aggregate({
+      prisma.creditTransaction.aggregate({  // 修正模型名
         where: {
-          transType: { in: ['admin_add', 'new_user', 'purchase'] },
+          type: 'income',  // 使用新的type字段值
         },
-        _sum: { credits: true },
+        _sum: { points: true },  // 使用points字段
       }),
-      prisma.credit.aggregate({
+      prisma.creditTransaction.aggregate({  // 修正模型名
         where: {
-          transType: { in: ['admin_deduct', 'usage', 'expired'] },
+          type: 'expense',  // 使用新的type字段值
         },
-        _sum: { credits: true },
+        _sum: { points: true },  // 使用points字段
       }),
     ]);
 
@@ -97,8 +90,8 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
       },
       orders: {
         total: totalOrders,
-        totalRevenue: paidOrdersStats._sum.amount || 0,
-        todayRevenue: todayRevenue._sum.amount || 0,
+        totalRevenue: (paidOrdersStats._sum.amountCents || 0) / 100,  // 分转元
+        todayRevenue: (todayRevenue._sum.amountCents || 0) / 100,  // 分转元
         pending: pendingOrders,
       },
       codes: {
@@ -108,8 +101,8 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
         expired: expiredCount,
       },
       credits: {
-        totalIssued: creditIssued._sum.credits || 0,
-        totalConsumed: creditConsumed._sum.credits || 0,
+        totalIssued: creditIssued._sum.points || 0,
+        totalConsumed: creditConsumed._sum.points || 0,
       },
     };
 
