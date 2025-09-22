@@ -1,5 +1,5 @@
 import { CreditsAmount, CreditsTransType } from "./credit";
-import { findUserByEmail, findUserByUuid, insertUser } from "@/app/models/user";
+import { findUserByEmail, findUserById, insertUser } from "@/app/models/user";
 
 
 import { auth } from "@/app/auth/helpers";
@@ -84,7 +84,7 @@ export async function getUserInfo() {
     return;
   }
 
-  const user = await findUserByUuid(user_id);
+  const user = await findUserById(user_id);
 
   return user;
 }

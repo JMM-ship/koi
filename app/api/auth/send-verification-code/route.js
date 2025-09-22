@@ -30,7 +30,7 @@ export async function POST(request) {
     // Check rate limit (allow only once per 60 seconds)
     const latestCode = await getLatestVerificationCode(email);
     if (latestCode) {
-      const createdAt = new Date(latestCode.created_at);
+      const createdAt = new Date(latestCode.createdAt);
       const now = new Date();
       const diffInSeconds = (now - createdAt) / 1000;
 
@@ -59,7 +59,7 @@ export async function POST(request) {
 
     // Send email
     const emailResult = await
-      fetch('http://38.60.223.56/api/email/send', {
+      fetch('http://localhost:5000/api/email/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -125,11 +125,14 @@ providers.push(
       rememberMe: { label: "记住我", type: "text" },
     },
     async authorize(credentials) {
+      console.log(credentials,"打印");
+      
       if (!credentials?.email || !credentials?.password) {
         return null;
       }
 
       const user = await findUserByEmail(credentials.email);
+      console.log(user,"dds");
       
       if (!user || !user.password) {
         return null;
@@ -139,11 +142,13 @@ providers.push(
         credentials.password,
         user.password
       );
-
+      console.log("Password match:匹配", isPasswordValid);
       if (!isPasswordValid) {
         return null;
       }
-
+      console.log("credentials:", credentials);
+console.log("user from DB:", user);
+console.log("password match:", await bcrypt.compare(credentials.password, user.password));
       return {
         id: user.id,
         email: user.email,

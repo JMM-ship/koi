@@ -1,21 +1,113 @@
-// EmailVerificationCode 功能在新数据库架构中已被移除
-// 此文件保留为存根以避免破坏可能的依赖
+import bcrypt from "bcryptjs";
+import { prisma } from "./db";
+import { EmailVerificationCode as PrismaEmailVerificationCode } from "@prisma/client";
 
+// 更新接口定义以匹配数据库模型
 export interface EmailVerificationCode {
-  id?: number;
+  id?: string;  // 改为 string (UUID)
   email: string;
   code: string;
-  expires_at: string;
-  created_at?: string;
-  updated_at?: string;
+  expiresAt: string;  // 改为 expiresAt
+  createdAt?: string;  // 改为 createdAt
+  isUsed?: boolean;  // 添加 isUsed 字段
+}
+
+// 转换 Prisma 模型到应用接口
+function fromPrismaVerificationCode(record: PrismaEmailVerificationCode | null): EmailVerificationCode | undefined {
+  if (!record) return undefined;
+
+  return {
+    id: record.id,
+    email: record.email,
+    code: record.code,
+    expiresAt: record.expiresAt.toISOString(),
+    createdAt: record.createdAt.toISOString(),
+    isUsed: record.isUsed,
+  };
+}
+
+// 转换应用接口到 Prisma 创建数据
+function toPrismaCreateData(data: EmailVerificationCode) {
+  return {
+    email: data.email,
+    code: data.code,
+    expiresAt: new Date(data.expiresAt),
+    isUsed: data.isUsed || false,
+  };
+}
+
+// 根据邮箱查找最新验证码
+export async function findLatestEmailVerificationCode(
+  email: string
+): Promise<EmailVerificationCode | undefined> {
+  try {
+    const record = await prisma.emailVerificationCode.findFirst({
+      where: { 
+        email,
+        isUsed: false,  // 只查找未使用的验证码
+      },
+      orderBy: {
+        createdAt: 'desc',  // 按创建时间降序排列，获取最新的
+      },
+    });
+    
+    return fromPrismaVerificationCode(record);
+  } catch (err) {
+    console.error("Failed to find latest verification code:", err);
+    return undefined;
+  }
+}
+
+// 创建验证码（带哈希）
+export async function createVerificationCode(
+  email: string
+): Promise<{ plainCode: string } | undefined> {
+  try {
+    const plainCode = generateVerificationCode(); // 生成6位数验证码
+    // const hashedCode = await bcrypt.hash(plainCode, 10); // bcrypt哈希
+
+    const record: EmailVerificationCode = {
+      email,
+      code: plainCode,
+      expiresAt: createExpiryTime(10), // 10分钟有效
+      isUsed: false,
+    };
+
+    await insertEmailVerificationCode(record);
+
+    return { plainCode }; // 返回明文验证码，用于发邮件
+  } catch (err) {
+    console.error("Failed to create verification code:", err);
+    return undefined;
+  }
+}
+
+// 获取最新验证码（根据 email）
+export async function getLatestVerificationCode(
+  email: string
+): Promise<EmailVerificationCode | undefined> {
+  try {
+    const latest = await findLatestEmailVerificationCode(email);
+    return latest ?? undefined;
+  } catch (err) {
+    console.error("Failed to get latest verification code:", err);
+    return undefined;
+  }
 }
 
 // 插入验证码
 export async function insertEmailVerificationCode(
   data: EmailVerificationCode
 ): Promise<EmailVerificationCode | undefined> {
-  console.warn('Email verification feature is disabled in the new database architecture');
-  return undefined;
+  try {
+    const record = await prisma.emailVerificationCode.create({
+      data: toPrismaCreateData(data),
+    });
+    return fromPrismaVerificationCode(record);
+  } catch (err) {
+    console.error("Failed to insert verification code:", err);
+    return undefined;
+  }
 }
 
 // 根据邮箱和验证码查找
@@ -23,14 +115,59 @@ export async function findEmailVerificationCodeByEmailAndCode(
   email: string,
   code: string
 ): Promise<EmailVerificationCode | undefined> {
-  console.warn('Email verification feature is disabled in the new database architecture');
-  return undefined;
+  try {
+    const record = await prisma.emailVerificationCode.findFirst({
+      where: {
+        email,
+        code,
+        isUsed: false,  // 只查找未使用的验证码
+        expiresAt: {
+          gt: new Date(),  // 验证码未过期
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',  // 获取最新的匹配记录
+      },
+    });
+    
+    return fromPrismaVerificationCode(record);
+  } catch (err) {
+    console.error("Failed to find verification code by email and code:", err);
+    return undefined;
+  }
+}
+
+// 标记验证码为已使用
+export async function markVerificationCodeAsUsed(
+  id: string
+): Promise<boolean> {
+  try {
+    await prisma.emailVerificationCode.update({
+      where: { id },
+      data: { isUsed: true },
+    });
+    return true;
+  } catch (err) {
+    console.error("Failed to mark verification code as used:", err);
+    return false;
+  }
 }
 
 // 删除过期的验证码
 export async function deleteExpiredEmailVerificationCodes(): Promise<number> {
-  console.warn('Email verification feature is disabled in the new database architecture');
-  return 0;
+  try {
+    const result = await prisma.emailVerificationCode.deleteMany({
+      where: {
+        expiresAt: {
+          lt: new Date(),  // 删除已过期的验证码
+        },
+      },
+    });
+    return result.count;
+  } catch (err) {
+    console.error("Failed to delete expired verification codes:", err);
+    return 0;
+  }
 }
 
 // 生成6位数字验证码

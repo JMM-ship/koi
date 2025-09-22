@@ -14,7 +14,10 @@
         "studio": "prisma studio",
         "cron": "tsx scripts/cron-scheduler.ts",
         "cron:once": "tsx scripts/cron-scheduler.ts --once",
-        "reset:credits": "tsx scripts/reset-credits.ts"
+        "reset:credits": "tsx scripts/reset-credits.ts",
+        "test:db": "tsx scripts/test-database-full.ts",
+        "test:db:cleanup": "tsx scripts/test-database-full.ts --cleanup",
+        "test:db:verbose": "VERBOSE=1 tsx scripts/test-database-full.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.859.0",
@@ -60,6 +63,7 @@
         "eslint": "^9",
         "eslint-config-next": "15.0.3",
         "prisma": "^6.13.0",
+        "tsx": "^4.20.5",
         "typescript": "^5"
     }
 }
