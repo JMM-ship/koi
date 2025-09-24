@@ -28,7 +28,6 @@ export default function ProfileContent() {
   // Initialize form data from user data only once
   useEffect(() => {
     if (user && !userLoading && !dataInitialized) {
-      console.log(user, "sss");
 
       setNickname(user.nickname || "");
       setAvatarUrl(user.avatarUrl || "");

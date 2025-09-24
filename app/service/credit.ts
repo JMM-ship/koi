@@ -4,7 +4,7 @@ import {
   insertCredit,
 } from "@/app/models/credit";
 
-import { findUserByUuid } from "@/app/models/user";
+import { findUserById } from "@/app/models/user";
 import { getFirstPaidOrderByUserUuid } from "@/app/models/order";
 import { getIsoTimestr } from "@/app/lib/time";
 import { getSnowId } from "@/app/lib/hash";

@@ -95,7 +95,7 @@ export async function createUserPackage(data: {
         startAt: data.start_date, // startDate -> startAt
         endAt: data.end_date, // endDate -> endAt
         dailyPoints: data.daily_credits, // dailyCredits -> dailyPoints
-        dailyQuotaTokens: BigInt(data.daily_credits * 1000), // 添加 dailyQuotaTokens
+        dailyQuotaTokens: BigInt(data.daily_credits), // 对应SQL中的daily_quota_tokens字段
         packageSnapshot: data.package_snapshot ? {
           ...data.package_snapshot,
           isAutoRenew: data.is_auto_renew || false

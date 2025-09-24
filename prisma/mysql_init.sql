@@ -7,28 +7,33 @@
 -- USE your_database_name;
 
 -- 用户表
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    uuid VARCHAR(255) UNIQUE NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    nickname VARCHAR(255),
-    avatar_url VARCHAR(255),
-    locale VARCHAR(50),
-    signin_type VARCHAR(50),
-    signin_ip VARCHAR(255),
-    signin_provider VARCHAR(50),
-    signin_openid VARCHAR(255),
-    invite_code VARCHAR(255) NOT NULL DEFAULT '',
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    invited_by VARCHAR(255) NOT NULL DEFAULT '',
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT NOT NULL,
+    nickname TEXT,
+    avatar_url TEXT,
+    locale TEXT,
+    signin_type TEXT,
+    signin_ip TEXT,
+    signin_provider TEXT,
+    signin_openid TEXT,
+    invite_code TEXT NOT NULL DEFAULT '',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    invited_by TEXT NOT NULL DEFAULT '',
     is_affiliate BOOLEAN NOT NULL DEFAULT false,
-    password VARCHAR(255),
-    UNIQUE KEY uk_email_provider (email, signin_provider),
-    INDEX idx_uuid (uuid),
-    INDEX idx_email (email),
-    INDEX idx_invite_code (invite_code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    password TEXT,
+    role TEXT NOT NULL DEFAULT 'user',
+    status TEXT NOT NULL DEFAULT 'active',
+    plan_type TEXT NOT NULL DEFAULT 'free',
+    plan_expired_at TIMESTAMPTZ,
+    total_credits INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 索引和唯一约束
+CREATE UNIQUE INDEX uk_email_provider ON users(email, signin_provider);
+CREATE INDEX idx_email ON users(email);
+CREATE INDEX idx_invite_code ON users(invite_code);
 
 -- 订单表
 CREATE TABLE IF NOT EXISTS orders (

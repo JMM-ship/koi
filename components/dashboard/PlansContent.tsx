@@ -10,11 +10,9 @@ import ModalPortal from "@/components/common/ModalPortal";
 interface Package {
   id: string;
   name: string;
-  name_en?: string;
-  price: number;
-  original_price?: number;
-  daily_credits: number;
-  valid_days: number;
+  price: number; // 元（后端 /api/packages 做了 /100）
+  daily_credits: number; // 展示层仍使用下划线命名
+  valid_days: number;    // 展示层仍使用下划线命名
   features?: string[];
   tag?: string;
   is_recommended: boolean;
@@ -133,8 +131,11 @@ export default function PlansContent() {
         // Convert price from cents to yuan
         const packagesData = data.data.packages.map((pkg: any) => ({
           ...pkg,
-          price: pkg.price / 100,
-          original_price: pkg.original_price ? pkg.original_price / 100 : undefined
+          price: pkg.priceCents / 100,
+          daily_credits: pkg.dailyPoints,
+          valid_days: pkg.validDays,
+          plan_type: pkg.planType,
+          is_recommended: (pkg.features?.isRecommended === true),
         }));
         setPackages(packagesData);
         console.log(data.data, "获取数据");
@@ -340,8 +341,10 @@ export default function PlansContent() {
     }
 
     // Generate default features based on package info
+    console.log(pkg.daily_credits, "日用");
+
     return [
-      `${pkg.daily_credits.toLocaleString()} credits daily`,
+      `${pkg.daily_credits?.toLocaleString()} credits daily`,
       'Full speed response',
       'Support all AI models',
       'Technical support service',
@@ -478,7 +481,7 @@ export default function PlansContent() {
                     textTransform: 'uppercase',
                     letterSpacing: '1px'
                   }}>
-                    {pkg.name_en || pkg.name}
+                    {pkg.name}
                   </h3>
 
                   <div style={{ marginBottom: '24px' }}>
@@ -490,24 +493,6 @@ export default function PlansContent() {
                         /month
                       </span>
                     </div>
-                    {pkg.original_price && (
-                      <div style={{ marginTop: '8px' }}>
-                        <span style={{ fontSize: '14px', color: '#666', textDecoration: 'line-through' }}>
-                          Original ${pkg.original_price}/month
-                        </span>
-                        <span style={{
-                          fontSize: '12px',
-                          color: '#ff4444',
-                          marginLeft: '8px',
-                          fontWeight: '600',
-                          background: 'rgba(255, 68, 68, 0.1)',
-                          padding: '2px 8px',
-                          borderRadius: '4px'
-                        }}>
-                          Save {Math.round((1 - pkg.price / pkg.original_price) * 100)}%
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
 
@@ -663,7 +648,7 @@ export default function PlansContent() {
               marginBottom: '24px'
             }}>
               <h4 style={{ color: '#fff', fontSize: '18px', marginBottom: '16px' }}>
-                {selectedPackage.name_en || selectedPackage.name}
+                {selectedPackage.name}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <span style={{ color: '#999' }}>Original Price</span>

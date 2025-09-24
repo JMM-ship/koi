@@ -67,24 +67,23 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
         return { success: false, error: 'Package not found' };
       }
       
-      if (!packageInfo.is_active) {
+      if (!packageInfo.isActive) {
         return { success: false, error: 'Package is not active' };
       }
       
-      amount = packageInfo.price;
-      credits = packageInfo.daily_credits * packageInfo.valid_days; // 总积分数
+      amount = packageInfo.priceCents / 100; // API 面向前端用元
+      credits = (packageInfo.dailyPoints || 0) * (packageInfo.validDays || 0);
       productName = packageInfo.name;
-      validDays = packageInfo.valid_days;
+      validDays = packageInfo.validDays || 0;
       
       // 创建套餐快照
       packageSnapshot = {
         id: packageInfo.id,
         name: packageInfo.name,
         version: packageInfo.version,
-        price: packageInfo.price,
-        originalPrice: packageInfo.original_price,
-        dailyCredits: packageInfo.daily_credits,
-        validDays: packageInfo.valid_days,
+        price: packageInfo.priceCents / 100,
+        dailyCredits: packageInfo.dailyPoints,
+        validDays: packageInfo.validDays,
         features: packageInfo.features,
         limitations: packageInfo.limitations,
       };
@@ -97,16 +96,16 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
           return { success: false, error: 'Package not found' };
         }
         
-        if (!packageInfo.is_active) {
+        if (!packageInfo.isActive) {
           return { success: false, error: 'Package is not active' };
         }
         
-        if (packageInfo.plan_type !== 'credits') {
+        if (packageInfo.planType !== 'credits') {
           return { success: false, error: 'Invalid package type for credits order' };
         }
         
-        amount = packageInfo.price;
-        credits = packageInfo.daily_credits; // 对于积分套餐，daily_credits存储的是总积分数
+        amount = packageInfo.priceCents / 100;
+        credits = packageInfo.dailyPoints || 0; // credits 套餐，dailyPoints 表示总积分
         productName = packageInfo.name;
         params.creditAmount = credits; // 设置creditAmount用于后续处理
         
@@ -115,9 +114,8 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
           id: packageInfo.id,
           name: packageInfo.name,
           version: packageInfo.version,
-          price: packageInfo.price,
-          originalPrice: packageInfo.original_price,
-          totalCredits: packageInfo.daily_credits,
+          price: packageInfo.priceCents / 100,
+          totalCredits: packageInfo.dailyPoints,
           features: packageInfo.features,
         };
       } else if (params.creditAmount && params.creditAmount > 0) {
@@ -175,6 +173,7 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       payment_method: params.paymentMethod,
       expired_at: expiredAt.toISOString(),
     };
+    console.log(orderData,"订单信息");
     
     const order = await insertOrder(orderData);
     if (!order) {
@@ -237,15 +236,18 @@ export async function handlePaymentSuccess(
     
     // 根据订单类型处理
     if (order.order_type === OrderType.Package) {
+      // 检查套餐ID是否存在
+      if (!order.package_id) {
+        return { success: false, error: 'Package ID not found in order' };
+      }
 
-      
       // 激活套餐
       const result = await purchasePackage(
         order.user_id,
         order.package_id,
         orderNo
       );
-      
+
       if (!result.success) {
         // 如果激活失败，需要处理退款逻辑
         console.error('Failed to activate package:', result.error);
@@ -255,18 +257,18 @@ export async function handlePaymentSuccess(
       // 增加积分
       // 使用 credit_amount 或 credits 字段（向后兼容）
       const creditAmount = order.credit_amount || order.credits;
-      
+
       if (!creditAmount || creditAmount <= 0) {
         console.error('Invalid credit amount in order:', order);
         return { success: false, error: 'Invalid credit amount' };
       }
-      
+
       const result = await purchaseCredits(
         order.user_id,
         creditAmount,
         orderNo
       );
-      
+
       if (!result.success) {
         console.error('Failed to add credits:', result.error);
         return { success: false, error: 'Failed to add credits' };

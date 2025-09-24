@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/auth/config';
 import { createOrder, OrderType } from '@/app/service/orderProcessor';
+import { findUserByEmail } from '@/app/models/user';
 
 // POST /api/orders/create - 创建订单
 export async function POST(request: NextRequest) {
@@ -76,9 +77,10 @@ export async function POST(request: NextRequest) {
     }
     
     // 创建订单
-    const userId = session.user.uuid || session.user.id;
+    const user = await findUserByEmail(session.user.email)
+
     const result = await createOrder({
-      userId: userId!,
+      userId: user?.id!,
       userEmail: session.user.email,
       orderType,
       packageId,

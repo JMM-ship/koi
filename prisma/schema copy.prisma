@@ -1,9 +1,6 @@
-// Supabase (PostgreSQL) Schema
-// 这是与Supabase兼容的新数据库架构
-
+// PostgreSQL Schema for Supabase
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client-supabase"
 }
 
 datasource db {
@@ -14,27 +11,43 @@ datasource db {
 
 // ========== 用户模型 ==========
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  nickname  String?
-  avatarUrl String?  @map("avatar_url")
-  role      String   @default("user")
-  status    String   @default("active")
-  locale    String?
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  id String @id @default(uuid()) @db.Uuid
+  email          String
+  nickname       String?
+  avatarUrl      String?   @map("avatar_url")
+  locale         String?
+  signinType     String?   @map("signin_type")
+  signinIp       String?   @map("signin_ip")
+  signinProvider String?   @map("signin_provider")
+  signinOpenid   String?   @map("signin_openid")
+  inviteCode     String    @default("") @map("invite_code")
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  invitedBy      String    @default("") @map("invited_by")
+  isAffiliate    Boolean   @default(false) @map("is_affiliate")
+  password       String?
+  role           String    @default("user")
+  status         String    @default("active")
+  planType       String    @default("free") @map("plan_type")
+  planExpiredAt  DateTime? @map("plan_expired_at") @db.Timestamptz
+  totalCredits   Int       @default(0) @map("total_credits")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   // 关联
-  orders         Order[]
-  wallets        Wallet?
-  apiKeys        ApiKey[]
-  userPackages   UserPackage[]
-  oauthSessions  OauthSession[]
-  auditLogs      AdminAuditLog[]
-  usageRecords   UsageRecord[]
+  orders             Order[]
+  wallets            Wallet?
+  apiKeys            ApiKey[]
+  userPackages       UserPackage[]
+  oauthSessions      OauthSession[]
+  auditLogs          AdminAuditLog[]
+  usageRecords       UsageRecord[]
   creditTransactions CreditTransaction[]
 
   @@map("users")
+
+  // 索引
+  @@unique([email, signinProvider], name: "uk_email_provider")
+  @@index([email], name: "idx_email")
+  @@index([inviteCode], name: "idx_invite_code")
 }
 
 // ========== 账户组模型 ==========
@@ -326,4 +339,19 @@ model OauthSession {
   @@index([userId])
   @@index([expiresAt])
   @@map("oauth_sessions")
+}
+
+// ========== 邮箱验证码模型 ==========
+model EmailVerificationCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String
+  code      String   @db.VarChar(6)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  isUsed    Boolean  @default(false) @map("is_used")
+
+  @@map("email_verification_codes")
+  @@index([email, code], name: "idx_email_code")
+  @@index([expiresAt], name: "idx_expires_at")
+  @@index([createdAt], name: "idx_created_at")
 }

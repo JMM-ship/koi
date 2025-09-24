@@ -4,18 +4,33 @@
   CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
   -- ========== users ==========
-  CREATE TABLE IF NOT EXISTS users (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    email text UNIQUE NOT NULL,
-    nickname text,
-    avatar_url text,
-    role text NOT NULL DEFAULT 'user' CHECK (role IN ('user','admin')),
-    status text NOT NULL DEFAULT 'active' CHECK (status IN
-  ('active','suspended','deleted')),
-    locale text,
-    created_at timestamptz NOT NULL DEFAULT now(),
-    updated_at timestamptz NOT NULL DEFAULT now()
-  );
+CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT NOT NULL,
+    nickname TEXT,
+    avatar_url TEXT,
+    locale TEXT,
+    signin_type TEXT,
+    signin_ip TEXT,
+    signin_provider TEXT,
+    signin_openid TEXT,
+    invite_code TEXT NOT NULL DEFAULT '',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    invited_by TEXT NOT NULL DEFAULT '',
+    is_affiliate BOOLEAN NOT NULL DEFAULT false,
+    password TEXT,
+    role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ("user","admin")),
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ("active",'suspended'."deleted")),
+    plan_type TEXT NOT NULL DEFAULT 'free',
+    plan_expired_at TIMESTAMPTZ,
+    total_credits INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- 索引和唯一约束
+CREATE UNIQUE INDEX uk_email_provider ON users(email, signin_provider);
+CREATE INDEX idx_email ON users(email);
+CREATE INDEX idx_invite_code ON users(invite_code);
 
   -- ========== account_groups ==========
   CREATE TABLE IF NOT EXISTS account_groups (

@@ -17,72 +17,60 @@ export interface PackageLimitations {
 export interface Package {
   id: string;
   name: string;
-  name_en?: string;
   version: string;
   description?: string;
-  price: number;
-  original_price?: number;
+  priceCents: number;
   currency: string;
-  daily_credits: number;
-  valid_days: number;
-  plan_type: string; // basic, pro, enterprise
+  dailyPoints: number;
+  validDays?: number;
+  planType: string; // basic, pro, enterprise
   features?: PackageFeatures;
   limitations?: PackageLimitations;
-  sort_order: number;
-  is_active: boolean;
-  is_recommended: boolean;
-  tag?: string;
-  created_at: string;
-  updated_at: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-// 转换函数：将Prisma数据转换为应用层格式
-function fromPrismaPackage(pkg: any | null): Package | undefined {
+// 转换函数：将Prisma数据转换为应用层格式（与Prisma保持同名字段）
+function fromPrismaPackage(pkg: PrismaPackage | null): Package | undefined {
   if (!pkg) return undefined;
   
   return {
     id: pkg.id,
     name: pkg.name,
-    name_en: pkg.nameEn || undefined,
     version: pkg.version,
     description: pkg.description || undefined,
-    price: pkg.price,
-    original_price: pkg.originalPrice || undefined,
+    priceCents: pkg.priceCents,
     currency: pkg.currency,
-    daily_credits: pkg.dailyCredits,
-    valid_days: pkg.validDays,
-    plan_type: pkg.planType,
-    features: pkg.features as PackageFeatures || undefined,
-    limitations: pkg.limitations as PackageLimitations || undefined,
-    sort_order: pkg.sortOrder,
-    is_active: pkg.isActive,
-    is_recommended: pkg.isRecommended,
-    tag: pkg.tag || undefined,
-    created_at: pkg.createdAt.toISOString(),
-    updated_at: pkg.updatedAt.toISOString(),
+    dailyPoints: pkg.dailyPoints,
+    validDays: pkg.validDays || undefined,
+    planType: pkg.planType,
+    features: (pkg.features as unknown as PackageFeatures) || undefined,
+    limitations: (pkg.limitations as unknown as PackageLimitations) || undefined,
+    sortOrder: pkg.sortOrder,
+    isActive: pkg.isActive,
+    createdAt: pkg.createdAt.toISOString(),
+    updatedAt: pkg.updatedAt.toISOString(),
   };
 }
 
 // 转换函数：将应用层数据转换为Prisma格式
-function toPrismaPackage(pkg: Partial<Package>): any {
+function toPrismaPackage(pkg: Partial<Package>): Partial<PrismaPackage> {
   return {
-    name: pkg.name,
-    nameEn: pkg.name_en || null,
-    version: pkg.version,
-    description: pkg.description || null,
-    price: pkg.price,
-    originalPrice: pkg.original_price || null,
-    currency: pkg.currency || 'CNY',
-    dailyCredits: pkg.daily_credits,
-    validDays: pkg.valid_days || 30,
-    planType: pkg.plan_type || 'basic',
-    features: pkg.features || null,
-    limitations: pkg.limitations || null,
-    sortOrder: pkg.sort_order || 0,
-    isActive: pkg.is_active !== undefined ? pkg.is_active : true,
-    isRecommended: pkg.is_recommended || false,
-    tag: pkg.tag || null,
-  };
+    name: pkg.name!,
+    version: pkg.version!,
+    description: pkg.description ?? null,
+    priceCents: pkg.priceCents!,
+    currency: pkg.currency ?? 'USD',
+    dailyPoints: pkg.dailyPoints!,
+    validDays: pkg.validDays ?? null,
+    planType: pkg.planType ?? 'basic',
+    features: (pkg.features as any) ?? {},
+    limitations: (pkg.limitations as any) ?? {},
+    sortOrder: pkg.sortOrder ?? 0,
+    isActive: pkg.isActive ?? true,
+  } as any;
 }
 
 // 获取所有激活的套餐
@@ -116,7 +104,7 @@ export async function getPackageById(id: string): Promise<Package | undefined> {
 export async function createPackage(data: Partial<Package>): Promise<Package | undefined> {
   try {
     const pkg = await prisma.package.create({
-      data: toPrismaPackage(data),
+      data: toPrismaPackage(data) as any,
     });
     return fromPrismaPackage(pkg);
   } catch (error) {
@@ -130,7 +118,7 @@ export async function updatePackage(id: string, data: Partial<Package>): Promise
   try {
     const pkg = await prisma.package.update({
       where: { id },
-      data: toPrismaPackage(data),
+      data: toPrismaPackage(data) as any,
     });
     return fromPrismaPackage(pkg);
   } catch (error) {
@@ -153,10 +141,9 @@ export async function deletePackage(id: string): Promise<boolean> {
   }
 }
 
-// 获取推荐套餐
+// 获取推荐套餐（通过 features 中的 isRecommended 标记）
 export async function getRecommendedPackages(): Promise<Package[]> {
   try {
-    // isRecommended 信息可能存储在 features JSON 中
     const packages = await prisma.package.findMany({
       where: {
         isActive: true,
@@ -164,7 +151,6 @@ export async function getRecommendedPackages(): Promise<Package[]> {
       orderBy: { sortOrder: 'asc' },
     });
 
-    // 过滤出推荐的套餐
     const recommendedPackages = packages.filter(pkg => {
       const features = (pkg.features as any) || {};
       return features.isRecommended === true;

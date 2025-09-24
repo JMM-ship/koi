@@ -60,22 +60,22 @@ export async function findLatestEmailVerificationCode(
 
 // 创建验证码（带哈希）
 export async function createVerificationCode(
-  email: string
+  email: string,code: string
 ): Promise<{ plainCode: string } | undefined> {
   try {
-    const plainCode = generateVerificationCode(); // 生成6位数验证码
+    // const plainCode = generateVerificationCode(); // 生成6位数验证码
     // const hashedCode = await bcrypt.hash(plainCode, 10); // bcrypt哈希
 
     const record: EmailVerificationCode = {
       email,
-      code: plainCode,
+      code,
       expiresAt: createExpiryTime(10), // 10分钟有效
       isUsed: false,
     };
 
     await insertEmailVerificationCode(record);
 
-    return { plainCode }; // 返回明文验证码，用于发邮件
+    return 
   } catch (err) {
     console.error("Failed to create verification code:", err);
     return undefined;

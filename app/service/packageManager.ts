@@ -35,24 +35,24 @@ export async function purchasePackage(
       return { success: false, error: 'Package not found' };
     }
     
-    if (!packageInfo.is_active) {
+    if (!packageInfo.isActive) {
       return { success: false, error: 'Package is not active' };
     }
     
     // 计算套餐起止时间
     const startDate = new Date();
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + packageInfo.valid_days);
+    endDate.setDate(endDate.getDate() + (packageInfo.validDays || 0));
     
     // 创建套餐快照
     const packageSnapshot = {
       id: packageInfo.id,
       name: packageInfo.name,
       version: packageInfo.version,
-      price: packageInfo.price,
-      dailyCredits: packageInfo.daily_credits,
-      validDays: packageInfo.valid_days,
-      planType: packageInfo.plan_type,
+      price: packageInfo.priceCents / 100,
+      dailyCredits: packageInfo.dailyPoints,
+      validDays: packageInfo.validDays,
+      planType: packageInfo.planType,
       features: packageInfo.features,
     };
     
@@ -63,7 +63,7 @@ export async function purchasePackage(
       order_no: orderNo,
       start_date: startDate,
       end_date: endDate,
-      daily_credits: packageInfo.daily_credits,
+      daily_credits: packageInfo.dailyPoints || 0,
       package_snapshot: packageSnapshot,
     });
     
@@ -74,7 +74,7 @@ export async function purchasePackage(
     // 激活套餐积分
     const creditResult = await activatePackageCredits(
       userId,
-      packageInfo.daily_credits,
+      packageInfo.dailyPoints || 0,
       orderNo
     );
     
@@ -111,7 +111,7 @@ export async function renewPackage(
       return { success: false, error: 'Package not found' };
     }
     
-    if (!packageInfo.is_active) {
+    if (!packageInfo.isActive) {
       return { success: false, error: 'Package is not active' };
     }
     
@@ -120,10 +120,10 @@ export async function renewPackage(
       id: packageInfo.id,
       name: packageInfo.name,
       version: packageInfo.version,
-      price: packageInfo.price,
-      dailyCredits: packageInfo.daily_credits,
-      validDays: packageInfo.valid_days,
-      planType: packageInfo.plan_type,
+      price: packageInfo.priceCents / 100,
+      dailyCredits: packageInfo.dailyPoints,
+      validDays: packageInfo.validDays,
+      planType: packageInfo.planType,
       features: packageInfo.features,
     };
     
@@ -132,8 +132,8 @@ export async function renewPackage(
       userId,
       packageId,
       orderNo,
-      packageInfo.valid_days,
-      packageInfo.daily_credits,
+      packageInfo.validDays || 0,
+      packageInfo.dailyPoints || 0,
       packageSnapshot
     );
     
@@ -414,7 +414,7 @@ export async function calculatePackageChange(
     
     // 计算按比例退款/补差价
     const currentDailyPrice = currentPackage.package_snapshot?.price / currentPackage.package_snapshot?.validDays || 0;
-    const newDailyPrice = newPackage.price / newPackage.valid_days;
+    const newDailyPrice = (newPackage.priceCents / 100) / (newPackage.validDays || 1);
     const proratedAmount = Math.round((newDailyPrice - currentDailyPrice) * remainingDays);
     
     return {

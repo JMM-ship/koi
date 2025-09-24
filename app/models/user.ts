@@ -14,7 +14,7 @@ function fromPrismaUser(user: PrismaUser | null): User | undefined {
     email: user.email,
     created_at: user.createdAt.toISOString(),
     updated_at: user.updatedAt.toISOString(),
-    password:user.password,
+    password:user.password || undefined,
     nickname: user.nickname || undefined,
     avatar_url: user.avatarUrl || undefined,
     locale: user.locale || undefined,
@@ -50,7 +50,7 @@ export async function insertUser(user: Partial<User>) {
 
 export async function findUserByEmail(email: string): Promise<User | undefined> {
   const user = await prisma.user.findFirst({ where: { email } });
-  console.log(user,"sss");
+ 
   
   return fromPrismaUser(user);
 }

@@ -71,6 +71,7 @@ export async function updatePackageCredits(
     const wallet = await prisma.wallet.upsert({
       where: { userId },
       update: {
+        packageDailyQuotaTokens: BigInt(credits),
         packageTokensRemaining: BigInt(credits),
         packageResetAt: resetAt || new Date(),
       },
@@ -181,6 +182,7 @@ export async function resetPackageCredits(
     const wallet = await prisma.wallet.update({
       where: { userId },
       data: {
+        packageDailyQuotaTokens: BigInt(dailyCredits),
         packageTokensRemaining: BigInt(dailyCredits),
         packageResetAt: new Date(),
       },
@@ -207,6 +209,7 @@ export async function batchResetPackageCredits(
           await tx.wallet.update({
             where: { userId: user.userId },
             data: {
+              packageDailyQuotaTokens: BigInt(user.dailyCredits),
               packageTokensRemaining: BigInt(user.dailyCredits),
               packageResetAt: new Date(),
             },

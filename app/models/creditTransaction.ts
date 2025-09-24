@@ -82,10 +82,11 @@ export async function createCreditTransaction(data: {
         bucket: data.credit_type, // credit_type 映射到 bucket
         tokens: data.amount, // 使用 tokens 字段
         points: data.amount, // 使用 points 字段
-        beforePackageTokens: data.credit_type === CreditType.Package ? BigInt(data.before_balance) : BigInt(0),
-        afterPackageTokens: data.credit_type === CreditType.Package ? BigInt(data.after_balance) : BigInt(0),
-        beforeIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.before_balance) : BigInt(0),
-        afterIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.after_balance) : BigInt(0),
+        // 根据积分类型设置before/after值
+        beforePackageTokens: data.credit_type === CreditType.Package ? BigInt(data.before_balance) : null,
+        afterPackageTokens: data.credit_type === CreditType.Package ? BigInt(data.after_balance) : null,
+        beforeIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.before_balance) : null,
+        afterIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.after_balance) : null,
         orderId: data.order_no || null,
         reason: data.description || null,
         meta: data.metadata || {},
@@ -286,8 +287,8 @@ export async function batchCreateResetTransactions(
       points: reset.amount,
       beforePackageTokens: BigInt(reset.beforeBalance),
       afterPackageTokens: BigInt(reset.afterBalance),
-      beforeIndependentTokens: BigInt(0),
-      afterIndependentTokens: BigInt(0),
+      beforeIndependentTokens: null,
+      afterIndependentTokens: null,
       reason: '每日积分重置',
       meta: { autoReset: true },
     }));

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       // 未登录用户，只返回套餐列表
       const packages = await getActivePackages();
       result = {
-        packages: packages.filter(pkg => !active || pkg.is_active),
+        packages: packages.filter(pkg => !active || pkg.isActive),
         currentPackage: null,
       };
     }
