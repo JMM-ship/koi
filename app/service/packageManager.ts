@@ -160,19 +160,20 @@ export async function getPackagesWithUserStatus(userId?: string) {
     // 获取所有激活的套餐
     const packages = await getActivePackages();
     
+    
     // 如果提供了用户ID，获取用户当前套餐
     let userPackage = null;
     if (userId) {
       userPackage = await getUserActivePackage(userId);
     }
-    
+
     // 标记用户当前套餐
     const packagesWithStatus = packages.map(pkg => ({
       ...pkg,
       isCurrent: userPackage?.package_id === pkg.id,
       userPackage: userPackage?.package_id === pkg.id ? userPackage : null,
     }));
-    
+
     return {
       packages: packagesWithStatus,
       currentPackage: userPackage,

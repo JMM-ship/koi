@@ -83,7 +83,7 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
         signinIp: null,  // 新架构中已移除
         signinProvider: null,  // 新架构中已移除
         signinOpenid: null,  // 新架构中已移除
-        inviteCode: null,  // 新架构中已移除
+        // inviteCode: null,  // 新架构中已移除
         invitedBy: null,  // 新架构中已移除
         isAffiliate: false,  // 新架构中已移除
         role: user.role as 'user' | 'admin',

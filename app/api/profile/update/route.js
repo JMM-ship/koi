@@ -9,7 +9,7 @@ export async function POST(request) {
   try {
     // 获取当前登录用户
     const session = await getServerSession(authOptions);
-    
+
     if (!session || !session.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized" },
@@ -51,7 +51,7 @@ export async function POST(request) {
 
     // 查找用户
     const user = await findUserByEmail(session.user.email);
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "User not found" },
@@ -61,7 +61,7 @@ export async function POST(request) {
 
     // 更新用户信息
     const updatedUser = await prisma.user.update({
-      where: { uuid: user.uuid },
+      where: { id: user.id },
       data: {
         nickname: nickname.trim(),
         avatarUrl: avatarUrl || null,
@@ -73,7 +73,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       data: {
-        uuid: updatedUser.uuid,
+        uuid: updatedUser.id,
         email: updatedUser.email,
         nickname: updatedUser.nickname,
         avatarUrl: updatedUser.avatarUrl,

@@ -10,42 +10,76 @@ import ModalPortal from "@/components/common/ModalPortal";
 interface Package {
   id: string;
   name: string;
-  price: number; // 元（后端 /api/packages 做了 /100）
-  daily_credits: number; // 展示层仍使用下划线命名
-  valid_days: number;    // 展示层仍使用下划线命名
-  features?: string[];
-  tag?: string;
-  is_recommended: boolean;
+  version: string;
+  description?: string;
+  priceCents: number; // 数据库字段名
+  price: number; // 计算后的价格（元）
   currency: string;
-  plan_type: string
+  dailyPoints: number; // 数据库字段名
+  daily_credits: number; // 展示用字段
+  planType: string; // 数据库字段名
+  plan_type: string; // 展示用字段
+  validDays?: number; // 数据库字段名
+  valid_days: number; // 展示用字段
+  features?: any; // JSON 字段
+  limitations?: any; // JSON 字段
+  isActive: boolean;
+  sortOrder: number;
+  tag?: string; // 展示用
+  is_recommended: boolean; // 展示用
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface UserPackage {
   id: string;
+  userId: string;
   packageId: string;
+  orderId?: string;
+  startAt: string;
+  endAt: string;
+  dailyPoints: number;
+  dailyQuotaTokens: string; // BigInt 作为字符串
+  isActive: boolean;
+  packageSnapshot: any; // JSON 字段
+  // 展示用字段
   packageName: string;
   endDate: string;
   dailyCredits: number;
   remainingDays: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 function fromApiUserPackage(apiData: any): UserPackage {
-  let diffDays = 0
+  let diffDays = 0;
+
   if (apiData?.start_date && apiData?.end_date) {
     const start = new Date(apiData.start_date);
     const end = new Date(apiData.end_date);
 
     const diffMs = end.getTime() - start.getTime(); // 毫秒差
     diffDays = diffMs / (1000 * 60 * 60 * 24); // 转换成天数
-
   }
+
   return {
     id: apiData?.id,
+    userId: apiData?.user_id,
     packageId: apiData?.package_id,
-    packageName: apiData?.package_snapshot?.name || apiData?.package_name,
+    orderId: apiData?.order_no,
+    startAt: apiData?.start_date,
+    endAt: apiData?.end_date,
+    dailyPoints: apiData?.daily_credits, // 映射 daily_credits -> dailyPoints
+    dailyQuotaTokens: apiData?.daily_quota_tokens, // 如果后端有
+    isActive: apiData?.is_active,
+    packageSnapshot: apiData?.package_snapshot,
+    // 展示用字段
+    packageName: apiData?.package_snapshot?.name || apiData?.package?.name,
     endDate: apiData?.end_date,
     dailyCredits: apiData?.daily_credits,
     remainingDays: diffDays,
+    createdAt: apiData?.created_at,
+    updatedAt: apiData?.updated_at,
   };
 }
 
@@ -92,6 +126,7 @@ export default function PlansContent() {
   // Determine button text based on package comparison
   const getButtonText = (pkg: Package): string => {
 
+    console.log(pkg, "当前包", currentPackage);
 
     if (!currentPackage) return 'Choose Plan';
 
@@ -101,7 +136,6 @@ export default function PlansContent() {
 
     const currentLevel = getPackageLevel(currentPackage.packageName);
     const targetLevel = getPackageLevel(pkg.name);
-
 
     if (targetLevel > currentLevel) {
       return 'Upgrade';
@@ -138,7 +172,8 @@ export default function PlansContent() {
           is_recommended: (pkg.features?.isRecommended === true),
         }));
         setPackages(packagesData);
-        console.log(data.data, "获取数据");
+        console.log(data.data, "数据的数据");
+
 
         setCurrentPackage(fromApiUserPackage(data.data.currentPackage));
       }
@@ -249,7 +284,8 @@ export default function PlansContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          months: selectedMonths
+          months: selectedMonths,
+          packageId: renewPackage.id
         }),
       });
 
@@ -497,7 +533,7 @@ export default function PlansContent() {
                 </div>
 
                 <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px' }}>
-                  {formatFeatures(pkg).map((feature, index) => (
+                  {formatFeatures(pkg).map((feature: any, index: any) => (
                     <li key={index} className="d-flex align-items-start" style={{ marginBottom: '14px' }}>
                       <span style={{
                         width: '18px',

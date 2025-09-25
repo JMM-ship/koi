@@ -146,9 +146,7 @@ providers.push(
       if (!isPasswordValid) {
         return null;
       }
-      console.log("credentials:", credentials);
-console.log("user from DB:", user);
-console.log("password match:", await bcrypt.compare(credentials.password, user.password));
+
       return {
         id: user.id,
         email: user.email,
@@ -205,10 +203,11 @@ export const authOptions: NextAuthOptions = {
         // 从数据库获取最新的用户信息，确保角色是最新的
         try {
           const latestUser = await findUserByEmail(token.user.email as any);
+          
           if (latestUser) {
             session.user = {
               ...token.user,
-              id: token.user.uuid, // Add id field for compatibility
+              id: latestUser.id, // Add id field for compatibility
               role: latestUser.role || 'user',
               status: latestUser.status || 'active',
               planType: latestUser.planType || 'free',
@@ -229,6 +228,7 @@ export const authOptions: NextAuthOptions = {
           };
         }
       }
+      
       return session;
     },
     async jwt({ token, user, account }) {

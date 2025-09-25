@@ -25,11 +25,10 @@ const SatisfactionRate = () => {
           // 计算积分数据
           const balance = creditBalance;
 
-          const total = (balance?.packageCredits || 0) + (balance?.independentCredits || 0) + (userInfo?.totalCredits || 0);
+          const total = (balance?.packageCredits || 0) + (balance?.independentCredits || 0);
           const used = balance?.totalUsed || 0;
           const remaining = Math.max(0, total - used);
           const percent = total > 0 ? (remaining / total) * 100 : 0;
-          console.log(total, used, remaining, percent);
 
           setCreditData({
             totalCredits: total,

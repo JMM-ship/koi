@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     
     // 获取用户会话（可选）
     const session = await getServerSession(authOptions);
-    const userId = session?.user?.uuid;
-    
+    const userId = session?.user?.id;
+
     // 获取套餐列表
     let result;
     if (userId) {

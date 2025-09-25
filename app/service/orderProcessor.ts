@@ -173,7 +173,6 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       payment_method: params.paymentMethod,
       expired_at: expiredAt.toISOString(),
     };
-    console.log(orderData,"订单信息");
     
     const order = await insertOrder(orderData);
     if (!order) {

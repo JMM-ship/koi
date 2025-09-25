@@ -10,6 +10,7 @@ export interface UserPackage {
   end_date: string;
   daily_credits: number;
   package_snapshot?: any;
+  package?: any; // 关联的 package 数据
   is_active: boolean;
   is_auto_renew: boolean;
   created_at: string;
@@ -17,7 +18,7 @@ export interface UserPackage {
 }
 
 // 转换函数：将Prisma数据转换为应用层格式
-function fromPrismaUserPackage(userPkg: PrismaUserPackage | null): UserPackage | undefined {
+function fromPrismaUserPackage(userPkg: any): UserPackage | undefined {
   if (!userPkg) return undefined;
 
   // 从 packageSnapshot 中提取额外信息
@@ -32,6 +33,7 @@ function fromPrismaUserPackage(userPkg: PrismaUserPackage | null): UserPackage |
     end_date: userPkg.endAt.toISOString(), // endAt 对应 end_date
     daily_credits: userPkg.dailyPoints, // dailyPoints 对应 daily_credits
     package_snapshot: userPkg.packageSnapshot,
+    package: userPkg.package, // 添加关联的 package 数据
     is_active: userPkg.isActive,
     is_auto_renew: snapshot.isAutoRenew || false, // 从 snapshot 中获取
     created_at: userPkg.createdAt.toISOString(),
@@ -51,11 +53,14 @@ export async function getUserActivePackage(userId: string): Promise<UserPackage 
           gte: now,
         },
       },
+      include: {
+        package: true, // 包含关联的 package 数据
+      },
       orderBy: {
         endAt: 'desc', // endDate -> endAt
       },
     });
-    
+
     return fromPrismaUserPackage(userPackage);
   } catch (error) {
     console.error('Error getting user active package:', error);

@@ -61,6 +61,7 @@ export async function POST(request: Request) {
   try {
     // 获取当前用户
     let user = await getAuth(request);
+    
     if (!user && process.env.NODE_ENV === 'development') {
       user = await getMockAuth();
     }

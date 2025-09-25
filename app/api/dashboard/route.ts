@@ -15,10 +15,18 @@ export async function GET(request: Request) {
     }
 
     if (!user) {
+      throw new Error("User not found");
+    }
+
+    const dbUser = await prisma.user.findFirst({
+      where: { email: user.email },
+    });
+    if (!dbUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = user.uuid;
+    
+    const userId = dbUser.id;
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
@@ -43,7 +51,6 @@ export async function GET(request: Request) {
         userId
       }
     });
-
     // 获取最近的使用记录（替代modelUsages）
     const usageRecords = await prisma.usageRecord.findMany({
       where: {
@@ -71,7 +78,7 @@ export async function GET(request: Request) {
         endAt: 'desc'
       }
     });
-
+    
     // 获取用户信息
     const userInfo = await prisma.user.findUnique({
       where: { id: userId },

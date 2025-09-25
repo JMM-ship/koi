@@ -6,6 +6,7 @@ import prisma from '@/lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+
     if (!session?.user?.uuid) {
       return NextResponse.json(
         {
@@ -29,7 +30,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userId = session.user.uuid || session.user.id;
+    const userId = session.user.id;
+    console.log(userId,"sssdsdsa");
+    
     if (!userId) {
       return NextResponse.json(
         {

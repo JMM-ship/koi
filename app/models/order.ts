@@ -93,7 +93,6 @@ function fromPrismaOrder(order: PrismaOrder | null): any | undefined {
 }
 
 export async function insertOrder(order: any) {
-  console.log("出版人",order);
   
   try {
     const data = await prisma.order.create({
