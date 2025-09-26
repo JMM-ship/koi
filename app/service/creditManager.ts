@@ -180,16 +180,16 @@ export async function activatePackageCredits(
     const result = await prisma.$transaction(async (tx) => {
       // 获取当前余额
       const currentBalance = await getCreditBalance(userId);
-      const beforeBalance = currentBalance 
-        ? currentBalance.package_credits + currentBalance.independent_credits 
+      const beforeBalance = currentBalance
+        ? currentBalance.package_credits + currentBalance.independent_credits
         : 0;
-      
+
       // 更新套餐积分
       const newBalance = await updatePackageCredits(userId, dailyCredits);
       if (!newBalance) {
         throw new Error('Failed to update package credits');
       }
-      
+
       // 创建流水记录
       const transaction = await createCreditTransaction({
         user_id: userId,
@@ -206,7 +206,7 @@ export async function activatePackageCredits(
           dailyCredits,
         },
       });
-      
+
       return {
         balance: newBalance,
         transaction,
@@ -215,7 +215,7 @@ export async function activatePackageCredits(
       maxWait: 30000, // 最大等待时间30秒
       timeout: 30000, // 事务超时时间30秒
     });
-    
+
     return {
       success: true,
       balance: {
@@ -228,6 +228,69 @@ export async function activatePackageCredits(
   } catch (error) {
     console.error('Error activating package credits:', error);
     return { success: false, error: 'Failed to activate package credits' };
+  }
+}
+
+// 购买新套餐时重置积分
+export async function resetPackageCreditsForNewPackage(
+  userId: string,
+  dailyCredits: number,
+  orderNo: string
+): Promise<CreditPurchaseResult> {
+  try {
+    // 使用事务处理，增加超时时间到30秒
+    const result = await prisma.$transaction(async (tx) => {
+      // 获取当前余额
+      const currentBalance = await getCreditBalance(userId);
+      const beforeBalance = currentBalance
+        ? currentBalance.package_credits + currentBalance.independent_credits
+        : 0;
+
+      // 重置套餐积分为新套餐的日积分值
+      const newBalance = await resetPackageCredits(userId, dailyCredits);
+      if (!newBalance) {
+        throw new Error('Failed to reset package credits');
+      }
+
+      // 创建流水记录
+      const transaction = await createCreditTransaction({
+        user_id: userId,
+        type: TransactionType.Reset,
+        credit_type: CreditType.Package,
+        amount: dailyCredits,
+        before_balance: beforeBalance,
+        after_balance: newBalance.package_credits + newBalance.independent_credits,
+        order_no: orderNo,
+        description: '购买套餐重置积分',
+        metadata: {
+          orderNo,
+          purchaseType: 'package',
+          dailyCredits,
+          resetType: 'new_package',
+        },
+      });
+
+      return {
+        balance: newBalance,
+        transaction,
+      };
+    }, {
+      maxWait: 30000, // 最大等待时间30秒
+      timeout: 30000, // 事务超时时间30秒
+    });
+
+    return {
+      success: true,
+      balance: {
+        packageCredits: result.balance.package_credits,
+        independentCredits: result.balance.independent_credits,
+        totalAvailable: result.balance.package_credits + result.balance.independent_credits,
+      },
+      transaction: result.transaction,
+    };
+  } catch (error) {
+    console.error('Error resetting package credits for new package:', error);
+    return { success: false, error: 'Failed to reset package credits for new package' };
   }
 }
 

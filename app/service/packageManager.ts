@@ -11,7 +11,7 @@ import {
   getAllActivePackageUsers,
   getExpiringPackages
 } from "@/app/models/userPackage";
-import { activatePackageCredits, dailyResetCredits } from "./creditManager";
+import { activatePackageCredits, dailyResetCredits, resetPackageCreditsForNewPackage } from "./creditManager";
 import { batchCreateResetTransactions } from "@/app/models/creditTransaction";
 import { getCreditBalance, batchResetPackageCredits } from "@/app/models/creditBalance";
 import { prisma } from "@/app/models/db";
@@ -71,15 +71,15 @@ export async function purchasePackage(
       return { success: false, error: 'Failed to create user package' };
     }
     
-    // 激活套餐积分
-    const creditResult = await activatePackageCredits(
+    // 重置套餐积分到新套餐的日积分值
+    const creditResult = await resetPackageCreditsForNewPackage(
       userId,
       packageInfo.dailyPoints || 0,
       orderNo
     );
-    
+
     if (!creditResult.success) {
-      return { success: false, error: 'Failed to activate package credits' };
+      return { success: false, error: 'Failed to reset package credits' };
     }
     
     // 注：用户的 plan_type 信息现在通过 UserPackage 管理
