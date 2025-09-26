@@ -32,12 +32,12 @@ export function useDashboardData() {
     '/api/dashboard',
     fetcher,
     {
-      revalidateOnFocus: false, // Don't revalidate on window focus
+      revalidateOnFocus: true, // Revalidate on window focus (changed from false)
       revalidateOnReconnect: true, // Revalidate on reconnect
       refreshInterval: 60000, // Auto refresh every minute
-      dedupingInterval: 5000, // Dedupe requests within 5 seconds
+      dedupingInterval: 2000, // Dedupe requests within 2 seconds (reduced from 5000)
       errorRetryCount: 3, // Retry failed requests 3 times
-      errorRetryInterval: 5000, // Wait 5 seconds between retries
+      errorRetryInterval: 3000, // Wait 3 seconds between retries (reduced from 5000)
     }
   );
 
@@ -51,12 +51,20 @@ export function useDashboardData() {
     return mutate(updater, false);
   };
 
+  // Force refresh after purchase (bypasses cache)
+  const forceRefreshAfterPurchase = async () => {
+    // Clear the cache first, then refetch
+    await mutate(undefined, true);
+    return mutate();
+  };
+
   return {
     data,
     error,
     isLoading,
     refreshData,
     updateData,
+    forceRefreshAfterPurchase,
     mutate,
   };
 }

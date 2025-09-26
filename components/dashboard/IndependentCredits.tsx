@@ -17,7 +17,7 @@ const IndependentCredits = () => {
   const [showPackages, setShowPackages] = useState(false);
   
   // Get data from context
-  const { data, isLoading, refreshData } = useDashboard();
+  const { data, isLoading, refreshData, forceRefreshAfterPurchase } = useDashboard();
   const creditBalance = useCreditBalance();
   const userPackage = useUserPackage();
   useEffect(() => {
@@ -85,9 +85,12 @@ const IndependentCredits = () => {
 
   // Show packages view when button is clicked
   if (showPackages) {
-    return <IndependentPackages onBack={() => setShowPackages(false)} onPurchase={() => {
+    return <IndependentPackages onBack={() => setShowPackages(false)} onPurchase={async () => {
       setShowPackages(false);
-      setTimeout(() => refreshData(), 1500);
+      // Force refresh immediately using the new method
+      await forceRefreshAfterPurchase();
+      // Add a backup refresh after delay
+      setTimeout(() => forceRefreshAfterPurchase(), 2500);
     }} />;
   }
 

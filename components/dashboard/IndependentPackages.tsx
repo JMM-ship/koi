@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
+import { useSWRConfig } from "swr";
 
 interface Package {
   id: string;
@@ -23,6 +24,7 @@ interface IndependentPackagesProps {
 
 const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) => {
   const { showSuccess, showError, showLoading, dismiss } = useToast();
+  const { mutate } = useSWRConfig();
   const [packages, setPackages] = useState<Package[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -115,14 +117,18 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
         duration: 4000,
         icon: '🎉',
       });
-      
+
+      // Force refresh dashboard data by clearing SWR cache
+      await mutate('/api/dashboard');
+      await mutate('/api/profile');
+
       // Short delay before returning to let user see success message
       if (onPurchase) {
         onPurchase();
       } else {
         setTimeout(() => {
           onBack();
-        }, 1500);
+        }, 2000); // Increased delay to 2 seconds
       }
     } catch (error) {
       dismiss();

@@ -9,12 +9,13 @@ interface DashboardContextType {
   error: any;
   refreshData: () => Promise<DashboardData | undefined>;
   updateData: (updater: (data: DashboardData | undefined) => DashboardData | undefined) => Promise<DashboardData | undefined>;
+  forceRefreshAfterPurchase: () => Promise<DashboardData | undefined>;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
-  const { data, error, isLoading, refreshData, updateData } = useDashboardData();
+  const { data, error, isLoading, refreshData, updateData, forceRefreshAfterPurchase } = useDashboardData();
 
   return (
     <DashboardContext.Provider
@@ -24,6 +25,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         error,
         refreshData,
         updateData,
+        forceRefreshAfterPurchase,
       }}
     >
       {children}

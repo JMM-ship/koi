@@ -29,8 +29,11 @@ export function useUserData() {
     session?.user?.email ? '/api/profile' : null,
     fetcher,
     {
-      revalidateOnFocus: false,
-      dedupingInterval: 5000,
+      revalidateOnFocus: true, // Changed from false
+      revalidateOnReconnect: true,
+      dedupingInterval: 2000, // Reduced from 5000
+      errorRetryCount: 3,
+      errorRetryInterval: 3000,
     }
   );
 
