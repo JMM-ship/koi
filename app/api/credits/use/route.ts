@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   try {
     // 验证用户登录
     const session = await getServerSession(authOptions);
-    if (!session?.user?.uuid) {
+    if (!session?.user?.uuid && !session?.user?.id) {
       return NextResponse.json(
         {
           success: false,

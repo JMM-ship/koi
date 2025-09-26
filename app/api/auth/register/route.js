@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createUserWithPassword, findUserByEmail } from '@/app/models/user';
-import { increaseCredits } from '@/app/service/credit';
-import { CreditsAmount, CreditsTransType } from '@/app/service/credit';
-import { getOneYearLaterTimestr } from '@/app/lib/time';
+import { CreditsAmount } from '@/app/service/credit';
 import { findEmailVerificationCodeByEmailAndCode, markVerificationCodeAsUsed } from '@/app/models/verification';
 
 export async function POST(request) {
@@ -89,20 +87,37 @@ export async function POST(request) {
       await markVerificationCodeAsUsed(verification.id);
     }
 
-    // Grant initial credits to the new user
-    await increaseCredits({
-      user_uuid: newUser.uuid,
-      trans_type: CreditsTransType.NewUser,
-      credits: CreditsAmount.NewUserGet,
-      expired_at: getOneYearLaterTimestr(),
-    });
+    // Grant initial credits to the new user using new wallet system
+    try {
+      const { addIndependentCredits } = await import("@/app/models/creditBalance");
+      await addIndependentCredits(newUser.id, CreditsAmount.NewUserGet);
+
+      // Create credit transaction record
+      const { createCreditTransaction, TransactionType, CreditType } = await import("@/app/models/creditTransaction");
+      await createCreditTransaction({
+        user_id: newUser.id,
+        type: TransactionType.Income,
+        credit_type: CreditType.Independent,
+        amount: CreditsAmount.NewUserGet,
+        before_balance: 0,
+        after_balance: CreditsAmount.NewUserGet,
+        description: '新用户注册奖励',
+        metadata: {
+          source: 'email_registration',
+          email: newUser.email,
+        },
+      });
+    } catch (creditError) {
+      console.error("Failed to grant initial credits to new user:", creditError);
+      // Continue with registration, don't block user creation
+    }
 
     // Return success response
     return NextResponse.json({
       success: true,
       message: 'Registration successful.',
       user: {
-        uuid: newUser.uuid,
+        uuid: newUser.id, // 使用id字段
         email: newUser.email,
         nickname: newUser.nickname,
       }

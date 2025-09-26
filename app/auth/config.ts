@@ -217,14 +217,14 @@ export const authOptions: NextAuthOptions = {
           } else {
             session.user = {
               ...token.user,
-              id: token.user.uuid // Add id field for compatibility
+              id: token.user.uuid || token.user.id // Add id field for compatibility
             };
           }
         } catch (e) {
           console.error("Failed to get latest user info in session:", e);
           session.user = {
             ...token.user,
-            id: token.user.uuid // Add id field for compatibility
+            id: token.user.uuid || token.user.id // Add id field for compatibility
           };
         }
       }
@@ -242,7 +242,7 @@ export const authOptions: NextAuthOptions = {
         
         if (user && user.email && account) {
           const dbUser = {
-            uuid: getUuid(),
+            id: user.id, // 使用id字段替代uuid
             email: user.email,
             nickname: user.name || "",
             avatar_url: user.image || "",
@@ -257,7 +257,7 @@ export const authOptions: NextAuthOptions = {
             const savedUser = await saveUser(dbUser);
 
             token.user = {
-              uuid: savedUser.uuid,
+              uuid: savedUser.id, // 用id作为uuid兼容
               email: savedUser.email,
               nickname: savedUser.nickname,
               avatarUrl: savedUser.avatar_url || savedUser.avatarUrl,

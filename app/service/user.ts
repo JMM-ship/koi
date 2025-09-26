@@ -12,18 +12,41 @@ export async function saveUser(user:any) {
   try {
     const existUser = await findUserByEmail(user.email);
     if (!existUser) {
-      await insertUser(user);
+      const newUser = await insertUser(user);
 
-      // increase credits for new user, expire in one year
-      await increaseCredits({
-        user_uuid: user.id || "",
-        trans_type: CreditsTransType.NewUser,
-        credits: CreditsAmount.NewUserGet,
-        expired_at: getOneYearLaterTimestr(),
-      });
+      // 为新用户创建钱包并赠送初始积分
+      if (newUser?.id) {
+        try {
+          // 使用新的钱包系统赠送初始积分
+          const { addIndependentCredits } = await import("@/app/models/creditBalance");
+          await addIndependentCredits(newUser.id, CreditsAmount.NewUserGet);
+
+          // 创建积分交易记录
+          const { createCreditTransaction, TransactionType, CreditType } = await import("@/app/models/creditTransaction");
+          await createCreditTransaction({
+            user_id: newUser.id,
+            type: TransactionType.Income,
+            credit_type: CreditType.Independent,
+            amount: CreditsAmount.NewUserGet,
+            before_balance: 0,
+            after_balance: CreditsAmount.NewUserGet,
+            description: '新用户注册奖励',
+            metadata: {
+              source: 'oauth_registration',
+              provider: user.signin_provider || 'unknown',
+            },
+          });
+        } catch (creditError) {
+          console.error("Failed to grant initial credits to OAuth user:", creditError);
+          // 不阻止用户创建，只记录错误
+        }
+      }
+
+      // 设置返回的用户信息
+      user.id = newUser?.id;
+      user.created_at = newUser?.created_at;
     } else {
       user.id = existUser.id;
-      user.id = existUser.uuid;
       user.created_at = existUser.created_at;
     }
 

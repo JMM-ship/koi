@@ -28,7 +28,7 @@ export async function GET(request) {
 
     // 返回用户信息（不包含密码）
     const profileData = {
-      uuid: user.uuid,
+      uuid: user.id, // 使用id字段
       email: user.email,
       nickname: user.nickname || user.email.split('@')[0],
       avatarUrl: user.avatar_url || session.user.image || null,
