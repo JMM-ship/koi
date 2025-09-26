@@ -10,10 +10,12 @@ async function testPackagePurchase() {
   try {
     // 1. 创建或获取测试用户
     console.log('1️⃣ 创建测试用户...');
-    const testUser = await prisma.user.upsert({
+    const existingUser = await prisma.user.findFirst({
       where: { email: 'test-purchase@example.com' },
-      update: {},
-      create: {
+    });
+
+    const testUser = existingUser || await prisma.user.create({
+      data: {
         id: 'test-user-purchase-123',
         email: 'test-purchase@example.com',
         nickname: 'Test Purchase User',

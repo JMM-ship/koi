@@ -3,7 +3,8 @@
 import { User } from "@prisma/client";
 
 // 扩展的用户类型（包含管理员字段）
-export interface AdminUser extends User {
+export interface AdminUser extends Omit<User, 'inviteCode'> {
+  inviteCode?: string | null;
   role: 'user' | 'admin';
   status: 'active' | 'suspended' | 'deleted';
   planType: 'free' | 'basic' | 'pro' | 'enterprise';

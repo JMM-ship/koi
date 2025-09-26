@@ -76,7 +76,7 @@ export const GET = withAdminAuth(async (
       signinProvider: null,  // 新架构中已移除
       signinOpenid: null,  // 新架构中已移除
       inviteCode: null,  // 新架构中已移除
-      invitedBy: null,  // 新架构中已移除
+      invitedBy: user.invitedBy || "",  // 从数据库获取，如果为空则使用空字符串
       isAffiliate: false,  // 新架构中已移除
       stats: {
         totalOrders,

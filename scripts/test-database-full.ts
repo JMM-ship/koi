@@ -155,13 +155,11 @@ async function testPackageCRUD() {
     const pkg = await prisma.package.create({
       data: {
         name: '测试套餐',
-        nameEn: 'Test Package',
         version: 'v1.0.0',
         description: '这是一个测试套餐',
-        price: 99.99,
-        originalPrice: 199.99,
+        priceCents: 9999,
         currency: 'CNY',
-        dailyCredits: 1000,
+        dailyPoints: 1000,
         validDays: 30,
         planType: 'pro',
         features: {
@@ -170,8 +168,6 @@ async function testPackageCRUD() {
         },
         sortOrder: 1,
         isActive: true,
-        isRecommended: true,
-        tag: 'HOT',
       },
     });
     packageId = pkg.id;

@@ -83,8 +83,8 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
         signinIp: null,  // 新架构中已移除
         signinProvider: null,  // 新架构中已移除
         signinOpenid: null,  // 新架构中已移除
-        // inviteCode: null,  // 新架构中已移除
-        invitedBy: null,  // 新架构中已移除
+        inviteCode: user.inviteCode || null,  // 确保inviteCode字段存在
+        invitedBy: user.invitedBy || "",  // 从数据库获取，如果为空则使用空字符串
         isAffiliate: false,  // 新架构中已移除
         role: user.role as 'user' | 'admin',
         status: user.status as 'active' | 'suspended' | 'deleted',
@@ -143,7 +143,7 @@ export const POST = withAdminAuth(async (req: NextRequest) => {
     }
 
     // 检查邮箱是否已存在
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findFirst({
       where: { email: body.email },
     });
 
