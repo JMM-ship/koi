@@ -217,14 +217,14 @@ export const authOptions: NextAuthOptions = {
           } else {
             session.user = {
               ...token.user,
-              id: token.user.uuid || token.user.id // Add id field for compatibility
+              id: (token.user as any).uuid || (token.user as any).id // Add id field for compatibility
             };
           }
         } catch (e) {
           console.error("Failed to get latest user info in session:", e);
           session.user = {
             ...token.user,
-            id: token.user.uuid || token.user.id // Add id field for compatibility
+            id: (token.user as any).uuid || (token.user as any).id // Add id field for compatibility
           };
         }
       }
@@ -242,7 +242,7 @@ export const authOptions: NextAuthOptions = {
         
         if (user && user.email && account) {
           const dbUser = {
-            id: user.id, // 使用id字段替代uuid
+            id: getUuid(), // 生成新的UUID作为id
             email: user.email,
             nickname: user.name || "",
             avatar_url: user.image || "",
@@ -258,12 +258,13 @@ export const authOptions: NextAuthOptions = {
 
             token.user = {
               uuid: savedUser.id, // 用id作为uuid兼容
+              id: savedUser.id, // 添加id字段
               email: savedUser.email,
               nickname: savedUser.nickname,
               avatarUrl: savedUser.avatar_url || savedUser.avatarUrl,
               created_at: savedUser.created_at || savedUser.createdAt,
               role: savedUser.role || 'user',
-            };
+            } as any;
           } catch (e) {
             console.error("save user failed:", e);
           }
@@ -274,12 +275,13 @@ export const authOptions: NextAuthOptions = {
             if (latestUser) {
               token.user = {
                 ...token.user,
+                id: latestUser.id,
                 role: latestUser.role || 'user',
                 status: latestUser.status || 'active',
                 planType: latestUser.planType || 'free',
                 totalCredits: latestUser.totalCredits || 0,
-                avatarUrl: latestUser.avatar_url || token.user.avatarUrl,
-              }; 
+                avatarUrl: latestUser.avatar_url || (token.user as any).avatarUrl,
+              } as any;
             }
           } catch (e) {
             console.error("update user info failed:", e);
