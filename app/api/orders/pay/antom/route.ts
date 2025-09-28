@@ -52,6 +52,9 @@ export async function POST(request: NextRequest) {
     const payCurrency = process.env.ANTOM_PAYMENT_CURRENCY || order.currency || 'USD'
     const settleCurrencyEnv = process.env.ANTOM_SETTLEMENT_CURRENCY
 
+    // Resolve payment method type: prefer request, then env, then CONNECT_WALLET (multi-wallet cashier)
+    const resolvedPaymentMethodType = paymentMethodType || process.env.ANTOM_PAYMENT_METHOD || 'CONNECT_WALLET'
+
     const payResult = await antomPay({
       orderNo,
       amount: order.amount,
@@ -60,7 +63,7 @@ export async function POST(request: NextRequest) {
       userEmail: session.user.email,
       notifyUrl,
       returnUrl,
-      paymentMethodType: paymentMethodType || process.env.ANTOM_PAYMENT_METHOD || undefined,
+      paymentMethodType: resolvedPaymentMethodType,
       settlementCurrency: settleCurrencyEnv || undefined,
     })
 
@@ -74,6 +77,7 @@ export async function POST(request: NextRequest) {
             payCurrency,
             settlementCurrency: settleCurrencyEnv || null,
             gateway: process.env.ANTOM_GATEWAY_URL || 'https://open-na.alipay.com',
+            paymentMethodType: resolvedPaymentMethodType,
           }
         },
         timestamp: new Date().toISOString(),
