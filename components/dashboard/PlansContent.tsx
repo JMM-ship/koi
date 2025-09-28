@@ -98,6 +98,7 @@ export default function PlansContent() {
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewPackage, setRenewPackage] = useState<Package | null>(null);
   const [upgradeDiscount, setUpgradeDiscount] = useState<{ amount: number, days: number } | null>(null);
+  const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
 
   // Define package hierarchy
   const packageHierarchy: { [key: string]: number } = {
@@ -322,7 +323,7 @@ export default function PlansContent() {
         body: JSON.stringify({
           orderType: 'package',
           packageId: selectedPackage.id,
-          paymentMethod: 'mock', // Mock payment
+          paymentMethod: paymentProvider,
           upgradeDiscount: upgradeDiscount ? upgradeDiscount.amount : 0
         }),
       });
@@ -330,8 +331,24 @@ export default function PlansContent() {
       const data = await response.json();
 
       if (data.success) {
-        // Simulate payment success
-        await simulatePaymentSuccess(data.data.order.orderNo);
+        const orderNo = data.data.order.orderNo as string;
+        if (paymentProvider === 'antom') {
+          // Create Antom payment and redirect
+          const payResp = await fetch('/api/orders/pay/antom', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderNo }),
+          });
+          const payData = await payResp.json();
+          if (!payResp.ok || !payData?.success || !payData?.data?.redirectUrl) {
+            throw new Error(payData?.error?.message || 'Failed to create Antom payment');
+          }
+          window.location.href = payData.data.redirectUrl;
+          return; // Redirecting, skip local success toast for now
+        } else {
+          // Simulate payment success (mock)
+          await simulatePaymentSuccess(orderNo);
+        }
 
         showSuccess('Package purchased successfully!');
         setShowConfirmModal(false);

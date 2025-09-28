@@ -29,6 +29,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
 
   useEffect(() => {
     // Fetch credit packages list
@@ -76,7 +77,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
           orderType: 'credits',
           creditAmount: selected.credits,
           packageId: selected.id,
-          paymentMethod: 'mock',
+          paymentMethod: paymentProvider,
         }),
       });
 
@@ -86,30 +87,37 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
         throw new Error(orderData.error?.message || 'Failed to create order');
       }
 
-      // Update loading message
-      dismiss(loadingToast);
-      const paymentToast = showLoading('Completing payment...');
-
-      // Mock payment
-      const payResponse = await fetch('/api/orders/pay/mock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderNo: orderData.data.order.orderNo,
-          paymentDetails: {
-            method: 'mock',
-            transactionId: 'mock_' + Date.now(),
-          },
-        }),
-      });
-
-      const payData = await payResponse.json();
-      dismiss(paymentToast);
-
-      if (!payData.success) {
-        throw new Error(payData.error?.message || 'Payment failed');
+      const orderNo = orderData.data.order.orderNo as string;
+      if (paymentProvider === 'antom') {
+        dismiss(loadingToast);
+        const payResp = await fetch('/api/orders/pay/antom', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderNo }),
+        });
+        const payData = await payResp.json();
+        if (!payResp.ok || !payData?.success || !payData?.data?.redirectUrl) {
+          throw new Error(payData?.error?.message || 'Failed to create Antom payment');
+        }
+        window.location.href = payData.data.redirectUrl;
+        return;
+      } else {
+        // Mock payment
+        dismiss(loadingToast);
+        const paymentToast = showLoading('Completing payment...');
+        const payResponse = await fetch('/api/orders/pay/mock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderNo,
+            paymentDetails: { method: 'mock', transactionId: 'mock_' + Date.now() },
+          }),
+        });
+        const payData = await payResponse.json();
+        dismiss(paymentToast);
+        if (!payData.success) {
+          throw new Error(payData.error?.message || 'Payment failed');
+        }
       }
 
       // Payment successful

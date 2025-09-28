@@ -54,6 +54,7 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
     let productName = '';
     let packageSnapshot = null;
     let validDays = 0;
+    let currency = process.env.ANTOM_PAYMENT_CURRENCY || 'USD';
     
     // 根据订单类型处理
     if (params.orderType === OrderType.Package) {
@@ -75,6 +76,7 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       credits = (packageInfo.dailyPoints || 0) * (packageInfo.validDays || 0);
       productName = packageInfo.name;
       validDays = packageInfo.validDays || 0;
+      currency = packageInfo.currency || process.env.ANTOM_PAYMENT_CURRENCY || 'USD';
       
       // 创建套餐快照
       packageSnapshot = {
@@ -108,6 +110,7 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
         credits = packageInfo.dailyPoints || 0; // credits 套餐，dailyPoints 表示总积分
         productName = packageInfo.name;
         params.creditAmount = credits; // 设置creditAmount用于后续处理
+        currency = packageInfo.currency || process.env.ANTOM_PAYMENT_CURRENCY || 'USD';
         
         // 创建套餐快照
         packageSnapshot = {
@@ -122,8 +125,9 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
         // 直接指定积分数量购买（保留旧逻辑）
         credits = params.creditAmount;
         // 计算价格（示例：1积分 = 0.01元）
-        amount = Math.round(credits * 1); // 1积分 = 1分钱
+        amount = Math.round(credits * 1); // 1积分 = 1分钱（单位货币由 currency 决定）
         productName = `${credits} 积分`;
+        currency = process.env.ANTOM_PAYMENT_CURRENCY || 'USD';
       } else {
         return { success: false, error: 'Credit amount or package ID is required' };
       }
@@ -160,7 +164,7 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       amount: amount,
       status: OrderStatus.Pending,
       credits: credits,
-      currency: 'CNY',
+      currency: currency,
       product_name: productName,
       order_type: params.orderType,
       package_id: params.packageId,
