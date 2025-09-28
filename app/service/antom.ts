@@ -152,15 +152,17 @@ export async function antomPay(params: AntomPayParams): Promise<AntomPayResult> 
       orderDescription: params.productName,
       orderAmount: { currency: params.currency, value: String(valueMinorUnit) },
     },
-    paymentMethod: {
-      paymentMethodType: params.paymentMethodType || 'ALIPAY_CN',
-    },
     paymentNotifyUrl: params.notifyUrl,
     paymentRedirectUrl: params.returnUrl,
     env: {
       terminalType: 'WEB',
       osType: 'WEB',
     },
+  }
+
+  // Only include a specific payment method if provided; otherwise let cashier show all supported methods
+  if (params.paymentMethodType) {
+    payload.paymentMethod = { paymentMethodType: params.paymentMethodType }
   }
 
   // Only set settlement strategy if explicitly provided to avoid contract mismatches

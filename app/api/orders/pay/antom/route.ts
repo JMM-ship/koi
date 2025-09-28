@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { orderNo } = body || {}
+    const { orderNo, paymentMethodType } = body || {}
     if (!orderNo) {
       return NextResponse.json({
         success: false,
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       userEmail: session.user.email,
       notifyUrl,
       returnUrl,
-      paymentMethodType: process.env.ANTOM_PAYMENT_METHOD || 'ALIPAY_CN',
+      paymentMethodType: paymentMethodType || process.env.ANTOM_PAYMENT_METHOD || undefined,
       settlementCurrency: settleCurrencyEnv || undefined,
     })
 
