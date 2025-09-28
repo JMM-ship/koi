@@ -92,7 +92,8 @@ model ProviderAccount {
   updatedAt            DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   // 关联
-  group AccountGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  group           AccountGroup?    @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  usageAggregates UsageAggregate[]
 
   @@index([provider])
   @@index([groupId])
@@ -190,8 +191,10 @@ model ApiKey {
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   // 关联
-  owner        User           @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
-  usageRecords UsageRecord[]
+  owner           User              @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  usageRecords    UsageRecord[]
+  costAggregates  CostAggregate[]
+  usageAggregates UsageAggregate[]
 
   @@index([ownerUserId])
   @@index([status])
@@ -354,4 +357,39 @@ model EmailVerificationCode {
   @@index([email, code], name: "idx_email_code")
   @@index([expiresAt], name: "idx_expires_at")
   @@index([createdAt], name: "idx_created_at")
+}
+
+// ========== 成本聚合模型 ==========
+model CostAggregate {
+  apiKeyId    String   @map("api_key_id") @db.Uuid
+  granularity String
+  bucketAt    DateTime @map("bucket_at") @db.Timestamptz
+  amount      Decimal  @default(0) @db.Decimal
+
+  // 关联
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@id([apiKeyId, granularity, bucketAt])
+  @@map("cost_aggregates")
+}
+
+// ========== 使用聚合模型 ==========
+model UsageAggregate {
+  apiKeyId     String   @map("api_key_id") @db.Uuid
+  accountId    String?  @map("account_id") @db.Uuid
+  model        String
+  granularity  String
+  bucketAt     DateTime @map("bucket_at") @db.Timestamptz
+  inputTokens  BigInt   @default(0) @map("input_tokens")
+  outputTokens BigInt   @default(0) @map("output_tokens")
+  cacheTokens  BigInt   @default(0) @map("cache_tokens")
+  allTokens    BigInt   @default(0) @map("all_tokens")
+  requests     BigInt   @default(0)
+
+  // 关联
+  apiKey  ApiKey           @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  account ProviderAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+
+  @@id([apiKeyId, model, granularity, bucketAt])
+  @@map("usage_aggregates")
 }

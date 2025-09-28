@@ -41,6 +41,14 @@ CREATE TABLE public.api_keys (
   CONSTRAINT api_keys_pkey PRIMARY KEY (id),
   CONSTRAINT api_keys_owner_user_id_fkey FOREIGN KEY (owner_user_id) REFERENCES public.users(id)
 );
+CREATE TABLE public.cost_aggregates (
+  api_key_id uuid NOT NULL,
+  granularity text NOT NULL CHECK (granularity = ANY (ARRAY['h'::text, 'd'::text, 'm'::text, 'w'::text])),
+  bucket_at timestamp with time zone NOT NULL,
+  amount numeric NOT NULL DEFAULT 0 CHECK (amount >= 0::numeric),
+  CONSTRAINT cost_aggregates_pkey PRIMARY KEY (api_key_id, granularity, bucket_at),
+  CONSTRAINT cost_aggregates_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES public.api_keys(id)
+);
 CREATE TABLE public.credit_transactions (
   id uuid NOT NULL,
   user_id uuid NOT NULL,
@@ -107,7 +115,7 @@ CREATE TABLE public.packages (
   price_cents integer NOT NULL CHECK (price_cents >= 0),
   currency text NOT NULL DEFAULT 'USD'::text,
   daily_points integer NOT NULL CHECK (daily_points >= 0),
-  plan_type text NOT NULL CHECK (plan_type = ANY (ARRAY['basic'::text, 'pro'::text, 'enterprise'::text])),
+  plan_type text NOT NULL CHECK (plan_type = ANY (ARRAY['basic'::text, 'pro'::text, 'enterprise'::text, 'independence'::text, 'credits'::text])),
   valid_days integer CHECK (valid_days > 0),
   features jsonb NOT NULL DEFAULT '{}'::jsonb,
   limitations jsonb NOT NULL DEFAULT '{}'::jsonb,
@@ -155,6 +163,21 @@ CREATE TABLE public.rate_limit_policies (
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT rate_limit_policies_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.usage_aggregates (
+  api_key_id uuid NOT NULL,
+  account_id uuid,
+  model text NOT NULL,
+  granularity text NOT NULL CHECK (granularity = ANY (ARRAY['h'::text, 'd'::text, 'm'::text])),
+  bucket_at timestamp with time zone NOT NULL,
+  input_tokens bigint NOT NULL DEFAULT 0 CHECK (input_tokens >= 0),
+  output_tokens bigint NOT NULL DEFAULT 0 CHECK (output_tokens >= 0),
+  cache_tokens bigint NOT NULL DEFAULT 0 CHECK (cache_tokens >= 0),
+  all_tokens bigint NOT NULL DEFAULT 0 CHECK (all_tokens >= 0),
+  requests bigint NOT NULL DEFAULT 0 CHECK (requests >= 0),
+  CONSTRAINT usage_aggregates_pkey PRIMARY KEY (api_key_id, model, granularity, bucket_at),
+  CONSTRAINT usage_aggregates_api_key_id_fkey FOREIGN KEY (api_key_id) REFERENCES public.api_keys(id),
+  CONSTRAINT usage_aggregates_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.provider_accounts(id)
 );
 CREATE TABLE public.usage_records (
   id uuid NOT NULL,
