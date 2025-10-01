@@ -167,18 +167,6 @@ model Wallet {
   independentTokens       BigInt   @default(0) @map("independent_tokens")
   lockedTokens            BigInt   @default(0) @map("locked_tokens")
   version                 Int      @default(0)
-
-  // 新增：每日使用量跟踪
-  dailyUsageCount         BigInt   @default(0) @map("daily_usage_count")
-  dailyUsageResetAt       DateTime? @map("daily_usage_reset_at") @db.Timestamptz
-
-  // 新增：手动重置跟踪
-  manualResetCount        Int      @default(0) @map("manual_reset_count")
-  manualResetAt           DateTime? @map("manual_reset_at") @db.Timestamptz
-
-  // 新增：最后恢复时间
-  lastRecoveryAt          DateTime? @map("last_recovery_at") @db.Timestamptz
-
   createdAt               DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt               DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
