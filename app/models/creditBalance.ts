@@ -179,12 +179,21 @@ export async function resetPackageCredits(
   dailyCredits: number
 ): Promise<CreditBalance | undefined> {
   try {
-    const wallet = await prisma.wallet.update({
+    const wallet = await prisma.wallet.upsert({
       where: { userId },
-      data: {
+      update: {
         packageDailyQuotaTokens: BigInt(dailyCredits),
         packageTokensRemaining: BigInt(dailyCredits),
         packageResetAt: new Date(),
+      },
+      create: {
+        userId,
+        packageDailyQuotaTokens: BigInt(dailyCredits),
+        packageTokensRemaining: BigInt(dailyCredits),
+        packageResetAt: new Date(),
+        independentTokens: BigInt(0),
+        lockedTokens: BigInt(0),
+        version: 0,
       },
     });
 

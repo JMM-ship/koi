@@ -1,6 +1,8 @@
 import { resetAllPackageCredits, resetUserPackageCredits, shouldResetCredits } from './creditResetService';
 import { checkAndExpirePackages } from './packageManager';
 import { batchCheckExpiredOrders } from './orderProcessor';
+import { prisma } from '@/app/models/db';
+import { autoRecoverCredits } from '@/app/service/creditRecoveryService';
 
 // 定时任务配置
 export interface CronJobConfig {
@@ -17,6 +19,76 @@ export interface JobExecutionResult {
   success: boolean;
   message?: string;
   details?: any;
+}
+
+// 每小时积分恢复任务（遍历活跃用户，按小时基于 lastRecoveryAt 恢复）
+export async function hourlyRecoveryJob(options?: { now?: Date; pageSize?: number; concurrency?: number }): Promise<JobExecutionResult> {
+  const startedAt = new Date();
+  const now = options?.now ?? new Date();
+
+  const pageSize = options?.pageSize ?? Number(process.env.HOURLY_RECOVERY_PAGE_SIZE || 500);
+  const concurrency = options?.concurrency ?? Math.max(1, Number(process.env.HOURLY_RECOVERY_CONCURRENCY || 5));
+
+  let offset = 0;
+  let totalUsers = 0;
+  let successCount = 0;
+  let failedCount = 0;
+
+  try {
+    // 分页获取去重后的活跃用户（存在活跃套餐，且未过期）
+    // 注意：自动恢复基于 lastRecoveryAt 与 now 的时间差，因此不依赖触发时区；
+    // 按小时持续恢复对每个用户独立成立。
+    for (;;) {
+      const userIds = await prisma.userPackage.findMany({
+        where: { isActive: true, endAt: { gte: now } },
+        select: { userId: true },
+        distinct: ['userId'],
+        take: pageSize,
+        skip: offset,
+        orderBy: { userId: 'asc' },
+      });
+
+      if (!userIds.length) break;
+      offset += userIds.length;
+
+      totalUsers += userIds.length;
+
+      // 分片 + 保守并发
+      for (let i = 0; i < userIds.length; i += concurrency) {
+        const slice = userIds.slice(i, i + concurrency);
+        const results = await Promise.all(
+          slice.map(async (row) => {
+            try {
+              const r = await autoRecoverCredits(row.userId, { now });
+              return { ok: r.success };
+            } catch (e) {
+              return { ok: false };
+            }
+          })
+        );
+        for (const r of results) {
+          if (r.ok) successCount++; else failedCount++;
+        }
+      }
+    }
+
+    const message = `Hourly recovery processed ${totalUsers} users: ${successCount} succeeded, ${failedCount} failed`;
+    return {
+      jobName: 'Hourly Credit Recovery',
+      executedAt: startedAt.toISOString(),
+      success: failedCount === 0,
+      message,
+      details: { totalUsers, successCount, failedCount, pageSize, concurrency },
+    };
+  } catch (error) {
+    const message = `Hourly recovery failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    return {
+      jobName: 'Hourly Credit Recovery',
+      executedAt: startedAt.toISOString(),
+      success: false,
+      message,
+    };
+  }
 }
 
 // 每日积分重置任务
@@ -121,9 +193,9 @@ export async function runDailyMaintenanceTasks(): Promise<JobExecutionResult[]> 
   
   const results: JobExecutionResult[] = [];
   
-  // 1. 重置套餐积分
-  const creditResetResult = await dailyCreditResetJob();
-  results.push(creditResetResult);
+  // 1. 每小时恢复任务（手动触发一次）
+  const hourlyResult = await hourlyRecoveryJob();
+  results.push(hourlyResult);
   
   // 2. 检查套餐到期
   const packageExpiryResult = await packageExpiryCheckJob();
@@ -165,9 +237,17 @@ export async function checkAndResetUserCredits(userUuid: string): Promise<boolea
 export function getCronJobConfigs(): CronJobConfig[] {
   return [
     {
+      name: 'Hourly Credit Recovery',
+      // 每小时第5分触发（node-cron: 秒 分 时 日 月 周）
+      schedule: '0 5 * * * *',
+      enabled: process.env.ENABLE_HOURLY_RECOVERY === 'true',
+      handler: hourlyRecoveryJob,
+    },
+    {
       name: 'Daily Credit Reset',
       schedule: '0 0 * * *', // 每天0点执行
-      enabled: process.env.ENABLE_CRON_JOBS === 'true',
+      // 通过独立环境变量控制，默认关闭旧作业
+      enabled: process.env.ENABLE_DAILY_RESET === 'true',
       handler: dailyCreditResetJob
     },
     {

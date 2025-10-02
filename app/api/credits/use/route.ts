@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     // 解析请求体
     const body = await request.json();
-    const { amount, service, metadata } = body;
+    const { amount, service, metadata, requestId } = body;
     
     // 验证参数
     if (!amount || amount <= 0) {
@@ -71,24 +71,31 @@ export async function POST(request: NextRequest) {
     }
     
     // 使用积分
-    const result = await useCredits(userId, amount, service, metadata);
+    const result = await useCredits(userId, amount, service, metadata, { requestId });
     
     if (!result.success) {
       // 根据错误类型返回不同的状态码
-      const statusCode = result.error === 'Insufficient credits' ? 400 : 500;
-      const errorCode = result.error === 'Insufficient credits' ? 'INSUFFICIENT_CREDITS' : 'USE_CREDITS_FAILED';
+      const statusCode =
+        result.error === 'Insufficient credits' || result.error === 'DAILY_LIMIT_REACHED' ? 400 : 500;
+      const errorCode =
+        result.error === 'Insufficient credits'
+          ? 'INSUFFICIENT_CREDITS'
+          : result.error === 'DAILY_LIMIT_REACHED'
+          ? 'DAILY_LIMIT_REACHED'
+          : 'USE_CREDITS_FAILED';
       
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            code: errorCode,
-            message: result.error || 'Failed to use credits',
-          },
-          timestamp: new Date().toISOString(),
+      const payload: any = {
+        success: false,
+        error: {
+          code: errorCode,
+          message: result.error || 'Failed to use credits',
         },
-        { status: statusCode }
-      );
+        timestamp: new Date().toISOString(),
+      };
+      if ((result as any).remainingToday !== undefined) {
+        payload.remainingToday = (result as any).remainingToday;
+      }
+      return NextResponse.json(payload, { status: statusCode });
     }
     
     return NextResponse.json({

@@ -87,7 +87,8 @@ export async function createCreditTransaction(data: {
         afterPackageTokens: data.credit_type === CreditType.Package ? BigInt(data.after_balance) : null,
         beforeIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.before_balance) : null,
         afterIndependentTokens: data.credit_type === CreditType.Independent ? BigInt(data.after_balance) : null,
-        orderId: data.order_no || null,
+        // orderId 字段为 UUID，仅当传入合法 UUID 时才写入，否则置 null
+        orderId: data.order_no && data.order_no.match(/^[0-9a-fA-F-]{36}$/) ? data.order_no : null,
         reason: data.description || null,
         meta: data.metadata || {},
       },

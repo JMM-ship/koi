@@ -96,7 +96,8 @@ export async function createUserPackage(data: {
       data: {
         userId: data.user_id,
         packageId: data.package_id,
-        orderId: data.order_no, // orderNo -> orderId
+        // UserPackage.orderId 是 UUID；当传入的不是 UUID（如订单号）时，写 null 避免数据库错误
+        orderId: data.order_no && data.order_no.match(/^[0-9a-fA-F-]{36}$/) ? data.order_no : null,
         startAt: data.start_date, // startDate -> startAt
         endAt: data.end_date, // endDate -> endAt
         dailyPoints: data.daily_credits, // dailyCredits -> dailyPoints
