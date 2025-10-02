@@ -137,7 +137,14 @@ export async function GET(request: Request) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
+    // 输出更详细的错误信息，便于判断是否为连接耗尽/超时等问题
+    const err = error as any;
+    console.error('Error fetching dashboard data:', {
+      message: err?.message,
+      name: err?.name,
+      code: err?.code,
+      meta: err?.meta,
+    });
     return NextResponse.json(
       { error: 'Failed to fetch dashboard data' },
       { status: 500 }
