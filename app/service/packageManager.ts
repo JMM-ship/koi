@@ -12,6 +12,7 @@ import {
   getExpiringPackages
 } from "@/app/models/userPackage";
 import { activatePackageCredits, dailyResetCredits, resetPackageCreditsForNewPackage } from "./creditManager";
+import { findOrderByOrderNo } from "@/app/models/order";
 import { batchCreateResetTransactions } from "@/app/models/creditTransaction";
 import { getCreditBalance, batchResetPackageCredits } from "@/app/models/creditBalance";
 import { prisma } from "@/app/models/db";
@@ -57,10 +58,18 @@ export async function purchasePackage(
     };
     
     // 创建用户套餐
+    // 尝试将 orderNo 映射为真实的订单 UUID（UserPackage.orderId 为 UUID 类型）
+    let orderUuid: string | undefined = undefined;
+    try {
+      const order = await findOrderByOrderNo(orderNo);
+      orderUuid = order?.id;
+    } catch {}
+
     const userPackage = await createUserPackage({
       user_id: userId,
       package_id: packageId,
-      order_no: orderNo,
+      // 传入真实的订单 UUID；若不可得则传空字符串，底层将写入 null
+      order_no: orderUuid || '',
       start_date: startDate,
       end_date: endDate,
       daily_credits: packageInfo.dailyPoints || 0,

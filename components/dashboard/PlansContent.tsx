@@ -103,8 +103,10 @@ export default function PlansContent() {
   // Define package hierarchy
   const packageHierarchy: { [key: string]: number } = {
     'basic': 1,
+    'pro': 2,
     'professional': 2,
-    'enterprise': 3
+    'enterprise': 3,
+    'max': 3,
   };
 
   // Get package level from name
@@ -112,9 +114,9 @@ export default function PlansContent() {
     const lowerName = packageName?.toLowerCase();
 
     // Check for English names
-    if (lowerName?.includes('basic')) return packageHierarchy.basic;
-    if (lowerName?.includes('professional')) return packageHierarchy.professional;
-    if (lowerName?.includes('enterprise')) return packageHierarchy.enterprise;
+    if (lowerName?.includes('basic') || lowerName?.includes('base')) return packageHierarchy.basic;
+    if (lowerName?.includes('professional') || lowerName?.includes('pro')) return packageHierarchy.pro;
+    if (lowerName?.includes('enterprise') || lowerName?.includes('max')) return packageHierarchy.enterprise;
 
     // Check for Chinese names
     if (packageName?.includes('基础版')) return packageHierarchy.basic;
@@ -389,20 +391,31 @@ export default function PlansContent() {
 
   // Format package features
   const formatFeatures = (pkg: Package) => {
-    if (pkg.features && pkg.features.length > 0) {
-      return pkg.features;
-    }
+    // Prefer structured features from backend
+    const f = (pkg.features || {}) as any;
+    const creditCap = Number(f.creditCap ?? pkg.daily_credits ?? pkg.dailyPoints ?? 0);
+    const recoveryRate = Number(f.recoveryRate ?? 0);
+    const dailyUsageLimit = Number(f.dailyUsageLimit ?? 0);
+    const manualResetPerDay = Number(f.manualResetPerDay ?? 0);
+    const hoursToFull = recoveryRate > 0 && creditCap > 0 ? Math.ceil(creditCap / recoveryRate) : null;
 
-    // Generate default features based on package info
-    console.log(pkg.daily_credits, "日用");
-
-    return [
-      `${pkg.daily_credits?.toLocaleString()} credits daily`,
-      'Full speed response',
-      'Support all AI models',
-      'Technical support service',
-      `${pkg.valid_days} days validity`
+    const common = [
+      `${creditCap.toLocaleString()} credit cap`,
+      recoveryRate > 0 ? `Recovery rate ${recoveryRate.toLocaleString()}/hour` : 'Recovery rate 0/hour',
+      dailyUsageLimit > 0 ? `Daily max usage ${dailyUsageLimit.toLocaleString()} credits` : 'No daily usage cap',
+      hoursToFull ? `Full recovery in ~${hoursToFull} hours` : 'Full recovery N/A',
+      manualResetPerDay > 0 ? `Manual reset to cap ${manualResetPerDay} time(s) per day` : 'No manual reset',
+      'Supports Claude and full suite of CLI tools',
     ];
+
+    const name = (pkg.name || '').toLowerCase();
+    const isPro = name.includes('pro') || pkg.plan_type === 'pro' || pkg.planType === 'pro';
+    const isMax = name.includes('max') || pkg.plan_type === 'enterprise' || pkg.planType === 'enterprise';
+
+    if (isPro || isMax) {
+      return [...common, 'Priority technical support'];
+    }
+    return [...common, 'Standard technical support'];
   };
 
   if (loading) {

@@ -13,6 +13,7 @@
 import * as cron from 'node-cron';
 import { 
   dailyCreditResetJob,
+  hourlyRecoveryJob,
   packageExpiryCheckJob,
   expiredOrderCleanupJob,
   getCronJobConfigs
@@ -95,9 +96,21 @@ class CronScheduler {
     
     const results = [];
     
-    // 执行每日积分重置
-    console.log(`[${new Date().toISOString()}] Running daily credit reset...`);
-    results.push(await dailyCreditResetJob());
+    // 执行每小时恢复（若启用）
+    if (process.env.ENABLE_HOURLY_RECOVERY === 'true') {
+      console.log(`[${new Date().toISOString()}] Running hourly credit recovery...`);
+      results.push(await hourlyRecoveryJob());
+    } else {
+      console.log(`[${new Date().toISOString()}] Hourly recovery disabled (ENABLE_HOURLY_RECOVERY!=true), skipping`);
+    }
+
+    // 兼容旧作业：执行每日积分重置（仅当明确启用）
+    if (process.env.ENABLE_DAILY_RESET === 'true') {
+      console.log(`[${new Date().toISOString()}] Running daily credit reset...`);
+      results.push(await dailyCreditResetJob());
+    } else {
+      console.log(`[${new Date().toISOString()}] Daily reset disabled (ENABLE_DAILY_RESET!=true), skipping`);
+    }
     
     // 执行套餐到期检查
     console.log(`[${new Date().toISOString()}] Running package expiry check...`);

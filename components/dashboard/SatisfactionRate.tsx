@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as echarts from 'echarts';
 import { useDashboard, useCreditBalance, useUserInfo } from "@/contexts/DashboardContext";
+import { useToast } from "@/hooks/useToast";
 
 const SatisfactionRate = () => {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -17,6 +18,32 @@ const SatisfactionRate = () => {
   const { data, isLoading } = useDashboard();
   const creditBalance = useCreditBalance();
   const userInfo = useUserInfo();
+  const { refreshData } = useDashboard();
+  const toast = useToast();
+
+  // manual reset related info
+  const [resetsRemainingToday, setResetsRemainingToday] = useState<number | null>(null);
+  const [nextAvailableAtUtc, setNextAvailableAtUtc] = useState<string | null>(null);
+  const [creditCap, setCreditCap] = useState<number | null>(null);
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const fetchCreditsInfo = async () => {
+    try {
+      const res = await fetch('/api/credits/info', { cache: 'no-store' });
+      if (!res.ok) return;
+      const body = await res.json();
+      if (body?.success && body?.data) {
+        const usage = body.data.usage || {};
+        const cfg = body.data.packageConfig || {};
+        setResetsRemainingToday(typeof usage.resetsRemainingToday === 'number' ? usage.resetsRemainingToday : 0);
+        // info 接口返回 nextResetAtUtc；在未点击前，我们将其作为“下一次可用”的提示
+        setNextAvailableAtUtc(usage.nextResetAtUtc || null);
+        setCreditCap(typeof cfg.creditCap === 'number' ? cfg.creditCap : null);
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
 
   useEffect(() => {
     if (data && creditBalance && userInfo) {
@@ -45,6 +72,10 @@ const SatisfactionRate = () => {
       processCreditBalance();
     }
   }, [data, creditBalance, userInfo]);
+
+  useEffect(() => {
+    fetchCreditsInfo();
+  }, []);
 
   const { totalCredits, usedCredits, remainingCredits, percentage } = creditData;
 
@@ -290,6 +321,67 @@ const SatisfactionRate = () => {
         className="satisfaction-chart-echarts"
         style={{ width: '100%', height: '220px' }}
       />
+
+      {/* Manual Reset Button & Tips */}
+      <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+        <button
+          onClick={async () => {
+            try {
+              setResetLoading(true);
+              const res = await fetch('/api/credits/manual-reset', { method: 'POST' });
+              const body = await res.json();
+              if (!res.ok || !body?.success) {
+                const code = body?.error?.code || 'RESET_FAILED';
+                toast.showError(`Manual reset failed: ${code}`);
+                // 同步提示信息
+                if (typeof body?.resetsRemainingToday === 'number') setResetsRemainingToday(body.resetsRemainingToday);
+                if (typeof body?.nextAvailableAtUtc === 'string') setNextAvailableAtUtc(body.nextAvailableAtUtc);
+                return;
+              }
+              const d = body.data || {};
+              setResetsRemainingToday(typeof d.resetsRemainingToday === 'number' ? d.resetsRemainingToday : 0);
+              setNextAvailableAtUtc(typeof d.nextAvailableAtUtc === 'string' ? d.nextAvailableAtUtc : null);
+              if (typeof d.newBalance === 'number') {
+                // 尝试立即刷新仪表；同时触发全局刷新
+                await refreshData();
+              }
+              toast.showSuccess('Credits reset to cap successfully');
+            } catch (e) {
+              toast.showError('Manual reset failed');
+            } finally {
+              setResetLoading(false);
+            }
+          }}
+          disabled={resetLoading || (resetsRemainingToday !== null && resetsRemainingToday <= 0)}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 8,
+            border: 'none',
+            background: resetLoading || (resetsRemainingToday !== null && resetsRemainingToday <= 0) ? '#3a3d4a' : '#00b4d8',
+            color: '#fff',
+            cursor: resetLoading || (resetsRemainingToday !== null && resetsRemainingToday <= 0) ? 'not-allowed' : 'pointer',
+            fontSize: 13,
+            fontWeight: 600,
+          }}
+          title={
+            resetsRemainingToday !== null && resetsRemainingToday <= 0
+              ? 'No resets remaining today'
+              : 'Reset package credits to cap'
+          }
+        >
+          {resetLoading ? 'Resetting...' : 'Manual Reset to Cap'}
+        </button>
+        <div style={{ fontSize: 12, color: '#8b8d97' }}>
+          {typeof resetsRemainingToday === 'number'
+            ? `Resets remaining today: ${resetsRemainingToday}${creditCap ? ` • Cap: ${creditCap}` : ''}`
+            : 'Loading reset info...'}
+        </div>
+        {nextAvailableAtUtc && (
+          <div style={{ fontSize: 12, color: '#6c6f7b' }}>
+            Next available: {new Date(nextAvailableAtUtc).toLocaleString()}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
