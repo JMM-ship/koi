@@ -377,7 +377,8 @@ model CostAggregate {
   granularity String
   bucketAt    DateTime @map("bucket_at") @db.Timestamptz
   amount      Decimal  @default(0) @db.Decimal
-
+  tokens      Decimal  @default(0) @db.Decimal
+  points      Decimal  @default(0) @db.Decimal
   // 关联
   apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
 
