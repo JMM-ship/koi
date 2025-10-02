@@ -133,7 +133,7 @@ export async function autoRecoverCredits(
       // 3.2 计算应恢复的积分
       const lastRecoveryBase: Date =
         wallet.lastRecoveryAt || wallet.updatedAt || wallet.createdAt || now;
-      const currentCredits = Number(wallet.packageTokensRemaining || 0n);
+      const currentCredits = Number(wallet.packageTokensRemaining ?? BigInt(0));
       const recovered = calculateRecoverableCredits(lastRecoveryBase, currentCredits, config, now);
 
       if (recovered <= 0) {
@@ -279,12 +279,12 @@ export async function manualResetCredits(userId: string): Promise<{
       return {
         success: false,
         resetAmount: 0,
-        newBalance: Number(wallet.packageTokensRemaining || 0n),
+        newBalance: Number(wallet.packageTokensRemaining ?? BigInt(0)),
         code: 'LIMIT_REACHED',
       };
     }
 
-    const before = Number(wallet.packageTokensRemaining || 0n);
+    const before = Number(wallet.packageTokensRemaining ?? BigInt(0));
     const increment = Math.max(0, creditCap - before);
     if (increment <= 0) {
       return {

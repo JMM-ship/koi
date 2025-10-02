@@ -50,12 +50,12 @@ export async function GET(request: NextRequest) {
     const dailyUsageLimit: number = Number(snapshotFeatures.dailyUsageLimit ?? pkgFeatures.dailyUsageLimit ?? 999999);
     const manualResetPerDay: number = Number(snapshotFeatures.manualResetPerDay ?? pkgFeatures.manualResetPerDay ?? 1);
 
-    const packageTokensRemaining = Number(wallet?.packageTokensRemaining || 0n);
-    const independentTokens = Number(wallet?.independentTokens || 0n);
+    const packageTokensRemaining = Number(wallet?.packageTokensRemaining ?? BigInt(0));
+    const independentTokens = Number(wallet?.independentTokens ?? BigInt(0));
     const totalAvailable = packageTokensRemaining + independentTokens;
 
     const dailyUsageCount = isSameUtcDay(wallet?.dailyUsageResetAt || null, now)
-      ? Number(wallet?.dailyUsageCount || 0n)
+      ? Number(wallet?.dailyUsageCount ?? BigInt(0))
       : 0;
 
     const resetsToday = isSameUtcDay(wallet?.manualResetAt || null, now) ? (wallet?.manualResetCount || 0) : 0;
@@ -96,4 +96,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

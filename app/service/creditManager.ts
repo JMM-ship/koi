@@ -13,6 +13,7 @@ import {
   getMonthlyUsage
 } from "@/app/models/creditTransaction";
 import { prisma } from "@/app/models/db";
+import { getUserActivePackage } from "@/app/models/userPackage";
 import { autoRecoverCredits } from "@/app/service/creditRecoveryService";
 
 export interface CreditUsageResult {
@@ -66,10 +67,10 @@ export async function useCredits(
           success: true,
           balance: wallet
             ? {
-                packageCredits: Number(wallet.packageTokensRemaining || 0n),
-                independentCredits: Number(wallet.independentTokens || 0n),
+                packageCredits: Number(wallet.packageTokensRemaining ?? BigInt(0)),
+                independentCredits: Number(wallet.independentTokens ?? BigInt(0)),
                 totalAvailable:
-                  Number(wallet.packageTokensRemaining || 0n) + Number(wallet.independentTokens || 0n),
+                  Number(wallet.packageTokensRemaining ?? BigInt(0)) + Number(wallet.independentTokens ?? BigInt(0)),
               }
             : { packageCredits: 0, independentCredits: 0, totalAvailable: 0 },
           transaction: { transNo: existing.id, amount: existing.points, creditType: existing.bucket },
@@ -128,14 +129,14 @@ export async function useCredits(
 
         const hasActive = !!activePackage;
         const currentDailyUsage = isSameUtcDay(wallet.dailyUsageResetAt, now)
-          ? Number(wallet.dailyUsageCount || 0n)
+          ? Number(wallet.dailyUsageCount ?? BigInt(0))
           : 0;
         const allowedPackageRemaining = hasActive
           ? Math.max(0, dailyUsageLimit - currentDailyUsage)
           : Number.POSITIVE_INFINITY;
 
-        const packageAvail = Number(wallet.packageTokensRemaining || 0n);
-        const independentAvail = Number(wallet.independentTokens || 0n);
+        const packageAvail = Number(wallet.packageTokensRemaining ?? BigInt(0));
+        const independentAvail = Number(wallet.independentTokens ?? BigInt(0));
 
         const packageUse = Math.min(amount, packageAvail, allowedPackageRemaining);
         const independentNeed = amount - packageUse;
@@ -282,8 +283,8 @@ export async function purchaseCredits(
         },
       });
 
-      const beforePackage = Number(wallet.packageTokensRemaining || 0n);
-      const beforeIndependent = Number(wallet.independentTokens || 0n);
+      const beforePackage = Number(wallet.packageTokensRemaining ?? BigInt(0));
+      const beforeIndependent = Number(wallet.independentTokens ?? BigInt(0));
       const beforeBalance = beforePackage + beforeIndependent;
 
       // 增加独立积分（乐观锁）
@@ -621,8 +622,8 @@ export async function refundCredits(
         },
       });
 
-      const beforePackage = Number(wallet.packageTokensRemaining || 0n);
-      const beforeIndependent = Number(wallet.independentTokens || 0n);
+      const beforePackage = Number(wallet.packageTokensRemaining ?? BigInt(0));
+      const beforeIndependent = Number(wallet.independentTokens ?? BigInt(0));
 
       if (refundType === 'package') {
         // 清空套餐池
