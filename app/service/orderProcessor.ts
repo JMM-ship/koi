@@ -3,7 +3,6 @@ import { getPackageById } from "@/app/models/package";
 import { purchasePackage, renewPackage } from "./packageManager";
 import { purchaseCredits } from "./creditManager";
 import { handleOrderSession } from "./order";
-import { handlePackagePurchaseCallback } from "./packagePurchaseCallback";
 
 export enum OrderType {
   Package = 'package',
@@ -256,26 +255,6 @@ export async function handlePaymentSuccess(
         // 如果激活失败，需要处理退款逻辑
         console.error('Failed to activate package:', result.error);
         return { success: false, error: 'Failed to activate package' };
-      }
-
-      // 套餐激活成功后，调用回调服务创建 API Key 并发送邮件
-      try {
-        const callbackResult = await handlePackagePurchaseCallback({
-          userId: order.user_id,
-          packageId: order.package_id,
-          orderNo: orderNo
-        });
-
-        if (!callbackResult.success) {
-          console.error('Package purchase callback failed:', callbackResult.error);
-          // 注意：即使回调失败，也不影响订单支付成功的状态
-          // 可以通过后台任务或手动重试
-        } else {
-          console.log('Package purchase callback completed successfully');
-        }
-      } catch (error) {
-        console.error('Error executing package purchase callback:', error);
-        // 同样，回调失败不影响订单状态
       }
     } else if (order.order_type === OrderType.Credits) {
       // 增加积分
