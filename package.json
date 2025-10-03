@@ -22,7 +22,8 @@
         "test:coverage": "jest --coverage",
         "test:db": "tsx scripts/test-database-full.ts",
         "test:db:cleanup": "tsx scripts/test-database-full.ts --cleanup",
-        "test:db:verbose": "VERBOSE=1 tsx scripts/test-database-full.ts"
+        "test:db:verbose": "VERBOSE=1 tsx scripts/test-database-full.ts",
+        "test:db:ping": "tsx scripts/ping-prisma.ts"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.859.0",
