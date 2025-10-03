@@ -178,3 +178,21 @@ export async function getPackageByVersion(version: string): Promise<Package | un
     return undefined;
   }
 }
+
+// 查找与独立积分总额匹配的激活 credits 套餐（dailyPoints 即总积分）
+export async function findActiveCreditsPackageByTotalCredits(totalCredits: number): Promise<Package | undefined> {
+  try {
+    const pkg = await prisma.package.findFirst({
+      where: {
+        planType: 'credits',
+        isActive: true,
+        dailyPoints: totalCredits,
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+    return fromPrismaPackage(pkg);
+  } catch (error) {
+    console.error('Error finding credits package by total credits:', error);
+    return undefined;
+  }
+}

@@ -9,12 +9,13 @@ interface Package {
   id: string;
   name: string;
   credits: number;
-  price: number;
+  price: number; // already in base currency units (e.g., 1 = $1)
   originalPrice?: number;
   popular?: boolean;
   description: string;
   savings?: string;
   tag?: string;
+  currency?: string; // e.g., 'USD', optional from API
 }
 
 interface IndependentPackagesProps {
@@ -30,6 +31,20 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
   const [isProcessing, setIsProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
   const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
+
+  const currencySymbol = (cur?: string) => {
+    switch ((cur || 'USD').toUpperCase()) {
+      case 'USD':
+        return '$';
+      case 'CNY':
+      case 'RMB':
+        return '¥';
+      case 'EUR':
+        return '€';
+      default:
+        return '$';
+    }
+  };
 
   useEffect(() => {
     // Fetch credit packages list
@@ -310,7 +325,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
                 color: '#fff',
                 marginBottom: '0.25rem'
               }}>
-                ¥{(pkg.price / 100).toFixed(2)}
+                {currencySymbol(pkg.currency)}{(pkg.price).toFixed(2)}
               </div>
 
               {pkg.originalPrice && (
@@ -320,7 +335,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
                   textDecoration: 'line-through',
                   marginBottom: '0.25rem'
                 }}>
-                  ¥{(pkg.originalPrice / 100).toFixed(2)}
+                  {currencySymbol(pkg.currency)}{(pkg.originalPrice).toFixed(2)}
                 </div>
               )}
 

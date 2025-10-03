@@ -17,6 +17,7 @@
     "migrate:packages:all": "MIGRATION_SCOPE=all CONFIRM_ALL=true tsx scripts/migrate-packages.ts",
     "migrate:packages:tag": "MIGRATION_SCOPE=tagged MIGRATION_TAG=dev tsx scripts/migrate-packages.ts",
         "reset:credits": "tsx scripts/reset-credits.ts",
+    "seed:credits:v2": "tsx scripts/seed-credit-packages.ts",
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",

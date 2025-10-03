@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+// 强制动态 & 禁用缓存，避免平台层缓存导致的空列表/旧数据
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { prisma } from '@/app/models/db';
 
 // GET /api/packages/credits - 获取积分套餐列表
@@ -62,7 +66,7 @@ export async function GET(request: NextRequest) {
         count: packages.length,
       },
       timestamp: new Date().toISOString(),
-    });
+    }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     console.error('Error fetching credit packages:', error);
     return NextResponse.json(
@@ -74,7 +78,7 @@ export async function GET(request: NextRequest) {
         },
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500, headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }
