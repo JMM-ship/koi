@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../Downloads/antom-checkout-payment-sample-ckp-hosted"
+		},
+		{
+			"path": "../../Downloads/antom-checkout-payment-sample"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

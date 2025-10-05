@@ -3,6 +3,7 @@ import { getPackageById, findActiveCreditsPackageByTotalCredits } from "@/app/mo
 import { purchasePackage, renewPackage } from "./packageManager";
 import { purchaseCredits } from "./creditManager";
 import { handleOrderSession } from "./order";
+import { processFirstPurchase } from "./referral";
 
 export enum OrderType {
   Package = 'package',
@@ -287,8 +288,12 @@ export async function handlePaymentSuccess(
     // TODO: 发送订单确认邮件
     // await sendOrderConfirmationEmail(order);
     
-    // TODO: 处理推广佣金
-    // await processAffiliateCommission(order);
+    // 推荐计划：首次消费奖励（幂等由内部判定）
+    try {
+      await processFirstPurchase(order.user_id, orderNo)
+    } catch (e) {
+      console.error('processFirstPurchase error:', e)
+    }
     
     return { success: true };
   } catch (error) {
