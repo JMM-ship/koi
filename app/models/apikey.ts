@@ -82,7 +82,7 @@ export async function getUserUuidByApiKey(
         ownerUserId: true,
       },
     });
-    return data?.ownerUserId;
+    return data?.ownerUserId ?? undefined;
   } catch (error) {
     return undefined;
   }
