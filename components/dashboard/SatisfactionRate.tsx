@@ -318,9 +318,8 @@ const SatisfactionRate = () => {
               if (!res.ok || !body?.success) {
                 const code = body?.error?.code || 'RESET_FAILED';
                 toast.showError(`Manual reset failed: ${code}`);
-                // 同步提示信息
-                if (typeof body?.resetsRemainingToday === 'number') setResetsRemainingToday(body.resetsRemainingToday);
-                if (typeof body?.nextAvailableAtUtc === 'string') setNextAvailableAtUtc(body.nextAvailableAtUtc);
+                // 尝试刷新 creditsInfo 以同步服务端状态
+                await mutateCreditsInfo();
                 return;
               }
               const d = body.data || {};
