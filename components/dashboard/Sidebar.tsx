@@ -64,9 +64,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
 
   const menuItems: MenuItem[] = [
     { id: 1, icon: FiGrid, label: "Dashboard", path: "dashboard", active: activeTab === "dashboard" },
-    { id: 2, icon: FiUser, label: "My Subscription", path: "subscription", active: activeTab === "subscription" },
     { id: 3, icon: FiSlack, label: "API Keys", path: "api-keys", active: activeTab === "api-keys" },
     { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "plans", active: activeTab === "plans" },
+    { id: 5, icon: FiUsers, label: "Referral Program", path: "referral", active: activeTab === "referral" },
   ];
 
   // 管理员菜单项

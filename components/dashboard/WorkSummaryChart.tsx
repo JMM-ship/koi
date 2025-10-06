@@ -1,14 +1,54 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import useSWR from 'swr'
 import * as echarts from 'echarts';
 import "@/public/assets/css/dashboard-chart.css";
 
 const WorkSummaryChart = () => {
   const [selectedType, setSelectedType] = useState("points");
   const [chartHeight, setChartHeight] = useState(280);
-  const [consumptionData, setConsumptionData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: consumptionData } = useSWR(`/api/dashboard/consumption-trends?days=7&type=${selectedType}`,
+    async (url: string) => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const result = await response.json();
+        const chartData = result.data.map((item: any) => item.value);
+        const dateLabels = result.data.map((item: any) => item.date);
+        const maxValue = Math.max(...chartData) * 1.2;
+        const colorScheme = {
+          points: { color: '#794aff', glowColor: '#b084ff' },
+          money: { color: '#00b4d8', glowColor: '#00e5ff' },
+          tokens: { color: '#00d084', glowColor: '#00ff9f' }
+        } as const;
+        return {
+          data: chartData,
+          dateLabels,
+          unit: result.stats.unit,
+          total: result.stats.total,
+          increase: result.stats.increase,
+          percentage: result.stats.percentage,
+          ...(colorScheme as any)[selectedType],
+          max: maxValue || 100
+        };
+      } catch (error) {
+        // 返回默认数据
+        return {
+          data: [0, 0, 0, 0, 0, 0, 0],
+          dateLabels: generateDefaultDateLabels(),
+          unit: selectedType === 'money' ? 'USD' : selectedType === 'tokens' ? 'Tokens' : 'Points',
+          total: 0,
+          increase: 0,
+          percentage: '+0%',
+          color: '#794aff',
+          glowColor: '#b084ff',
+          max: 100
+        };
+      }
+    }
+  )
+  const loading = !consumptionData;
   const chartRef = useRef<HTMLDivElement>(null);
 
   // 获取消费趋势数据
@@ -73,16 +113,7 @@ const WorkSummaryChart = () => {
     return dates;
   };
 
-  // 加载数据
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      const data = await fetchConsumptionData(selectedType);
-      setConsumptionData(data);
-      setLoading(false);
-    };
-    loadData();
-  }, [selectedType]);
+  // 加载数据由 SWR 上方负责
 
   // 响应式高度调整
   useEffect(() => {

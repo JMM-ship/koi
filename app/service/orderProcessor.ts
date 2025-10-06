@@ -1,8 +1,9 @@
 import { insertOrder, updateOrderStatus, findOrderByOrderNo } from "@/app/models/order";
-import { getPackageById } from "@/app/models/package";
+import { getPackageById, findActiveCreditsPackageByTotalCredits } from "@/app/models/package";
 import { purchasePackage, renewPackage } from "./packageManager";
 import { purchaseCredits } from "./creditManager";
 import { handleOrderSession } from "./order";
+import { processFirstPurchase } from "./referral";
 
 export enum OrderType {
   Package = 'package',
@@ -93,7 +94,11 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       // 积分订单
       // 如果提供了packageId，说明是购买积分套餐
       if (params.packageId) {
-        const packageInfo = await getPackageById(params.packageId);
+        let packageInfo = await getPackageById(params.packageId);
+        // 兼容兜底：若通过 ID 未找到，尝试按积分总额匹配一个激活的 credits 套餐
+        if (!packageInfo && params.creditAmount && params.creditAmount > 0) {
+          packageInfo = await findActiveCreditsPackageByTotalCredits(params.creditAmount);
+        }
         if (!packageInfo) {
           return { success: false, error: 'Package not found' };
         }
@@ -124,8 +129,10 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       } else if (params.creditAmount && params.creditAmount > 0) {
         // 直接指定积分数量购买（保留旧逻辑）
         credits = params.creditAmount;
-        // 计算价格（示例：1积分 = 0.01元）
-        amount = Math.round(credits * 1); // 1积分 = 1分钱（单位货币由 currency 决定）
+        // 计算价格：按现有 credits_v2 比例估算（200 credits = $1）
+        // 注意：前端通常会传 packageId，只有在找不到套餐时才会进入此分支
+        const priceByUsdRatio = credits / 200; // $1 = 200 credits
+        amount = priceByUsdRatio;
         productName = `${credits} 积分`;
         currency = process.env.ANTOM_PAYMENT_CURRENCY || 'USD';
       } else {
@@ -281,8 +288,12 @@ export async function handlePaymentSuccess(
     // TODO: 发送订单确认邮件
     // await sendOrderConfirmationEmail(order);
     
-    // TODO: 处理推广佣金
-    // await processAffiliateCommission(order);
+    // 推荐计划：首次消费奖励（幂等由内部判定）
+    try {
+      await processFirstPurchase(order.user_id, orderNo)
+    } catch (e) {
+      console.error('processFirstPurchase error:', e)
+    }
     
     return { success: true };
   } catch (error) {

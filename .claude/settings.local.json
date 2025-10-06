@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npm run lint)",
       "Bash(npm run:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(cat:*)",
+      "Bash(psql:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

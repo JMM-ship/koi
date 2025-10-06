@@ -1,46 +1,34 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import useSWR from 'swr'
+
+interface CreditDetail {
+  id: string
+  model: string
+  credits: number
+  timestamp: string
+  type: string
+  status: string
+}
 
 const TeamMembers = () => {
-  const [creditDetails, setCreditDetails] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchModelUsage = async () => {
-      try {
-        const response = await fetch('/api/dashboard/model-usage?limit=10');
-        if (!response.ok) throw new Error('Failed to fetch model usage');
-        const result = await response.json();
-
-        // 格式化数据
-        const formattedData = result.data.map((item: any) => ({
-          id: item.id,
-          model: item.modelName,
-          credits: item.credits,
-          timestamp: new Date(item.timestamp).toLocaleString('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-          }),
-          type: item.usageType,
-          status: item.status
-        }));
-
-        setCreditDetails(formattedData);
-      } catch (error) {
-        console.error('Error fetching model usage:', error);
-        // 使用默认数据
-        setCreditDetails([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchModelUsage();
-  }, []);
+  const { data: creditDetails } = useSWR<CreditDetail[]>('/api/dashboard/model-usage?limit=10', async (url: string) => {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error('Failed to fetch model usage')
+    const result = await response.json()
+    const formatted: CreditDetail[] = (result?.data || []).map((item: any) => ({
+      id: item.id,
+      model: item.modelName,
+      credits: item.credits,
+      timestamp: new Date(item.timestamp).toLocaleString('zh-CN', {
+        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+      }),
+      type: item.usageType,
+      status: item.status,
+    }))
+    return formatted
+  })
+  const loading = !creditDetails
 
   const getModelColor = (model: string) => {
     const colors: { [key: string]: string } = {
@@ -53,7 +41,7 @@ const TeamMembers = () => {
     return colors[model] || "#6b7280";
   };
 
-  const totalRecords = creditDetails.length;
+  const totalRecords = (creditDetails || []).length;
 
   if (loading) {
     return (
@@ -82,7 +70,7 @@ const TeamMembers = () => {
           paddingRight: "0"
         }}
       >
-        {creditDetails.length === 0 ? (
+        {(creditDetails || []).length === 0 ? (
           <div
             style={{
               textAlign: "center",
@@ -114,7 +102,7 @@ const TeamMembers = () => {
             </button>
           </div>
         ) : (
-          creditDetails.slice(0, 5).map((detail) => (
+          (creditDetails || []).slice(0, 5).map((detail: CreditDetail) => (
             <div key={detail.id} className="team-member">
               <div className="member-info">
                 <div

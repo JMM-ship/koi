@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as echarts from 'echarts';
+import useSWR from 'swr'
 import { useDashboard, useCreditBalance, useUserInfo } from "@/contexts/DashboardContext";
 import { useToast } from "@/hooks/useToast";
 
@@ -21,29 +22,36 @@ const SatisfactionRate = () => {
   const { refreshData } = useDashboard();
   const toast = useToast();
 
-  // manual reset related info
-  const [resetsRemainingToday, setResetsRemainingToday] = useState<number | null>(null);
-  const [nextAvailableAtUtc, setNextAvailableAtUtc] = useState<string | null>(null);
-  const [creditCap, setCreditCap] = useState<number | null>(null);
-  const [resetLoading, setResetLoading] = useState(false);
+  // manual reset related info (SWR cache-first)
+  const { data: creditsInfo, mutate: mutateCreditsInfo } = useSWR('/api/credits/info', async (url: string) => {
+    const res = await fetch(url)
+    return res.json()
+  })
+  const resetsRemainingToday: number | null = (typeof creditsInfo?.data?.usage?.resetsRemainingToday === 'number') ? creditsInfo.data.usage.resetsRemainingToday : null
+  const nextAvailableAtUtc: string | null = (typeof creditsInfo?.data?.usage?.nextResetAtUtc === 'string') ? creditsInfo.data.usage.nextResetAtUtc : null
+  const creditCap: number | null = (typeof creditsInfo?.data?.packageConfig?.creditCap === 'number') ? creditsInfo.data.packageConfig.creditCap : null
+  const recoveryRate: number | null = (typeof creditsInfo?.data?.packageConfig?.recoveryRate === 'number') ? creditsInfo.data.packageConfig.recoveryRate : null
+  const packageTokensRemaining: number | null = (typeof creditsInfo?.data?.balance?.packageTokensRemaining === 'number') ? creditsInfo.data.balance.packageTokensRemaining : null
+  const lastRecoveryAtIso: string | null = (typeof creditsInfo?.data?.usage?.lastRecoveryAt === 'string') ? creditsInfo.data.usage.lastRecoveryAt : null
+  const serverTimestampIso: string | null = (typeof creditsInfo?.timestamp === 'string') ? creditsInfo.timestamp : null
+  const [tick, setTick] = useState(0)
+  const [serverOffsetMs, setServerOffsetMs] = useState<number | null>(null)
 
-  const fetchCreditsInfo = async () => {
-    try {
-      const res = await fetch('/api/credits/info', { cache: 'no-store' });
-      if (!res.ok) return;
-      const body = await res.json();
-      if (body?.success && body?.data) {
-        const usage = body.data.usage || {};
-        const cfg = body.data.packageConfig || {};
-        setResetsRemainingToday(typeof usage.resetsRemainingToday === 'number' ? usage.resetsRemainingToday : 0);
-        // info 接口返回 nextResetAtUtc；在未点击前，我们将其作为“下一次可用”的提示
-        setNextAvailableAtUtc(usage.nextResetAtUtc || null);
-        setCreditCap(typeof cfg.creditCap === 'number' ? cfg.creditCap : null);
-      }
-    } catch (e) {
-      // ignore
+  // Track client-server time drift using server timestamp from API
+  useEffect(() => {
+    if (serverTimestampIso) {
+      const serverNow = new Date(serverTimestampIso).getTime()
+      const clientNow = Date.now()
+      setServerOffsetMs(clientNow - serverNow)
     }
-  };
+  }, [serverTimestampIso])
+
+  // Minute ticker (lightweight refresh as requested)
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => (t + 1) % 1_000_000), 60_000)
+    return () => clearInterval(id)
+  }, [])
+  const [resetLoading, setResetLoading] = useState(false);
 
   useEffect(() => {
     if (data && creditBalance && userInfo) {
@@ -73,11 +81,73 @@ const SatisfactionRate = () => {
     }
   }, [data, creditBalance, userInfo]);
 
-  useEffect(() => {
-    fetchCreditsInfo();
-  }, []);
+  // creditsInfo 加载由 SWR 负责（首帧可用缓存，后台刷新）
 
   const { totalCredits, usedCredits, remainingCredits, percentage } = creditData;
+
+  // Helpers to compute next hourly recovery timing (job runs at hh:05)
+  function nextMinute05AtOrAfter(base: Date): Date {
+    const d = new Date(base)
+    d.setSeconds(0, 0)
+    if (d.getMinutes() < 5) {
+      d.setMinutes(5)
+    } else if (d.getMinutes() === 5 && base.getSeconds() === 0 && base.getMilliseconds() === 0) {
+      // already exactly at :05, keep as-is
+    } else {
+      d.setHours(d.getHours() + 1)
+      d.setMinutes(5)
+    }
+    return d
+  }
+
+  function formatRelativeMm(leftMs: number): string {
+    if (leftMs <= 0) return '0m'
+    const mins = Math.ceil(leftMs / 60_000)
+    return `${mins}m`
+  }
+
+  const recoveryStatus = useMemo(() => {
+    // Default: loading state hidden
+    if (
+      recoveryRate == null ||
+      creditCap == null ||
+      packageTokensRemaining == null
+    ) {
+      return { kind: 'loading' as const }
+    }
+
+    // No active/paused
+    if (recoveryRate <= 0 || creditCap <= 0) {
+      return { kind: 'paused' as const }
+    }
+
+    // At cap
+    if (packageTokensRemaining >= creditCap) {
+      return { kind: 'atCap' as const }
+    }
+
+    // Compute next hour recovery amount
+    const nextAmount = Math.max(0, Math.min(recoveryRate, creditCap - packageTokensRemaining))
+
+    // Time base: use server time if available; else client now
+    const clientNow = new Date()
+    const serverNow = serverOffsetMs != null ? new Date(clientNow.getTime() - serverOffsetMs) : clientNow
+
+    const lastBase = lastRecoveryAtIso ? new Date(lastRecoveryAtIso) : serverNow
+    const eligibleAt = new Date(lastBase.getTime() + 60 * 60 * 1000) // last + 1h
+
+    // Next job run at hh:05, based on server clock notion (approx via local)
+    const anchor = eligibleAt > serverNow ? eligibleAt : serverNow
+    const nextRunAt = nextMinute05AtOrAfter(anchor)
+    const leftMs = Math.max(0, nextRunAt.getTime() - serverNow.getTime())
+
+    return {
+      kind: 'next' as const,
+      amount: nextAmount,
+      etaMs: leftMs,
+      nextAt: nextRunAt,
+    }
+  }, [recoveryRate, creditCap, packageTokensRemaining, lastRecoveryAtIso, serverOffsetMs, tick])
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -322,6 +392,28 @@ const SatisfactionRate = () => {
         style={{ width: '100%', height: '220px' }}
       />
 
+      {/* Hourly Recovery Hint */}
+      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+        {(() => {
+          if ((recoveryStatus as any).kind === 'loading') {
+            return <div style={{ fontSize: 12, color: '#8b8d97' }}>Loading recovery info...</div>
+          }
+          if ((recoveryStatus as any).kind === 'paused') {
+            return <div style={{ fontSize: 12, color: '#8b8d97' }}>No recoverable package / paused</div>
+          }
+          if ((recoveryStatus as any).kind === 'atCap') {
+            return <div style={{ fontSize: 12, color: '#8b8d97' }}>No recovery (at cap)</div>
+          }
+          const r = recoveryStatus as { kind: 'next'; amount: number; etaMs: number; nextAt: Date }
+          const eta = formatRelativeMm(r.etaMs)
+          return (
+            <div style={{ fontSize: 12, color: '#8b8d97', textAlign: 'center' }}>
+              Next +{r.amount.toLocaleString()} credits in {eta}
+            </div>
+          )
+        })()}
+      </div>
+
       {/* Manual Reset Button & Tips */}
       <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
         <button
@@ -333,14 +425,12 @@ const SatisfactionRate = () => {
               if (!res.ok || !body?.success) {
                 const code = body?.error?.code || 'RESET_FAILED';
                 toast.showError(`Manual reset failed: ${code}`);
-                // 同步提示信息
-                if (typeof body?.resetsRemainingToday === 'number') setResetsRemainingToday(body.resetsRemainingToday);
-                if (typeof body?.nextAvailableAtUtc === 'string') setNextAvailableAtUtc(body.nextAvailableAtUtc);
+                // 尝试刷新 creditsInfo 以同步服务端状态
+                await mutateCreditsInfo();
                 return;
               }
               const d = body.data || {};
-              setResetsRemainingToday(typeof d.resetsRemainingToday === 'number' ? d.resetsRemainingToday : 0);
-              setNextAvailableAtUtc(typeof d.nextAvailableAtUtc === 'string' ? d.nextAvailableAtUtc : null);
+              await mutateCreditsInfo();
               if (typeof d.newBalance === 'number') {
                 // 尝试立即刷新仪表；同时触发全局刷新
                 await refreshData();

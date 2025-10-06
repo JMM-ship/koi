@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import useSWR from 'swr'
 import { FiCheck, FiAlertTriangle, FiX } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -87,18 +88,31 @@ export default function PlansContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const { showSuccess, showError, showWarning } = useToast();
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [currentPackage, setCurrentPackage] = useState<UserPackage | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   const [purchasing, setPurchasing] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showRenewModal, setShowRenewModal] = useState(false);
   const [selectedMonths, setSelectedMonths] = useState(1);
   const [isRenewing, setIsRenewing] = useState(false);
   const [renewPackage, setRenewPackage] = useState<Package | null>(null);
   const [upgradeDiscount, setUpgradeDiscount] = useState<{ amount: number, days: number } | null>(null);
   const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
+  // Fetch packages via SWR for cache-first behavior
+  const { data: packagesResp, mutate: mutatePackages } = useSWR('/api/packages', async (url: string) => {
+    const res = await fetch(url)
+    return res.json()
+  })
+  const loading = !packagesResp
+  const packages: Package[] = ((packagesResp?.data?.packages || []) as any[]).map((pkg: any) => ({
+    ...pkg,
+    price: pkg.priceCents / 100,
+    daily_credits: pkg.dailyPoints,
+    valid_days: pkg.validDays,
+    plan_type: pkg.planType,
+    is_recommended: (pkg.features?.isRecommended === true),
+  }))
+  const currentPackage: UserPackage | null = packagesResp?.data?.currentPackage ? fromApiUserPackage(packagesResp.data.currentPackage) : null
+  // keep other state lines removed above relocated earlier
 
   // Define package hierarchy
   const packageHierarchy: { [key: string]: number } = {
@@ -153,39 +167,7 @@ export default function PlansContent() {
   };
 
 
-  // Get packages list
-  useEffect(() => {
-    fetchPackages();
-  }, []);
-
-  const fetchPackages = async () => {
-    try {
-      const response = await fetch('/api/packages');
-      const data = await response.json()
-
-
-      if (data.success && data.data?.packages?.length > 0) {
-        // Convert price from cents to yuan
-        const packagesData = data.data.packages.map((pkg: any) => ({
-          ...pkg,
-          price: pkg.priceCents / 100,
-          daily_credits: pkg.dailyPoints,
-          valid_days: pkg.validDays,
-          plan_type: pkg.planType,
-          is_recommended: (pkg.features?.isRecommended === true),
-        }));
-        setPackages(packagesData);
-        console.log(data.data, "数据的数据");
-
-
-        setCurrentPackage(fromApiUserPackage(data.data.currentPackage));
-      }
-    } catch (error) {
-      showError('Failed to load packages');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Remove old fetchPackages in favor of SWR above
 
   // Calculate upgrade discount based on remaining days
   const calculateUpgradeDiscount = (targetPackage: Package) => {
@@ -298,7 +280,7 @@ export default function PlansContent() {
         showSuccess(`Package renewed successfully for ${selectedMonths} month(s)!`);
         setShowRenewModal(false);
         // Refresh packages data
-        await fetchPackages();
+        await mutatePackages();
       } else {
         showError(data.error?.message || 'Failed to renew package');
       }
@@ -356,7 +338,7 @@ export default function PlansContent() {
         setShowConfirmModal(false);
 
         // Refresh page data
-        await fetchPackages();
+        await mutatePackages();
       } else {
         showError(data.error?.message || 'Failed to create order');
       }

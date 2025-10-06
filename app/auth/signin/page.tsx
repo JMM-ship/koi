@@ -13,7 +13,10 @@ export default function SignInPage() {
     const searchParams = useSearchParams()
     const { showSuccess, showError, showInfo } = useToast()
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
-    const [isLogin, setIsLogin] = useState(true)
+    // Default to Register tab when coming from referral
+    const refParam = searchParams.get('ref')
+    const registerParam = searchParams.get('register')
+    const [isLogin, setIsLogin] = useState(!(refParam || registerParam === '1' || registerParam === 'true'))
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [verificationSent, setVerificationSent] = useState(false)
@@ -33,6 +36,20 @@ export default function SignInPage() {
         password: '',
         verificationCode: ''
     })
+    // Referral (optional)
+    const [inviteCode, setInviteCode] = useState('')
+
+    // On mount: persist URL ref to localStorage and input
+    useEffect(() => {
+        const ref = searchParams.get('ref') || ''
+        if (ref) {
+            try { window.localStorage.setItem('inviteCode', ref) } catch {}
+            setInviteCode(ref)
+            // Switch to Register tab if referral present
+            setIsLogin(false)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     // Send verification code
     const sendVerificationCode = async () => {
@@ -125,6 +142,10 @@ export default function SignInPage() {
         setError('')
 
         try {
+            // Best-effort persist invite code before register
+            if (inviteCode) {
+                try { window.localStorage.setItem('inviteCode', inviteCode) } catch {}
+            }
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -160,6 +181,11 @@ export default function SignInPage() {
 
     // Google login
     const handleGoogleSignIn = () => {
+        // Persist invite code before redirecting to Google
+        const ref = inviteCode || (searchParams.get('ref') || '')
+        if (ref) {
+            try { window.localStorage.setItem('inviteCode', ref) } catch {}
+        }
         signIn('google', { 
             callbackUrl,
             prompt: 'select_account'
@@ -272,6 +298,16 @@ export default function SignInPage() {
                                                 onChange={(e) => setRegisterData({ ...registerData, username: e.target.value })}
                                                 required
                                                 minLength={3}
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label className="form-label text-white">Invite Code (Optional)</label>
+                                            <input
+                                                type="text"
+                                                className="form-control bg-dark text-white border-secondary"
+                                                value={inviteCode}
+                                                onChange={(e) => setInviteCode(e.target.value)}
+                                                placeholder="Enter invite code if any"
                                             />
                                         </div>
                                         <div className="mb-3">
