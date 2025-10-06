@@ -2,12 +2,21 @@
 
 import useSWR from 'swr'
 
+interface CreditDetail {
+  id: string
+  model: string
+  credits: number
+  timestamp: string
+  type: string
+  status: string
+}
+
 const TeamMembers = () => {
-  const { data: creditDetails } = useSWR('/api/dashboard/model-usage?limit=10', async (url: string) => {
+  const { data: creditDetails } = useSWR<CreditDetail[]>('/api/dashboard/model-usage?limit=10', async (url: string) => {
     const response = await fetch(url)
     if (!response.ok) throw new Error('Failed to fetch model usage')
     const result = await response.json()
-    const formatted = (result?.data || []).map((item: any) => ({
+    const formatted: CreditDetail[] = (result?.data || []).map((item: any) => ({
       id: item.id,
       model: item.modelName,
       credits: item.credits,
@@ -93,7 +102,7 @@ const TeamMembers = () => {
             </button>
           </div>
         ) : (
-          (creditDetails || []).slice(0, 5).map((detail) => (
+          (creditDetails || []).slice(0, 5).map((detail: CreditDetail) => (
             <div key={detail.id} className="team-member">
               <div className="member-info">
                 <div

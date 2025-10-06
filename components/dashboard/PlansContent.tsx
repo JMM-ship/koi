@@ -98,7 +98,7 @@ export default function PlansContent() {
   const [upgradeDiscount, setUpgradeDiscount] = useState<{ amount: number, days: number } | null>(null);
   const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
   // Fetch packages via SWR for cache-first behavior
-  const { data: packagesResp } = useSWR('/api/packages', async (url: string) => {
+  const { data: packagesResp, mutate: mutatePackages } = useSWR('/api/packages', async (url: string) => {
     const res = await fetch(url)
     return res.json()
   })
@@ -280,7 +280,7 @@ export default function PlansContent() {
         showSuccess(`Package renewed successfully for ${selectedMonths} month(s)!`);
         setShowRenewModal(false);
         // Refresh packages data
-        await fetchPackages();
+        await mutatePackages();
       } else {
         showError(data.error?.message || 'Failed to renew package');
       }
@@ -338,7 +338,7 @@ export default function PlansContent() {
         setShowConfirmModal(false);
 
         // Refresh page data
-        await fetchPackages();
+        await mutatePackages();
       } else {
         showError(data.error?.message || 'Failed to create order');
       }
