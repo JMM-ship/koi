@@ -139,35 +139,35 @@ export default function ApiKeysContent() {
         <div className="row">
           {apiKeys.map((apiKey) => (
             <div key={apiKey.id} className="col-12 mb-4">
-              <div className="balance-card" style={{ background: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: 12, padding: 20 }}>
-                <div className="d-flex justify-content-between align-items-start mb-3">
+              <div className="api-key-card">
+                <div className="api-key-header">
                   <div>
-                    <h4 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 4 }}>{apiKey.title}</h4>
-                    <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 600, background: apiKey.status === "active" ? "#00d084" : "#4b5563", color: apiKey.status === "active" ? "#000" : "#999", textTransform: "uppercase" }}>{apiKey.status}</span>
+                    <h4 className="api-key-title">{apiKey.title}</h4>
+                    <span className={`api-key-status ${apiKey.status === 'active' ? 'active' : 'inactive'}`}>{apiKey.status}</span>
                   </div>
-                  <button style={{ background: "none", border: "none", color: "#ff006e", cursor: "pointer", padding: 4 }} onClick={() => handleDeleteKey(apiKey.id, apiKey.title)}>
+                  <button className="btn-icon" aria-label="Delete API key" onClick={() => handleDeleteKey(apiKey.id, apiKey.title)}>
                     <FiTrash2 />
                   </button>
                 </div>
-                <div style={{ background: "#1a1a1a", borderRadius: 6, padding: 12, marginBottom: 16 }}>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <code style={{ color: "#794aff", fontSize: 12, fontFamily: "monospace", letterSpacing: 0.5 }}>{showKey[apiKey.id] ? apiKey.fullKey : apiKey.apiKey}</code>
-                    <div className="d-flex gap-2">
-                      <button onClick={() => setShowKey((prev) => ({ ...prev, [apiKey.id]: !prev[apiKey.id] }))} style={{ background: "none", border: "none", color: "#999", cursor: "pointer", padding: 4 }}>{showKey[apiKey.id] ? <FiEyeOff /> : <FiEye />}</button>
-                      <button onClick={() => handleCopy(apiKey.fullKey)} style={{ background: "none", border: "none", color: copiedKey === apiKey.fullKey ? "#00d084" : "#999", cursor: "pointer", padding: 4 }}>
-                        <FiCopy />
-                      </button>
-                    </div>
+                <div className="api-key-bar">
+                  <code className="api-key-code">{showKey[apiKey.id] ? apiKey.fullKey : apiKey.apiKey}</code>
+                  <div className="api-key-actions">
+                    <button className="btn-icon" aria-label={showKey[apiKey.id] ? 'Hide API key' : 'Reveal API key'} onClick={() => setShowKey((prev) => ({ ...prev, [apiKey.id]: !prev[apiKey.id] }))}>
+                      {showKey[apiKey.id] ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                    <button className="btn-icon" aria-label="Copy API key" onClick={() => handleCopy(apiKey.fullKey)} style={{ color: copiedKey === apiKey.fullKey ? 'var(--dashboard-success)' : undefined }}>
+                      <FiCopy />
+                    </button>
                   </div>
                 </div>
-                <div className="d-flex justify-content-between" style={{ fontSize: 12 }}>
+                <div className="api-key-footer">
                   <div>
-                    <span style={{ color: "#666" }}>Created: </span>
-                    <span style={{ color: "#fff" }}>{new Date(apiKey.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                    <span>Created • </span>
+                    <span>{new Date(apiKey.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                   <div>
-                    <span style={{ color: "#666" }}>Status: </span>
-                    <span style={{ color: apiKey.status === "active" ? "#00d084" : "#666" }}>{apiKey.status === "active" ? "Active" : "Inactive"}</span>
+                    <span>Status: </span>
+                    <span className={apiKey.status === 'active' ? 'text-success' : 'text-dim'}>{apiKey.status === 'active' ? 'Active' : 'Inactive'}</span>
                   </div>
                 </div>
               </div>
