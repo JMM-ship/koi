@@ -191,7 +191,7 @@ model Wallet {
 // ========== API密钥模型 ==========
 model ApiKey {
   id           String    @id @default(uuid()) @db.Uuid
-  ownerUserId  String    @map("owner_user_id") @db.Uuid
+  ownerUserId  String?   @map("owner_user_id") @db.Uuid
   keyHash      String    @unique @map("key_hash")
   prefix       String
   name         String?
@@ -203,7 +203,7 @@ model ApiKey {
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   // 关联
-  owner           User              @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  owner           User?             @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   usageRecords    UsageRecord[]
   costAggregates  CostAggregate[]
   usageAggregates UsageAggregate[]
@@ -377,6 +377,8 @@ model CostAggregate {
   granularity String
   bucketAt    DateTime @map("bucket_at") @db.Timestamptz
   amount      Decimal  @default(0) @db.Decimal
+  points      Decimal? @db.Decimal
+  tokens      Decimal? @db.Decimal
 
   // 关联
   apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
