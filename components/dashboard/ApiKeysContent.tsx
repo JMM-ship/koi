@@ -204,43 +204,131 @@ export default function ApiKeysContent() {
               <button onClick={() => setActiveTab("linux")} style={{ background: activeTab === "linux" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: activeTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> Linux</button>
             </div>
             {activeTab === "windows" && (
-              <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                  <code style={{ color: "#00d084" }}>npm install -g @anthropic-ai/claude-code</code>
+              <>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Download the LTS installer from https://nodejs.org and follow the default steps. Verify with:</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>node --version</code>
+                  </div>
                 </div>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                  <code style={{ color: "#00d084" }}>$env:ANTHROPIC_BASE_URL = "https://api.jiuwanliguoxue.com"</code>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 2: Install Claude Code CLI</h5>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
+                    <code style={{ color: "#00d084" }}>npm install -g @anthropic-ai/claude-code</code>
+                  </div>
+                  <p style={{ color: "#aaa", marginTop: 8 }}>If permission issues occur, run PowerShell as Administrator.</p>
                 </div>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                  <code style={{ color: "#00d084" }}>$env:ANTHROPIC_AUTH_TOKEN = "{userApiKey || 'Your Token'}"</code>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>PowerShell (temporary for current session):</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>$env:ANTHROPIC_BASE_URL = "https://api.jiuwanliguoxue.com"</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>{`$env:ANTHROPIC_AUTH_TOKEN = "${userApiKey || 'Your Token'}"`}</code>
+                  </div>
+                  <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (user scope):</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://api.jiuwanliguoxue.com", [System.EnvironmentVariableTarget]::User)</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>{`[System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "${userApiKey || 'Your Token'}", [System.EnvironmentVariableTarget]::User)`}</code>
+                  </div>
                 </div>
-              </div>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 4: Get Started</h5>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
+                    <code style={{ color: "#00d084" }}>claude</code>
+                  </div>
+                </div>
+              </>
             )}
             {activeTab === "macos" && (
-              <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                  <code style={{ color: "#00d084" }}>npm install -g @anthropic-ai/claude-code</code>
+              <>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Use Homebrew (brew install node) or download LTS from https://nodejs.org. Verify with:</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>node --version</code>
+                  </div>
                 </div>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                  <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"</code>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 2: Install Claude Code CLI</h5>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
+                    <code style={{ color: "#00d084" }}>npm install -g @anthropic-ai/claude-code</code>
+                  </div>
                 </div>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                  <code style={{ color: "#00d084" }}>export ANTHROPIC_AUTH_TOKEN="{userApiKey || 'Your API Token'}"</code>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Temporary (current session):</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>{`export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
+                  </div>
+                  <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (~/.zshrc or ~/.bash_profile):</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"' &gt;&gt; ~/.zshrc</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>{`echo 'export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"' >> ~/.zshrc`}</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>source ~/.zshrc</code>
+                  </div>
                 </div>
-              </div>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 4: Get Started</h5>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
+                    <code style={{ color: "#00d084" }}>claude</code>
+                  </div>
+                </div>
+              </>
             )}
             {activeTab === "linux" && (
-              <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                  <code style={{ color: "#00d084" }}>sudo npm install -g @anthropic-ai/claude-code</code>
+              <>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Use your distribution's package manager, e.g. apt/dnf/pacman, then verify with:</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>node --version</code>
+                  </div>
                 </div>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                  <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"</code>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 2: Install Claude Code CLI</h5>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
+                    <code style={{ color: "#00d084" }}>sudo npm install -g @anthropic-ai/claude-code</code>
+                  </div>
                 </div>
-                <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                  <code style={{ color: "#00d084" }}>export ANTHROPIC_AUTH_TOKEN="{userApiKey || 'Your API Token'}"</code>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Temporary (current session):</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>{`export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
+                  </div>
+                  <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (~/.bashrc):</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://api.jiuwanliguoxue.com"' &gt;&gt; ~/.bashrc</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>{`echo 'export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"' >> ~/.bashrc`}</code>
+                  </div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>source ~/.bashrc</code>
+                  </div>
                 </div>
-              </div>
+                <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
+                  <h5 style={{ margin: 0, color: "#fff" }}>Step 4: Get Started</h5>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
+                    <code style={{ color: "#00d084" }}>claude</code>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         )}
@@ -248,21 +336,21 @@ export default function ApiKeysContent() {
         {selectedGuide === "codex" && (
           <div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>使用说明</div>
-              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>koi.codes的 API Key可以同时在 Codex 和 Claude Code 中使用</p>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Usage Note</div>
+              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>Your koi.codes API key can be used in both Codex and Claude Code.</p>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>0 安装 Codex</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 0: Install Codex</div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>npm install -g @openai/codex</code>
               </div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>brew install codex</code>
               </div>
-              <div style={{ fontSize: 12, color: "#999" }}>更多平台的安装问题可以查看 https://github.com/openai/codex</div>
+              <div style={{ fontSize: 12, color: "#999" }}>For other platforms and troubleshooting, see https://github.com/openai/codex</div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>1 创建 auth.json 文件</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 1: Create auth.json</div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>rm ~/.codex/auth.json</code>
               </div>
@@ -273,10 +361,10 @@ export default function ApiKeysContent() {
               </div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>创建 config.toml 文件</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 2: Create config.toml</div>
               <div style={{ background: "#221a00", border: "1px solid #ffa500", borderRadius: 6, padding: 10, marginBottom: 8 }}>
-                <div style={{ color: "#ffa500", fontWeight: 700, marginBottom: 4 }}>重要提示</div>
-                <div style={{ color: "#ffd27f", fontSize: 12 }}>配置文件必须命名为 config.toml 并使用 TOML 格式，千万不要误创建 config.json 或其他格式。</div>
+                <div style={{ color: "#ffa500", fontWeight: 700, marginBottom: 4 }}>Important</div>
+                <div style={{ color: "#ffd27f", fontSize: 12 }}>The config file must be named config.toml and use TOML format. Do not create config.json or other formats.</div>
               </div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>rm ~/.codex/config.toml</code>
@@ -296,7 +384,7 @@ wire_api = "responses"`}</code></pre>
               </div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Get Started</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 3: Get Started</div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>codex</code>
               </div>
@@ -309,4 +397,3 @@ wire_api = "responses"`}</code></pre>
     </div>
   );
 }
-
