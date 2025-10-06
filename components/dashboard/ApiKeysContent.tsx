@@ -217,14 +217,14 @@ export default function ApiKeysContent() {
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>PowerShell (temporary for current session):</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#00d084" }}>$env:ANTHROPIC_BASE_URL = "https://koicode.xyz/"</code>
+                    <code style={{ color: "#00d084" }}>$env:ANTHROPIC_BASE_URL = "https://koicode.xyz/api"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`$env:ANTHROPIC_AUTH_TOKEN = "${userApiKey || 'Your Token'}"`}</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (user scope):</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#00d084" }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://koicode.xyz/", [System.EnvironmentVariableTarget]::User)</code>
+                    <code style={{ color: "#00d084" }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://koicode.xyz/api", [System.EnvironmentVariableTarget]::User)</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`[System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", "${userApiKey || 'Your Token'}", [System.EnvironmentVariableTarget]::User)`}</code>
@@ -262,14 +262,14 @@ export default function ApiKeysContent() {
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>Temporary (current session):</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://koicode.xyz/"</code>
+                    <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://koicode.xyz/api"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (~/.zshrc or ~/.bash_profile):</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://koicode.xyz/"' &gt;&gt; ~/.zshrc</code>
+                    <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://koicode.xyz/api"' &gt;&gt; ~/.zshrc</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>{`echo 'export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"' >> ~/.zshrc`}</code>
@@ -314,14 +314,14 @@ export default function ApiKeysContent() {
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>Temporary (current session):</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://koicode.xyz/"</code>
+                    <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://koicode.xyz/api"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (~/.bashrc):</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://koicode.xyz/"' &gt;&gt; ~/.bashrc</code>
+                    <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://koicode.xyz/api"' &gt;&gt; ~/.bashrc</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>{`echo 'export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"' >> ~/.bashrc`}</code>
