@@ -20,6 +20,8 @@ export function Providers({ children }: { children: ReactNode }) {
       '/api/packages',
       '/api/apikeys',
       '/api/dashboard',
+      '/api/credits/info',
+      '/api/profile',
     ],
     softTtlMs: 5 * 60 * 1000,
     hardTtlMs: 24 * 60 * 60 * 1000,

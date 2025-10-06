@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as echarts from 'echarts';
+import useSWR from 'swr'
 import { useDashboard, useCreditBalance, useUserInfo } from "@/contexts/DashboardContext";
 import { useToast } from "@/hooks/useToast";
 
@@ -21,29 +22,15 @@ const SatisfactionRate = () => {
   const { refreshData } = useDashboard();
   const toast = useToast();
 
-  // manual reset related info
-  const [resetsRemainingToday, setResetsRemainingToday] = useState<number | null>(null);
-  const [nextAvailableAtUtc, setNextAvailableAtUtc] = useState<string | null>(null);
-  const [creditCap, setCreditCap] = useState<number | null>(null);
+  // manual reset related info (SWR cache-first)
+  const { data: creditsInfo, mutate: mutateCreditsInfo } = useSWR('/api/credits/info', async (url: string) => {
+    const res = await fetch(url)
+    return res.json()
+  })
+  const resetsRemainingToday: number | null = (typeof creditsInfo?.data?.usage?.resetsRemainingToday === 'number') ? creditsInfo.data.usage.resetsRemainingToday : null
+  const nextAvailableAtUtc: string | null = (typeof creditsInfo?.data?.usage?.nextResetAtUtc === 'string') ? creditsInfo.data.usage.nextResetAtUtc : null
+  const creditCap: number | null = (typeof creditsInfo?.data?.packageConfig?.creditCap === 'number') ? creditsInfo.data.packageConfig.creditCap : null
   const [resetLoading, setResetLoading] = useState(false);
-
-  const fetchCreditsInfo = async () => {
-    try {
-      const res = await fetch('/api/credits/info', { cache: 'no-store' });
-      if (!res.ok) return;
-      const body = await res.json();
-      if (body?.success && body?.data) {
-        const usage = body.data.usage || {};
-        const cfg = body.data.packageConfig || {};
-        setResetsRemainingToday(typeof usage.resetsRemainingToday === 'number' ? usage.resetsRemainingToday : 0);
-        // info 接口返回 nextResetAtUtc；在未点击前，我们将其作为“下一次可用”的提示
-        setNextAvailableAtUtc(usage.nextResetAtUtc || null);
-        setCreditCap(typeof cfg.creditCap === 'number' ? cfg.creditCap : null);
-      }
-    } catch (e) {
-      // ignore
-    }
-  };
 
   useEffect(() => {
     if (data && creditBalance && userInfo) {
@@ -73,9 +60,7 @@ const SatisfactionRate = () => {
     }
   }, [data, creditBalance, userInfo]);
 
-  useEffect(() => {
-    fetchCreditsInfo();
-  }, []);
+  // creditsInfo 加载由 SWR 负责（首帧可用缓存，后台刷新）
 
   const { totalCredits, usedCredits, remainingCredits, percentage } = creditData;
 
@@ -339,8 +324,7 @@ const SatisfactionRate = () => {
                 return;
               }
               const d = body.data || {};
-              setResetsRemainingToday(typeof d.resetsRemainingToday === 'number' ? d.resetsRemainingToday : 0);
-              setNextAvailableAtUtc(typeof d.nextAvailableAtUtc === 'string' ? d.nextAvailableAtUtc : null);
+              await mutateCreditsInfo();
               if (typeof d.newBalance === 'number') {
                 // 尝试立即刷新仪表；同时触发全局刷新
                 await refreshData();
