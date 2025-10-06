@@ -13,7 +13,10 @@ export default function SignInPage() {
     const searchParams = useSearchParams()
     const { showSuccess, showError, showInfo } = useToast()
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
-    const [isLogin, setIsLogin] = useState(true)
+    // Default to Register tab when coming from referral
+    const refParam = searchParams.get('ref')
+    const registerParam = searchParams.get('register')
+    const [isLogin, setIsLogin] = useState(!(refParam || registerParam === '1' || registerParam === 'true'))
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [verificationSent, setVerificationSent] = useState(false)
@@ -42,6 +45,8 @@ export default function SignInPage() {
         if (ref) {
             try { window.localStorage.setItem('inviteCode', ref) } catch {}
             setInviteCode(ref)
+            // Switch to Register tab if referral present
+            setIsLogin(false)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

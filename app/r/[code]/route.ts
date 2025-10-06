@@ -15,6 +15,8 @@ export async function GET(req: Request, { params }: { params: { code: string } }
   const redirectTo = new URL('/auth/signin', url.origin)
   if (normalized) {
     redirectTo.searchParams.set('ref', normalized)
+    // Open the Register tab by default
+    redirectTo.searchParams.set('register', '1')
   }
 
   const res = NextResponse.redirect(redirectTo)
@@ -29,4 +31,3 @@ export async function GET(req: Request, { params }: { params: { code: string } }
   }
   return res
 }
-

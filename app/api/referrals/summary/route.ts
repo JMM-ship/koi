@@ -4,7 +4,7 @@ import { authOptions } from '@/app/auth/config'
 import { ensureUserInviteCode } from '@/app/service/referral'
 import { prisma } from '@/app/models/db'
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id || !session?.user?.email) {
@@ -24,12 +24,12 @@ export async function GET() {
       .filter((t: any) => (t.meta as any)?.source === 'referral_reward')
       .reduce((acc, t) => acc + Number(t.points || 0), 0)
 
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || ''
-    const inviteUrl = origin ? `${origin}/r/${inviteCode}` : `/r/${inviteCode}`
+    const originFromEnv = process.env.NEXT_PUBLIC_SITE_URL || ''
+    const origin = originFromEnv || new URL(req.url).origin
+    const inviteUrl = `${origin}/r/${inviteCode}`
 
     return NextResponse.json({ success: true, data: { inviteCode, inviteUrl, invitedCount, totalRewardPoints } })
   } catch (e: any) {
     return NextResponse.json({ success: false, error: { code: 'SERVER_ERROR', message: String(e?.message || 'Server error') } }, { status: 500 })
   }
 }
-
