@@ -3,6 +3,7 @@ import { getAuth } from '@/lib/auth';
 import { getMockAuth } from '@/lib/auth-mock';
 import prisma from '@/lib/prisma';
 import crypto from 'crypto';
+import { decryptApiKey } from '@/app/lib/crypto';
 
 // 生成 API 密钥
 function generateApiKey(): string {
@@ -90,36 +91,106 @@ export async function POST(request: Request) {
       );
     }
 
-    // 生成新的 API 密钥
-    const newApiKey = generateApiKey();
-    const prefix = newApiKey.substring(0, 7); // 前缀用于快速查找
-
-    // 保存到数据库
-    const apiKey = await prisma.apiKey.create({
-      data: {
-        keyHash: newApiKey,
-        prefix: prefix,
-        name: title || 'My API Key',
-        ownerUserId: userId,
+    // 从数据库中获取一个可用的 API 密钥
+    // 查找一个未分配的活动 API 密钥
+    const availableKey = await prisma.apiKey.findFirst({
+      where: {
+        ownerUserId: null,
         status: 'active'
       }
     });
 
+    if (!availableKey) {
+      return NextResponse.json(
+        { error: 'No available API keys. Please contact support.' },
+        { status: 503 }
+      );
+    }
+
+    // 从 meta.key_encrypted 中获取加密的 key 值
+    const meta = availableKey.meta as any;
+    const encryptedKey = meta?.key_encrypted;
+
+    if (!encryptedKey) {
+      return NextResponse.json(
+        { error: 'Invalid API key configuration: missing encrypted key. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    // 解密 API 密钥
+    let actualKey: string;
+    try {
+      // 调试：打印加密数据的信息
+      console.log('Encrypted key format:', {
+        encrypted: encryptedKey,
+        keyId: availableKey.id,
+        encryptedLength: encryptedKey?.length,
+        encryptedType: typeof encryptedKey
+      });
+
+      // 使用 API key ID 作为 AAD（附加认证数据）
+      actualKey = decryptApiKey(encryptedKey, availableKey.id);
+    } catch (error) {
+      console.error('Failed to decrypt API key:', error);
+      console.error('Encrypted key was:', encryptedKey);
+      return NextResponse.json(
+        { error: 'Failed to decrypt API key. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    // 更新密钥，分配给当前用户（使用 where 条件确保并发安全）
+    const updatedKey = await prisma.apiKey.updateMany({
+      where: {
+        id: availableKey.id,
+        ownerUserId: null, // 确保只有在还未分配时才更新
+        status: 'active'
+      },
+      data: {
+        ownerUserId: userId,
+        name: title || 'My API Key',
+        keyHash: actualKey, // 更新 keyHash 为实际的 key 值
+        prefix: actualKey.substring(0, 7) // 更新前缀
+      }
+    });
+
+    // 检查是否成功更新（如果 count 为 0，说明该 key 已被其他请求占用）
+    if (updatedKey.count === 0) {
+      return NextResponse.json(
+        { error: 'The API key was assigned to another user. Please try again.' },
+        { status: 409 }
+      );
+    }
+
+    // 重新获取更新后的完整记录
+    const result = await prisma.apiKey.findUnique({
+      where: { id: availableKey.id }
+    });
+
+    if (!result) {
+      return NextResponse.json(
+        { error: 'Failed to retrieve the assigned API key.' },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       apiKey: {
-        id: apiKey.id,
-        title: apiKey.name || 'My API Key',
-        apiKey: newApiKey, // 创建时返回完整密钥
-        createdAt: apiKey.createdAt,
-        status: apiKey.status
+        id: result.id,
+        title: result.name || 'My API Key',
+        apiKey: actualKey, // 创建时返回完整密钥
+        createdAt: result.createdAt,
+        status: result.status
       },
       message: 'API key created successfully. Please save it securely as it won\'t be shown again.'
     });
   } catch (error) {
     console.error('Error creating API key:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create API key';
     return NextResponse.json(
-      { error: 'Failed to create API key' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
