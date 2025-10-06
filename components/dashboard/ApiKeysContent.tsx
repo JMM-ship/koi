@@ -184,14 +184,14 @@ export default function ApiKeysContent() {
             <FiTerminal style={{ color: "#794aff", fontSize: 24 }} />
             <div>
               <div style={{ color: "#fff", fontWeight: 600 }}>Claude Code</div>
-              <div style={{ color: "#999", fontSize: 12 }}>CLI 安装与配置</div>
+              <div style={{ color: "#999", fontSize: 12 }}>CLI install & setup</div>
             </div>
           </div>
           <div onClick={() => setSelectedGuide(selectedGuide === "codex" ? null : "codex")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "codex" ? "#121212" : "#1a1a1a", border: selectedGuide === "codex" ? "1px solid #00d084" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
             <FiCode style={{ color: "#00d084", fontSize: 24 }} />
             <div>
               <div style={{ color: "#fff", fontWeight: 600 }}>Codex</div>
-              <div style={{ color: "#999", fontSize: 12 }}>CLI 安装与配置</div>
+              <div style={{ color: "#999", fontSize: 12 }}>CLI install & setup</div>
             </div>
           </div>
         </div>
@@ -207,7 +207,12 @@ export default function ApiKeysContent() {
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Download the LTS installer from https://nodejs.org and follow the default steps. Verify with:</p>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Option 1 (Recommended): Download the LTS installer from https://nodejs.org, run the installer and follow default steps.</p>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>Option 2 (winget):</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>winget install OpenJS.NodeJS.LTS</code>
+                  </div>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>Verify installation:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>node --version</code>
                   </div>
@@ -248,7 +253,12 @@ export default function ApiKeysContent() {
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Use Homebrew (brew install node) or download LTS from https://nodejs.org. Verify with:</p>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Option 1 (Recommended): Use Homebrew.</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>brew install node</code>
+                  </div>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>Option 2: Download the LTS installer (.pkg) from https://nodejs.org and follow the instructions.</p>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>Verify installation:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>node --version</code>
                   </div>
@@ -291,9 +301,18 @@ export default function ApiKeysContent() {
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Use your distribution's package manager, e.g. apt/dnf/pacman, then verify with:</p>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>Use your distribution's package manager, then verify with node --version. Examples:</p>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>Ubuntu/Debian:</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>sudo apt update &amp;&amp; sudo apt install -y nodejs npm</code>
+                  </div>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>Fedora/RHEL/CentOS:</p>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                    <code style={{ color: "#00d084" }}>sudo dnf install -y nodejs npm</code>
+                  </div>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>Arch:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#00d084" }}>node --version</code>
+                    <code style={{ color: "#00d084" }}>sudo pacman -S nodejs npm</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
@@ -351,9 +370,11 @@ export default function ApiKeysContent() {
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
               <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 1: Create auth.json</div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>Delete any existing auth.json under ~/.codex (if present), then create a new auth.json.</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>rm ~/.codex/auth.json</code>
               </div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>Then create a new ~/.codex/auth.json with the following content:</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                 <pre style={{ margin: 0 }}><code style={{ fontSize: 14, color: "#00d084" }}>{`{
   "OPENAI_API_KEY": "${userApiKey || 'Your Token'}"
@@ -366,9 +387,11 @@ export default function ApiKeysContent() {
                 <div style={{ color: "#ffa500", fontWeight: 700, marginBottom: 4 }}>Important</div>
                 <div style={{ color: "#ffd27f", fontSize: 12 }}>The config file must be named config.toml and use TOML format. Do not create config.json or other formats.</div>
               </div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>Delete any existing config.toml under ~/.codex (if present), then create a new config.toml.</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>rm ~/.codex/config.toml</code>
               </div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>Then create a new ~/.codex/config.toml with the content below:</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                 <pre style={{ margin: 0 }}><code style={{ fontSize: 14, color: "#00d084" }}>{`model_provider = "aicodewith"
 model = "gpt-5-codex"
