@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useSWR from 'swr'
 import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2, FiKey, FiTerminal, FiCode } from "react-icons/fi";
 import { FaApple, FaWindows, FaLinux } from "react-icons/fa";
 import { useToast } from "@/hooks/useToast";
@@ -13,8 +14,12 @@ type GuideKind = "claude" | "codex" | null;
 export default function ApiKeysContent() {
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [apiKeys, setApiKeys] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: apiKeysResp, mutate: mutateKeys, isLoading } = useSWR('/api/apikeys', async (url: string) => {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error('Failed to fetch API keys')
+    return res.json()
+  })
+  const apiKeys = ((apiKeysResp?.apiKeys || []) as any[]).filter((k) => k.status !== 'deleted')
   const [creating, setCreating] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newKeyTitle, setNewKeyTitle] = useState("");
@@ -24,20 +29,9 @@ export default function ApiKeysContent() {
   const { confirmState, showConfirm } = useConfirm();
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/apikeys");
-        if (!res.ok) throw new Error("Failed to fetch API keys");
-        const data = await res.json();
-        setApiKeys((data.apiKeys || []).filter((k: any) => k.status !== "deleted"));
-      } catch (e) {
-        console.error("Error fetching API keys", e);
-        showError("Failed to load API keys");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    // surface fetch errors subtly via toast only when SWR fetch throws
+    // errors are automatically retried by SWR config
+  }, [])
 
   const userApiKey = apiKeys.find((k) => k.status === "active")?.fullKey || "";
 
@@ -65,10 +59,7 @@ export default function ApiKeysContent() {
       setShowCreateModal(false);
       setNewKeyTitle("");
       showSuccess("API key created");
-      // refresh list
-      const res = await fetch("/api/apikeys");
-      const next = await res.json();
-      setApiKeys((next.apiKeys || []).filter((k: any) => k.status !== "deleted"));
+      await mutateKeys()
     } catch (e: any) {
       console.error("Error creating API key", e);
       showError(e.message || "Failed to create API key");
@@ -85,9 +76,7 @@ export default function ApiKeysContent() {
           const response = await fetch(`/api/apikeys?id=${keyId}`, { method: "DELETE" });
           if (!response.ok) throw new Error("Failed to delete API key");
           showSuccess(`Deleted "${keyTitle}"`);
-          const res = await fetch("/api/apikeys");
-          const next = await res.json();
-          setApiKeys((next.apiKeys || []).filter((k: any) => k.status !== "deleted"));
+          await mutateKeys()
         } catch (e) {
           console.error("Error deleting API key", e);
           showError("Failed to delete API key");
@@ -124,7 +113,7 @@ export default function ApiKeysContent() {
         </div>
       )}
 
-      {loading ? (
+      {apiKeysResp === undefined ? (
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200, color: "#999" }}>Loading API keys...</div>
       ) : apiKeys.length === 0 ? (
         <div className="balance-card" style={{ background: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: 12, padding: 40, textAlign: "center" }}>

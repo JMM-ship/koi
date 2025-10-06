@@ -17,6 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
       '/api/referrals/summary',
       '/api/referrals/invites',
       '/api/packages/credits',
+      '/api/packages',
       '/api/apikeys',
       '/api/dashboard',
     ],
