@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
-import { useSWRConfig } from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 interface Package {
   id: string;
@@ -26,10 +26,14 @@ interface IndependentPackagesProps {
 const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) => {
   const { showSuccess, showError, showLoading, dismiss } = useToast();
   const { mutate } = useSWRConfig();
-  const [packages, setPackages] = useState<Package[]>([]);
+  const { data: packagesResp } = useSWR('/api/packages/credits', async (url: string) => {
+    const res = await fetch(url)
+    return res.json()
+  })
+  const packages: Package[] = (packagesResp?.data?.packages || []) as Package[]
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const loading = !packagesResp;
   const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
 
   const currencySymbol = (cur?: string) => {
@@ -46,27 +50,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
     }
   };
 
-  useEffect(() => {
-    // Fetch credit packages list
-    const fetchPackages = async () => {
-      try {
-        const response = await fetch('/api/packages/credits');
-        const data = await response.json();
-
-        if (data.success && data.data?.packages) {
-          setPackages(data.data.packages);
-        } else {
-          console.error('Failed to fetch packages:', data.error);
-        }
-      } catch (error) {
-        console.error('Error fetching packages:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPackages();
-  }, []);
+  // Data fetching moved to SWR above to enable persisted cache-first rendering
 
   const handlePurchase = async () => {
     if (!selectedPackage) return;
