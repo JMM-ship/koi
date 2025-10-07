@@ -401,14 +401,14 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
               <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 3: Set Environment Variable</div>
               <p style={{ color: "#ccc", marginTop: 4 }}>Temporary (current session):</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                <code style={{ fontSize: 14, color: "#00d084" }}>export KOI_OPENAI_TOKEN="your api key"</code>
+                <code style={{ fontSize: 14, color: "#00d084" }}>{`export KOI_OPENAI_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
               </div>
               <p style={{ color: "#ccc", marginTop: 4 }}>Permanent (~/.zshrc or ~/.bash_profile):</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                <code style={{ fontSize: 14, color: "#00d084" }}>echo 'export KOI_OPENAI_TOKEN="your api key"' &gt;&gt; ~/.zshrc</code>
+                <code style={{ fontSize: 14, color: "#00d084" }}>{`echo 'export KOI_OPENAI_TOKEN="${userApiKey || 'Your API Token'}"' >> ~/.zshrc`}</code>
               </div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                <code style={{ fontSize: 14, color: "#00d084" }}>echo 'export KOI_OPENAI_TOKEN="your api key"' &gt;&gt; ~/.bashrc</code>
+                <code style={{ fontSize: 14, color: "#00d084" }}>{`echo 'export KOI_OPENAI_TOKEN="${userApiKey || 'Your API Token'}"' >> ~/.bashrc`}</code>
               </div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>source ~/.zshrc</code>
