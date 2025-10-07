@@ -173,9 +173,9 @@ export default function AdminCodeGenerateModal({ onClose, onSuccess }: AdminCode
                           required
                         >
                           <option value="">选择套餐</option>
-                          <option value="basic">基础版</option>
-                          <option value="pro">专业版</option>
-                          <option value="enterprise">企业版</option>
+                          <option value="basic">Plus</option>
+                          <option value="pro">Pro</option>
+                          <option value="enterprise">Max</option>
                         </select>
                       )}
                     </div>

@@ -407,3 +407,23 @@ model UsageAggregate {
   @@id([apiKeyId, model, granularity, bucketAt])
   @@map("usage_aggregates")
 }
+
+// ========== 兑换码模型 ==========
+model RedemptionCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  code      String   @unique
+  codeType  String   @map("code_type")
+  codeValue String   @map("code_value")
+  validDays Int      @default(30) @map("valid_days")
+  status    String   @default("active")
+  batchId   String?  @map("batch_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  usedAt    DateTime? @map("used_at") @db.Timestamptz
+  usedBy    String?   @map("used_by") @db.Uuid
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz
+  notes     String?
+
+  @@map("redemption_codes")
+  @@index([code], name: "idx_code")
+  @@index([status], name: "idx_status")
+}

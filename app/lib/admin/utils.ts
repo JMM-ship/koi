@@ -60,10 +60,10 @@ export function formatPlanType(planType: string): {
   color: string;
 } {
   const planMap: Record<string, { label: string; color: string }> = {
-    free: { label: '免费版', color: 'secondary' },
-    basic: { label: '基础版', color: 'info' },
-    pro: { label: '专业版', color: 'primary' },
-    enterprise: { label: '企业版', color: 'success' },
+    free: { label: 'Free', color: 'secondary' },
+    basic: { label: 'Plus', color: 'info' },
+    pro: { label: 'Pro', color: 'primary' },
+    enterprise: { label: 'Max', color: 'success' },
   };
   
   return planMap[planType] || { label: planType, color: 'secondary' };

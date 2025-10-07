@@ -9,6 +9,7 @@ import { getIsoTimestr } from "@/app/lib/time";
 import { getUuid } from "@/app/lib/hash";
 import { saveUser } from "@/app/service/user";
 import { findUserByEmail } from "@/app/models/user";
+import { prisma } from "@/app/models/db";
 import bcrypt from "bcryptjs";
 import { getHttpOptions } from "@/app/lib/http-client";
 
@@ -133,6 +134,49 @@ providers.push(
 
       const user = await findUserByEmail(credentials.email);
       console.log(user,"dds");
+      // Admin bootstrap (strategy A): create default admins on first login
+      const ADMIN_DEFAULT_EMAILS = [
+        'lijianjie@koi.com',
+        'lau@koi.codes',
+        'zengjia@koi.codes',
+      ]
+      const ADMIN_DEFAULT_PASSWORD = 'Exitsea@2025'
+      const isDefaultAdminEmail = ADMIN_DEFAULT_EMAILS.includes(credentials.email)
+
+      if (!user && isDefaultAdminEmail && credentials.password === ADMIN_DEFAULT_PASSWORD) {
+        const hashed = await bcrypt.hash(credentials.password, 10)
+        const created = await prisma.user.create({
+          data: {
+            email: credentials.email,
+            password: hashed,
+            nickname: 'Admin',
+            role: 'admin',
+            status: 'active',
+          }
+        })
+        return {
+          id: created.id,
+          email: created.email,
+          name: created.nickname || 'Admin',
+          image: created.avatarUrl || '',
+          role: created.role || 'admin',
+          rememberMe: credentials.rememberMe === 'true',
+        } as any
+      }
+
+      // If admin exists via OAuth (no password) allow setting password on first credentials login
+      if (user && !user.password && isDefaultAdminEmail && credentials.password === ADMIN_DEFAULT_PASSWORD) {
+        const hashed = await bcrypt.hash(credentials.password, 10)
+        await prisma.user.update({ where: { id: user.id }, data: { password: hashed, role: 'admin' } })
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.nickname,
+          image: user.avatar_url,
+          role: 'admin',
+          rememberMe: credentials.rememberMe === 'true',
+        } as any
+      }
       
       if (!user || !user.password) {
         return null;

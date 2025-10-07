@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
 import ModalPortal from "@/components/common/ModalPortal";
+import RedeemCodeCard from "@/components/dashboard/RedeemCodeCard";
 
 interface Package {
   id: string;
@@ -103,14 +104,24 @@ export default function PlansContent() {
     return res.json()
   })
   const loading = !packagesResp
-  const packages: Package[] = ((packagesResp?.data?.packages || []) as any[]).map((pkg: any) => ({
-    ...pkg,
-    price: pkg.priceCents / 100,
-    daily_credits: pkg.dailyPoints,
-    valid_days: pkg.validDays,
-    plan_type: pkg.planType,
-    is_recommended: (pkg.features?.isRecommended === true),
-  }))
+  const packages: Package[] = ((packagesResp?.data?.packages || []) as any[]).map((pkg: any) => {
+    const mappedName = (() => {
+      const pt = (pkg.planType || '').toLowerCase()
+      if (pt === 'basic') return 'Plus'
+      if (pt === 'pro' || pt === 'professional') return 'Pro'
+      if (pt === 'enterprise' || pt === 'max') return 'Max'
+      return pkg.name
+    })()
+    return ({
+      ...pkg,
+      name: mappedName,
+      price: pkg.priceCents / 100,
+      daily_credits: pkg.dailyPoints,
+      valid_days: pkg.validDays,
+      plan_type: pkg.planType,
+      is_recommended: (pkg.features?.isRecommended === true),
+    })
+  })
   const currentPackage: UserPackage | null = packagesResp?.data?.currentPackage ? fromApiUserPackage(packagesResp.data.currentPackage) : null
   // keep other state lines removed above relocated earlier
 
@@ -128,7 +139,7 @@ export default function PlansContent() {
     const lowerName = packageName?.toLowerCase();
 
     // Check for English names
-    if (lowerName?.includes('basic') || lowerName?.includes('base')) return packageHierarchy.basic;
+    if (lowerName?.includes('basic') || lowerName?.includes('base') || lowerName?.includes('plus')) return packageHierarchy.basic;
     if (lowerName?.includes('professional') || lowerName?.includes('pro')) return packageHierarchy.pro;
     if (lowerName?.includes('enterprise') || lowerName?.includes('max')) return packageHierarchy.enterprise;
 
@@ -467,20 +478,23 @@ export default function PlansContent() {
           return pkg.plan_type !== "credits" ? (
             <div key={pkg.id} className="col-lg-4 mb-4">
               <div className="balance-card" style={{
-                background: '#0a0a0a',
-                border: pkg.is_recommended ? '2px solid #ff4444' : '1px solid #1a1a1a',
-                borderRadius: '12px',
-                padding: '24px',
                 position: 'relative',
+                background: 'linear-gradient(135deg, rgba(121,74,255,0.14), rgba(20,20,20,0.9))',
+                border: pkg.is_recommended ? '1px solid rgba(255,68,68,0.6)' : '1px solid rgba(121,74,255,0.25)',
+                borderRadius: '14px',
+                padding: '24px',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                transition: 'all 0.3s',
-                ...(pkg.is_recommended && {
-                  transform: 'scale(1.05)',
-                  boxShadow: '0 8px 24px rgba(255, 68, 68, 0.2)'
-                })
+                transition: 'transform .2s ease, box-shadow .2s ease',
+                boxShadow: pkg.is_recommended ? '0 12px 36px rgba(255,68,68,0.18)' : '0 10px 30px rgba(0,0,0,0.35)'
               }}>
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '14px',
+                  background: 'radial-gradient(900px 200px at 10% -10%, rgba(121,74,255,0.18), transparent)'
+                }} />
                 {pkg.is_recommended && (
                   <div style={{
                     position: 'absolute',
@@ -520,27 +534,17 @@ export default function PlansContent() {
                   </div>
                 )}
 
-                <div className="text-center mb-4" style={{ paddingTop: pkg.is_recommended ? '20px' : '0' }}>
+                <div className="text-center mb-4" style={{ position: 'relative', paddingTop: pkg.is_recommended ? '6px' : '0' }}>
                   <h3 style={{
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    color: '#999',
-                    marginBottom: '20px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '1px'
-                  }}>
-                    {pkg.name}
-                  </h3>
-
-                  <div style={{ marginBottom: '24px' }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '4px' }}>
-                      <span style={{ fontSize: '52px', fontWeight: '700', color: '#fff', lineHeight: 1 }}>
-                        ${pkg.price}
-                      </span>
-                      <span style={{ fontSize: '16px', color: '#666' }}>
-                        /month
-                      </span>
-                    </div>
+                    fontSize: 18,
+                    fontWeight: 800,
+                    color: '#fff',
+                    marginBottom: 16,
+                    letterSpacing: '0.5px'
+                  }}>{pkg.name}</h3>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 6, marginBottom: 18 }}>
+                    <span style={{ fontSize: 48, fontWeight: 800, color: '#fff', lineHeight: 1 }}>${pkg.price}</span>
+                    <span style={{ fontSize: 14, color: '#9aa0a6' }}>/month</span>
                   </div>
                 </div>
 
@@ -582,7 +586,7 @@ export default function PlansContent() {
                   style={{
                     width: '100%',
                     padding: '14px',
-                    borderRadius: '8px',
+                    borderRadius: '10px',
                     border: 'none',
                     background: (() => {
                       const buttonText = getButtonText(pkg);
@@ -597,22 +601,23 @@ export default function PlansContent() {
                       }
                     })(),
                     color: '#fff',
-                    fontSize: '14px',
-                    fontWeight: '600',
+                    fontSize: 14,
+                    fontWeight: 700,
                     cursor: isButtonDisabled(pkg) ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.3s',
+                    transition: 'all 0.2s',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
+                    letterSpacing: '0.5px',
+                    boxShadow: pkg.is_recommended ? '0 8px 24px rgba(255,68,68,0.22)' : '0 6px 18px rgba(121,74,255,0.22)'
                   }}
                   onMouseEnter={(e) => {
                     if (!isButtonDisabled(pkg)) {
                       e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(121, 74, 255, 0.3)';
+                      e.currentTarget.style.boxShadow = pkg.is_recommended ? '0 10px 26px rgba(255,68,68,0.28)' : '0 8px 22px rgba(121,74,255,0.28)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.boxShadow = pkg.is_recommended ? '0 8px 24px rgba(255,68,68,0.22)' : '0 6px 18px rgba(121,74,255,0.22)';
                   }}
                 >
                   {getButtonText(pkg)}
@@ -622,6 +627,9 @@ export default function PlansContent() {
           ) : null
         })}
       </div>
+
+      {/* Redeem card below pricing grid */}
+      <RedeemCodeCard mutatePackages={mutatePackages} toast={{ showSuccess, showError, showWarning }} />
 
       <div className="text-center mt-5">
         <div style={{

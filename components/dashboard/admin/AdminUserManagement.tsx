@@ -120,11 +120,11 @@ export default function AdminUserManagement() {
                     value={planFilter}
                     onChange={(e) => setPlanFilter(e.target.value)}
                   >
-                    <option value="">所有套餐</option>
-                    <option value="free">免费版</option>
-                    <option value="basic">基础版</option>
-                    <option value="pro">专业版</option>
-                    <option value="enterprise">企业版</option>
+                    <option value="">All Plans</option>
+                    <option value="free">Free</option>
+                    <option value="basic">Plus</option>
+                    <option value="pro">Pro</option>
+                    <option value="enterprise">Max</option>
                   </select>
                 </div>
                 <div className="col-md-2">

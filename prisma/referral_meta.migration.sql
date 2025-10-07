@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS referral_meta (
 
 -- 2) Case-insensitive unique index for users.invite_code
 -- Ensures global uniqueness irrespective of case
+-- Only enforce uniqueness for non-empty, non-null codes
 CREATE UNIQUE INDEX IF NOT EXISTS uk_users_invite_code_lower
-ON users ((lower(invite_code)));
-
+ON users ((lower(invite_code)))
+WHERE invite_code IS NOT NULL AND invite_code <> '';
