@@ -59,7 +59,7 @@ export async function POST(request) {
 
     // Send email
     const emailResult = await
-      fetch('http://localhost:5000/api/email/send', {
+      fetch('http://34.182.103.153:8080/api/email/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
