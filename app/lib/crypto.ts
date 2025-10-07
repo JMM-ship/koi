@@ -6,42 +6,26 @@ import crypto from 'crypto';
  * @param aad 附加认证数据（通常是 API key ID）
  * @returns 解密后的明文 API 密钥
  */
-export function decryptApiKey(encryptedPayload: string, aad: string): string {
-  // 解析加密负载
-  const parts = encryptedPayload.split(':');
+export function decryptApiKey(encryptedPayload: string, aad: string = ''): string {
+  const key = getEncryptionKey();
+  const [ver, ivB64, ctB64, tagB64] = String(encryptedPayload).split(':');
 
-  if (parts.length !== 4 || parts[0] !== 'v1') {
-    throw new Error('Invalid encrypted payload format. Expected "v1:iv:ciphertext:tag"');
+  if (ver !== 'v1') {
+    throw new Error('unsupported envelope version');
   }
 
-  const [version, ivBase64, ciphertextBase64, tagBase64] = parts;
+  const iv = Buffer.from(ivB64, 'base64');
+  const ct = Buffer.from(ctB64, 'base64');
+  const tag = Buffer.from(tagB64, 'base64');
 
-  // 获取加密密钥
-  const encryptionKey = getEncryptionKey();
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+  if (aad) decipher.setAAD(Buffer.from(aad));
+  decipher.setAuthTag(tag);
 
-  // 转换为 Buffer（使用 Base64 解码，而不是 hex）
-  const iv = Buffer.from(ivBase64, 'base64');
-  const ciphertext = Buffer.from(ciphertextBase64, 'base64');
-  const tag = Buffer.from(tagBase64, 'base64');
+  const p1 = decipher.update(ct);
+  const p2 = decipher.final();
 
-  try {
-    // 创建解密器（AES-256-GCM）
-    const decipher = crypto.createDecipheriv('aes-256-gcm', encryptionKey, iv);
-
-    // 设置认证标签
-    decipher.setAuthTag(tag);
-
-    // 设置附加认证数据（AAD）
-    decipher.setAAD(Buffer.from(aad, 'utf8'));
-
-    // 解密
-    let plaintext = decipher.update(ciphertext);
-    plaintext = Buffer.concat([plaintext, decipher.final()]);
-
-    return plaintext.toString('utf8');
-  } catch (error) {
-    throw new Error(`Decryption failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+  return Buffer.concat([p1, p2]).toString('utf8');
 }
 
 /**
@@ -69,7 +53,7 @@ function getEncryptionKey(): Buffer {
   if (encryptionKey) {
     // 使用 scrypt 派生 32 字节密钥
     // 注意：这里使用固定盐值，实际生产环境应该使用更安全的方式
-    const salt = 'api-keys-encryption-salt'; // 与原始脚本保持一致
+    const salt = 'api-keys-at-rest'; // 与原始脚本保持一致
     try {
       return crypto.scryptSync(encryptionKey, salt, 32);
     } catch (error) {
