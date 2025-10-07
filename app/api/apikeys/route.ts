@@ -54,7 +54,8 @@ export async function GET(request: Request) {
         console.error(`Failed to decrypt key ${key.id}:`, err);
         // 解密失败时使用哈希值
       }
-
+      console.log('actualKey', actualKey,key.id);
+      
       return {
         id: key.id,
         title: key.name || 'Untitled Key',
