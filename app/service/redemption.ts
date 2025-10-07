@@ -17,32 +17,54 @@ export async function redeemCode(userId: string, rawCode: string): Promise<Redee
   const code = (rawCode || '').trim().toUpperCase()
   if (!userId || !code) return { success: false, error: 'INVALID_PARAMS' }
 
-  return await (prisma as any).$transaction(async (tx: any) => {
-    const codeRow = await (tx as any).redemptionCode.findUnique({ where: { code } })
-    if (!codeRow) return { success: false, error: 'CODE_NOT_FOUND' }
-    if (codeRow.status !== 'active') return { success: false, error: 'CODE_NOT_ACTIVE' }
-    if (codeRow.expiresAt && new Date(codeRow.expiresAt) < new Date()) return { success: false, error: 'CODE_EXPIRED' }
+  // 读取并校验
+  const codeRow = await (prisma as any).redemptionCode.findUnique({ where: { code } })
+  if (!codeRow) return { success: false, error: 'CODE_NOT_FOUND' }
+  if (codeRow.expiresAt && new Date(codeRow.expiresAt) < new Date()) return { success: false, error: 'CODE_EXPIRED' }
+  if (codeRow.status !== 'active') {
+    return { success: false, error: codeRow.status === 'used' ? 'CODE_ALREADY_USED' : 'CODE_NOT_ACTIVE' }
+  }
 
-    // 乐观更新：先占用卡密
-    const upd = await (tx as any).redemptionCode.updateMany({
-      where: { code, status: 'active' },
-      data: { status: 'used', usedAt: new Date(), usedBy: userId },
-    })
-    if (upd.count !== 1) return { success: false, error: 'CODE_ALREADY_USED' }
+  // 抢占：active -> used（一次性成功）
+  const lock = await (prisma as any).redemptionCode.updateMany({
+    where: { code, status: 'active' },
+    data: { status: 'used', usedAt: new Date(), usedBy: userId },
+  })
+  if (lock.count !== 1) return { success: false, error: 'CODE_ALREADY_USED' }
 
+  // 后续业务，失败则回滚为 active
+  const revert = async () => {
+    try {
+      await (prisma as any).redemptionCode.updateMany({
+        where: { code, status: 'used', usedBy: userId },
+        data: { status: 'active', usedAt: null, usedBy: null },
+      })
+    } catch {}
+  }
+
+  try {
     if (codeRow.codeType === 'credits') {
       const amount = parseInt(String(codeRow.codeValue), 10)
-      if (!amount || amount <= 0) return { success: false, error: 'INVALID_CODE_VALUE' }
+      if (!amount || amount <= 0) {
+        await revert();
+        return { success: false, error: 'INVALID_CODE_VALUE' }
+      }
       const r = await purchaseCredits(userId, amount, `redeem-${code}`)
-      if (!r.success) return { success: false, error: 'REDEEM_FAILED' }
+      if (!r.success) {
+        await revert();
+        return { success: false, error: 'REDEEM_FAILED' }
+      }
       return { success: true, message: 'Credits added' }
     }
 
     if (codeRow.codeType === 'plan') {
       const targetPlan = String(codeRow.codeValue || '').toLowerCase()
       const pkgs = await getActivePackages()
-      const target = pkgs.find(p => (p.planType || '').toLowerCase() === targetPlan)
-      if (!target) return { success: false, error: 'PLAN_NOT_FOUND' }
+      const target = pkgs.find((p) => (p.planType || '').toLowerCase() === targetPlan)
+      if (!target) {
+        await revert();
+        return { success: false, error: 'PLAN_NOT_FOUND' }
+      }
 
       const now = new Date()
       const validDays = Number(codeRow.validDays || 0)
@@ -50,16 +72,14 @@ export async function redeemCode(userId: string, rawCode: string): Promise<Redee
       endDate.setDate(endDate.getDate() + validDays)
 
       const current = await getUserActivePackage(userId)
-      const currentLevel = current ? levelOf((current.package_snapshot?.planType) || current.package?.planType || '') : 0
+      const currentLevel = current ? levelOf(current.package_snapshot?.planType || current.package?.planType || '') : 0
       const targetLevel = levelOf(target.planType)
-
-      // 降级不允许
       if (current && targetLevel < currentLevel) {
+        await revert();
         return { success: false, error: 'DOWNGRADE_NOT_ALLOWED' }
       }
 
       const orderNo = `redeem-${code}`
-
       if (!current) {
         const snapshot = {
           id: target.id,
@@ -67,7 +87,7 @@ export async function redeemCode(userId: string, rawCode: string): Promise<Redee
           version: target.version,
           price: target.priceCents / 100,
           dailyCredits: target.dailyPoints,
-          validDays: validDays,
+          validDays,
           planType: target.planType,
           features: target.features,
         }
@@ -81,19 +101,21 @@ export async function redeemCode(userId: string, rawCode: string): Promise<Redee
           package_snapshot: snapshot,
         })
         const rr = await resetPackageCreditsForNewPackage(userId, target.dailyPoints || 0, orderNo)
-        if (!rr.success) return { success: false, error: 'REDEEM_FAILED' }
+        if (!rr.success) {
+          await revert();
+          return { success: false, error: 'REDEEM_FAILED' }
+        }
         return { success: true, message: 'Plan activated' }
       }
 
       if (targetLevel > currentLevel) {
-        // 升级：立即生效，覆盖旧套餐，并重置套餐积分
         const snapshot = {
           id: target.id,
           name: target.name,
           version: target.version,
           price: target.priceCents / 100,
           dailyCredits: target.dailyPoints,
-          validDays: validDays,
+          validDays,
           planType: target.planType,
           features: target.features,
         }
@@ -107,11 +129,13 @@ export async function redeemCode(userId: string, rawCode: string): Promise<Redee
           package_snapshot: snapshot,
         })
         const rr = await resetPackageCreditsForNewPackage(userId, target.dailyPoints || 0, orderNo)
-        if (!rr.success) return { success: false, error: 'REDEEM_FAILED' }
+        if (!rr.success) {
+          await revert();
+          return { success: false, error: 'REDEEM_FAILED' }
+        }
         return { success: true, message: 'Plan upgraded' }
       }
 
-      // 同级：叠加有效期（从当前结束时间开始）
       const renewed = await renewUserPackage(
         userId,
         target.id,
@@ -129,11 +153,17 @@ export async function redeemCode(userId: string, rawCode: string): Promise<Redee
           features: target.features,
         }
       )
-      if (!renewed) return { success: false, error: 'REDEEM_FAILED' }
+      if (!renewed) {
+        await revert();
+        return { success: false, error: 'REDEEM_FAILED' }
+      }
       return { success: true, message: 'Plan renewed' }
     }
 
+    await revert();
     return { success: false, error: 'UNSUPPORTED_CODE_TYPE' }
-  })
+  } catch (e) {
+    await revert();
+    return { success: false, error: 'REDEEM_FAILED' }
+  }
 }
-
