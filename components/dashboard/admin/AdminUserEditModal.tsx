@@ -122,10 +122,10 @@ export default function AdminUserEditModal({ user, onClose, onSuccess }: AdminUs
                       value={formData.planType}
                       onChange={(e) => setFormData({ ...formData, planType: e.target.value as AdminUser['planType'] })}
                     >
-                      <option value="free">免费版</option>
-                      <option value="basic">基础版</option>
-                      <option value="pro">专业版</option>
-                      <option value="enterprise">企业版</option>
+                      <option value="free">Free</option>
+                      <option value="basic">Plus</option>
+                      <option value="pro">Pro</option>
+                      <option value="enterprise">Max</option>
                     </select>
                   </div>
                 </div>
