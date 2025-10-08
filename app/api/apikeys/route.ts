@@ -4,6 +4,7 @@ import { getMockAuth } from '@/lib/auth-mock';
 import prisma from '@/lib/prisma';
 import crypto from 'crypto';
 import { diag, timer } from '@/lib/diag';
+import { decryptApiKey } from '@/app/lib/crypto';
 
 // 生成 API 密钥
 function generateApiKey(): string {
