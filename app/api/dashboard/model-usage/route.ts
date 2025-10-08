@@ -101,7 +101,6 @@ export async function GET(request: Request) {
     // 获取用户ID
     const userId = user.uuid;
 
-<<<<<<< HEAD
     const expenseTypes = ['expense', 'use'];
 
     const whereClause = {
@@ -150,56 +149,6 @@ export async function GET(request: Request) {
         timestamp: transaction.createdAt,
       };
     });
-=======
-    const expenseTypes = ['expense', 'use'];
-
-    const whereClause = {
-      userId,
-      type: {
-        in: expenseTypes,
-      },
-    };
-
-    const [transactions, total] = await Promise.all([
-      prisma.creditTransaction.findMany({
-        where: whereClause,
-        orderBy: {
-          createdAt: 'desc',
-        },
-        take: limit,
-        skip: offset,
-      }),
-      prisma.creditTransaction.count({
-        where: whereClause,
-      }),
-    ]);
-
-    const formattedData = transactions.map((transaction) => {
-      const rawMeta = (transaction.meta || {}) as Record<string, any>;
-      const displayName = typeof rawMeta.modelName === 'string'
-        ? rawMeta.modelName
-        : typeof rawMeta.service === 'string'
-        ? rawMeta.service
-        : transaction.reason || 'Credits Usage';
-
-      const usageType = typeof rawMeta.usageType === 'string'
-        ? rawMeta.usageType
-        : transaction.bucket;
-
-      return {
-        id: transaction.id,
-        userId: transaction.userId,
-        modelName: displayName,
-        usageType,
-        credits: transaction.points,
-        metadata: transaction.meta,
-        status: 'completed',
-        bucket: transaction.bucket,
-        reason: transaction.reason,
-        timestamp: transaction.createdAt,
-      };
-    });
->>>>>>> feat/observability-sentry-init
 
     return NextResponse.json({
       data: formattedData,
