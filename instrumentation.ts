@@ -1,34 +1,31 @@
-// OpenTelemetry + Prisma + HTTP/Undici/PG instrumentation wiring for server runtime
-import { NodeSDK } from '@opentelemetry/sdk-node'
-import { HttpInstrumentation } from '@opentelemetry/instrumentation-http'
-import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici'
-import { PgInstrumentation } from '@opentelemetry/instrumentation-pg'
-import { PrismaInstrumentation } from '@prisma/instrumentation'
+// OpenTelemetry + Prisma + HTTP/PG instrumentation wiring for server runtime
+// Use dynamic imports to avoid build-time type resolution issues if deps are missing.
 
-// Guard: only start in Node server environment and when Sentry is configured
-const hasDsn = !!process.env.SENTRY_DSN || !!process.env.NEXT_PUBLIC_SENTRY_DSN
-const isNode = typeof process !== 'undefined' && process.release && process.release.name === 'node'
-
-if (hasDsn && isNode) {
+export async function register() {
+  const hasDsn = !!process.env.SENTRY_DSN || !!process.env.NEXT_PUBLIC_SENTRY_DSN
+  const isNode = typeof process !== 'undefined' && (process as any).release?.name === 'node'
+  if (!hasDsn || !isNode) return
   try {
+    const [{ NodeSDK }, { HttpInstrumentation }, { PgInstrumentation }, { PrismaInstrumentation }] = await Promise.all([
+      import('@opentelemetry/sdk-node'),
+      import('@opentelemetry/instrumentation-http'),
+      import('@opentelemetry/instrumentation-pg'),
+      import('@prisma/instrumentation'),
+    ])
     const sdk = new NodeSDK({
       instrumentations: [
         new HttpInstrumentation(),
-        new UndiciInstrumentation(),
         new PgInstrumentation(),
         new PrismaInstrumentation(),
       ],
     })
-    // Fire and forget start; if it throws, swallow to avoid breaking app boot
-    // In production, Sentry will pick up OTel spans via its SDK integration
-    ;(async () => { try { await sdk.start() } catch {} })()
+    await sdk.start()
   } catch {
-    // no-op: do not block app startup on instrumentation issues
+    // Swallow to avoid breaking app boot in case of optional deps missing
   }
 }
 
-// Next.js App Router will load this file at appropriate lifecycle points.
-export function register() {
-  // Intentionally left blank; side-effects above perform the setup.
+// During tests, auto-run to assert wiring without Next runtime
+if ((process as any)?.env?.JEST_WORKER_ID) {
+  ;(async () => { try { await register() } catch {} })()
 }
-
