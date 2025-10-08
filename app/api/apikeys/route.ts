@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getAuth } from '@/lib/auth';
+import { getAuthLight } from '@/lib/auth-light';
 import { getMockAuth } from '@/lib/auth-mock';
 import prisma from '@/lib/prisma';
 import crypto from 'crypto';
-import { decryptApiKey } from '@/app/lib/crypto';
+import { diag, timer } from '@/lib/diag';
 
 // 生成 API 密钥
 function generateApiKey(): string {
@@ -15,8 +15,9 @@ function generateApiKey(): string {
 // 获取用户的 API 密钥列表
 export async function GET(request: Request) {
   try {
-    // 获取当前用户
-    let user = await getAuth(request);
+    const t = timer('apikeys.GET.total')
+    // 轻量鉴权（不触发额外的DB读取）
+    let user = await getAuthLight(request);
     if (!user && process.env.NODE_ENV === 'development') {
       user = await getMockAuth();
     }
@@ -27,46 +28,34 @@ export async function GET(request: Request) {
     // 获取用户ID
     const userId = user.uuid;
 
-    // 获取用户的 API 密钥
+    // 仅获取非删除状态的密钥（避免解密无意义数据）
+    const q = timer('apikeys.GET.findMany')
     const apiKeys = await prisma.apiKey.findMany({
       where: {
-        ownerUserId: userId
+        ownerUserId: userId,
+        NOT: { status: 'deleted' }
       },
       orderBy: {
         createdAt: 'desc'
       }
     });
+    q.end({ count: apiKeys.length })
 
-    // 格式化返回数据，解密真实密钥
+    // 列表轻量返回：不解密、不回传 fullKey
     const formattedKeys = apiKeys.map((key: any) => {
-      let actualKey = key.keyHash; // 默认使用哈希值（如果解密失败）
-
-      try {
-        // 从 meta 中获取加密的 key 并解密
-        const meta = (key.meta || {}) as any;
-        const encryptedKey: string | undefined = meta?.key_encrypted || meta?.keyEncrypted;
-
-        if (encryptedKey) {
-          // 解密获取真实的 key
-          actualKey = decryptApiKey(encryptedKey, key.id);
-        }
-      } catch (err) {
-        console.error(`Failed to decrypt key ${key.id}:`, err);
-        // 解密失败时使用哈希值
-      }
-      console.log('actualKey', actualKey,key.id);
-      
+      const masked = key.prefix ? `${key.prefix}...****` : maskApiKey(String(key.keyHash || ''))
       return {
         id: key.id,
         title: key.name || 'Untitled Key',
-        apiKey: maskApiKey(actualKey), // 默认隐藏大部分密钥
-        fullKey: actualKey, // 完整的真实密钥
+        apiKey: masked,
         createdAt: key.createdAt,
         status: key.status || 'active'
-      };
-    });
+      }
+    })
 
-    return NextResponse.json({ apiKeys: formattedKeys });
+    const res = NextResponse.json({ apiKeys: formattedKeys })
+    t.end()
+    return res
   } catch (error) {
     console.error('Error fetching API keys:', error);
     return NextResponse.json(
@@ -85,7 +74,8 @@ function hashApiKey(rawKey: string): string {
   export async function POST(request: Request) {
   try {
   // 1) 获取当前用户
-  let user = await getAuth(request)
+  const t = timer('apikeys.POST.total')
+  let user = await getAuthLight(request)
   if (!user && process.env.NODE_ENV === 'development') {
   user = await getMockAuth()
   }
@@ -98,9 +88,11 @@ function hashApiKey(rawKey: string): string {
       const userId = user.uuid
 
       // 2) 每用户限制一个激活中的密钥
+      const t1 = timer('apikeys.POST.findExisting')
       const existingKey = await prisma.apiKey.findFirst({
         where: { ownerUserId: userId, status: 'active' }
       })
+      t1.end()
       if (existingKey) {
         return NextResponse.json(
           { error: 'You already have an active API key. Please delete it before creating a new one.' },
@@ -109,16 +101,18 @@ function hashApiKey(rawKey: string): string {
       }
 
       // 3) 领取一个未分配的活动密钥
+      const t2 = timer('apikeys.POST.findAvailable')
       const availableKey = await prisma.apiKey.findFirst({
         where: { ownerUserId: null, status: 'active' }
       })
+      t2.end()
       if (!availableKey) {
         return NextResponse.json(
           { error: 'No available API keys. Please contact support.' },
           { status: 503 }
         )
       }
-      console.log('availableKey', availableKey);
+      diag('apikeys.POST.availableKey', { id: availableKey.id })
       
       // 4) 从 meta 中取加密串并解密（AAD 使用 key 的 id）
       const meta = (availableKey.meta || {}) as any
@@ -156,6 +150,7 @@ function hashApiKey(rawKey: string): string {
       }
 
       // 6) 抢占归属（并发安全）：只更新 ownerUserId 和 name，不要修改 keyHash/prefix
+      const t3 = timer('apikeys.POST.claim')
       const updated = await prisma.apiKey.updateMany({
         where: { id: availableKey.id, ownerUserId: null, status: 'active' },
         data: {
@@ -163,7 +158,7 @@ function hashApiKey(rawKey: string): string {
           name: title || 'My API Key'
         }
       })
-      console.log('updated', updated,userId,availableKey.id);
+      t3.end({ count: updated.count })
       
       if (updated.count === 0) {
         return NextResponse.json(
@@ -173,7 +168,9 @@ function hashApiKey(rawKey: string): string {
       }
 
       // 7) 返回给用户一次性展示的明文 key（不持久化明文）
+      const t4 = timer('apikeys.POST.fetchResult')
       const result = await prisma.apiKey.findUnique({ where: { id: availableKey.id } })
+      t4.end()
       if (!result) {
         return NextResponse.json(
           { error: 'Failed to retrieve the assigned API key.' },
@@ -181,18 +178,20 @@ function hashApiKey(rawKey: string): string {
         )
       }
 
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         apiKey: {
           id: result.id,
           title: result.name || 'My API Key',
-          apiKey: maskApiKey(actualKey), // 隐藏版本
-          fullKey: actualKey, // 完整的真实 key（只在创建时返回一次）
+          apiKey: maskApiKey(actualKey),
+          fullKey: actualKey,
           createdAt: result.createdAt,
           status: result.status
         },
         message: "API key created successfully. Please save it securely as it won't be shown again."
       })
+      t.end()
+      return response
 
   } catch (error) {
   const errorMessage = error instanceof Error ? error.message : 'Failed to create API key'
@@ -203,8 +202,9 @@ function hashApiKey(rawKey: string): string {
 // 删除 API 密钥
 export async function DELETE(request: Request) {
   try {
-    // 获取当前用户
-    let user = await getAuth(request);
+    const t = timer('apikeys.DELETE.total')
+    // 获取当前用户（轻量）
+    let user = await getAuthLight(request);
     if (!user && process.env.NODE_ENV === 'development') {
       user = await getMockAuth();
     }
@@ -241,6 +241,7 @@ export async function DELETE(request: Request) {
     }
 
     // 删除密钥（软删除，更新状态为 deleted）
+    const t1 = timer('apikeys.DELETE.softDelete')
     await prisma.apiKey.update({
       where: {
         id: keyId
@@ -249,11 +250,14 @@ export async function DELETE(request: Request) {
         status: 'deleted'
       }
     });
+    t1.end()
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       message: 'API key deleted successfully'
     });
+    t.end()
+    return res
   } catch (error) {
     console.error('Error deleting API key:', error);
     return NextResponse.json(
