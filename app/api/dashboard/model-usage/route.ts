@@ -101,87 +101,111 @@ export async function GET(request: Request) {
     // 获取用户ID
     const userId = user.uuid;
 
-    // 先查询该用户的所有API密钥
-    const userApiKeys = await prisma.apiKey.findMany({
-      where: {
-        ownerUserId: userId
+<<<<<<< HEAD
+    const expenseTypes = ['expense', 'use'];
+
+    const whereClause = {
+      userId,
+      type: {
+        in: expenseTypes,
       },
-      select: {
-        id: true
-      }
-    });
+    };
 
-    const apiKeyIds = userApiKeys.map(key => key.id);
-
-    // 如果用户没有API密钥,返回空数据
-    if (apiKeyIds.length === 0) {
-      return NextResponse.json({
-        data: [],
-        total: 0,
-        limit,
-        offset
-      });
-    }
-
-    // 先查询所有granularity的数据，看看有什么
-    const allAggregates = await prisma.usageAggregate.findMany({
-      where: {
-        apiKeyId: {
-          in: apiKeyIds
-        }
-      },
-      take: 5
-    });
-
-    // 查询usage_aggregates表,只获取granularity为'h'的数据
-    const usageAggregates = await prisma.usageAggregate.findMany({
-      where: {
-        apiKeyId: {
-          in: apiKeyIds
+    const [transactions, total] = await Promise.all([
+      prisma.creditTransaction.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: 'desc',
         },
-        granularity: 'h'
-      },
-      orderBy: {
-        bucketAt: 'desc'  // 按时间降序排序
-      },
-      take: limit,
-      skip: offset
-    });
+        take: limit,
+        skip: offset,
+      }),
+      prisma.creditTransaction.count({
+        where: whereClause,
+      }),
+    ]);
 
-    // 统计总数
-    const total = await prisma.usageAggregate.count({
-      where: {
-        apiKeyId: {
-          in: apiKeyIds
+    const formattedData = transactions.map((transaction) => {
+      const rawMeta = (transaction.meta || {}) as Record<string, any>;
+      const displayName = typeof rawMeta.modelName === 'string'
+        ? rawMeta.modelName
+        : typeof rawMeta.service === 'string'
+        ? rawMeta.service
+        : transaction.reason || 'Credits Usage';
+
+      const usageType = typeof rawMeta.usageType === 'string'
+        ? rawMeta.usageType
+        : transaction.bucket;
+
+      return {
+        id: transaction.id,
+        userId: transaction.userId,
+        modelName: displayName,
+        usageType,
+        credits: transaction.points,
+        metadata: transaction.meta,
+        status: 'completed',
+        bucket: transaction.bucket,
+        reason: transaction.reason,
+        timestamp: transaction.createdAt,
+      };
+    });
+=======
+    const expenseTypes = ['expense', 'use'];
+
+    const whereClause = {
+      userId,
+      type: {
+        in: expenseTypes,
+      },
+    };
+
+    const [transactions, total] = await Promise.all([
+      prisma.creditTransaction.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: 'desc',
         },
-        granularity: 'h'
-      }
-    });
-    
-    // 格式化数据以兼容前端
-    const formattedData = usageAggregates.map(record => ({
-      id: `${record.apiKeyId}-${record.model}-${record.bucketAt.getTime()}`,
-      apiKeyId: record.apiKeyId,
-      accountId: record.accountId,
-      model: record.model,
-      granularity: record.granularity,
-      timestamp: record.bucketAt,
-      inputTokens: record.inputTokens,
-      outputTokens: record.outputTokens,
-      cacheTokens: record.cacheTokens,
-      allTokens: record.allTokens,
-      requests: record.requests
-    }));
-    console.log('allAggregates', formattedData);
+        take: limit,
+        skip: offset,
+      }),
+      prisma.creditTransaction.count({
+        where: whereClause,
+      }),
+    ]);
 
-    // ✅ 转换 BigInt
-    const safeData = safeJson(formattedData);
+    const formattedData = transactions.map((transaction) => {
+      const rawMeta = (transaction.meta || {}) as Record<string, any>;
+      const displayName = typeof rawMeta.modelName === 'string'
+        ? rawMeta.modelName
+        : typeof rawMeta.service === 'string'
+        ? rawMeta.service
+        : transaction.reason || 'Credits Usage';
+
+      const usageType = typeof rawMeta.usageType === 'string'
+        ? rawMeta.usageType
+        : transaction.bucket;
+
+      return {
+        id: transaction.id,
+        userId: transaction.userId,
+        modelName: displayName,
+        usageType,
+        credits: transaction.points,
+        metadata: transaction.meta,
+        status: 'completed',
+        bucket: transaction.bucket,
+        reason: transaction.reason,
+        timestamp: transaction.createdAt,
+      };
+    });
+>>>>>>> feat/observability-sentry-init
 
     return NextResponse.json({
-      data: safeData,
+      data: formattedData,
       total,
       limit,
-      offset
+      offset,
     });
   } catch (error) {
     console.log('error这个错了', error);

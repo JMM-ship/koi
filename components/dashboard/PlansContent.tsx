@@ -122,6 +122,21 @@ export default function PlansContent() {
       is_recommended: (pkg.features?.isRecommended === true),
     })
   })
+
+  // Sort display order: Plus -> Max -> Pro
+  const tierRank = (pkg: Package): number => {
+    const plan = (pkg.plan_type || pkg.planType || '').toLowerCase()
+    const name = (pkg.name || '').toLowerCase()
+    // Normalize to tiers
+    const isPlus = plan === 'basic' || name.includes('plus')
+    const isMax = plan === 'enterprise' || plan === 'max' || name.includes('max')
+    const isPro = plan === 'pro' || plan === 'professional' || name.includes('pro')
+    if (isPlus) return 0
+    if (isMax) return 1
+    if (isPro) return 2
+    return 99
+  }
+  const sortedPackages = [...packages].sort((a, b) => tierRank(a) - tierRank(b) || (a.sortOrder - b.sortOrder))
   const currentPackage: UserPackage | null = packagesResp?.data?.currentPackage ? fromApiUserPackage(packagesResp.data.currentPackage) : null
   // keep other state lines removed above relocated earlier
 
@@ -472,7 +487,7 @@ export default function PlansContent() {
       </div>
 
       <div className="row justify-content-center">
-        {packages.map((pkg) => {
+        {sortedPackages.map((pkg) => {
 
 
           return pkg.plan_type !== "credits" ? (
