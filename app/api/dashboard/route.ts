@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getAuth } from '@/lib/auth';
 import { getMockAuth } from '@/lib/auth-mock';
 import prisma from '@/lib/prisma';
+import { dbRouter } from '@/app/models/db';
 
 export async function GET(request: Request) {
   try {
@@ -27,19 +28,20 @@ export async function GET(request: Request) {
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     // 并行抓取核心数据，减少总耗时
+    // 使用副本库进行查询操作，提升性能
     const [wallet, usageRecords, userPackage, userInfo] = await Promise.all([
-      prisma.wallet.findUnique({ where: { userId } }),
-      prisma.usageRecord.findMany({
+      dbRouter.read.wallet.findUnique({ where: { userId } }),
+      dbRouter.read.usageRecord.findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
         take: 10,
       }),
-      prisma.userPackage.findFirst({
+      dbRouter.read.userPackage.findFirst({
         where: { userId, isActive: true, endAt: { gte: now } },
         include: { package: true },
         orderBy: { endAt: 'desc' },
       }),
-      prisma.user.findUnique({
+      dbRouter.read.user.findUnique({
         where: { id: userId },
         select: {
           id: true,
@@ -118,21 +120,22 @@ async function calculateCreditStats(userId: string) {
   const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
   const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
+  // 使用副本库进行统计查询，减轻主库压力
   // 三段统计 + 排名并行计算
   const [todayUsage, weekUsage, monthUsage, allUsersWeekUsage] = await Promise.all([
-    prisma.creditTransaction.aggregate({
+    dbRouter.read.creditTransaction.aggregate({
       where: { userId, type: 'expense', createdAt: { gte: today } },
       _sum: { points: true },
     }),
-    prisma.creditTransaction.aggregate({
+    dbRouter.read.creditTransaction.aggregate({
       where: { userId, type: 'expense', createdAt: { gte: weekAgo } },
       _sum: { points: true },
     }),
-    prisma.creditTransaction.aggregate({
+    dbRouter.read.creditTransaction.aggregate({
       where: { userId, type: 'expense', createdAt: { gte: monthAgo } },
       _sum: { points: true },
     }),
-    prisma.creditTransaction.groupBy({
+    dbRouter.read.creditTransaction.groupBy({
       by: ['userId'],
       where: { type: 'expense', createdAt: { gte: weekAgo } },
       _sum: { points: true },

@@ -1,4 +1,4 @@
-import { 
+import {
   getActivePackages,
   getPackageById,
   getRecommendedPackages
@@ -15,7 +15,7 @@ import { activatePackageCredits, dailyResetCredits, resetPackageCreditsForNewPac
 import { findOrderByOrderNo } from "@/app/models/order";
 import { batchCreateResetTransactions } from "@/app/models/creditTransaction";
 import { getCreditBalance, batchResetPackageCredits } from "@/app/models/creditBalance";
-import { prisma } from "@/app/models/db";
+import { prisma, dbRouter } from "@/app/models/db";
 
 export interface PackagePurchaseResult {
   success: boolean;
@@ -310,7 +310,8 @@ export async function checkAndExpirePackages(): Promise<number> {
   try {
     // 查找所有已过期但仍然活跃的套餐
     const now = new Date();
-    const expiredPackages = await prisma.userPackage.findMany({
+    // 使用副本库查询过期套餐列表
+    const expiredPackages = await dbRouter.read.userPackage.findMany({
       where: {
         isActive: true,
         endAt: {  // endDate -> endAt
@@ -318,15 +319,15 @@ export async function checkAndExpirePackages(): Promise<number> {
         }
       }
     });
-    
+
     if (expiredPackages.length === 0) {
       console.log('No expired packages found');
       return 0;
     }
-    
+
     console.log(`Found ${expiredPackages.length} expired packages to process`);
-    
-    // 批量更新为非活跃状态
+
+    // 批量更新为非活跃状态 - 使用主库进行写操作
     const result = await prisma.userPackage.updateMany({
       where: {
         id: {
@@ -338,8 +339,8 @@ export async function checkAndExpirePackages(): Promise<number> {
         updatedAt: now
       }
     });
-    
-    // 对每个过期的套餐，清空用户的套餐积分
+
+    // 对每个过期的套餐，清空用户的套餐积分 - 使用主库进行写操作
     for (const pkg of expiredPackages) {
       try {
         await prisma.wallet.update({
@@ -350,13 +351,13 @@ export async function checkAndExpirePackages(): Promise<number> {
             updatedAt: now
           }
         });
-        
+
         console.log(`Expired package for user ${pkg.userId}`);
       } catch (error) {
         console.error(`Failed to clear package credits for user ${pkg.userId}:`, error);
       }
     }
-    
+
     return result.count;
   } catch (error) {
     console.error('Error checking and expiring packages:', error);

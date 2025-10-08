@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAdminAuth } from "@/app/lib/admin/middleware";
-import { prisma } from "@/app/models/db";
+import { prisma, dbRouter } from "@/app/models/db";
 import { AdminStats, SuccessResponse } from "@/app/types/admin";
 
 /**
@@ -15,6 +15,7 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
     const weekAgo = new Date(today);
     weekAgo.setDate(weekAgo.getDate() - 7);
 
+    // 使用副本库查询统计数据，减轻主库压力
     // 查询用户统计
     const [
       totalUsers,
@@ -22,14 +23,14 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
       newUsersToday,
       newUsersThisWeek,
     ] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.count({ where: { status: 'active' } }),
-      prisma.user.count({
+      dbRouter.read.user.count(),
+      dbRouter.read.user.count({ where: { status: 'active' } }),
+      dbRouter.read.user.count({
         where: {
           createdAt: { gte: today },
         },
       }),
-      prisma.user.count({
+      dbRouter.read.user.count({
         where: {
           createdAt: { gte: weekAgo },
         },
@@ -43,13 +44,13 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
       paidOrdersStats,
       todayRevenue,
     ] = await Promise.all([
-      prisma.order.count(),
-      prisma.order.count({ where: { status: 'pending' } }),
-      prisma.order.aggregate({
+      dbRouter.read.order.count(),
+      dbRouter.read.order.count({ where: { status: 'pending' } }),
+      dbRouter.read.order.aggregate({
         where: { status: 'paid' },
         _sum: { amountCents: true },  // 修正字段名
       }),
-      prisma.order.aggregate({
+      dbRouter.read.order.aggregate({
         where: {
           status: 'paid',
           paidAt: { gte: today },
@@ -66,13 +67,13 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
 
     // 查询积分统计
     const [creditIssued, creditConsumed] = await Promise.all([
-      prisma.creditTransaction.aggregate({  // 修正模型名
+      dbRouter.read.creditTransaction.aggregate({  // 修正模型名
         where: {
           type: 'income',  // 使用新的type字段值
         },
         _sum: { points: true },  // 使用points字段
       }),
-      prisma.creditTransaction.aggregate({  // 修正模型名
+      dbRouter.read.creditTransaction.aggregate({  // 修正模型名
         where: {
           type: 'expense',  // 使用新的type字段值
         },

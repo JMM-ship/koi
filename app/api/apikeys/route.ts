@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getAuthLight } from '@/lib/auth-light';
 import { getMockAuth } from '@/lib/auth-mock';
 import prisma from '@/lib/prisma';
+import { dbRouter } from '@/app/models/db';
 import crypto from 'crypto';
 import { diag, timer } from '@/lib/diag';
 import { decryptApiKey } from '@/app/lib/crypto';
@@ -29,9 +30,10 @@ export async function GET(request: Request) {
     // 获取用户ID
     const userId = user.uuid;
 
+    // 使用副本库查询API密钥列表，减轻主库压力
     // 仅获取非删除状态的密钥（避免解密无意义数据）
     const q = timer('apikeys.GET.findMany')
-    const apiKeys = await prisma.apiKey.findMany({
+    const apiKeys = await dbRouter.read.apiKey.findMany({
       where: {
         ownerUserId: userId,
         NOT: { status: 'deleted' }

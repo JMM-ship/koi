@@ -1,4 +1,4 @@
-import { prisma } from "@/app/models/db";
+import { prisma, dbRouter } from "@/app/models/db";
 import { Package as PrismaPackage } from "@prisma/client";
 
 export interface PackageFeatures {
@@ -76,7 +76,8 @@ function toPrismaPackage(pkg: Partial<Package>): Partial<PrismaPackage> {
 // 获取所有激活的套餐
 export async function getActivePackages(): Promise<Package[]> {
   try {
-    const packages = await prisma.package.findMany({
+    // 使用副本库 - 套餐列表查询允许轻微延迟
+    const packages = await dbRouter.read.package.findMany({
       where: { isActive: true },
       orderBy: { sortOrder: 'asc' },
     });
@@ -90,7 +91,8 @@ export async function getActivePackages(): Promise<Package[]> {
 // 根据ID获取套餐
 export async function getPackageById(id: string): Promise<Package | undefined> {
   try {
-    const pkg = await prisma.package.findUnique({
+    // 使用副本库 - 查询单个套餐信息允许轻微延迟
+    const pkg = await dbRouter.read.package.findUnique({
       where: { id },
     });
     return fromPrismaPackage(pkg);
@@ -144,7 +146,8 @@ export async function deletePackage(id: string): Promise<boolean> {
 // 获取推荐套餐（通过 features 中的 isRecommended 标记）
 export async function getRecommendedPackages(): Promise<Package[]> {
   try {
-    const packages = await prisma.package.findMany({
+    // 使用副本库 - 推荐套餐查询允许轻微延迟
+    const packages = await dbRouter.read.package.findMany({
       where: {
         isActive: true,
       },
@@ -166,10 +169,11 @@ export async function getRecommendedPackages(): Promise<Package[]> {
 // 根据版本号获取套餐
 export async function getPackageByVersion(version: string): Promise<Package | undefined> {
   try {
-    const pkg = await prisma.package.findFirst({
-      where: { 
+    // 使用副本库 - 套餐查询允许轻微延迟
+    const pkg = await dbRouter.read.package.findFirst({
+      where: {
         version,
-        isActive: true 
+        isActive: true
       },
     });
     return fromPrismaPackage(pkg);
@@ -182,7 +186,8 @@ export async function getPackageByVersion(version: string): Promise<Package | un
 // 查找与独立积分总额匹配的激活 credits 套餐（dailyPoints 即总积分）
 export async function findActiveCreditsPackageByTotalCredits(totalCredits: number): Promise<Package | undefined> {
   try {
-    const pkg = await prisma.package.findFirst({
+    // 使用副本库 - 套餐查询允许轻微延迟
+    const pkg = await dbRouter.read.package.findFirst({
       where: {
         planType: 'credits',
         isActive: true,

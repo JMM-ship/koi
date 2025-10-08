@@ -1,5 +1,5 @@
 import { User } from "@/app/types/user";
-import { prisma } from "./db";
+import { prisma, dbRouter } from "./db";
 import bcrypt from "bcryptjs";
 import { User as PrismaUser } from "@prisma/client";
 
@@ -64,7 +64,8 @@ export async function findUserById(id: string): Promise<User | undefined> {
 
 export async function getUsers(page = 1, limit = 50): Promise<User[]> {
   const offset = (page - 1) * limit;
-  const users = await prisma.user.findMany({
+  // 使用副本库 - 列表查询允许轻微延迟
+  const users = await dbRouter.read.user.findMany({
     skip: offset,
     take: limit,
     orderBy: { createdAt: "desc" },
@@ -82,11 +83,13 @@ export async function getUsersByIds(userIds: string[]): Promise<User[]> {
 // ====== 统计 ======
 
 export async function getUsersTotal(): Promise<number> {
-  return prisma.user.count();
+  // 使用副本库 - 统计查询允许轻微延迟
+  return dbRouter.read.user.count();
 }
 
 export async function getUserCountByDate(startTime: string): Promise<Map<string, number>> {
-  const users = await prisma.user.findMany({
+  // 使用副本库 - 统计查询允许轻微延迟
+  const users = await dbRouter.read.user.findMany({
     where: { createdAt: { gte: new Date(startTime) } },
     select: { createdAt: true },
     orderBy: { createdAt: "asc" },

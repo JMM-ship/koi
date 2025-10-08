@@ -1,4 +1,4 @@
-import { prisma } from "@/app/models/db";
+import { prisma, dbRouter } from "@/app/models/db";
 import { Order as PrismaOrder } from "@prisma/client";
 
 export enum OrderStatus {
@@ -141,8 +141,9 @@ export async function getFirstPaidOrderByUserEmail(
   user_email: string
 ): Promise<any | undefined> {
   try {
+    // 使用副本库 - 历史订单查询允许轻微延迟
     // 由于 userEmail 现在存储在 details JSON 中，需要使用不同的查询方法
-    const orders = await prisma.order.findMany({
+    const orders = await dbRouter.read.order.findMany({
       where: {
         status: "paid",
       },
@@ -274,7 +275,8 @@ export async function getOrdersByUserUuid(
   user_id: string
 ): Promise<any[] | undefined> {
   try {
-    const orders = await prisma.order.findMany({
+    // 使用副本库 - 订单列表查询允许轻微延迟
+    const orders = await dbRouter.read.order.findMany({
       where: {
         userId: user_id,
         status: "paid",
@@ -293,8 +295,9 @@ export async function getOrdersByUserEmail(
   user_email: string
 ): Promise<any[] | undefined> {
   try {
+    // 使用副本库 - 订单列表查询允许轻微延迟
     // 由于 userEmail 现在存储在 details JSON 中，需要使用不同的查询方法
-    const orders = await prisma.order.findMany({
+    const orders = await dbRouter.read.order.findMany({
       where: {
         status: "paid",
       },
@@ -319,8 +322,9 @@ export async function getOrdersByPaidEmail(
   paid_email: string
 ): Promise<any[] | undefined> {
   try {
+    // 使用副本库 - 订单列表查询允许轻微延迟
     // paidEmail 现在存储在 details JSON 中
-    const orders = await prisma.order.findMany({
+    const orders = await dbRouter.read.order.findMany({
       where: {
         status: "paid",
       },
@@ -346,7 +350,8 @@ export async function getPaiedOrders(
   limit: number
 ): Promise<any[] | undefined> {
   try {
-    const orders = await prisma.order.findMany({
+    // 使用副本库 - 订单列表查询允许轻微延迟
+    const orders = await dbRouter.read.order.findMany({
       where: {
         status: "paid",
       },
@@ -364,7 +369,8 @@ export async function getPaiedOrders(
 
 export async function getPaidOrdersTotal(): Promise<number | undefined> {
   try {
-    const count = await prisma.order.count({
+    // 使用副本库 - 统计查询允许轻微延迟
+    const count = await dbRouter.read.order.count({
       where: {
         status: "paid",
       },
@@ -380,7 +386,8 @@ export async function getOrderCountByDate(
   status?: string
 ): Promise<Map<string, number> | undefined> {
   try {
-    const orders = await prisma.order.findMany({
+    // 使用副本库 - 统计查询允许轻微延迟
+    const orders = await dbRouter.read.order.findMany({
       where: {
         createdAt: {
           gte: new Date(startTime),

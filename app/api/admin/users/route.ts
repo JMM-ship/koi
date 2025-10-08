@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAdminAuth } from "@/app/lib/admin/middleware";
-import { prisma } from "@/app/models/db";
+import { prisma, dbRouter } from "@/app/models/db";
 import { UserListQuery, PaginatedResponse, AdminUser } from "@/app/types/admin";
 
 /**
@@ -36,9 +36,10 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
     // 计算分页
     const skip = (page - 1) * limit;
 
+    // 使用副本库查询用户列表，减轻主库压力
     // 查询用户列表（包含钱包信息）
     const [users, total] = await Promise.all([
-      prisma.user.findMany({
+      dbRouter.read.user.findMany({
         where,
         skip,
         take: limit,
@@ -56,7 +57,7 @@ export const GET = withAdminAuth(async (req: NextRequest) => {
           },
         },
       }),
-      prisma.user.count({ where }),
+      dbRouter.read.user.count({ where }),
     ]);
 
     // 转换用户数据类型
