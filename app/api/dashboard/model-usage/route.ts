@@ -81,12 +81,6 @@ export async function GET(request: Request) {
     // 尝试获取真实用户，如果失败则使用模拟用户（仅用于开发）
     let user = await getAuth(request);
 
-    // 在开发环境下，如果没有配置认证，使用模拟认证
-    if (!user && process.env.NODE_ENV === 'development') {
-      console.log('Using mock auth for development');
-      user = await getMockAuth();
-    }
-
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -98,35 +92,78 @@ export async function GET(request: Request) {
     // 获取用户ID
     const userId = user.uuid;
 
-    // 获取使用记录
-    const usageRecords = await prisma.usageRecord.findMany({
+    // 先查询该用户的所有API密钥
+    const userApiKeys = await prisma.apiKey.findMany({
       where: {
-        userId: userId
+        ownerUserId: userId
+      },
+      select: {
+        id: true
+      }
+    });
+
+    const apiKeyIds = userApiKeys.map(key => key.id);
+
+    // 如果用户没有API密钥,返回空数据
+    if (apiKeyIds.length === 0) {
+      return NextResponse.json({
+        data: [],
+        total: 0,
+        limit,
+        offset
+      });
+    }
+
+    // 先查询所有granularity的数据，看看有什么
+    const allAggregates = await prisma.usageAggregate.findMany({
+      where: {
+        apiKeyId: {
+          in: apiKeyIds
+        }
+      },
+      take: 5
+    });
+
+    // 查询usage_aggregates表,只获取granularity为'h'的数据
+    const usageAggregates = await prisma.usageAggregate.findMany({
+      where: {
+        apiKeyId: {
+          in: apiKeyIds
+        },
+        granularity: 'h'
       },
       orderBy: {
-        createdAt: 'desc'
+        bucketAt: 'desc'  // 按时间降序排序
       },
       take: limit,
       skip: offset
     });
 
-    const total = await prisma.usageRecord.count({
+    // 统计总数
+    const total = await prisma.usageAggregate.count({
       where: {
-        userId: userId
+        apiKeyId: {
+          in: apiKeyIds
+        },
+        granularity: 'h'
       }
     });
-
+    
     // 格式化数据以兼容前端
-    const formattedData = usageRecords.map(record => ({
-      id: record.id,
-      userId: record.userId,
-      modelName: record.model,
-      usageType: 'api_call',
-      credits: record.pointsCharged,
-      metadata: record.meta,
-      status: record.status,
-      timestamp: record.createdAt
+    const formattedData = usageAggregates.map(record => ({
+      id: `${record.apiKeyId}-${record.model}-${record.bucketAt.getTime()}`,
+      apiKeyId: record.apiKeyId,
+      accountId: record.accountId,
+      model: record.model,
+      granularity: record.granularity,
+      timestamp: record.bucketAt,
+      inputTokens: record.inputTokens,
+      outputTokens: record.outputTokens,
+      cacheTokens: record.cacheTokens,
+      allTokens: record.allTokens,
+      requests: record.requests
     }));
+    console.log('allAggregates', formattedData);
 
     return NextResponse.json({
       data: formattedData,
