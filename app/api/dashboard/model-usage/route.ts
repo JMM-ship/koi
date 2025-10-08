@@ -98,41 +98,60 @@ export async function GET(request: Request) {
     // 获取用户ID
     const userId = user.uuid;
 
-    // 获取使用记录
-    const usageRecords = await prisma.usageRecord.findMany({
-      where: {
-        userId: userId
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: limit,
-      skip: offset
-    });
+    const expenseTypes = ['expense', 'use'];
 
-    const total = await prisma.usageRecord.count({
-      where: {
-        userId: userId
-      }
-    });
+    const whereClause = {
+      userId,
+      type: {
+        in: expenseTypes,
+      },
+    };
 
-    // 格式化数据以兼容前端
-    const formattedData = usageRecords.map(record => ({
-      id: record.id,
-      userId: record.userId,
-      modelName: record.model,
-      usageType: 'api_call',
-      credits: record.pointsCharged,
-      metadata: record.meta,
-      status: record.status,
-      timestamp: record.createdAt
-    }));
+    const [transactions, total] = await Promise.all([
+      prisma.creditTransaction.findMany({
+        where: whereClause,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.creditTransaction.count({
+        where: whereClause,
+      }),
+    ]);
+
+    const formattedData = transactions.map((transaction) => {
+      const rawMeta = (transaction.meta || {}) as Record<string, any>;
+      const displayName = typeof rawMeta.modelName === 'string'
+        ? rawMeta.modelName
+        : typeof rawMeta.service === 'string'
+        ? rawMeta.service
+        : transaction.reason || 'Credits Usage';
+
+      const usageType = typeof rawMeta.usageType === 'string'
+        ? rawMeta.usageType
+        : transaction.bucket;
+
+      return {
+        id: transaction.id,
+        userId: transaction.userId,
+        modelName: displayName,
+        usageType,
+        credits: transaction.points,
+        metadata: transaction.meta,
+        status: 'completed',
+        bucket: transaction.bucket,
+        reason: transaction.reason,
+        timestamp: transaction.createdAt,
+      };
+    });
 
     return NextResponse.json({
       data: formattedData,
       total,
       limit,
-      offset
+      offset,
     });
   } catch (error) {
     console.error('Error fetching model usage:', error);
