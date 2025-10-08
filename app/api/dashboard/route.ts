@@ -18,86 +18,45 @@ export async function GET(request: Request) {
       throw new Error("User not found");
     }
 
-    const dbUser = await prisma.user.findFirst({
-      where: { email: user.email },
-    });
-    if (!dbUser) {
+    // 使用会话中的 uuid/id，避免额外查库
+    const userId = (user as any).uuid as string;
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    
-    const userId = dbUser.id;
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // 获取最近7天的积分交易记录（替代consumptionTrends）
-    const creditTransactions = await prisma.creditTransaction.findMany({
-      where: {
-        userId,
-        createdAt: {
-          gte: sevenDaysAgo,
-          lte: now
-        }
-      },
-      orderBy: {
-        createdAt: 'asc'
-      },
-      take: 100
-    });
+    // 并行抓取核心数据，减少总耗时
+    const [wallet, usageRecords, userPackage, userInfo] = await Promise.all([
+      prisma.wallet.findUnique({ where: { userId } }),
+      prisma.usageRecord.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 10,
+      }),
+      prisma.userPackage.findFirst({
+        where: { userId, isActive: true, endAt: { gte: now } },
+        include: { package: true },
+        orderBy: { endAt: 'desc' },
+      }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          nickname: true,
+          role: true,
+          status: true,
+          createdAt: true,
+        },
+      }),
+    ]);
 
-    // 获取用户钱包信息（替代creditBalance）
-    const wallet = await prisma.wallet.findUnique({
-      where: {
-        userId
-      }
-    });
-    // 获取最近的使用记录（替代modelUsages）
-    const usageRecords = await prisma.usageRecord.findMany({
-      where: {
-        userId
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: 10
-    });
-
-    // 获取用户套餐信息
-    const userPackage = await prisma.userPackage.findFirst({
-      where: {
-        userId,
-        isActive: true,
-        endAt: {
-          gte: now
-        }
-      },
-      include: {
-        package: true
-      },
-      orderBy: {
-        endAt: 'desc'
-      }
-    });
-    
-    // 获取用户信息
-    const userInfo = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        email: true,
-        nickname: true,
-        role: true,
-        status: true,
-        createdAt: true
-      }
-    });
-
-    // 计算积分消耗统计
+    // 计算积分消耗统计（内部已并行化）
     const creditStats = await calculateCreditStats(userId);
 
     // 格式化响应数据以兼容前端
     const response = {
-      consumptionTrends: formatConsumptionTrends(creditTransactions, sevenDaysAgo, now),
       creditBalance: {
         id: wallet?.userId,
         userId: wallet?.userId,
@@ -152,45 +111,6 @@ export async function GET(request: Request) {
   }
 }
 
-// 格式化消费趋势数据
-function formatConsumptionTrends(
-  transactions: any[],
-  startDate: Date,
-  endDate: Date
-) {
-  // 按日期分组聚合
-  const dailyData = new Map<string, { pointsUsed: number; tokensUsed: number; moneyUsed: number }>();
-
-  transactions.forEach(transaction => {
-    if (transaction.type === 'expense') {
-      const date = new Date(transaction.createdAt);
-      const dateStr = date.toISOString().split('T')[0];
-
-      const existing = dailyData.get(dateStr) || { pointsUsed: 0, tokensUsed: 0, moneyUsed: 0 };
-      existing.pointsUsed += transaction.points;
-      existing.tokensUsed += transaction.tokens;
-      dailyData.set(dateStr, existing);
-    }
-  });
-
-  // 填充缺失的日期
-  const result = [];
-  const currentDate = new Date(startDate);
-  while (currentDate <= endDate) {
-    const dateStr = currentDate.toISOString().split('T')[0];
-    const data = dailyData.get(dateStr) || { pointsUsed: 0, tokensUsed: 0, moneyUsed: 0 };
-
-    result.push({
-      date: new Date(dateStr),
-      ...data
-    });
-
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return result;
-}
-
 // 计算积分消耗统计
 async function calculateCreditStats(userId: string) {
   const now = new Date();
@@ -198,61 +118,26 @@ async function calculateCreditStats(userId: string) {
   const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
   const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-  // 今日消耗
-  const todayUsage = await prisma.creditTransaction.aggregate({
-    where: {
-      userId,
-      type: 'expense',
-      createdAt: {
-        gte: today
-      }
-    },
-    _sum: {
-      points: true
-    }
-  });
-
-  // 本周消耗
-  const weekUsage = await prisma.creditTransaction.aggregate({
-    where: {
-      userId,
-      type: 'expense',
-      createdAt: {
-        gte: weekAgo
-      }
-    },
-    _sum: {
-      points: true
-    }
-  });
-
-  // 本月消耗
-  const monthUsage = await prisma.creditTransaction.aggregate({
-    where: {
-      userId,
-      type: 'expense',
-      createdAt: {
-        gte: monthAgo
-      }
-    },
-    _sum: {
-      points: true
-    }
-  });
-
-  // 获取所有用户的消耗排名（用于计算百分比）
-  const allUsersWeekUsage = await prisma.creditTransaction.groupBy({
-    by: ['userId'],
-    where: {
-      type: 'expense',
-      createdAt: {
-        gte: weekAgo
-      }
-    },
-    _sum: {
-      points: true
-    }
-  });
+  // 三段统计 + 排名并行计算
+  const [todayUsage, weekUsage, monthUsage, allUsersWeekUsage] = await Promise.all([
+    prisma.creditTransaction.aggregate({
+      where: { userId, type: 'expense', createdAt: { gte: today } },
+      _sum: { points: true },
+    }),
+    prisma.creditTransaction.aggregate({
+      where: { userId, type: 'expense', createdAt: { gte: weekAgo } },
+      _sum: { points: true },
+    }),
+    prisma.creditTransaction.aggregate({
+      where: { userId, type: 'expense', createdAt: { gte: monthAgo } },
+      _sum: { points: true },
+    }),
+    prisma.creditTransaction.groupBy({
+      by: ['userId'],
+      where: { type: 'expense', createdAt: { gte: weekAgo } },
+      _sum: { points: true },
+    }),
+  ]);
 
   const userWeekTotal = weekUsage._sum.points || 0;
   const usersWithLessUsage = allUsersWeekUsage.filter(

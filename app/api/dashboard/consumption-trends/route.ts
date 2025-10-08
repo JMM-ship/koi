@@ -81,30 +81,19 @@ export async function GET(request: Request) {
     const total = formattedData.reduce((sum, item) => sum + item.value, 0);
     const average = total / formattedData.length;
 
-    // 计算增长率（对比前一周期）
+    // 计算增长率（对比前一周期）：仅聚合总量，避免拉取明细
     const previousStartDate = new Date(startDate.getTime() - days * 24 * 60 * 60 * 1000);
-    const previousTransactions = await prisma.creditTransaction.findMany({
+    const previousAgg = await prisma.creditTransaction.aggregate({
       where: {
         userId: userId,
         type: 'expense',
-        createdAt: {
-          gte: previousStartDate,
-          lt: startDate
-        }
-      }
+        createdAt: { gte: previousStartDate, lt: startDate },
+      },
+      _sum: { points: true, tokens: true },
     });
-
-    let previousTotal = 0;
-    previousTransactions.forEach(transaction => {
-      switch (type) {
-        case 'points':
-          previousTotal += transaction.points;
-          break;
-        case 'tokens':
-          previousTotal += transaction.tokens;
-          break;
-      }
-    });
+    const previousTotal = type === 'tokens'
+      ? (previousAgg._sum.tokens || 0)
+      : (previousAgg._sum.points || 0);
 
     const increase = total - previousTotal;
     const percentage = previousTotal > 0
