@@ -10,8 +10,10 @@ describe('OTel NodeSDK registers http/undici/pg/prisma instrumentations', () => 
     process.env = OLD_ENV
   })
 
-  test('constructs NodeSDK with http/pg/prisma instrumentations', async () => {
-    await import('@/instrumentation')
+  test('constructs NodeSDK with http/pg/prisma instrumentations (gated by SENTRY_OTEL_ENABLE)', async () => {
+    process.env.SENTRY_OTEL_ENABLE = '1'
+    const ins = await import('@/instrumentation')
+    await (ins as any).register()
     const sdkStub = await import('@opentelemetry/sdk-node')
     const capturedOptions = (sdkStub as any).__getCapturedOptions()
     expect(capturedOptions).toBeTruthy()

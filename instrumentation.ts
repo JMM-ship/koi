@@ -2,15 +2,22 @@
 // Use dynamic imports to avoid build-time type resolution issues if deps are missing.
 
 export async function register() {
-  const hasDsn = !!process.env.SENTRY_DSN || !!process.env.NEXT_PUBLIC_SENTRY_DSN
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build'
+  if (isBuildPhase) return
   const isNode = typeof process !== 'undefined' && (process as any).release?.name === 'node'
-  if (!hasDsn || !isNode) return
+  if (!isNode) return
+  const enabled = process.env.SENTRY_OTEL_ENABLE === '1'
+  if (!enabled) return
   try {
+    const sdkNodeMod = ['@opentelemetry', '/sdk-node'].join('')
+    const httpMod = ['@opentelemetry', '/instrumentation-http'].join('')
+    const pgMod = ['@opentelemetry', '/instrumentation-pg'].join('')
+    const prismaMod = ['@prisma', '/instrumentation'].join('')
     const [{ NodeSDK }, { HttpInstrumentation }, { PgInstrumentation }, { PrismaInstrumentation }] = await Promise.all([
-      import('@opentelemetry/sdk-node'),
-      import('@opentelemetry/instrumentation-http'),
-      import('@opentelemetry/instrumentation-pg'),
-      import('@prisma/instrumentation'),
+      import(sdkNodeMod as any),
+      import(httpMod as any),
+      import(pgMod as any),
+      import(prismaMod as any),
     ])
     const sdk = new NodeSDK({
       instrumentations: [
@@ -21,11 +28,6 @@ export async function register() {
     })
     await sdk.start()
   } catch {
-    // Swallow to avoid breaking app boot in case of optional deps missing
+    // swallow
   }
-}
-
-// During tests, auto-run to assert wiring without Next runtime
-if ((process as any)?.env?.JEST_WORKER_ID) {
-  ;(async () => { try { await register() } catch {} })()
 }
