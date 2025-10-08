@@ -32,12 +32,13 @@ export function useDashboardData() {
     '/api/dashboard',
     fetcher,
     {
-      revalidateOnFocus: true, // Revalidate on window focus (changed from false)
-      revalidateOnReconnect: true, // Revalidate on reconnect
-      refreshInterval: 60000, // Auto refresh every minute
-      dedupingInterval: 2000, // Dedupe requests within 2 seconds (reduced from 5000)
-      errorRetryCount: 3, // Retry failed requests 3 times
-      errorRetryInterval: 3000, // Wait 3 seconds between retries (reduced from 5000)
+      // Reduce background refetch pressure; rely on persisted cache + manual refresh
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+      refreshInterval: 180000, // 3 minutes; set 0 to disable if desired
+      dedupingInterval: 5000,
+      errorRetryCount: 3,
+      errorRetryInterval: 3000,
     }
   );
 

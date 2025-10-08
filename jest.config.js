@@ -14,6 +14,12 @@ const customJestConfig = {
   moduleNameMapper: {
     // Handle module aliases (this will be automatically configured for you soon)
     '^@/(.*)$': '<rootDir>/$1',
+    '^@sentry/nextjs$': '<rootDir>/tests/obs/stubs/sentry-nextjs.ts',
+    '^@opentelemetry/sdk-node$': '<rootDir>/tests/obs/stubs/otel-sdk-node.ts',
+    '^@opentelemetry/instrumentation-http$': '<rootDir>/tests/obs/stubs/otel-http.ts',
+    '^@opentelemetry/instrumentation-undici$': '<rootDir>/tests/obs/stubs/otel-undici.ts',
+    '^@opentelemetry/instrumentation-pg$': '<rootDir>/tests/obs/stubs/otel-pg.ts',
+    '^@prisma/instrumentation$': '<rootDir>/tests/obs/stubs/prisma-instrumentation.ts',
   },
   testMatch: [
     '<rootDir>/tests/**/*.test.ts',

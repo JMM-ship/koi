@@ -20,6 +20,8 @@ export default function ApiKeysContent() {
     return res.json()
   })
   const apiKeys = ((apiKeysResp?.apiKeys || []) as any[]).filter((k) => k.status !== 'deleted')
+  const [fullKeyMap, setFullKeyMap] = useState<Record<string, string | undefined>>({})
+  const [loadingKey, setLoadingKey] = useState<Record<string, boolean>>({})
   const [creating, setCreating] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newKeyTitle, setNewKeyTitle] = useState("");
@@ -33,14 +35,35 @@ export default function ApiKeysContent() {
     // errors are automatically retried by SWR config
   }, [])
 
-  const userApiKey = apiKeys.find((k) => k.status === "active")?.fullKey || "";
+  const activeKeyId = apiKeys.find((k) => k.status === 'active')?.id
+  const userApiKey = activeKeyId ? (fullKeyMap[activeKeyId] || "") : ""
 
-  const handleCopy = (key: string) => {
-    navigator.clipboard.writeText(key);
-    setCopiedKey(key);
-    showSuccess("API key copied to clipboard");
-    setTimeout(() => setCopiedKey(null), 2000);
-  };
+  const handleCopyById = async (id: string) => {
+    if (!fullKeyMap[id]) {
+      await ensureFullKey(id)
+    }
+    const full = fullKeyMap[id]
+    if (!full) return
+    navigator.clipboard.writeText(full)
+    setCopiedKey(full)
+    showSuccess("API key copied to clipboard")
+    setTimeout(() => setCopiedKey(null), 2000)
+  }
+
+  const ensureFullKey = async (id: string) => {
+    if (fullKeyMap[id]) return fullKeyMap[id]
+    try {
+      setLoadingKey((prev) => ({ ...prev, [id]: true }))
+      const res = await fetch(`/api/apikeys/${id}/show`)
+      if (!res.ok) throw new Error('Failed to load API key')
+      const body = await res.json()
+      const full = body?.apiKey?.fullKey
+      setFullKeyMap((prev) => ({ ...prev, [id]: full }))
+      return full
+    } finally {
+      setLoadingKey((prev) => ({ ...prev, [id]: false }))
+    }
+  }
 
   const handleCreateKey = async () => {
     if (!newKeyTitle.trim()) {
@@ -49,6 +72,13 @@ export default function ApiKeysContent() {
     }
     setCreating(true);
     try {
+      // optimistic: add placeholder immediately
+      const tempId = `temp-${Date.now()}`
+      await mutateKeys((old: any) => ({ apiKeys: [
+        { id: tempId, title: newKeyTitle, apiKey: 'creating...', status: 'active', createdAt: new Date().toISOString() },
+        ...((old?.apiKeys) || [])
+      ] }), false)
+
       const response = await fetch("/api/apikeys", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,10 +90,18 @@ export default function ApiKeysContent() {
       setShowCreateModal(false);
       setNewKeyTitle("");
       showSuccess("API key created");
-      await mutateKeys()
+      // replace temp with real
+      await mutateKeys((old: any) => ({ apiKeys: [
+        { id: data.apiKey.id, title: data.apiKey.title, apiKey: data.apiKey.apiKey, status: data.apiKey.status, createdAt: data.apiKey.createdAt },
+        ...((old?.apiKeys || []).filter((k: any) => k.id !== tempId))
+      ] }), false)
+      // cache fullKey locally for copy/reveal
+      setFullKeyMap((prev) => ({ ...prev, [data.apiKey.id]: data.apiKey.fullKey }))
     } catch (e: any) {
       console.error("Error creating API key", e);
       showError(e.message || "Failed to create API key");
+      // rollback temp
+      await mutateKeys((old: any) => ({ apiKeys: (old?.apiKeys || []).filter((k: any) => !String(k.id).startsWith('temp-')) }), false)
     } finally {
       setCreating(false);
     }
@@ -74,13 +112,20 @@ export default function ApiKeysContent() {
       `Are you sure you want to delete "${keyTitle}"? This action cannot be undone.`,
       async () => {
         try {
+          // optimistic removal
+          const prev = apiKeysResp
+          await mutateKeys((old: any) => ({ apiKeys: (old?.apiKeys || []).filter((k: any) => k.id !== keyId) }), false)
+
           const response = await fetch(`/api/apikeys?id=${keyId}`, { method: "DELETE" });
           if (!response.ok) throw new Error("Failed to delete API key");
           showSuccess(`Deleted "${keyTitle}"`);
-          await mutateKeys()
+          // cleanup local cache
+          setFullKeyMap((prev) => { const c = { ...prev }; delete c[keyId]; return c })
         } catch (e) {
           console.error("Error deleting API key", e);
           showError("Failed to delete API key");
+          // rollback
+          await mutateKeys()
         }
       },
       () => showInfo("Deletion cancelled")
@@ -140,12 +185,17 @@ export default function ApiKeysContent() {
                   </button>
                 </div>
                 <div className="api-key-bar">
-                  <code className="api-key-code">{showKey[apiKey.id] ? apiKey.fullKey : apiKey.apiKey}</code>
+                  <code className="api-key-code">{showKey[apiKey.id] ? (fullKeyMap[apiKey.id] || 'Loading...') : apiKey.apiKey}</code>
                   <div className="api-key-actions">
-                    <button className="btn-icon" aria-label={showKey[apiKey.id] ? 'Hide API key' : 'Reveal API key'} onClick={() => setShowKey((prev) => ({ ...prev, [apiKey.id]: !prev[apiKey.id] }))}>
+                    <button className="btn-icon" aria-label={showKey[apiKey.id] ? 'Hide API key' : 'Reveal API key'} onClick={async () => {
+                      if (!showKey[apiKey.id]) {
+                        await ensureFullKey(apiKey.id)
+                      }
+                      setShowKey((prev) => ({ ...prev, [apiKey.id]: !prev[apiKey.id] }))
+                    }}>
                       {showKey[apiKey.id] ? <FiEyeOff /> : <FiEye />}
                     </button>
-                    <button className="btn-icon" aria-label="Copy API key" onClick={() => handleCopy(apiKey.fullKey)} style={{ color: copiedKey === apiKey.fullKey ? 'var(--dashboard-success)' : undefined }}>
+                    <button className="btn-icon" aria-label="Copy API key" onClick={() => handleCopyById(apiKey.id)}>
                       <FiCopy />
                     </button>
                   </div>
