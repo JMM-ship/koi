@@ -21,4 +21,6 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Apply Sentry plugin (wrapper handles absence gracefully)
+import { wrapWithSentry } from './sentry.next.config.js'
+export default wrapWithSentry(nextConfig);
