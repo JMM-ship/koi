@@ -75,6 +75,15 @@ export async function POST(request: Request) {
   }
 }
 
+// ⚙️ 添加这个工具函数在文件顶部
+function safeJson(obj: any) {
+  return JSON.parse(
+    JSON.stringify(obj, (_, value) =>
+      typeof value === 'bigint' ? Number(value) : value
+    )
+  );
+}
+
 // 获取模型使用历史
 export async function GET(request: Request) {
   try {
@@ -165,13 +174,18 @@ export async function GET(request: Request) {
     }));
     console.log('allAggregates', formattedData);
 
+    // ✅ 转换 BigInt
+    const safeData = safeJson(formattedData);
+
     return NextResponse.json({
-      data: formattedData,
+      data: safeData,
       total,
       limit,
       offset
     });
   } catch (error) {
+    console.log('error这个错了', error);
+    
     console.error('Error fetching model usage:', error);
     return NextResponse.json(
       { error: 'Failed to fetch model usage' },

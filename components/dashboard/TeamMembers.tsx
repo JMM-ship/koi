@@ -19,7 +19,7 @@ const TeamMembers = () => {
     const formatted: CreditDetail[] = (result?.data || []).map((item: any) => ({
       id: item.id,
       model: item.modelName,
-      credits: item.credits,
+      credits: item.allTokens,
       timestamp: new Date(item.timestamp).toLocaleString('zh-CN', {
         year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
       }),
@@ -42,6 +42,7 @@ const TeamMembers = () => {
   };
 
   const totalRecords = (creditDetails || []).length;
+  console.log('creditDetails', creditDetails);
 
   if (loading) {
     return (
@@ -121,17 +122,17 @@ const TeamMembers = () => {
                     flexShrink: 0
                   }}
                 >
-                  {detail.model.substring(0, 2).toUpperCase()}
+                  {detail?.model?.substring(0, 2).toUpperCase()}
                 </div>
                 <div style={{ marginLeft: "0.75rem", flex: 1 }}>
                   <div
                     className="member-name"
                     style={{ fontWeight: 600, marginBottom: "0.25rem" }}
                   >
-                    {detail.model}
+                    {detail?.model}
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "#6b7280" }}>
-                    {detail.type} · {detail.timestamp}
+                    {detail?.type} · {detail?.timestamp}
                   </div>
                 </div>
               </div>
@@ -150,7 +151,7 @@ const TeamMembers = () => {
                     textAlign: "right"
                   }}
                 >
-                  -{detail.credits} Credits
+                  -{detail?.credits} Credits
                 </span>
               </div>
             </div>
