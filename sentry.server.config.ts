@@ -35,3 +35,6 @@ try {
     Sentry.setTag('region', process.env.VERCEL_REGION)
   }
 } catch {}
+
+// Make this file a module to avoid global scope collisions
+export {}

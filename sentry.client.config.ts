@@ -15,3 +15,6 @@ if (Sentry?.init) {
     tracesSampleRate: environment === 'production' ? 0.2 : 1.0,
   })
 }
+
+// Make this file a module to avoid global scope collisions
+export {}
