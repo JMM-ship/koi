@@ -31,6 +31,8 @@ const TeamMembers = () => {
   const loading = !creditDetails
 
   const getModelColor = (model: string) => {
+    console.log("有什么模型", model);
+
     const colors: { [key: string]: string } = {
       "claude-sonnet-4-5-20250929": "#00d084",
       "GPT-3.5": "#00b4d8",
