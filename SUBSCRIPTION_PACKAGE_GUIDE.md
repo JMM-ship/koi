@@ -147,6 +147,14 @@ model Package {
 }
 ```
 
+### 唯一激活策略（每层级仅保留 1 条激活记录）
+- 目标：避免前端出现多个同层级（Plus/Pro/Max）卡片。
+- 方式：
+  - 去重脚本：`npm run packages:dedupe-only`（按 `updatedAt`/`createdAt` 保留最新一条，其他 `isActive=false`）
+  - 强制约束：`npm run db:index:packages-unique-active`（创建部分唯一索引，限制 `plan_type IN ('basic','pro','enterprise') AND is_active=true` 的唯一性）
+- 一次性执行两步：`npm run packages:enforce-unique`
+
+
 ### 2. UserPackage (用户套餐)
 **位置：** `prisma/schema.prisma:202-224`
 

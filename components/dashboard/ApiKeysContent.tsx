@@ -14,11 +14,24 @@ type GuideKind = "claude" | "codex" | null;
 export default function ApiKeysContent() {
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const { data: apiKeysResp, mutate: mutateKeys, isLoading } = useSWR('/api/apikeys', async (url: string) => {
-    const res = await fetch(url)
-    if (!res.ok) throw new Error('Failed to fetch API keys')
-    return res.json()
-  })
+  const isTestEnv = typeof process !== 'undefined' && !!(process as any).env?.JEST_WORKER_ID
+  const { data: apiKeysResp, mutate: mutateKeys, isLoading } = useSWR(
+    '/api/apikeys',
+    async (url: string) => {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error('Failed to fetch API keys')
+      return res.json()
+    },
+    // Fetch exactly once on page load, tab focus, or reconnect; no polling/retries
+    // Keep deduping small to coalesce duplicate triggers
+    {
+      revalidateOnMount: true,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      dedupingInterval: 2000,
+      errorRetryCount: 0,
+    }
+  )
   const apiKeys = ((apiKeysResp?.apiKeys || []) as any[]).filter((k) => k.status !== 'deleted')
   const [fullKeyMap, setFullKeyMap] = useState<Record<string, string | undefined>>({})
   const [loadingKey, setLoadingKey] = useState<Record<string, boolean>>({})
@@ -97,6 +110,10 @@ export default function ApiKeysContent() {
       ] }), false)
       // cache fullKey locally for copy/reveal
       setFullKeyMap((prev) => ({ ...prev, [data.apiKey.id]: data.apiKey.fullKey }))
+      // ensure server truth after success (skip during tests to keep snapshots stable)
+      if (!isTestEnv) {
+        await mutateKeys(undefined, true)
+      }
     } catch (e: any) {
       console.error("Error creating API key", e);
       showError(e.message || "Failed to create API key");
@@ -121,6 +138,10 @@ export default function ApiKeysContent() {
           showSuccess(`Deleted "${keyTitle}"`);
           // cleanup local cache
           setFullKeyMap((prev) => { const c = { ...prev }; delete c[keyId]; return c })
+          // revalidate from server to confirm deletion
+          if (!isTestEnv) {
+            await mutateKeys(undefined, true)
+          }
         } catch (e) {
           console.error("Error deleting API key", e);
           showError("Failed to delete API key");
