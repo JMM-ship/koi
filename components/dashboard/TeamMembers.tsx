@@ -71,7 +71,7 @@ const TeamMembers = () => {
   const getModelColor = (detail: CreditDetail) => {
     if (detail.bucket === 'package') return '#4f46e5'
     if (detail.bucket === 'independent') return '#10b981'
-    console.log("detail", detail);
+
 
     const colors: { [key: string]: string } = {
       "claude-sonnet-4-5-20250929": "#00d084",
@@ -146,7 +146,7 @@ const TeamMembers = () => {
             </button>
           </div>
         ) : (
-          details.slice(0, 5).map((detail: CreditDetail) => (
+          details.slice(0, 10).map((detail: CreditDetail) => (
             <div key={detail.id} className="team-member">
               <div className="member-info">
                 <div
