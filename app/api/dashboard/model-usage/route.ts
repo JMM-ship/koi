@@ -124,14 +124,14 @@ export async function GET(request: Request) {
     }
 
     // 先查询所有granularity的数据，看看有什么
-    const allAggregates = await prisma.usageAggregate.findMany({
-      where: {
-        apiKeyId: {
-          in: apiKeyIds
-        }
-      },
-      take: 5
-    });
+    // const allAggregates = await prisma.usageAggregate.findMany({
+    //   where: {
+    //     apiKeyId: {
+    //       in: apiKeyIds
+    //     }
+    //   },
+    //   take: 5
+    // });
 
     // 查询usage_aggregates表,只获取granularity为'h'的数据
     const usageAggregates = await prisma.usageAggregate.findMany({
@@ -139,7 +139,7 @@ export async function GET(request: Request) {
         apiKeyId: {
           in: apiKeyIds
         },
-        granularity: 'h'
+        granularity: 't'
       },
       orderBy: {
         bucketAt: 'desc'  // 按时间降序排序
@@ -154,7 +154,7 @@ export async function GET(request: Request) {
         apiKeyId: {
           in: apiKeyIds
         },
-        granularity: 'h'
+        granularity: 't'
       }
     });
     

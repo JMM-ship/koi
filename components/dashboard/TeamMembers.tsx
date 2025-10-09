@@ -1,5 +1,6 @@
 "use client";
 
+import { data } from 'isotope-layout';
 import useSWR from 'swr'
 
 interface CreditDetail {
@@ -25,14 +26,14 @@ const TeamMembers = () => {
 
     const formatted: CreditDetail[] = (result?.data || []).map((item: any) => {
       const meta = (item?.metadata || {}) as Record<string, any>
-      const displayName = typeof item?.reason === 'string' && item.reason.trim().length > 0
-        ? item.reason
-        : typeof item?.modelName === 'string' && item.modelName.trim().length > 0
-          ? item.modelName
-          : typeof meta?.service === 'string' && meta.service.trim().length > 0
-            ? meta.service
-            : 'Credits Usage'
-
+      // const displayName = typeof item?.reason === 'string' && item.reason.trim().length > 0
+      //   ? item.reason
+      //   : typeof item?.modelName === 'string' && item.modelName.trim().length > 0
+      //     ? item.modelName
+      //     : typeof meta?.service === 'string' && meta.service.trim().length > 0
+      //       ? meta.service
+      //       : 'Credits Usage'
+      const displayName = item?.model ? item?.model : "Credits Usage"
       const timeValue = item?.timestamp ? new Date(item.timestamp) : null
       const timestamp = timeValue && !isNaN(timeValue.getTime())
         ? timeValue.toLocaleString('zh-CN', {
@@ -44,7 +45,7 @@ const TeamMembers = () => {
         })
         : '-'
 
-      const credits = Number(item?.credits ?? item?.points ?? 0)
+      const credits = Number(item?.allTokens ?? item?.allTokens ?? 0)
       const bucket = typeof item?.bucket === 'string' ? item.bucket : (typeof item?.usageType === 'string' ? item.usageType : undefined)
       const type = typeof item?.usageType === 'string' ? item.usageType : (bucket ?? 'usage')
 
@@ -59,6 +60,7 @@ const TeamMembers = () => {
       }
     })
 
+
     return {
       items: formatted,
       total: typeof result?.total === 'number' ? result.total : formatted.length,
@@ -69,6 +71,8 @@ const TeamMembers = () => {
   const getModelColor = (detail: CreditDetail) => {
     if (detail.bucket === 'package') return '#4f46e5'
     if (detail.bucket === 'independent') return '#10b981'
+    console.log("detail", detail);
+
     const colors: { [key: string]: string } = {
       "claude-sonnet-4-5-20250929": "#00d084",
       "GPT-3.5": "#00b4d8",
