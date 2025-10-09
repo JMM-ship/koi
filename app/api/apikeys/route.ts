@@ -122,7 +122,8 @@ function hashApiKey(rawKey: string): string {
       // 3) 领取一个未分配的活动密钥
       const t2 = timer('apikeys.POST.findAvailable')
       const availableKey = await prisma.apiKey.findFirst({
-        where: { ownerUserId: null, status: 'active' }
+        where: { ownerUserId: null, status: 'active' },
+        orderBy: { createdAt: 'desc' }
       })
       t2.end()
       if (!availableKey) {
@@ -138,7 +139,7 @@ function hashApiKey(rawKey: string): string {
       const encryptedKey: string | undefined = meta?.key_encrypted || meta?.keyEncrypted
       if (!encryptedKey) {
         return NextResponse.json(
-          { error: 'Invalid API key configuration: missing encrypted key. Please contact support.' },
+          { code: 'POOL_KEY_INVALID', error: 'Invalid API key configuration: missing encrypted key. Please contact support.' },
           { status: 500 }
         )
       }
