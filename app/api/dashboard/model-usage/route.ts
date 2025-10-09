@@ -172,7 +172,6 @@ export async function GET(request: Request) {
       allTokens: record.allTokens,
       requests: record.requests
     }));
-    console.log('allAggregates', formattedData);
 
     // ✅ 转换 BigInt
     const safeData = safeJson(formattedData);
