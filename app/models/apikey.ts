@@ -1,4 +1,5 @@
 import { prisma } from "@/app/models/db";
+import crypto from 'crypto'
 import { ApiKey as PrismaApiKey } from "@prisma/client";
 
 export enum ApikeyStatus {
@@ -73,9 +74,12 @@ export async function getUserUuidByApiKey(
   apiKey: string
 ): Promise<string | undefined> {
   try {
+    // New schema stores only hash; compute hash(raw + pepper) then match
+    const pepper = process.env.ENCRYPTION_KEY || ''
+    const keyHash = crypto.createHash('sha256').update(apiKey + pepper).digest('hex')
     const data = await prisma.apiKey.findFirst({
       where: {
-        keyHash: apiKey,
+        keyHash,
         status: 'active',
       },
       select: {
