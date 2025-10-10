@@ -168,11 +168,10 @@ export async function GET(request: Request) {
     const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
     const userId = user.uuid;
 
-    // 1. 查 active 的 API keys
+    // 1. 查用户的所有 API keys（不限状态，追踪完整消费历史）
     const userApiKeys = await prisma.apiKey.findMany({
       where: {
-        ownerUserId: userId,
-        status: 'active'
+        ownerUserId: userId
       },
       select: { id: true }
     });
