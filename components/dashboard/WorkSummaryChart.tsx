@@ -57,14 +57,14 @@ const WorkSummaryChart = () => {
       const response = await fetch(`/api/dashboard/consumption-trends?days=7&type=${type}`);
       if (!response.ok) throw new Error('Failed to fetch data');
       const result = await response.json();
-      
+
       // 格式化数据以适配图表
       const chartData = result.data.map((item: any) => item.value);
       const dateLabels = result.data.map((item: any) => item.date);
-      
+
       // 计算最大值
       const maxValue = Math.max(...chartData) * 1.2; // 留20%空间
-      
+
       // 设置颜色方案
       const colorScheme = {
         points: { color: '#794aff', glowColor: '#b084ff' },
@@ -321,12 +321,12 @@ const WorkSummaryChart = () => {
           >
             Money
           </button>
-          <button
+          {/* <button
             className={`period-tab ${selectedType === "tokens" ? "active" : ""}`}
             onClick={() => setSelectedType("tokens")}
           >
             Tokens
-          </button>
+          </button> */}
         </div>
       </div>
 
