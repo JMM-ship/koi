@@ -6,7 +6,7 @@ import { useDashboard, useCreditStats } from "@/contexts/DashboardContext";
 const ExchangeBalance = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('today');
   const [rankingData, setRankingData] = useState<any>(null);
-  
+
   // Get data from context
   const { data, isLoading } = useDashboard();
   const creditStats = useCreditStats();
@@ -19,29 +19,29 @@ const ExchangeBalance = () => {
           const stats = creditStats;
 
 
-        const formatData = (period: any, color: string) => ({
-          points: period.amount.toLocaleString(),
-          percentage: period.percentage,
-          trend: period.amount > 0 ? `+${((period.amount / 100) * 10).toFixed(0)}%` : '0%',
-          color
-        });
-        setRankingData({
-          today: formatData(stats.today, "#00d084"),
-          week: formatData(stats.week, "#00b4d8"),
-          month: formatData(stats.month, "#ffa500")
-        });
-      } catch (error) {
-        console.error('Error processing credit stats:', error);
-        // 使用默认数据
-        setRankingData({
-          today: { points: "0", percentage: 0, trend: "+0%", color: "#00d084" },
-          week: { points: "0", percentage: 0, trend: "+0%", color: "#00b4d8" },
-          month: { points: "0", percentage: 0, trend: "+0%", color: "#ffa500" }
-        });
-      }
-    };
+          const formatData = (period: any, color: string) => ({
+            points: period.amount.toLocaleString(),
+            percentage: period.percentage,
+            trend: period.amount > 0 ? `+${((period.amount / 100) * 10).toFixed(0)}%` : '0%',
+            color
+          });
+          setRankingData({
+            today: formatData(stats.today, "#00d084"),
+            week: formatData(stats.week, "#00b4d8"),
+            month: formatData(stats.month, "#ffa500")
+          });
+        } catch (error) {
+          console.error('Error processing credit stats:', error);
+          // 使用默认数据
+          setRankingData({
+            today: { points: "0", percentage: 0, trend: "+0%", color: "#00d084" },
+            week: { points: "0", percentage: 0, trend: "+0%", color: "#00b4d8" },
+            month: { points: "0", percentage: 0, trend: "+0%", color: "#ffa500" }
+          });
+        }
+      };
 
-    processCreditStats();
+      processCreditStats();
     }
   }, [data, creditStats]);
 

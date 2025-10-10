@@ -113,7 +113,7 @@ export async function GET(request: Request) {
   }
 }
 
-// 计算积分消耗统计
+// 计算积分消耗统计（优化版：从聚合表读取百分位）
 async function calculateCreditStats(userId: string) {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -121,52 +121,32 @@ async function calculateCreditStats(userId: string) {
   const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   // 使用副本库进行统计查询，减轻主库压力
-  // 三段统计 + 排名并行计算
-  const [todayUsage, weekUsage, monthUsage, allUsersWeekUsage] = await Promise.all([
-    dbRouter.read.creditTransaction.aggregate({
-      where: { userId, type: 'expense', createdAt: { gte: today } },
-      _sum: { points: true },
-    }),
-    dbRouter.read.creditTransaction.aggregate({
-      where: { userId, type: 'expense', createdAt: { gte: weekAgo } },
-      _sum: { points: true },
-    }),
-    dbRouter.read.creditTransaction.aggregate({
-      where: { userId, type: 'expense', createdAt: { gte: monthAgo } },
-      _sum: { points: true },
-    }),
-    dbRouter.read.creditTransaction.groupBy({
-      by: ['userId'],
-      where: { type: 'expense', createdAt: { gte: weekAgo } },
-      _sum: { points: true },
-    }),
-  ]);
+  // 直接从聚合表读取预计算的消费数据和百分位
+  const userCostStats = await dbRouter.read.userCostStats.findUnique({
+    where: { userId },
+    select: {
+      todayPoints: true,
+      weekPoints: true,
+      monthPoints: true,
+      todayPercentile: true,
+      weekPercentile: true,
+      monthPercentile: true,
+    }
+  });
 
-  const userWeekTotal = weekUsage._sum.points || 0;
-  const usersWithLessUsage = allUsersWeekUsage.filter(
-    u => (u._sum.points || 0) < userWeekTotal
-  ).length;
-  const totalUsers = allUsersWeekUsage.length || 1;
-
-  let betterThanPercentage;
-  if (totalUsers === 1) {
-    betterThanPercentage = 100;
-  } else {
-    betterThanPercentage = Math.round((usersWithLessUsage / totalUsers) * 100);
-  }
-
+  // 如果聚合表中没有数据，使用默认值 0
   return {
     today: {
-      amount: todayUsage._sum.points || 0,
-      percentage: betterThanPercentage
+      amount: Number(userCostStats?.todayPoints || 0),
+      percentage: userCostStats?.todayPercentile || 0
     },
     week: {
-      amount: weekUsage._sum.points || 0,
-      percentage: betterThanPercentage
+      amount: Number(userCostStats?.weekPoints || 0),
+      percentage: userCostStats?.weekPercentile || 0
     },
     month: {
-      amount: monthUsage._sum.points || 0,
-      percentage: betterThanPercentage
+      amount: Number(userCostStats?.monthPoints || 0),
+      percentage: userCostStats?.monthPercentile || 0
     }
   };
 }

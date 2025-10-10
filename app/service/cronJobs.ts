@@ -3,6 +3,7 @@ import { checkAndExpirePackages } from './packageManager';
 import { batchCheckExpiredOrders } from './orderProcessor';
 import { prisma } from '@/app/models/db';
 import { autoRecoverCredits } from '@/app/service/creditRecoveryService';
+import { updateAllUsers as updateUserCostStats } from '../../scripts/update-user-cost-stats';
 
 // 定时任务配置
 export interface CronJobConfig {
@@ -159,14 +160,14 @@ export async function packageExpiryCheckJob(): Promise<JobExecutionResult> {
 export async function expiredOrderCleanupJob(): Promise<JobExecutionResult> {
   const startTime = new Date();
   console.log(`[${startTime.toISOString()}] Starting expired order cleanup job...`);
-  
+
   try {
     // 批量检查并清理过期订单
     const cleanedCount = await batchCheckExpiredOrders();
-    
+
     const message = `Order cleanup completed: ${cleanedCount} expired orders processed`;
     console.log(`[${new Date().toISOString()}] ${message}`);
-    
+
     return {
       jobName: 'Expired Order Cleanup',
       executedAt: startTime.toISOString(),
@@ -177,9 +178,40 @@ export async function expiredOrderCleanupJob(): Promise<JobExecutionResult> {
   } catch (error) {
     const errorMessage = `Order cleanup failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
     console.error(`[${new Date().toISOString()}] ${errorMessage}`, error);
-    
+
     return {
       jobName: 'Expired Order Cleanup',
+      executedAt: startTime.toISOString(),
+      success: false,
+      message: errorMessage
+    };
+  }
+}
+
+// 用户消费统计更新任务
+export async function userCostStatsUpdateJob(): Promise<JobExecutionResult> {
+  const startTime = new Date();
+  console.log(`[${startTime.toISOString()}] Starting user cost stats update job...`);
+
+  try {
+    // 更新所有用户的消费统计和排名
+    await updateUserCostStats();
+
+    const message = 'User cost stats update completed successfully';
+    console.log(`[${new Date().toISOString()}] ${message}`);
+
+    return {
+      jobName: 'User Cost Stats Update',
+      executedAt: startTime.toISOString(),
+      success: true,
+      message
+    };
+  } catch (error) {
+    const errorMessage = `User cost stats update failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
+    console.error(`[${new Date().toISOString()}] ${errorMessage}`, error);
+
+    return {
+      jobName: 'User Cost Stats Update',
       executedAt: startTime.toISOString(),
       success: false,
       message: errorMessage
@@ -242,6 +274,13 @@ export function getCronJobConfigs(): CronJobConfig[] {
       schedule: '0 5 * * * *',
       enabled: process.env.ENABLE_HOURLY_RECOVERY === 'true',
       handler: hourlyRecoveryJob,
+    },
+    {
+      name: 'User Cost Stats Update',
+      // 每小时第10分触发（在 cost_aggregates 更新后）
+      schedule: '0 10 * * * *',
+      enabled: process.env.ENABLE_CRON_JOBS === 'true',
+      handler: userCostStatsUpdateJob
     },
     {
       name: 'Daily Credit Reset',

@@ -38,6 +38,7 @@ model User {
   usageRecords       UsageRecord[]
   userPackages       UserPackage[]
   wallets            Wallet?
+  costStats          UserCostStats?
 
   @@unique([email, signinProvider], name: "uk_email_provider")
   @@index([email], map: "idx_email")
@@ -380,4 +381,21 @@ model referral_meta {
   invite_code_changes Int      @default(0)
   updated_at          DateTime @default(now()) @db.Timestamptz(6)
   users               User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model UserCostStats {w
+  userId          String   @id @map("user_id") @db.Uuid
+  todayPoints     Decimal  @default(0) @map("today_points") @db.Decimal
+  weekPoints      Decimal  @default(0) @map("week_points") @db.Decimal
+  monthPoints     Decimal  @default(0) @map("month_points") @db.Decimal
+  todayPercentile Int      @default(0) @map("today_percentile")
+  weekPercentile  Int      @default(0) @map("week_percentile")
+  monthPercentile Int      @default(0) @map("month_percentile")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([weekPoints])
+  @@index([monthPoints])
+  @@map("user_cost_stats")
 }
