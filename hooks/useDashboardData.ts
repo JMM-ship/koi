@@ -32,10 +32,10 @@ export function useDashboardData() {
     '/api/dashboard',
     fetcher,
     {
-      // Reduce background refetch pressure; rely on persisted cache + manual refresh
-      revalidateOnFocus: false,
+      // No background polling; refresh only on focus/reconnect or explicit actions
+      revalidateOnFocus: true,
       revalidateOnReconnect: true,
-      refreshInterval: 180000, // 3 minutes; set 0 to disable if desired
+      refreshInterval: 0,
       dedupingInterval: 5000,
       errorRetryCount: 3,
       errorRetryInterval: 3000,

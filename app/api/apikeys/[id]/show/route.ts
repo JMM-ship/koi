@@ -27,7 +27,7 @@ export async function GET(request: Request, ctx: { params: { id: string } }) {
     const meta: any = key.meta || {}
     const encryptedKey: string | undefined = meta?.key_encrypted || meta?.keyEncrypted
     if (!encryptedKey) {
-      return NextResponse.json({ error: 'Invalid API key configuration' }, { status: 500 })
+      return NextResponse.json({ code: 'NO_ENCRYPTED_KEY', error: 'This API key cannot be revealed. Please create a new key.' }, { status: 422 })
     }
 
     let fullKey: string
@@ -55,4 +55,3 @@ export async function GET(request: Request, ctx: { params: { id: string } }) {
     return NextResponse.json({ error: 'Failed to show API key' }, { status: 500 })
   }
 }
-

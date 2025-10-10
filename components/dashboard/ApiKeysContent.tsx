@@ -68,7 +68,15 @@ export default function ApiKeysContent() {
     try {
       setLoadingKey((prev) => ({ ...prev, [id]: true }))
       const res = await fetch(`/api/apikeys/${id}/show`)
-      if (!res.ok) throw new Error('Failed to load API key')
+      if (!res.ok) {
+        let code: string | undefined
+        try { const b = await res.json(); code = b?.code } catch {}
+        if (code === 'NO_ENCRYPTED_KEY') {
+          showError('This key cannot be revealed. Please rotate a new key.')
+          return undefined
+        }
+        throw new Error('Failed to load API key')
+      }
       const body = await res.json()
       const full = body?.apiKey?.fullKey
       setFullKeyMap((prev) => ({ ...prev, [id]: full }))
@@ -210,7 +218,8 @@ export default function ApiKeysContent() {
                   <div className="api-key-actions">
                     <button className="btn-icon" aria-label={showKey[apiKey.id] ? 'Hide API key' : 'Reveal API key'} onClick={async () => {
                       if (!showKey[apiKey.id]) {
-                        await ensureFullKey(apiKey.id)
+                        const full = await ensureFullKey(apiKey.id)
+                        if (!full) return
                       }
                       setShowKey((prev) => ({ ...prev, [apiKey.id]: !prev[apiKey.id] }))
                     }}>
