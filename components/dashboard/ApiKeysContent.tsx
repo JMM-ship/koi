@@ -20,7 +20,29 @@ export default function ApiKeysContent() {
     async (url: string) => {
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to fetch API keys')
-      return res.json()
+      const data = await res.json()
+
+      // 合并服务器数据与本地缓存的 fullKey (如果存在)
+      // 服务器返回的是脱敏数据,我们需要保留本地已有的 fullKey
+      const currentData = apiKeysResp
+      if (currentData?.apiKeys && data?.apiKeys) {
+        const fullKeyCache: Record<string, string> = {}
+        currentData.apiKeys.forEach((key: any) => {
+          if (key.fullKey) {
+            fullKeyCache[key.id] = key.fullKey
+          }
+        })
+
+        // 将缓存的 fullKey 合并到新数据中
+        data.apiKeys = data.apiKeys.map((key: any) => {
+          if (fullKeyCache[key.id]) {
+            return { ...key, fullKey: fullKeyCache[key.id] }
+          }
+          return key
+        })
+      }
+
+      return data
     },
     // Fetch exactly once on page load, tab focus, or reconnect; no polling/retries
     // Keep deduping small to coalesce duplicate triggers
@@ -44,9 +66,19 @@ export default function ApiKeysContent() {
   const { confirmState, showConfirm } = useConfirm();
 
   useEffect(() => {
-    // surface fetch errors subtly via toast only when SWR fetch throws
-    // errors are automatically retried by SWR config
-  }, [])
+    // 从 SWR 缓存中恢复 fullKey 到本地状态
+    if (apiKeys && apiKeys.length > 0) {
+      const newFullKeyMap: Record<string, string> = {}
+      apiKeys.forEach((key: any) => {
+        if (key.fullKey) {
+          newFullKeyMap[key.id] = key.fullKey
+        }
+      })
+      if (Object.keys(newFullKeyMap).length > 0) {
+        setFullKeyMap((prev) => ({ ...prev, ...newFullKeyMap }))
+      }
+    }
+  }, [apiKeys])
 
   const activeKeyId = apiKeys.find((k) => k.status === 'active')?.id
   const userApiKey = activeKeyId ? (fullKeyMap[activeKeyId] || "") : ""
@@ -111,9 +143,16 @@ export default function ApiKeysContent() {
       setShowCreateModal(false);
       setNewKeyTitle("");
       showSuccess("API key created");
-      // replace temp with real
+      // replace temp with real, and store fullKey in cache
       await mutateKeys((old: any) => ({ apiKeys: [
-        { id: data.apiKey.id, title: data.apiKey.title, apiKey: data.apiKey.apiKey, status: data.apiKey.status, createdAt: data.apiKey.createdAt },
+        {
+          id: data.apiKey.id,
+          title: data.apiKey.title,
+          apiKey: data.apiKey.apiKey,
+          fullKey: data.apiKey.fullKey, // 将完整密钥存入 SWR 缓存
+          status: data.apiKey.status,
+          createdAt: data.apiKey.createdAt
+        },
         ...((old?.apiKeys || []).filter((k: any) => k.id !== tempId))
       ] }), false)
       // cache fullKey locally for copy/reveal
