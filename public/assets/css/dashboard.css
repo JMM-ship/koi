@@ -1297,14 +1297,22 @@
   /* 移动端侧边栏默认隐藏 */
   .dashboard-sidebar {
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     z-index: 1000;
     width: 260px !important; /* 移动端强制使用完整宽度 */
+    will-change: transform;
   }
 
   /* 移动端侧边栏打开状态 */
   .dashboard-sidebar.mobile-open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  /* 移动端侧边栏关闭动画 */
+  .dashboard-sidebar.mobile-closing {
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   /* 移动端主内容区不留边距 */
@@ -1369,17 +1377,18 @@
     transform: scale(0.95);
   }
 
-  /* 移动端遮罩层动画 */
+  /* 移动端遮罩层 - 动画由内联样式控制 */
   .mobile-overlay {
-    animation: fadeIn 0.3s ease;
+    /* opacity transition 在组件内联样式中定义 */
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
+  /* 移动端菜单按钮脉冲效果 */
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
-    to {
-      opacity: 1;
+    50% {
+      box-shadow: 0 2px 12px rgba(121, 74, 255, 0.4);
     }
   }
 }

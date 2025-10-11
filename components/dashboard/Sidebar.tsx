@@ -65,6 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const { confirmState, showConfirm } = useConfirm();
   const { showError } = useToast()
   // 检查是否为管理员
@@ -81,6 +82,19 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // 处理侧边栏动画状态
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      setIsAnimating(true);
+    } else {
+      // 延迟卸载，等待退出动画完成
+      const timer = setTimeout(() => {
+        setIsAnimating(false);
+      }, 300); // 与 CSS transition 时间一致
+      return () => clearTimeout(timer);
+    }
+  }, [isMobileMenuOpen]);
 
 
   const menuItems: MenuItem[] = [
@@ -156,9 +170,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <>
       {/* 移动端遮罩层 */}
-      {isMobile && isMobileMenuOpen && (
+      {isMobile && isAnimating && (
         <div
-          className="mobile-overlay"
+          className={`mobile-overlay ${!isMobileMenuOpen ? 'closing' : ''}`}
           onClick={onMobileMenuClose}
           style={{
             position: 'fixed',
@@ -168,7 +182,10 @@ const Sidebar: React.FC<SidebarProps> = ({
             bottom: 0,
             background: 'rgba(0, 0, 0, 0.5)',
             zIndex: 999,
-            backdropFilter: 'blur(2px)'
+            backdropFilter: 'blur(2px)',
+            WebkitBackdropFilter: 'blur(2px)',
+            opacity: isMobileMenuOpen ? 1 : 0,
+            transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         />
       )}
@@ -210,8 +227,11 @@ const Sidebar: React.FC<SidebarProps> = ({
       `}</style>
 
       <div
-        className={`dashboard-sidebar transition-all duration-300 ${isMobile && isMobileMenuOpen ? 'mobile-open' : ''}`}
-        style={{ width: isCollapsed ? '80px' : '260px' }}
+        className={`dashboard-sidebar ${isMobile && isAnimating ? (isMobileMenuOpen ? 'mobile-open' : 'mobile-closing') : ''}`}
+        style={{
+          width: isCollapsed ? '80px' : '260px',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        }}
       >
         <div className="sidebar-header relative">
           <div className="logo-wrapper">
