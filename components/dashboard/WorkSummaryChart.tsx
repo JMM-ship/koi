@@ -143,9 +143,9 @@ const WorkSummaryChart = () => {
       backgroundColor: 'transparent',
       grid: {
         top: 20,
-        right: 10,
+        right: 20,
         bottom: 40,
-        left: 50,
+        left: 30,
         containLabel: false
       },
       xAxis: {
