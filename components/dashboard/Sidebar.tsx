@@ -46,9 +46,17 @@ interface SidebarProps {
   onCollapsedChange?: (collapsed: boolean) => void;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
+  isMobileMenuOpen?: boolean;
+  onMobileMenuClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashboard', onTabChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  onCollapsedChange,
+  activeTab = 'dashboard',
+  onTabChange,
+  isMobileMenuOpen = false,
+  onMobileMenuClose
+}) => {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
@@ -56,10 +64,23 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
   const [showTooltip, setShowTooltip] = useState<number | null>(null);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const { confirmState, showConfirm } = useConfirm();
   const { showError } = useToast()
   // 检查是否为管理员
   const isAdmin = session?.user?.role === 'admin';
+
+  // 检测是否为移动端
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
 
   const menuItems: MenuItem[] = [
@@ -87,6 +108,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
       setExpandedItems([]);
     }
     onCollapsedChange?.(newCollapsed);
+  };
+
+  // 处理移动端菜单项点击
+  const handleMenuItemClick = (path: string) => {
+    onTabChange?.(path);
+    // 移动端点击菜单项后自动关闭侧边栏
+    if (isMobile) {
+      onMobileMenuClose?.();
+    }
   };
 
   const toggleDropdown = (itemId: number) => {
@@ -125,6 +155,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
 
   return (
     <>
+      {/* 移动端遮罩层 */}
+      {isMobile && isMobileMenuOpen && (
+        <div
+          className="mobile-overlay"
+          onClick={onMobileMenuClose}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999,
+            backdropFilter: 'blur(2px)'
+          }}
+        />
+      )}
+
       {/* 添加旋转动画的样式 */}
       <style jsx global>{`
         @keyframes spin {
@@ -162,7 +210,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
       `}</style>
 
       <div
-        className="dashboard-sidebar transition-all duration-300"
+        className={`dashboard-sidebar transition-all duration-300 ${isMobile && isMobileMenuOpen ? 'mobile-open' : ''}`}
         style={{ width: isCollapsed ? '80px' : '260px' }}
       >
         <div className="sidebar-header relative">
@@ -216,7 +264,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
                 onMouseLeave={() => setShowTooltip(null)}
               >
                 <div
-                  onClick={() => onTabChange?.(item.path!)}
+                  onClick={() => handleMenuItemClick(item.path!)}
                   className="nav-link"
                   style={{
                     display: 'flex',
@@ -255,7 +303,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
                     onMouseLeave={() => setShowTooltip(null)}
                   >
                     <div
-                      onClick={() => onTabChange?.(item.path!)}
+                      onClick={() => handleMenuItemClick(item.path!)}
                       className="nav-link"
                       style={{
                         display: 'flex',
@@ -311,7 +359,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onCollapsedChange, activeTab = 'dashb
                       </div>
                     ) : (
                       <div
-                        onClick={() => onTabChange?.(item.path!)}
+                        onClick={() => handleMenuItemClick(item.path!)}
                         className="nav-link"
                         style={{
                           display: 'flex',

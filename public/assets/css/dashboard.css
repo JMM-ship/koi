@@ -1294,23 +1294,30 @@
 }
 
 @media (max-width: 768px) {
+  /* 移动端侧边栏默认隐藏 */
   .dashboard-sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    z-index: 1000;
+    width: 260px !important; /* 移动端强制使用完整宽度 */
   }
 
-  .dashboard-sidebar.active {
+  /* 移动端侧边栏打开状态 */
+  .dashboard-sidebar.mobile-open {
     transform: translateX(0);
   }
 
+  /* 移动端主内容区不留边距 */
   .dashboard-main,
   .dashboard-main.collapsed,
   .dashboard-main.expanded {
-    margin-left: 0;
+    margin-left: 0 !important;
+    width: 100% !important;
   }
 
+  /* 移动端内容区适配 */
   .dashboard-content {
-    padding: 10px;
+    padding: 70px 10px 10px 10px; /* 顶部留空给汉堡菜单按钮 */
   }
 
   .dashboard-grid {
@@ -1343,5 +1350,36 @@
 
   .topbar-right .search-box {
     display: none;
+  }
+
+  /* 移动端侧边栏收起按钮隐藏 */
+  .dashboard-sidebar .sidebar-toggle {
+    display: none !important;
+  }
+
+  /* 移动端菜单按钮悬停效果 */
+  .mobile-menu-btn:hover {
+    background: var(--dashboard-hover) !important;
+    border-color: var(--dashboard-primary) !important;
+    color: var(--dashboard-primary) !important;
+    transform: scale(1.05);
+  }
+
+  .mobile-menu-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* 移动端遮罩层动画 */
+  .mobile-overlay {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
