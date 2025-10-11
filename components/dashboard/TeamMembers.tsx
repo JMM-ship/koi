@@ -75,8 +75,8 @@ const TeamMembers = () => {
 
     const colors: { [key: string]: string } = {
       "claude-sonnet-4-5-20250929": "#00d084",
-      "GPT-3.5": "#00b4d8",
-      "claude-3-5-haiku-20241022": "#ffa500",
+      "gpt-5-codex": "#00b4d8",
+      "claude-opus-4-1-20250805": "#ffa500",
       "DALL-E 3": "#ff006e",
       "Midjourney": "#8b5cf6"
     };
