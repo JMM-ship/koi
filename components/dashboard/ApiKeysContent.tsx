@@ -15,6 +15,9 @@ export default function ApiKeysContent() {
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const isTestEnv = typeof process !== 'undefined' && !!(process as any).env?.JEST_WORKER_ID
+  // 使用 ref 来持久化存储 fullKey，避免被 SWR 重新获取数据时覆盖
+  const fullKeyCacheRef = useState<React.MutableRefObject<Record<string, string>>>(() => ({ current: {} }))[0]
+
   const { data: apiKeysResp, mutate: mutateKeys, isLoading } = useSWR(
     '/api/apikeys',
     async (url: string) => {
@@ -24,19 +27,11 @@ export default function ApiKeysContent() {
 
       // 合并服务器数据与本地缓存的 fullKey (如果存在)
       // 服务器返回的是脱敏数据,我们需要保留本地已有的 fullKey
-      const currentData = apiKeysResp
-      if (currentData?.apiKeys && data?.apiKeys) {
-        const fullKeyCache: Record<string, string> = {}
-        currentData.apiKeys.forEach((key: any) => {
-          if (key.fullKey) {
-            fullKeyCache[key.id] = key.fullKey
-          }
-        })
-
-        // 将缓存的 fullKey 合并到新数据中
+      if (data?.apiKeys) {
         data.apiKeys = data.apiKeys.map((key: any) => {
-          if (fullKeyCache[key.id]) {
-            return { ...key, fullKey: fullKeyCache[key.id] }
+          // 从持久化缓存中恢复 fullKey
+          if (fullKeyCacheRef.current[key.id]) {
+            return { ...key, fullKey: fullKeyCacheRef.current[key.id] }
           }
           return key
         })
@@ -111,6 +106,10 @@ export default function ApiKeysContent() {
       }
       const body = await res.json()
       const full = body?.apiKey?.fullKey
+      // 存入持久化缓存
+      if (full) {
+        fullKeyCacheRef.current[id] = full
+      }
       setFullKeyMap((prev) => ({ ...prev, [id]: full }))
       return full
     } finally {
@@ -143,6 +142,12 @@ export default function ApiKeysContent() {
       setShowCreateModal(false);
       setNewKeyTitle("");
       showSuccess("API key created");
+
+      // 将 fullKey 存入持久化缓存（使用 ref，不会被 SWR 重新获取时覆盖）
+      if (data.apiKey.fullKey) {
+        fullKeyCacheRef.current[data.apiKey.id] = data.apiKey.fullKey
+      }
+
       // replace temp with real, and store fullKey in cache
       await mutateKeys((old: any) => ({ apiKeys: [
         {
@@ -185,6 +190,8 @@ export default function ApiKeysContent() {
           showSuccess(`Deleted "${keyTitle}"`);
           // cleanup local cache
           setFullKeyMap((prev) => { const c = { ...prev }; delete c[keyId]; return c })
+          // cleanup persistent cache
+          delete fullKeyCacheRef.current[keyId]
           // revalidate from server to confirm deletion
           if (!isTestEnv) {
             await mutateKeys(undefined, true)

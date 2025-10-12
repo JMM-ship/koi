@@ -36,13 +36,13 @@ export default function Section6() {
                                 <div className="text-center text-white mt-4">
                                     <h4 className="mb-3">KOI</h4>
                                     <div className="d-flex justify-content-center align-items-baseline mb-2">
-                                        <h1 className="display-4 mb-0">$75</h1>
+                                        <h1 className="display-4 mb-0">$50</h1>
                                         <span className="fs-5">/month</span>
                                     </div>
                                     <span className="badge bg-white text-primary px-4 py-2 rounded-pill mb-4">Save 72%</span>
                                 </div>
                                 <ul className="list-unstyled mt-4 text-white">
-                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
+                                    {/* <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
@@ -50,14 +50,14 @@ export default function Section6() {
                                             <span>Monthly Price</span>
                                             <span className="text-white fw-bold">¥399/month ✓</span>
                                         </div>
-                                    </li>
+                                    </li> */}
                                     <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Usage Limit</span>
-                                            <span className="text-white fw-bold">10,800 credits daily ✓</span>
+                                            <span className="text-white fw-bold">6000 credits daily ✓</span>
                                         </div>
                                     </li>
                                     <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
@@ -97,7 +97,7 @@ export default function Section6() {
                                         </div>
                                     </li>
                                 </ul>
-                                <Link href="#" className="btn btn-linear w-100 mt-4 py-3 fw-bold hover-up">
+                                <Link href="/dashboard" className="btn btn-linear w-100 mt-4 py-3 fw-bold hover-up">
                                     Get Started Now
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ms-2">
                                         <line x1="5" y1="12" x2="19" y2="12"></line>
