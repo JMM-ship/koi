@@ -1,5 +1,11 @@
 import crypto from 'crypto'
 
+// ============================================================================
+// ANTOM PAYMENT INTEGRATION (TEMPORARILY DISABLED)
+// This file is commented out in favor of Stripe payment integration.
+// Uncomment when you need to re-enable Antom payments.
+// ============================================================================
+
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export interface AntomConfig {

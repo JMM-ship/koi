@@ -4,6 +4,12 @@ import { authOptions } from '@/app/auth/config'
 import { findOrderByOrderNo } from '@/app/models/order'
 import { antomPay, getBaseUrl } from '@/app/service/antom'
 
+// ============================================================================
+// ANTOM PAYMENT ROUTE (TEMPORARILY DISABLED)
+// This route is commented out in favor of Stripe payment integration.
+// Uncomment when you need to re-enable Antom payments.
+// ============================================================================
+
 // POST /api/orders/pay/antom - Create Antom payment session and return redirect URL
 export async function POST(request: NextRequest) {
   try {

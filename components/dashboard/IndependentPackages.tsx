@@ -87,7 +87,21 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
       }
 
       const orderNo = orderData.data.order.orderNo as string;
-      if (paymentProvider === 'antom') {
+
+      if (paymentProvider === 'stripe') {
+        dismiss(loadingToast);
+        const payResp = await fetch('/api/orders/pay/stripe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderNo }),
+        });
+        const payData = await payResp.json();
+        if (!payResp.ok || !payData?.success || !payData?.data?.checkoutUrl) {
+          throw new Error(payData?.error?.message || 'Failed to create Stripe checkout session');
+        }
+        window.location.href = payData.data.checkoutUrl;
+        return;
+      } else if (paymentProvider === 'antom') {
         dismiss(loadingToast);
         const payResp = await fetch('/api/orders/pay/antom', {
           method: 'POST',

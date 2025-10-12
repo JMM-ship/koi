@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyWebhookSignature } from '@/app/service/antom'
 import { handlePaymentSuccess } from '@/app/service/orderProcessor'
 
+// ============================================================================
+// ANTOM WEBHOOK ROUTE (TEMPORARILY DISABLED)
+// This route is commented out in favor of Stripe payment integration.
+// Uncomment when you need to re-enable Antom payments.
+// ============================================================================
+
 // POST /api/orders/pay/antom/notify - Antom webhook callback
 export async function POST(request: NextRequest) {
   try {

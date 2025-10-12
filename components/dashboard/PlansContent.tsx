@@ -169,8 +169,6 @@ export default function PlansContent() {
   // Determine button text based on package comparison
   const getButtonText = (pkg: Package): string => {
 
-    console.log(pkg, "当前包", currentPackage);
-
     if (!currentPackage) return 'Choose Plan';
 
     if (currentPackage.packageId === pkg.id) {
@@ -247,13 +245,19 @@ export default function PlansContent() {
 
   // Handle purchase button click
   const handlePurchase = (pkg: Package) => {
+    console.log('=== handlePurchase clicked ===');
+    console.log('Session:', session);
+    console.log('Package:', pkg);
+
     if (!session) {
+      console.log('No session, redirecting to signin');
       showWarning('Please login first');
       router.push('/signin');
       return;
     }
 
     const buttonText = getButtonText(pkg);
+    console.log('Button text:', buttonText);
 
     if (buttonText === 'Renew') {
       // Handle renewal - could redirect to renewal flow or show renewal modal
@@ -342,7 +346,21 @@ export default function PlansContent() {
 
       if (data.success) {
         const orderNo = data.data.order.orderNo as string;
-        if (paymentProvider === 'antom') {
+
+        if (paymentProvider === 'stripe') {
+          // Create Stripe Checkout session and redirect
+          const payResp = await fetch('/api/orders/pay/stripe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderNo }),
+          });
+          const payData = await payResp.json();
+          if (!payResp.ok || !payData?.success || !payData?.data?.checkoutUrl) {
+            throw new Error(payData?.error?.message || 'Failed to create Stripe checkout session');
+          }
+          window.location.href = payData.data.checkoutUrl;
+          return; // Redirecting, skip local success toast for now
+        } else if (paymentProvider === 'antom') {
           // Create Antom payment and redirect
           const payResp = await fetch('/api/orders/pay/antom', {
             method: 'POST',
@@ -508,7 +526,9 @@ export default function PlansContent() {
                   position: 'absolute',
                   inset: 0,
                   borderRadius: '14px',
-                  background: 'radial-gradient(900px 200px at 10% -10%, rgba(121,74,255,0.18), transparent)'
+                  background: 'radial-gradient(900px 200px at 10% -10%, rgba(121,74,255,0.18), transparent)',
+                  pointerEvents: 'none',
+                  zIndex: 0
                 }} />
                 {pkg.is_recommended && (
                   <div style={{
@@ -549,7 +569,7 @@ export default function PlansContent() {
                   </div>
                 )}
 
-                <div className="text-center mb-4" style={{ position: 'relative', paddingTop: pkg.is_recommended ? '6px' : '0' }}>
+                <div className="text-center mb-4" style={{ position: 'relative', paddingTop: pkg.is_recommended ? '6px' : '0', zIndex: 1 }}>
                   <h3 style={{
                     fontSize: 18,
                     fontWeight: 800,
@@ -563,7 +583,7 @@ export default function PlansContent() {
                   </div>
                 </div>
 
-                <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px' }}>
+                <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px', position: 'relative', zIndex: 1 }}>
                   {formatFeatures(pkg).map((feature: any, index: any) => (
                     <li key={index} className="d-flex align-items-start" style={{ marginBottom: '14px' }}>
                       <span style={{
@@ -599,6 +619,8 @@ export default function PlansContent() {
                   onClick={() => handlePurchase(pkg)}
                   disabled={isButtonDisabled(pkg)}
                   style={{
+                    position: 'relative',
+                    zIndex: 2,
                     width: '100%',
                     padding: '14px',
                     borderRadius: '10px',
