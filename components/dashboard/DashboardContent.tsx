@@ -10,6 +10,7 @@ import TeamMembers from "@/components/dashboard/TeamMembers";
 import SatisfactionRate from "@/components/dashboard/SatisfactionRate";
 import IndependentCredits from "@/components/dashboard/IndependentCredits";
 import CreditTestButton from "@/components/dashboard/CreditTestButton";
+import CreditsHistory from "@/components/dashboard/CreditsHistory";
 
 interface DashboardContentProps {
   onNavigateToPlans?: () => void;
@@ -60,9 +61,14 @@ export default function DashboardContent({ onNavigateToPlans }: DashboardContent
           </div>
         </div>
 
-        {/* 独立积分卡片 - 与左侧底部对齐 */}
+        {/* 独立积分与流水 */}
         <div className="side-content-bottom" key={refreshKey}>
-          <IndependentCredits />
+          <div className="side-content-item" style={{ marginBottom: '1rem' }}>
+            <IndependentCredits />
+          </div>
+          <div className="side-content-item">
+            <CreditsHistory />
+          </div>
         </div>
 
         {/* 信用卡

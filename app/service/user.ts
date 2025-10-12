@@ -7,6 +7,7 @@ import { getOneYearLaterTimestr } from "@/app/lib/time";
 import { getUserUuidByApiKey } from "@/app/models/apikey";
 import { headers } from "next/headers";
 import { increaseCredits } from "./credit";
+import { grantNewUserBonus } from "@/app/service/newUserBonus";
 
 export async function saveUser(user:any) {
   try {
@@ -14,28 +15,14 @@ export async function saveUser(user:any) {
     if (!existUser) {
       const newUser = await insertUser(user);
 
-      // 为新用户创建钱包并赠送初始积分
+      // 为新用户赠送初始积分（独立积分，幂等）
       if (newUser?.id) {
         try {
-          // 使用新的钱包系统赠送初始积分
-          const { addIndependentCredits } = await import("@/app/models/creditBalance");
-          await addIndependentCredits(newUser.id, CreditsAmount.NewUserGet);
-
-          // 创建积分交易记录
-          const { createCreditTransaction, TransactionType, CreditType } = await import("@/app/models/creditTransaction");
-          await createCreditTransaction({
-            user_id: newUser.id,
-            type: TransactionType.Income,
-            credit_type: CreditType.Independent,
-            amount: CreditsAmount.NewUserGet,
-            before_balance: 0,
-            after_balance: CreditsAmount.NewUserGet,
-            description: '新用户注册奖励',
-            metadata: {
-              source: 'oauth_registration',
-              provider: user.signin_provider || 'unknown',
-            },
-          });
+          await grantNewUserBonus({
+            userId: newUser.id,
+            source: 'oauth_registration',
+            provider: user.signin_provider || 'unknown',
+          })
         } catch (creditError) {
           console.error("Failed to grant initial credits to OAuth user:", creditError);
           // 不阻止用户创建，只记录错误
