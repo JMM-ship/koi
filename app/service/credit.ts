@@ -17,7 +17,7 @@ export enum CreditsTransType {
 }
 
 export enum CreditsAmount {
-  NewUserGet = 10,
+  NewUserGet = 500,
   PingCost = 1,
 }
 

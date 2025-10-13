@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createUserWithPassword, findUserByEmail } from '@/app/models/user';
 import { CreditsAmount } from '@/app/service/credit';
+import { grantNewUserBonus } from '@/app/service/newUserBonus'
 import { findEmailVerificationCodeByEmailAndCode, markVerificationCodeAsUsed } from '@/app/models/verification';
 
 export async function POST(request) {
@@ -87,26 +88,9 @@ export async function POST(request) {
       await markVerificationCodeAsUsed(verification.id);
     }
 
-    // Grant initial credits to the new user using new wallet system
+    // Grant initial credits to the new user (independent points, idempotent)
     try {
-      const { addIndependentCredits } = await import("@/app/models/creditBalance");
-      await addIndependentCredits(newUser.id, CreditsAmount.NewUserGet);
-
-      // Create credit transaction record
-      const { createCreditTransaction, TransactionType, CreditType } = await import("@/app/models/creditTransaction");
-      await createCreditTransaction({
-        user_id: newUser.id,
-        type: TransactionType.Income,
-        credit_type: CreditType.Independent,
-        amount: CreditsAmount.NewUserGet,
-        before_balance: 0,
-        after_balance: CreditsAmount.NewUserGet,
-        description: '新用户注册奖励',
-        metadata: {
-          source: 'email_registration',
-          email: newUser.email,
-        },
-      });
+      await grantNewUserBonus({ userId: newUser.id, source: 'email_registration' })
     } catch (creditError) {
       console.error("Failed to grant initial credits to new user:", creditError);
       // Continue with registration, don't block user creation
