@@ -58,6 +58,7 @@ describe('POST /api/orders/pay/antom - TW auto TWD', () => {
     expect(call.currency).toBe('TWD')
     expect(call.amount).toBe(292)
     expect(call.paymentMethodType).toBe('CONNECT_WALLET')
+    expect(call.userRegion).toBe('TW')
     expect(call.settlementCurrency).toBeUndefined()
   })
 

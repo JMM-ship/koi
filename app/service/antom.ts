@@ -28,6 +28,8 @@ export interface AntomPayParams {
   // Optional overrides
   paymentMethodType?: string // e.g. ALIPAY_CN
   settlementCurrency?: string // e.g. CNY
+  userRegion?: string // e.g. 'TW'
+  merchantRegion?: string // optional merchant region
 }
 
 export interface AntomPayResult {
@@ -174,6 +176,9 @@ export async function antomPay(params: AntomPayParams): Promise<AntomPayResult> 
   if (params.settlementCurrency) {
     payload.settlementStrategy = { settlementCurrency: params.settlementCurrency }
   }
+
+  if (params.userRegion) payload.userRegion = params.userRegion
+  if (params.merchantRegion) payload.merchantRegion = params.merchantRegion
 
   const body = JSON.stringify(payload)
   const headers = buildHeaders(cfg, method, path, body)

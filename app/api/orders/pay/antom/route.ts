@@ -98,6 +98,7 @@ export async function POST(request: NextRequest) {
       returnUrl,
       paymentMethodType: params.paymentMethodType,
       settlementCurrency: params.settlementCurrency,
+      userRegion: requestCountry === 'TW' ? 'TW' : undefined,
     })
 
     if (!payResult.ok) {
