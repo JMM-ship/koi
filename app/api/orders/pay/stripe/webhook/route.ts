@@ -5,6 +5,7 @@ import Stripe from 'stripe'
 
 // Disable body parsing for webhook to get raw body
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 // POST /api/orders/pay/stripe/webhook - Stripe webhook callback
 export async function POST(request: NextRequest) {
@@ -80,6 +81,46 @@ export async function POST(request: NextRequest) {
         } else {
           console.log('Payment not completed, status:', session.payment_status)
         }
+        break
+      }
+
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
+        const orderNo = paymentIntent.metadata?.order_no
+
+        if (!orderNo) {
+          console.error('Order number not found in payment intent metadata')
+          return NextResponse.json(
+            { success: false, error: { code: 'MISSING_ORDER', message: 'Order number not found' } },
+            { status: 400 }
+          )
+        }
+
+        const paymentDetails = {
+          method: 'stripe',
+          transactionId: paymentIntent.id,
+          paidAt: new Date(paymentIntent.created * 1000).toISOString(),
+          email: paymentIntent.receipt_email || undefined,
+          metadata: {
+            paymentIntentId: paymentIntent.id,
+            amount: paymentIntent.amount,
+            currency: paymentIntent.currency,
+            status: paymentIntent.status,
+            raw: paymentIntent,
+          },
+        }
+
+        const result = await handlePaymentSuccess(orderNo, paymentDetails)
+
+        if (!result.success) {
+          console.error('Failed to process payment success:', result.error)
+          return NextResponse.json(
+            { success: false, error: { code: 'PROCESS_FAILED', message: result.error || 'Failed to process order' } },
+            { status: 500 }
+          )
+        }
+
+        console.log('Payment intent succeeded for order:', orderNo)
         break
       }
 

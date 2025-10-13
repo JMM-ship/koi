@@ -4,6 +4,8 @@ import { authOptions } from "@/app/auth/config";
 import { findUserByEmail } from "@/app/models/user";
 import { prisma } from "@/app/models/db";
 
+export const dynamic = 'force-dynamic'
+
 // POST /api/profile/update - 更新用户个人信息
 export async function POST(request) {
   try {

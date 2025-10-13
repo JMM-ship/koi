@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/auth/config";
 import { findUserByEmail } from "@/app/models/user";
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/profile - 获取用户个人信息
 export async function GET(request) {
   try {

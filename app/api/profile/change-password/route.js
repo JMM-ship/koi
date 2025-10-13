@@ -5,6 +5,8 @@ import { findUserByEmail } from "@/app/models/user";
 import { prisma } from "@/app/models/db";
 import bcrypt from "bcryptjs";
 
+export const dynamic = 'force-dynamic'
+
 // POST /api/profile/change-password - 修改密码
 export async function POST(request) {
   try {
