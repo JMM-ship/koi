@@ -63,6 +63,11 @@ export async function createStripeCheckoutSession(
       metadata: {
         order_no: params.orderNo,
       },
+      payment_intent_data: {
+        metadata: {
+          order_no: params.orderNo,
+        },
+      },
       // Enable automatic tax calculation if needed
       // automatic_tax: { enabled: true },
     })
