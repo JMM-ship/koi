@@ -12,7 +12,7 @@ export interface BuildPayParamsInput {
 }
 
 export interface BuildPayParamsOutput {
-  paymentMethodType: string
+  paymentMethodType?: string
   payCurrency: string
   payAmount: number
   settlementCurrency?: string
@@ -50,7 +50,7 @@ export function buildPayParams(input: BuildPayParamsInput): BuildPayParamsOutput
   if (enableTwAuto && country === 'TW' && !explicitMethod) {
     const fx = toTwdIntegerCeil(orderAmount, initialCurrency, usdTwdRate)
     return {
-      paymentMethodType: 'CONNECT_WALLET',
+      // Omit paymentMethod for multi-wallet cashier to avoid PARAM_ILLEGAL
       payCurrency: 'TWD',
       payAmount: fx.amount,
       settlementCurrency: undefined,
@@ -66,4 +66,3 @@ export function buildPayParams(input: BuildPayParamsInput): BuildPayParamsOutput
     settlementCurrency: settlementCurrencyEnv || undefined,
   }
 }
-

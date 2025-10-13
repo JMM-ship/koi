@@ -113,6 +113,7 @@ export async function POST(request: NextRequest) {
             paymentMethodType: params.paymentMethodType,
             fx: params.fxApplied || null,
             country: requestCountry || null,
+            amount: params.payAmount,
           }
         },
         timestamp: new Date().toISOString(),
