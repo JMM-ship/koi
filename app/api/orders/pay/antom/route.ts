@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
     const enableTwAuto = process.env.ENABLE_TW_JKOPAY_AUTO === 'true'
     const usdTwdRate = Number(process.env.ANTOM_USD_TWD_RATE || '0')
     const requestCountry = getRequestCountry(request.headers)
+    const merchantRegionEnv = (process.env.ANTOM_MERCHANT_REGION || '').toUpperCase() || undefined
 
     const params = buildPayParams({
       country: requestCountry,
@@ -88,7 +89,7 @@ export async function POST(request: NextRequest) {
       })
     } catch {}
 
-    const payResult = await antomPay({
+    const firstParams = {
       orderNo,
       amount: params.payAmount,
       currency: params.payCurrency,
@@ -99,9 +100,47 @@ export async function POST(request: NextRequest) {
       paymentMethodType: params.paymentMethodType,
       settlementCurrency: params.settlementCurrency,
       userRegion: requestCountry === 'TW' ? 'TW' : undefined,
-    })
+      merchantRegion: requestCountry === 'TW' ? merchantRegionEnv : undefined,
+    } as const
+
+    let payResult = await antomPay(firstParams)
 
     if (!payResult.ok) {
+      // TW aggregated fallback: if PARAM_ILLEGAL in TW flow, retry with JKOPAY direct in TWD
+      const resultCode = payResult?.raw?.result?.resultCode || ''
+      const isParamIllegal = String(resultCode).toUpperCase() === 'PARAM_ILLEGAL'
+      const isTwFlow = requestCountry === 'TW' && (params.paymentMethodType === 'CONNECT_WALLET' || !params.paymentMethodType) && params.payCurrency === 'TWD'
+      if (isParamIllegal && isTwFlow) {
+        const fallback = await antomPay({
+          orderNo,
+          amount: params.payAmount,
+          currency: 'TWD',
+          productName: order.product_name || 'Order',
+          userEmail: session.user.email,
+          notifyUrl,
+          returnUrl,
+          paymentMethodType: 'JKOPAY',
+          settlementCurrency: undefined,
+          userRegion: 'TW',
+          merchantRegion: merchantRegionEnv,
+        })
+        if (fallback.ok) {
+          return NextResponse.json({
+            success: true,
+            data: {
+              orderNo,
+              redirectUrl: fallback.paymentRedirectUrl,
+              paymentId: fallback.paymentId,
+              paymentRequestId: fallback.paymentRequestId,
+              raw: fallback.raw,
+              debug: { fx: params.fxApplied || null, currency: 'TWD', amount: params.payAmount, country: 'TW', fallback: 'JKOPAY' }
+            },
+            timestamp: new Date().toISOString(),
+          })
+        }
+        // Merge fallback error into debug
+        payResult = { ...payResult, raw: { first: payResult.raw, fallback: fallback.raw } }
+      }
       return NextResponse.json({
         success: false,
         error: { code: 'PAYMENT_CREATE_FAILED', message: payResult.message || 'Failed to create Antom payment' },
@@ -115,6 +154,8 @@ export async function POST(request: NextRequest) {
             fx: params.fxApplied || null,
             country: requestCountry || null,
             amount: params.payAmount,
+            notifyUrl,
+            returnUrl,
           }
         },
         timestamp: new Date().toISOString(),

@@ -44,6 +44,7 @@ describe('POST /api/orders/pay/antom - TW auto TWD', () => {
     process.env.ENABLE_TW_JKOPAY_AUTO = 'true'
     process.env.ANTOM_USD_TWD_RATE = '32'
     process.env.ANTOM_PAYMENT_CURRENCY = 'USD'
+    process.env.ANTOM_MERCHANT_REGION = 'HK'
     delete process.env.ANTOM_SETTLEMENT_CURRENCY
   })
 
@@ -59,6 +60,7 @@ describe('POST /api/orders/pay/antom - TW auto TWD', () => {
     expect(call.amount).toBe(292)
     expect(call.paymentMethodType).toBe('CONNECT_WALLET')
     expect(call.userRegion).toBe('TW')
+    expect(call.merchantRegion).toBe('HK')
     expect(call.settlementCurrency).toBeUndefined()
   })
 
@@ -72,5 +74,44 @@ describe('POST /api/orders/pay/antom - TW auto TWD', () => {
     expect(call.currency).toBe('USD')
     expect(call.amount).toBe(9.1)
     expect(call.paymentMethodType).toBe('CONNECT_WALLET')
+  })
+})
+
+describe('POST /api/orders/pay/antom - TW fallback to JKOPAY on PARAM_ILLEGAL', () => {
+  beforeEach(() => {
+    antomPayMock.mockReset()
+    process.env.ENABLE_TW_JKOPAY_AUTO = 'true'
+    process.env.ANTOM_USD_TWD_RATE = '32'
+    process.env.ANTOM_PAYMENT_CURRENCY = 'USD'
+    process.env.ANTOM_MERCHANT_REGION = 'HK'
+    delete process.env.ANTOM_SETTLEMENT_CURRENCY
+  })
+
+  test('First call fails with PARAM_ILLEGAL, second retries with JKOPAY and succeeds', async () => {
+    // First response: fail PARAM_ILLEGAL
+    antomPayMock.mockImplementationOnce(async () => ({
+      ok: false,
+      raw: { result: { resultCode: 'PARAM_ILLEGAL', resultStatus: 'F' } }
+    }))
+    // Second response: ok
+    antomPayMock.mockImplementationOnce(async () => ({
+      ok: true,
+      paymentRedirectUrl: 'https://pay.example/redirect2',
+      raw: { result: { resultStatus: 'U' } },
+    }))
+
+    const req = makeRequest({ orderNo: 'ORD3' }, { 'x-vercel-ip-country': 'TW' })
+    const res = await antomPost(req)
+    const data = await (res as any).json()
+    expect(data?.success).toBe(true)
+    expect(data?.data?.redirectUrl).toBe('https://pay.example/redirect2')
+
+    // Verify second call used JKOPAY
+    expect(antomPayMock).toHaveBeenCalledTimes(2)
+    const secondCall = antomPayMock.mock.calls[1][0]
+    expect(secondCall.paymentMethodType).toBe('JKOPAY')
+    expect(secondCall.currency).toBe('TWD')
+    expect(secondCall.userRegion).toBe('TW')
+    expect(secondCall.merchantRegion).toBe('HK')
   })
 })
