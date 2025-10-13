@@ -11,12 +11,53 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 type GuideTab = "windows" | "macos" | "linux";
 type GuideKind = "claude" | "codex" | null;
 
+// localStorage 辅助函数
+const STORAGE_KEY = 'apikeys_fullkey_cache';
+
+function saveFullKeyToStorage(id: string, fullKey: string) {
+  try {
+    const cached = localStorage.getItem(STORAGE_KEY);
+    const data = cached ? JSON.parse(cached) : {};
+    data[id] = fullKey;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    console.error('Failed to save fullKey to localStorage:', error);
+  }
+}
+
+function loadFullKeysFromStorage(): Record<string, string> {
+  try {
+    const cached = localStorage.getItem(STORAGE_KEY);
+    return cached ? JSON.parse(cached) : {};
+  } catch (error) {
+    console.error('Failed to load fullKeys from localStorage:', error);
+    return {};
+  }
+}
+
+function removeFullKeyFromStorage(id: string) {
+  try {
+    const cached = localStorage.getItem(STORAGE_KEY);
+    if (cached) {
+      const data = JSON.parse(cached);
+      delete data[id];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  } catch (error) {
+    console.error('Failed to remove fullKey from localStorage:', error);
+  }
+}
+
 export default function ApiKeysContent() {
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const isTestEnv = typeof process !== 'undefined' && !!(process as any).env?.JEST_WORKER_ID
   // 使用 ref 来持久化存储 fullKey，避免被 SWR 重新获取数据时覆盖
-  const fullKeyCacheRef = useState<React.MutableRefObject<Record<string, string>>>(() => ({ current: {} }))[0]
+  // 初始化时从 localStorage 加载
+  const fullKeyCacheRef = useState<React.MutableRefObject<Record<string, string>>>(() => {
+    const stored = loadFullKeysFromStorage();
+    return { current: stored };
+  })[0]
 
   const { data: apiKeysResp, mutate: mutateKeys, isLoading } = useSWR(
     '/api/apikeys',
@@ -60,29 +101,25 @@ export default function ApiKeysContent() {
   const { showSuccess, showInfo, showError } = useToast();
   const { confirmState, showConfirm } = useConfirm();
 
-  useEffect(() => {
-    // 从 SWR 缓存中恢复 fullKey 到本地状态
-    if (apiKeys && apiKeys.length > 0) {
-      const newFullKeyMap: Record<string, string> = {}
-      apiKeys.forEach((key: any) => {
-        if (key.fullKey) {
-          newFullKeyMap[key.id] = key.fullKey
-        }
-      })
-      if (Object.keys(newFullKeyMap).length > 0) {
-        setFullKeyMap((prev) => ({ ...prev, ...newFullKeyMap }))
-      }
+  // 从 apiKeys 中提取 fullKey (apiKeys 已经在 SWR fetcher 中从 localStorage 恢复了 fullKey)
+  const fullKeyMapFromApiKeys = apiKeys.reduce((acc: Record<string, string>, key: any) => {
+    if (key.fullKey) {
+      acc[key.id] = key.fullKey
     }
-  }, [apiKeys])
+    return acc
+  }, {})
+
+  // 合并两个来源的 fullKey: state 中的优先
+  const mergedFullKeyMap = { ...fullKeyMapFromApiKeys, ...fullKeyMap }
 
   const activeKeyId = apiKeys.find((k) => k.status === 'active')?.id
-  const userApiKey = activeKeyId ? (fullKeyMap[activeKeyId] || "") : ""
+  const userApiKey = activeKeyId ? (mergedFullKeyMap[activeKeyId] || "") : ""
 
   const handleCopyById = async (id: string) => {
-    if (!fullKeyMap[id]) {
+    if (!mergedFullKeyMap[id]) {
       await ensureFullKey(id)
     }
-    const full = fullKeyMap[id]
+    const full = mergedFullKeyMap[id]
     if (!full) return
     navigator.clipboard.writeText(full)
     setCopiedKey(full)
@@ -91,7 +128,7 @@ export default function ApiKeysContent() {
   }
 
   const ensureFullKey = async (id: string) => {
-    if (fullKeyMap[id]) return fullKeyMap[id]
+    if (mergedFullKeyMap[id]) return mergedFullKeyMap[id]
     try {
       setLoadingKey((prev) => ({ ...prev, [id]: true }))
       const res = await fetch(`/api/apikeys/${id}/show`)
@@ -109,6 +146,8 @@ export default function ApiKeysContent() {
       // 存入持久化缓存
       if (full) {
         fullKeyCacheRef.current[id] = full
+        // 同时保存到 localStorage 实现永久存储
+        saveFullKeyToStorage(id, full)
       }
       setFullKeyMap((prev) => ({ ...prev, [id]: full }))
       return full
@@ -146,6 +185,8 @@ export default function ApiKeysContent() {
       // 将 fullKey 存入持久化缓存（使用 ref，不会被 SWR 重新获取时覆盖）
       if (data.apiKey.fullKey) {
         fullKeyCacheRef.current[data.apiKey.id] = data.apiKey.fullKey
+        // 同时保存到 localStorage 实现永久存储
+        saveFullKeyToStorage(data.apiKey.id, data.apiKey.fullKey)
       }
 
       // replace temp with real, and store fullKey in cache
@@ -192,6 +233,8 @@ export default function ApiKeysContent() {
           setFullKeyMap((prev) => { const c = { ...prev }; delete c[keyId]; return c })
           // cleanup persistent cache
           delete fullKeyCacheRef.current[keyId]
+          // cleanup localStorage
+          removeFullKeyFromStorage(keyId)
           // revalidate from server to confirm deletion
           if (!isTestEnv) {
             await mutateKeys(undefined, true)
@@ -260,7 +303,7 @@ export default function ApiKeysContent() {
                   </button>
                 </div>
                 <div className="api-key-bar">
-                  <code className="api-key-code">{showKey[apiKey.id] ? (fullKeyMap[apiKey.id] || 'Loading...') : apiKey.apiKey}</code>
+                  <code className="api-key-code">{showKey[apiKey.id] ? (mergedFullKeyMap[apiKey.id] || 'Loading...') : apiKey.apiKey}</code>
                   <div className="api-key-actions">
                     <button className="btn-icon" aria-label={showKey[apiKey.id] ? 'Hide API key' : 'Reveal API key'} onClick={async () => {
                       if (!showKey[apiKey.id]) {
