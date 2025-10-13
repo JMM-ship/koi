@@ -140,45 +140,23 @@ export default function PlansContent() {
   const currentPackage: UserPackage | null = packagesResp?.data?.currentPackage ? fromApiUserPackage(packagesResp.data.currentPackage) : null
   // keep other state lines removed above relocated earlier
 
-  // Define package hierarchy
-  const packageHierarchy: { [key: string]: number } = {
-    'basic': 1,
-    'pro': 2,
-    'professional': 2,
-    'enterprise': 3,
-    'max': 3,
-  };
-
-  // Get package level from name
-  const getPackageLevel = (packageName: string): number => {
-    const lowerName = packageName?.toLowerCase();
-
-    // Check for English names
-    if (lowerName?.includes('basic') || lowerName?.includes('base') || lowerName?.includes('plus')) return packageHierarchy.basic;
-    if (lowerName?.includes('professional') || lowerName?.includes('pro')) return packageHierarchy.pro;
-    if (lowerName?.includes('enterprise') || lowerName?.includes('max')) return packageHierarchy.enterprise;
-
-    // Check for Chinese names
-    if (packageName?.includes('基础版')) return packageHierarchy.basic;
-    if (packageName?.includes('专业版')) return packageHierarchy.professional;
-    if (packageName?.includes('企业版')) return packageHierarchy.enterprise;
-
-    return 0;
-  };
-
-  // Determine button text based on package comparison
+  // Determine button text based on package price comparison
   const getButtonText = (pkg: Package): string => {
-
     if (!currentPackage) return 'Choose Plan';
 
     if (currentPackage.packageId === pkg.id) {
       return 'Renew';
     }
 
-    const currentLevel = getPackageLevel(currentPackage.packageName);
-    const targetLevel = getPackageLevel(pkg.name);
+    // 获取当前套餐的价格
+    const currentPkg = packages.find(p => p.id === currentPackage.packageId);
+    if (!currentPkg) return 'Choose Plan';
 
-    if (targetLevel > currentLevel) {
+    const currentPrice = currentPkg.price;
+    const targetPrice = pkg.price;
+
+    // 根据价格判断:目标价格高于当前价格才是升级
+    if (targetPrice > currentPrice) {
       return 'Upgrade';
     }
 
@@ -193,20 +171,26 @@ export default function PlansContent() {
 
   // Remove old fetchPackages in favor of SWR above
 
-  // Calculate upgrade discount based on remaining days
+  // Calculate upgrade discount based on remaining days (only for upgrades)
   const calculateUpgradeDiscount = (targetPackage: Package) => {
     if (!currentPackage || !targetPackage) return null;
 
     console.log("=== 开始计算升级优惠 ===");
     console.log("目标套餐:", targetPackage);
 
-    const currentLevel = getPackageLevel(currentPackage.packageName);
-    const targetLevel = getPackageLevel(targetPackage.name);
-    console.log("当前套餐等级:", currentLevel, "目标套餐等级:", targetLevel);
+    const currentPkg = packages.find(p => p.id === currentPackage.packageId);
+    if (!currentPkg) {
+      console.log("未找到当前套餐详情 → 不适用优惠");
+      return null;
+    }
 
-    // 只对升级生效
-    if (targetLevel <= currentLevel) {
-      console.log("目标套餐不高于当前套餐 → 不适用优惠");
+    const currentPrice = currentPkg.price;
+    const targetPrice = targetPackage.price;
+    console.log("当前套餐价格:", currentPrice, "目标套餐价格:", targetPrice);
+
+    // 只对升级(目标价格高于当前价格)生效
+    if (targetPrice <= currentPrice) {
+      console.log("目标套餐价格不高于当前套餐 → 不适用优惠");
       return null;
     }
 
@@ -215,12 +199,6 @@ export default function PlansContent() {
 
     if (remainingDays <= 0) {
       console.log("剩余天数 <= 0 → 不适用优惠");
-      return null;
-    }
-
-    const currentPkg = packages.find(p => p.id === currentPackage.packageId);
-    if (!currentPkg) {
-      console.log("未找到当前套餐详情 → 不适用优惠");
       return null;
     }
 
