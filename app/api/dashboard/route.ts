@@ -85,7 +85,10 @@ export async function GET(request: Request) {
         dailyCredits: userPackage.dailyPoints,
         startDate: userPackage.startAt,
         endDate: userPackage.endAt,
-        isActive: userPackage.isActive
+        isActive: userPackage.isActive,
+        // 从 Package 表获取价格和功能
+        price: userPackage.package?.priceCents ? userPackage.package.priceCents / 100 : 0,
+        features: userPackage.package?.features || {}
       } : null,
       userInfo: userInfo ? {
         ...userInfo,

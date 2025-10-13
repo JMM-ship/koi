@@ -27,46 +27,73 @@ const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
         try {
           setDailyCredit(data?.creditBalance?.packageCredits || 0)
           setPackageCredits(userPackage?.dailyCredits || 0)
-          // 格式化套餐信息
+
+
+          // 格式化套餐信息 - 使用真实的数据库数据
           const now = new Date();
           const endDate = userPackage?.endDate || userInfo?.planExpiredAt || new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
           const startDate = userPackage?.startDate || new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-          const planType = userInfo?.planType || 'free';
-          const planNames: any = {
-            'free': 'Free',
-            'basic': 'Basic',
-            'pro': 'Professional',
-            'enterprise': 'Enterprise'
-          };
+          // 从数据库获取真实的套餐名称和价格
+          const packageName = userPackage?.packageName || 'Free';
 
-          const planPrices: any = {
-            'free': '$0',
-            'basic': '$9',
-            'pro': '$29',
-            'enterprise': '$99'
-          };
+          // 从 Package 表获取的价格
+          const packagePrice = userPackage?.price ? `$${userPackage.price}` : '$0';
+
+          // 从 Package 表的 features 获取功能列表
+          const packageFeatures = userPackage?.features || {};
+          const creditCap = Number(packageFeatures.creditCap ?? userPackage?.dailyCredits ?? 0);
+          const recoveryRate = Number(packageFeatures.recoveryRate ?? 0);
+          const dailyUsageLimit = Number(packageFeatures.dailyUsageLimit ?? 0);
+          const manualResetPerDay = Number(packageFeatures.manualResetPerDay ?? 0);
+
+          // 构建功能列表
+          const featuresList = [];
+          if (creditCap > 0) {
+            featuresList.push({
+              name: `Credit Cap: ${creditCap.toLocaleString()}`,
+              included: true
+            });
+          }
+          if (recoveryRate > 0) {
+            featuresList.push({
+              name: `Recovery Rate: ${recoveryRate.toLocaleString()}/hour`,
+              included: true
+            });
+          }
+          if (dailyUsageLimit > 0) {
+            featuresList.push({
+              name: `Daily Usage Limit: ${dailyUsageLimit.toLocaleString()}`,
+              included: true
+            });
+          }
+          if (manualResetPerDay > 0) {
+            featuresList.push({
+              name: `Manual Resets: ${manualResetPerDay}/day`,
+              included: true
+            });
+          }
+
+          // 如果没有从数据库获取到功能,使用基本功能
+          if (featuresList.length === 0 && packageName !== 'Free') {
+            featuresList.push({ name: "API Access", included: true });
+            featuresList.push({ name: "Credit System", included: true });
+          }
 
           const isActive = new Date(endDate) > now;
           const daysRemaining = Math.floor((new Date(endDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
           const status = isActive ? (daysRemaining < 7 ? 'expiring_soon' : 'active') : 'expired';
 
           setPlanDetails({
-            name: planNames[planType],
-            price: planPrices[planType],
+            name: packageName,
+            price: packagePrice,
             billing: 'month',
             status,
             statusLabel: status === 'active' ? 'Active' : status === 'expiring_soon' ? 'Expiring Soon' : 'Expired',
             statusColor: status === 'active' ? '#00d084' : status === 'expiring_soon' ? '#ffa500' : '#ff006e',
             startDate: new Date(startDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
             endDate: new Date(endDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-            features: [
-              { name: "Unlimited API Calls", included: planType !== 'free' },
-              { name: "Advanced Analytics", included: planType === 'pro' || planType === 'enterprise' },
-              { name: "Priority Support", included: planType === 'pro' || planType === 'enterprise' },
-              { name: "Custom Integrations", included: planType === 'enterprise' },
-              { name: "Team Collaboration", included: planType === 'enterprise' },
-            ],
+            features: featuresList,
             usage: {
               apiCalls: { used: 8500, limit: "Unlimited" },
               storage: { used: 3.2, limit: 10, unit: "GB" },
@@ -78,27 +105,23 @@ const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
           console.error('Error fetching plan details:', error);
           // 使用默认值
           setPlanDetails({
-            name: "Professional",
-            price: "$29",
+            name: "Free",
+            price: "$0",
             billing: "month",
             status: "active",
             statusLabel: "Active",
             statusColor: "#00d084",
-            startDate: "December 15, 2024",
-            endDate: "January 15, 2025",
+            startDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
             features: [
-              { name: "Unlimited API Calls", included: true },
-              { name: "Advanced Analytics", included: true },
-              { name: "Priority Support", included: true },
-              { name: "Custom Integrations", included: true },
-              { name: "Team Collaboration", included: false },
+              { name: "Basic API Access", included: true },
             ],
             usage: {
-              apiCalls: { used: 8500, limit: "Unlimited" },
-              storage: { used: 3.2, limit: 10, unit: "GB" },
-              users: { used: 3, limit: 5 },
+              apiCalls: { used: 0, limit: "Limited" },
+              storage: { used: 0, limit: 1, unit: "GB" },
+              users: { used: 1, limit: 1 },
             },
-            nextBilling: "January 15, 2025",
+            nextBilling: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
           });
         } finally {
           // Data loading is handled by context
