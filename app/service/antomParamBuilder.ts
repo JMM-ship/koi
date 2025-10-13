@@ -64,6 +64,7 @@ export function buildPayParams(input: BuildPayParamsInput): BuildPayParamsOutput
     paymentMethodType: resolvedMethod,
     payCurrency: initialCurrency,
     payAmount: orderAmount,
-    settlementCurrency: settlementCurrencyEnv || undefined,
+    // Some merchant configs require settlementCurrency; default to payCurrency when not provided
+    settlementCurrency: (settlementCurrencyEnv ?? initialCurrency) || undefined,
   }
 }

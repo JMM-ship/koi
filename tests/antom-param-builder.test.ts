@@ -47,6 +47,21 @@ describe('buildPayParams', () => {
     expect(out.settlementCurrency).toBe('USD')
   })
 
+  test('US + no method + no settlement env -> default settlement to payCurrency', () => {
+    const out = buildPayParams({
+      country: 'US',
+      explicitMethod: undefined,
+      orderCurrency: 'USD',
+      orderAmount: 5,
+      enableTwAuto: true,
+      usdTwdRate: 32,
+    })
+    expect(out.paymentMethodType).toBe('CONNECT_WALLET')
+    expect(out.payCurrency).toBe('USD')
+    expect(out.payAmount).toBe(5)
+    expect(out.settlementCurrency).toBe('USD')
+  })
+
   test('Auto disabled -> keep USD and amount', () => {
     const out = buildPayParams({
       country: 'TW',
