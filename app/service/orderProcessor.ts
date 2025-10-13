@@ -265,17 +265,37 @@ export async function handlePaymentSuccess(
         return { success: false, error: 'Package ID not found in order' };
       }
 
-      // 激活套餐
-      const result = await purchasePackage(
-        order.user_id,
-        order.package_id,
-        orderNo
-      );
+      // 检查是否为续费订单
+      const packageSnapshot = order.package_snapshot || {};
+      const renewMonths = packageSnapshot.renewMonths;
 
-      if (!result.success) {
-        // 如果激活失败，需要处理退款逻辑
-        console.error('Failed to activate package:', result.error);
-        return { success: false, error: 'Failed to activate package' };
+      if (renewMonths && renewMonths >= 1) {
+        // 续费订单:延长现有套餐
+        console.log(`Processing renewal for ${renewMonths} month(s)`);
+        const result = await renewPackage(
+          order.user_id,
+          order.package_id,
+          orderNo,
+          renewMonths
+        );
+
+        if (!result.success) {
+          console.error('Failed to renew package:', result.error);
+          return { success: false, error: 'Failed to renew package' };
+        }
+      } else {
+        // 首次购买:创建/激活套餐
+        console.log('Processing new package purchase');
+        const result = await purchasePackage(
+          order.user_id,
+          order.package_id,
+          orderNo
+        );
+
+        if (!result.success) {
+          console.error('Failed to activate package:', result.error);
+          return { success: false, error: 'Failed to activate package' };
+        }
       }
     } else if (order.order_type === OrderType.Credits) {
       // 增加积分

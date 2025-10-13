@@ -111,7 +111,8 @@ export async function purchasePackage(
 export async function renewPackage(
   userId: string,
   packageId: string,
-  orderNo: string
+  orderNo: string,
+  renewMonths: number = 1 // 续费月数
 ): Promise<PackagePurchaseResult> {
   try {
     // 获取套餐信息
@@ -119,11 +120,11 @@ export async function renewPackage(
     if (!packageInfo) {
       return { success: false, error: 'Package not found' };
     }
-    
+
     if (!packageInfo.isActive) {
       return { success: false, error: 'Package is not active' };
     }
-    
+
     // 创建套餐快照
     const packageSnapshot = {
       id: packageInfo.id,
@@ -135,21 +136,24 @@ export async function renewPackage(
       planType: packageInfo.planType,
       features: packageInfo.features,
     };
-    
+
+    // 计算续费天数: validDays * renewMonths
+    const renewDays = (packageInfo.validDays || 0) * renewMonths;
+
     // 续费套餐
     const userPackage = await renewUserPackage(
       userId,
       packageId,
       orderNo,
-      packageInfo.validDays || 0,
+      renewDays, // 使用计算后的续费天数
       packageInfo.dailyPoints || 0,
       packageSnapshot
     );
-    
+
     if (!userPackage) {
       return { success: false, error: 'Failed to renew package' };
     }
-    
+
     return {
       success: true,
       userPackage: {
