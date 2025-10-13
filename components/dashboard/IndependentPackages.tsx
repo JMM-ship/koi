@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import useSWR, { useSWRConfig } from "swr";
-import PaymentMethodModal from "@/components/dashboard/PaymentMethodModal";
+import { SiStripe, SiAlipay } from "react-icons/si";
 
 interface Package {
   id: string;
@@ -33,12 +33,9 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
   })
   const packages: Package[] = (packagesResp?.data?.packages || []) as Package[]
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
-  const [pendingOrderNo, setPendingOrderNo] = useState<string | null>(null);
-  const [processingPayment, setProcessingPayment] = useState(false);
+  const [processingStripe, setProcessingStripe] = useState(false);
+  const [processingAntom, setProcessingAntom] = useState(false);
   const loading = !packagesResp;
-  const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
 
   const currencySymbol = (cur?: string) => {
     switch ((cur || 'USD').toUpperCase()) {
@@ -56,10 +53,19 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
 
   // Data fetching moved to SWR above to enable persisted cache-first rendering
 
-  const handlePurchase = async () => {
-    if (!selectedPackage) return;
+  const handlePurchase = async (method: 'stripe' | 'antom') => {
+    if (!selectedPackage) {
+      showError('Please select a credit package');
+      return;
+    }
 
-    setIsProcessing(true);
+    // Set processing state for the clicked button
+    if (method === 'stripe') {
+      setProcessingStripe(true);
+    } else {
+      setProcessingAntom(true);
+    }
+
     const loadingToast = showLoading('Processing purchase request...');
 
     try {
@@ -67,11 +73,12 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
       if (!selected) {
         dismiss(loadingToast);
         showError('Please select a credit package');
-        setIsProcessing(false);
+        setProcessingStripe(false);
+        setProcessingAntom(false);
         return;
       }
 
-      // Create order first
+      // Create order
       const createOrderResponse = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
@@ -81,7 +88,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
           orderType: 'credits',
           creditAmount: selected.credits,
           packageId: selected.id,
-          paymentMethod: 'pending', // 暂时设置为pending,等用户选择
+          paymentMethod: method,
         }),
       });
 
@@ -93,58 +100,40 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
 
       const orderNo = orderData.data.order.orderNo as string;
 
-      // 保存订单号,关闭加载提示,打开支付方式选择modal
-      dismiss(loadingToast);
-      setPendingOrderNo(orderNo);
-      setShowPaymentMethodModal(true);
-    } catch (error) {
-      dismiss();
-      console.error("Purchase failed:", error);
-      showError(error instanceof Error ? error.message : 'Purchase failed, please try again later');
-      setIsProcessing(false);
-    }
-  };
-
-  // Handle payment method selection
-  const handlePaymentMethodSelect = async (method: 'stripe' | 'antom') => {
-    if (!pendingOrderNo || processingPayment) return;
-
-    setProcessingPayment(true);
-
-    try {
+      // Process payment immediately
       if (method === 'stripe') {
-        // Create Stripe Checkout session and redirect
         const payResp = await fetch('/api/orders/pay/stripe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderNo: pendingOrderNo }),
+          body: JSON.stringify({ orderNo }),
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.checkoutUrl) {
           throw new Error(payData?.error?.message || 'Failed to create Stripe checkout session');
         }
+        dismiss(loadingToast);
         window.location.href = payData.data.checkoutUrl;
-        return; // Redirecting
+        return;
       } else if (method === 'antom') {
-        // Create Antom payment and redirect
         const payResp = await fetch('/api/orders/pay/antom', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderNo: pendingOrderNo }),
+          body: JSON.stringify({ orderNo }),
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.redirectUrl) {
           throw new Error(payData?.error?.message || 'Failed to create Antom payment');
         }
+        dismiss(loadingToast);
         window.location.href = payData.data.redirectUrl;
-        return; // Redirecting
+        return;
       }
-    } catch (error: any) {
-      showError(error.message || 'Payment failed, please try again');
-      setProcessingPayment(false);
-      setShowPaymentMethodModal(false);
-      setPendingOrderNo(null);
-      setIsProcessing(false);
+    } catch (error) {
+      dismiss();
+      console.error("Purchase failed:", error);
+      showError(error instanceof Error ? error.message : 'Purchase failed, please try again later');
+      setProcessingStripe(false);
+      setProcessingAntom(false);
     }
   };
 
@@ -339,52 +328,92 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
         </div>
       )}
 
-      {/* Purchase Button */}
-      <button
-        onClick={handlePurchase}
-        disabled={!selectedPackage || isProcessing}
-        style={{
-          background: selectedPackage && !isProcessing
-            ? 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)'
-            : '#333',
-          border: 'none',
-          borderRadius: '0.375rem',
-          padding: '0.625rem',
-          color: selectedPackage && !isProcessing ? '#fff' : '#666',
-          fontSize: '0.8125rem',
-          fontWeight: '600',
-          cursor: selectedPackage && !isProcessing ? 'pointer' : 'not-allowed',
-          transition: 'all 0.3s',
-          width: '100%'
-        }}
-        onMouseEnter={(e) => {
-          if (selectedPackage && !isProcessing) {
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 165, 0, 0.3)';
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (selectedPackage && !isProcessing) {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = 'none';
-          }
-        }}
-      >
-        {isProcessing ? 'Processing...' : selectedPackage ? 'Purchase Now' : 'Select a Package'}
-      </button>
+      {/* Payment Buttons */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '0.75rem'
+      }}>
+        {/* Stripe Card Payment Button */}
+        <button
+          onClick={() => handlePurchase('stripe')}
+          disabled={!selectedPackage || processingStripe || processingAntom}
+          style={{
+            background: selectedPackage && !processingStripe && !processingAntom
+              ? 'linear-gradient(135deg, rgba(99, 91, 255, 0.2) 0%, rgba(99, 91, 255, 0.1) 100%)'
+              : '#333',
+            border: selectedPackage && !processingStripe && !processingAntom
+              ? '2px solid rgba(99, 91, 255, 0.5)'
+              : '1px solid #2a2a2a',
+            borderRadius: '0.5rem',
+            padding: '0.75rem',
+            color: selectedPackage && !processingStripe && !processingAntom ? '#fff' : '#666',
+            fontSize: '0.8125rem',
+            fontWeight: '600',
+            cursor: selectedPackage && !processingStripe && !processingAntom ? 'pointer' : 'not-allowed',
+            transition: 'all 0.3s',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '0.375rem'
+          }}
+          onMouseEnter={(e) => {
+            if (selectedPackage && !processingStripe && !processingAntom) {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 91, 255, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (selectedPackage && !processingStripe && !processingAntom) {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }
+          }}
+        >
+          <SiStripe size={24} style={{ color: selectedPackage && !processingStripe && !processingAntom ? '#635BFF' : '#666' }} />
+          <span>{processingStripe ? 'Processing...' : 'Card Payment'}</span>
+        </button>
 
-      {/* Payment Method Selection Modal */}
-      <PaymentMethodModal
-        isOpen={showPaymentMethodModal}
-        onClose={() => {
-          setShowPaymentMethodModal(false);
-          setPendingOrderNo(null);
-          setIsProcessing(false);
-          setProcessingPayment(false);
-        }}
-        onSelectMethod={handlePaymentMethodSelect}
-        processing={processingPayment}
-      />
+        {/* Antom E-Wallet Payment Button */}
+        <button
+          onClick={() => handlePurchase('antom')}
+          disabled={!selectedPackage || processingStripe || processingAntom}
+          style={{
+            background: selectedPackage && !processingStripe && !processingAntom
+              ? 'linear-gradient(135deg, rgba(0, 208, 132, 0.2) 0%, rgba(0, 208, 132, 0.1) 100%)'
+              : '#333',
+            border: selectedPackage && !processingStripe && !processingAntom
+              ? '2px solid rgba(0, 208, 132, 0.5)'
+              : '1px solid #2a2a2a',
+            borderRadius: '0.5rem',
+            padding: '0.75rem',
+            color: selectedPackage && !processingStripe && !processingAntom ? '#fff' : '#666',
+            fontSize: '0.8125rem',
+            fontWeight: '600',
+            cursor: selectedPackage && !processingStripe && !processingAntom ? 'pointer' : 'not-allowed',
+            transition: 'all 0.3s',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '0.375rem'
+          }}
+          onMouseEnter={(e) => {
+            if (selectedPackage && !processingStripe && !processingAntom) {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 208, 132, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (selectedPackage && !processingStripe && !processingAntom) {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }
+          }}
+        >
+          <SiAlipay size={24} style={{ color: selectedPackage && !processingStripe && !processingAntom ? '#00d084' : '#666' }} />
+          <span>{processingAntom ? 'Processing...' : 'E-Wallet'}</span>
+        </button>
+      </div>
     </div>
   );
 };
