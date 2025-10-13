@@ -13,7 +13,7 @@ async function runCase(test: Case) {
   const orderNo = `VERIFY_JKOPAY_${Date.now()}_${Math.floor(Math.random()*1000)}`
   const res = await antomPay({
     orderNo,
-    amount: 1.23, // small test amount in major units
+    amount: 2.00, // use whole major units so minor ends with "00"
     currency: test.currency,
     productName: `Verify JKOPay (${test.title})`,
     notifyUrl: 'https://example.com/api/orders/pay/antom/notify',
@@ -48,4 +48,3 @@ main().catch(err => {
   console.error('Fatal error running verification:', err)
   process.exit(1)
 })
-

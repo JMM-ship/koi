@@ -149,7 +149,6 @@ export async function antomPay(params: AntomPayParams): Promise<AntomPayResult> 
   const valueMinorUnit = Math.round(Number(params.amount) * 100)
 
   const payload: any = {
-    clientId: cfg.clientId,
     productCode: 'CASHIER_PAYMENT',
     paymentRequestId: params.orderNo,
     paymentAmount: { currency: params.currency, value: String(valueMinorUnit) },

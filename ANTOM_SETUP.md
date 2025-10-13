@@ -34,6 +34,11 @@ Notes
 - Webhook signature verify requires `ANTOM_ALIPAY_PUBLIC_KEY`. Without it, verification fails (401).
 - Ensure `PUBLIC_BASE_URL` is reachable from the internet (e.g. via tunneling) during sandbox testing.
 
+JKOPay specifics
+- JKOPay requires amount minor unit to end with `00` (integer major units). When invoking with `paymentMethodType='JKOPAY'`, the server converts order amount to TWD and rounds up to an integer to satisfy this rule.
+- Configure an exchange rate via `ANTOM_USD_TWD_RATE` (e.g., `32.0`). If not set, the server uses a sensible default.
+- For JKOPay, the route avoids forcing `settlementCurrency` to reduce contract mismatches.
+
 Return vs Notify base URLs (local dev)
 - To keep NextAuth session after redirect, separate user-app base from webhook base:
   - `PUBLIC_NOTIFY_URL` — Public webhook base (e.g., your ngrok URL). Used for `paymentNotifyUrl`.

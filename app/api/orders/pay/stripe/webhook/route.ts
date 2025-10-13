@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyStripeWebhook } from '@/app/service/stripe'
 import { handlePaymentSuccess, handlePaymentFailed } from '@/app/service/orderProcessor'
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 
 // Disable body parsing for webhook to get raw body
 export const runtime = 'nodejs'

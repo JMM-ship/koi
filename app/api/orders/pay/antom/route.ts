@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/auth/config'
 import { findOrderByOrderNo } from '@/app/models/order'
 import { antomPay, getBaseUrl } from '@/app/service/antom'
+import { getRequestCountry } from '@/lib/geo'
+import { buildPayParams } from '@/app/service/antomParamBuilder'
 
 // ============================================================================
 // ANTOM PAYMENT ROUTE (TEMPORARILY DISABLED)
@@ -55,22 +57,47 @@ export async function POST(request: NextRequest) {
     const appBase = process.env.PUBLIC_APP_URL || refererOrigin || requestOrigin
     const returnUrl = `${appBase}/dashboard?payment=return&orderNo=${encodeURIComponent(orderNo)}`
 
-    const payCurrency = process.env.ANTOM_PAYMENT_CURRENCY || order.currency || 'USD'
     const settleCurrencyEnv = process.env.ANTOM_SETTLEMENT_CURRENCY
+    const enableTwAuto = process.env.ENABLE_TW_JKOPAY_AUTO === 'true'
+    const usdTwdRate = Number(process.env.ANTOM_USD_TWD_RATE || '0')
+    const requestCountry = getRequestCountry(request.headers)
 
-    // Resolve payment method type: prefer request, then env, then CONNECT_WALLET (multi-wallet cashier)
-    const resolvedPaymentMethodType = paymentMethodType || process.env.ANTOM_PAYMENT_METHOD || 'CONNECT_WALLET'
+    const params = buildPayParams({
+      country: requestCountry,
+      explicitMethod: paymentMethodType || process.env.ANTOM_PAYMENT_METHOD || undefined,
+      orderCurrency: order.currency || process.env.ANTOM_PAYMENT_CURRENCY || 'USD',
+      orderAmount: order.amount,
+      baseCurrency: process.env.ANTOM_PAYMENT_CURRENCY || 'USD',
+      settlementCurrencyEnv: settleCurrencyEnv || null,
+      enableTwAuto,
+      usdTwdRate,
+    })
+
+    // info-level operational log
+    try {
+      console.info('AntomPayInfo', {
+        country: requestCountry,
+        originalCurrency: order.currency || null,
+        originalAmount: order.amount,
+        payCurrency: params.payCurrency,
+        payAmount: params.payAmount,
+        paymentMethodType: params.paymentMethodType,
+        settlementCurrency: params.settlementCurrency || null,
+        fxApplied: params.fxApplied || null,
+        enableTwAuto,
+      })
+    } catch {}
 
     const payResult = await antomPay({
       orderNo,
-      amount: order.amount,
-      currency: payCurrency,
+      amount: params.payAmount,
+      currency: params.payCurrency,
       productName: order.product_name || 'Order',
       userEmail: session.user.email,
       notifyUrl,
       returnUrl,
-      paymentMethodType: resolvedPaymentMethodType,
-      settlementCurrency: settleCurrencyEnv || undefined,
+      paymentMethodType: params.paymentMethodType,
+      settlementCurrency: params.settlementCurrency,
     })
 
     if (!payResult.ok) {
@@ -80,10 +107,12 @@ export async function POST(request: NextRequest) {
         data: { 
           raw: payResult.raw,
           debug: {
-            payCurrency,
-            settlementCurrency: settleCurrencyEnv || null,
+            payCurrency: params.payCurrency,
+            settlementCurrency: params.settlementCurrency || null,
             gateway: process.env.ANTOM_GATEWAY_URL || 'https://open-na.alipay.com',
-            paymentMethodType: resolvedPaymentMethodType,
+            paymentMethodType: params.paymentMethodType,
+            fx: params.fxApplied || null,
+            country: requestCountry || null,
           }
         },
         timestamp: new Date().toISOString(),
@@ -98,6 +127,7 @@ export async function POST(request: NextRequest) {
         paymentId: payResult.paymentId,
         paymentRequestId: payResult.paymentRequestId,
         raw: payResult.raw,
+        debug: { fx: params.fxApplied || null, currency: params.payCurrency, amount: params.payAmount, country: requestCountry || null }
       },
       timestamp: new Date().toISOString(),
     })
