@@ -27,6 +27,7 @@ export interface CreateOrderParams {
   creditAmount?: number;
   paymentMethod?: string;
   couponCode?: string;
+  upgradeDiscount?: number; // 升级折扣金额
 }
 
 export interface CreateOrderResult {
@@ -142,11 +143,20 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       return { success: false, error: 'Invalid order type' };
     }
     
-    // 应用优惠券（如果有）
+    // 应用折扣
     let discountAmount = 0;
-    if (params.couponCode) {
+
+    // 优先使用升级折扣
+    if (params.upgradeDiscount && params.upgradeDiscount > 0) {
+      discountAmount = params.upgradeDiscount;
+    } else if (params.couponCode) {
       // TODO: 实现优惠券验证和计算逻辑
       // discountAmount = await calculateCouponDiscount(params.couponCode, amount);
+    }
+
+    // 确保折扣不超过订单金额
+    if (discountAmount > amount) {
+      discountAmount = amount;
     }
     
     // 计算订单有效期

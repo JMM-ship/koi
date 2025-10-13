@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
       creditAmount,
       paymentMethod = 'stripe',
       couponCode,
+      upgradeDiscount = 0, // 升级折扣金额
     } = body;
     
     // 验证参数
@@ -87,6 +88,7 @@ export async function POST(request: NextRequest) {
       creditAmount,
       paymentMethod,
       couponCode,
+      upgradeDiscount, // 传递升级折扣
     });
     
     if (!result.success) {

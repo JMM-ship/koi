@@ -50,10 +50,14 @@ export async function POST(request: NextRequest) {
     const successUrl = `${appBase}/dashboard?payment=success&orderNo=${encodeURIComponent(orderNo)}`
     const cancelUrl = `${appBase}/dashboard?payment=cancel&orderNo=${encodeURIComponent(orderNo)}`
 
+    // Calculate final amount after discount
+    const discountAmount = order.discount_amount || 0;
+    const finalAmount = order.amount - discountAmount;
+
     // Create Stripe Checkout Session
     const checkoutResult = await createStripeCheckoutSession({
       orderNo,
-      amount: order.amount,
+      amount: finalAmount, // Use final amount after discount
       currency: order.currency || 'USD',
       productName: order.product_name || 'Order',
       userEmail: session.user.email,
