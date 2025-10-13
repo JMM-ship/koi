@@ -48,7 +48,7 @@ async function checkOrders() {
           })
 
           if (wallet) {
-            console.log(`💎 当前积分余额: ${wallet.independentCredits}`)
+            console.log(`💎 当前积分余额: ${wallet.independentTokens}`)
           }
 
           // 检查是否有对应的套餐
@@ -105,9 +105,9 @@ async function checkOrders() {
 
         console.log(`   - ${o.orderNo}`)
         console.log(`     积分: ${o.creditsPoints || 0}`)
-        console.log(`     当前余额: ${wallet?.independentCredits || 0}`)
+        console.log(`     当前余额: ${wallet?.independentTokens || 0}`)
 
-        if (o.creditsPoints && wallet && wallet.independentCredits < o.creditsPoints) {
+        if (o.creditsPoints && wallet && wallet.independentTokens < o.creditsPoints) {
           console.log(`     ⚠️  积分可能未发放!`)
         }
       }
