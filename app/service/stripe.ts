@@ -7,7 +7,7 @@ const getStripeClient = (): Stripe => {
     throw new Error('Missing STRIPE_SECRET_KEY in environment variables')
   }
   return new Stripe(secretKey, {
-    apiVersion: '2024-12-18.acacia',
+    apiVersion: '2025-09-30.clover',
     typescript: true,
   })
 }
