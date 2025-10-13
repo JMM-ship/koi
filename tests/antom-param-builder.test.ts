@@ -1,7 +1,7 @@
 import { buildPayParams } from '@/app/service/antomParamBuilder'
 
 describe('buildPayParams', () => {
-  test('TW + no method -> TWD integer amount and omit paymentMethod', () => {
+  test('TW + no method -> TWD CONNECT_WALLET with integer amount', () => {
     const out = buildPayParams({
       country: 'TW',
       explicitMethod: undefined,
@@ -10,7 +10,7 @@ describe('buildPayParams', () => {
       enableTwAuto: true,
       usdTwdRate: 32,
     })
-    expect(out.paymentMethodType).toBeUndefined()
+    expect(out.paymentMethodType).toBe('CONNECT_WALLET')
     expect(out.payCurrency).toBe('TWD')
     expect(out.payAmount).toBe(292)
     expect(out.settlementCurrency).toBeUndefined()

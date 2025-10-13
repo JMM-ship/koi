@@ -50,7 +50,8 @@ export function buildPayParams(input: BuildPayParamsInput): BuildPayParamsOutput
   if (enableTwAuto && country === 'TW' && !explicitMethod) {
     const fx = toTwdIntegerCeil(orderAmount, initialCurrency, usdTwdRate)
     return {
-      // Omit paymentMethod for multi-wallet cashier to avoid PARAM_ILLEGAL
+      // For AMS environments that require an explicit aggregator indicator
+      paymentMethodType: 'CONNECT_WALLET',
       payCurrency: 'TWD',
       payAmount: fx.amount,
       settlementCurrency: undefined,

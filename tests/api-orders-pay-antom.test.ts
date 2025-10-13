@@ -57,7 +57,7 @@ describe('POST /api/orders/pay/antom - TW auto TWD', () => {
     const call = antomPayMock.mock.calls[0][0]
     expect(call.currency).toBe('TWD')
     expect(call.amount).toBe(292)
-    expect(call.paymentMethodType).toBeUndefined()
+    expect(call.paymentMethodType).toBe('CONNECT_WALLET')
     expect(call.settlementCurrency).toBeUndefined()
   })
 
