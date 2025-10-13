@@ -28,6 +28,7 @@ export interface CreateOrderParams {
   paymentMethod?: string;
   couponCode?: string;
   upgradeDiscount?: number; // 升级折扣金额
+  renewMonths?: number; // 续费月数(默认1个月)
 }
 
 export interface CreateOrderResult {
@@ -64,22 +65,24 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
       if (!params.packageId) {
         return { success: false, error: 'Package ID is required' };
       }
-      
+
       const packageInfo = await getPackageById(params.packageId);
       if (!packageInfo) {
         return { success: false, error: 'Package not found' };
       }
-      
+
       if (!packageInfo.isActive) {
         return { success: false, error: 'Package is not active' };
       }
-      
-      amount = packageInfo.priceCents / 100; // API 面向前端用元
+
+      // 计算续费金额:如果是续费订单,金额 = 单月价格 * 续费月数
+      const renewMonths = params.renewMonths || 1;
+      amount = (packageInfo.priceCents / 100) * renewMonths;
       credits = (packageInfo.dailyPoints || 0) * (packageInfo.validDays || 0);
-      productName = packageInfo.name;
-      validDays = packageInfo.validDays || 0;
+      productName = renewMonths > 1 ? `${packageInfo.name} (${renewMonths} months)` : packageInfo.name;
+      validDays = (packageInfo.validDays || 0) * renewMonths;
       currency = packageInfo.currency || process.env.ANTOM_PAYMENT_CURRENCY || 'USD';
-      
+
       // 创建套餐快照
       packageSnapshot = {
         id: packageInfo.id,
@@ -90,6 +93,7 @@ export async function createOrder(params: CreateOrderParams): Promise<CreateOrde
         validDays: packageInfo.validDays,
         features: packageInfo.features,
         limitations: packageInfo.limitations,
+        renewMonths, // 保存续费月数
       };
     } else if (params.orderType === OrderType.Credits) {
       // 积分订单

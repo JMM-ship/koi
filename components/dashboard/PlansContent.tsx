@@ -271,26 +271,63 @@ export default function PlansContent() {
     setIsRenewing(true);
 
     try {
-      const response = await fetch('/api/packages/renew', {
+      // 创建续费订单 (续费也需要支付)
+      const response = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          months: selectedMonths,
-          packageId: renewPackage.id
+          orderType: 'package',
+          packageId: renewPackage.id,
+          paymentMethod: paymentProvider,
+          renewMonths: selectedMonths, // 标记为续费订单
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        showSuccess(`Package renewed successfully for ${selectedMonths} month(s)!`);
+        const orderNo = data.data.order.orderNo as string;
+
+        // 关闭续费弹窗
         setShowRenewModal(false);
-        // Refresh packages data
+
+        if (paymentProvider === 'stripe') {
+          // Create Stripe Checkout session and redirect
+          const payResp = await fetch('/api/orders/pay/stripe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderNo }),
+          });
+          const payData = await payResp.json();
+          if (!payResp.ok || !payData?.success || !payData?.data?.checkoutUrl) {
+            throw new Error(payData?.error?.message || 'Failed to create Stripe checkout session');
+          }
+          window.location.href = payData.data.checkoutUrl;
+          return; // Redirecting
+        } else if (paymentProvider === 'antom') {
+          // Create Antom payment and redirect
+          const payResp = await fetch('/api/orders/pay/antom', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderNo }),
+          });
+          const payData = await payResp.json();
+          if (!payResp.ok || !payData?.success || !payData?.data?.redirectUrl) {
+            throw new Error(payData?.error?.message || 'Failed to create Antom payment');
+          }
+          window.location.href = payData.data.redirectUrl;
+          return; // Redirecting
+        } else {
+          // Mock payment
+          await simulatePaymentSuccess(orderNo);
+        }
+
+        showSuccess(`Package renewed successfully for ${selectedMonths} month(s)!`);
         await mutatePackages();
       } else {
-        showError(data.error?.message || 'Failed to renew package');
+        showError(data.error?.message || 'Failed to create renewal order');
       }
     } catch (error) {
       showError('Renewal failed, please try again');

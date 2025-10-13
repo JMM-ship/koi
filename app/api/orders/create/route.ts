@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
       paymentMethod = 'stripe',
       couponCode,
       upgradeDiscount = 0, // 升级折扣金额
+      renewMonths = 1, // 续费月数
     } = body;
     
     // 验证参数
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
       paymentMethod,
       couponCode,
       upgradeDiscount, // 传递升级折扣
+      renewMonths, // 传递续费月数
     });
     
     if (!result.success) {
