@@ -69,14 +69,14 @@ export default function PaymentMethodModal({
             fontWeight: '700',
             marginBottom: '8px'
           }}>
-            选择支付方式
+            Select Payment Method
           </h2>
           <p style={{
             color: '#999',
             fontSize: '14px',
             margin: 0
           }}>
-            请选择您偏好的支付方式完成购买
+            Choose your preferred payment method to complete the purchase
           </p>
         </div>
 
@@ -142,7 +142,7 @@ export default function PaymentMethodModal({
                   alignItems: 'center',
                   gap: '8px'
                 }}>
-                  卡支付
+                  Card Payment
                   <FiCreditCard size={18} />
                 </div>
                 <div style={{
@@ -150,7 +150,7 @@ export default function PaymentMethodModal({
                   fontSize: '13px',
                   lineHeight: '1.5'
                 }}>
-                  支持 Visa、Mastercard、American Express 等国际信用卡/借记卡
+                  Supports Visa, Mastercard, American Express and other international credit/debit cards
                 </div>
               </div>
 
@@ -162,7 +162,7 @@ export default function PaymentMethodModal({
                 fontWeight: '600',
                 color: '#a29bff'
               }}>
-                推荐
+                Recommended
               </div>
             </div>
           </button>
@@ -224,7 +224,7 @@ export default function PaymentMethodModal({
                   alignItems: 'center',
                   gap: '8px'
                 }}>
-                  电子钱包支付
+                  E-Wallet Payment
                   <FiSmartphone size={18} />
                 </div>
                 <div style={{
@@ -232,7 +232,7 @@ export default function PaymentMethodModal({
                   fontSize: '13px',
                   lineHeight: '1.5'
                 }}>
-                  支持支付宝、微信支付、GCash、GoPay、Kakao Pay 等电子钱包
+                  Supports Alipay, WeChat Pay, GCash, GoPay, Kakao Pay and other e-wallets
                 </div>
               </div>
             </div>
@@ -259,7 +259,7 @@ export default function PaymentMethodModal({
               marginRight: '12px'
             }} />
             <span style={{ color: '#794aff', fontSize: '14px', fontWeight: '600' }}>
-              正在处理支付请求...
+              Processing payment request...
             </span>
           </div>
         )}

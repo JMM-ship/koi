@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import useSWR, { useSWRConfig } from "swr";
+import PaymentMethodModal from "@/components/dashboard/PaymentMethodModal";
 
 interface Package {
   id: string;
@@ -33,6 +34,9 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
   const packages: Package[] = (packagesResp?.data?.packages || []) as Package[]
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
+  const [pendingOrderNo, setPendingOrderNo] = useState<string | null>(null);
+  const [processingPayment, setProcessingPayment] = useState(false);
   const loading = !packagesResp;
   const paymentProvider = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER || 'mock';
 
@@ -57,16 +61,17 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
 
     setIsProcessing(true);
     const loadingToast = showLoading('Processing purchase request...');
-    
+
     try {
       const selected = packages.find(pkg => pkg.id === selectedPackage);
       if (!selected) {
         dismiss(loadingToast);
         showError('Please select a credit package');
+        setIsProcessing(false);
         return;
       }
 
-      // Create order
+      // Create order first
       const createOrderResponse = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
@@ -76,7 +81,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
           orderType: 'credits',
           creditAmount: selected.credits,
           packageId: selected.id,
-          paymentMethod: paymentProvider,
+          paymentMethod: 'pending', // 暂时设置为pending,等用户选择
         }),
       });
 
@@ -88,74 +93,57 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
 
       const orderNo = orderData.data.order.orderNo as string;
 
-      if (paymentProvider === 'stripe') {
-        dismiss(loadingToast);
+      // 保存订单号,关闭加载提示,打开支付方式选择modal
+      dismiss(loadingToast);
+      setPendingOrderNo(orderNo);
+      setShowPaymentMethodModal(true);
+    } catch (error) {
+      dismiss();
+      console.error("Purchase failed:", error);
+      showError(error instanceof Error ? error.message : 'Purchase failed, please try again later');
+      setIsProcessing(false);
+    }
+  };
+
+  // Handle payment method selection
+  const handlePaymentMethodSelect = async (method: 'stripe' | 'antom') => {
+    if (!pendingOrderNo || processingPayment) return;
+
+    setProcessingPayment(true);
+
+    try {
+      if (method === 'stripe') {
+        // Create Stripe Checkout session and redirect
         const payResp = await fetch('/api/orders/pay/stripe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderNo }),
+          body: JSON.stringify({ orderNo: pendingOrderNo }),
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.checkoutUrl) {
           throw new Error(payData?.error?.message || 'Failed to create Stripe checkout session');
         }
         window.location.href = payData.data.checkoutUrl;
-        return;
-      } else if (paymentProvider === 'antom') {
-        dismiss(loadingToast);
+        return; // Redirecting
+      } else if (method === 'antom') {
+        // Create Antom payment and redirect
         const payResp = await fetch('/api/orders/pay/antom', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderNo }),
+          body: JSON.stringify({ orderNo: pendingOrderNo }),
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.redirectUrl) {
           throw new Error(payData?.error?.message || 'Failed to create Antom payment');
         }
         window.location.href = payData.data.redirectUrl;
-        return;
-      } else {
-        // Mock payment
-        dismiss(loadingToast);
-        const paymentToast = showLoading('Completing payment...');
-        const payResponse = await fetch('/api/orders/pay/mock', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            orderNo,
-            paymentDetails: { method: 'mock', transactionId: 'mock_' + Date.now() },
-          }),
-        });
-        const payData = await payResponse.json();
-        dismiss(paymentToast);
-        if (!payData.success) {
-          throw new Error(payData.error?.message || 'Payment failed');
-        }
+        return; // Redirecting
       }
-
-      // Payment successful
-      showSuccess(`Successfully purchased ${selected.credits.toLocaleString()} credits!`, {
-        duration: 4000,
-        icon: '🎉',
-      });
-
-      // Force refresh dashboard data by clearing SWR cache
-      await mutate('/api/dashboard');
-      await mutate('/api/profile');
-
-      // Short delay before returning to let user see success message
-      if (onPurchase) {
-        onPurchase();
-      } else {
-        setTimeout(() => {
-          onBack();
-        }, 2000); // Increased delay to 2 seconds
-      }
-    } catch (error) {
-      dismiss();
-      console.error("Purchase failed:", error);
-      showError(error instanceof Error ? error.message : 'Purchase failed, please try again later');
-    } finally {
+    } catch (error: any) {
+      showError(error.message || 'Payment failed, please try again');
+      setProcessingPayment(false);
+      setShowPaymentMethodModal(false);
+      setPendingOrderNo(null);
       setIsProcessing(false);
     }
   };
@@ -384,6 +372,19 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
       >
         {isProcessing ? 'Processing...' : selectedPackage ? 'Purchase Now' : 'Select a Package'}
       </button>
+
+      {/* Payment Method Selection Modal */}
+      <PaymentMethodModal
+        isOpen={showPaymentMethodModal}
+        onClose={() => {
+          setShowPaymentMethodModal(false);
+          setPendingOrderNo(null);
+          setIsProcessing(false);
+          setProcessingPayment(false);
+        }}
+        onSelectMethod={handlePaymentMethodSelect}
+        processing={processingPayment}
+      />
     </div>
   );
 };
