@@ -12,21 +12,21 @@ const NEW_SKUS = [
     name: 'BASE',
     dailyPoints: 6000,
     priceCents: 5000,
-    features: { creditCap: 6000, recoveryRate: 500, dailyUsageLimit: 18000, manualResetPerDay: 1 },
+    features: { creditCap: 3000, recoveryRate: 250, dailyUsageLimit: 18000, manualResetPerDay: 1 },
   },
   {
     planType: 'pro',
     name: 'PRO',
     dailyPoints: 10000,
     priceCents: 10000,
-    features: { creditCap: 10000, recoveryRate: 1000, dailyUsageLimit: 34000, manualResetPerDay: 1 },
+    features: { creditCap: 5000, recoveryRate: 500, dailyUsageLimit: 34000, manualResetPerDay: 1 },
   },
   {
     planType: 'enterprise',
     name: 'MAX',
     dailyPoints: 15000,
     priceCents: 20000,
-    features: { creditCap: 15000, recoveryRate: 2500, dailyUsageLimit: 75000, manualResetPerDay: 1 },
+    features: { creditCap: 7500, recoveryRate: 1250, dailyUsageLimit: 75000, manualResetPerDay: 1 },
   },
 ];
 
