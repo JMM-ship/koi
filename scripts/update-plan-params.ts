@@ -9,10 +9,10 @@ function parseArgs(): { mode: Mode } {
 }
 
 type Tier = 'basic' | 'pro' | 'enterprise'
-const TARGETS: Record<Tier, { creditCap: number; recoveryRate: number }> = {
-  basic: { creditCap: 3000, recoveryRate: 250 },
-  pro: { creditCap: 5000, recoveryRate: 500 },
-  enterprise: { creditCap: 7500, recoveryRate: 1250 },
+const TARGETS: Record<Tier, { creditCap: number; recoveryRate: number; dailyUsageLimit: number }> = {
+  basic: { creditCap: 3000, recoveryRate: 250, dailyUsageLimit: 9000 },
+  pro: { creditCap: 5000, recoveryRate: 500, dailyUsageLimit: 17000 },
+  enterprise: { creditCap: 7500, recoveryRate: 1250, dailyUsageLimit: 37500 },
 }
 
 async function main() {
@@ -41,6 +41,7 @@ async function main() {
       ...before,
       creditCap: target.creditCap,
       recoveryRate: target.recoveryRate,
+      dailyUsageLimit: target.dailyUsageLimit,
     }
 
     console.log('\n[update-plan-params] package:', {
@@ -50,8 +51,10 @@ async function main() {
       version: p.version,
       currentCap: before?.creditCap,
       currentRecovery: before?.recoveryRate,
+      currentDailyUsageLimit: before?.dailyUsageLimit,
       newCap: after.creditCap,
       newRecovery: after.recoveryRate,
+      newDailyUsageLimit: after.dailyUsageLimit,
     })
 
     if (mode === 'apply') {
@@ -71,4 +74,3 @@ async function main() {
 }
 
 main().then(() => process.exit(0)).catch((e) => { console.error('[update-plan-params] failed:', e); process.exit(1) })
-

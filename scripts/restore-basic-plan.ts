@@ -10,7 +10,7 @@ const DESIRED = {
   features: {
     creditCap: 6000,
     recoveryRate: 500,
-    dailyUsageLimit: 18000,
+    dailyUsageLimit: 9000,
     manualResetPerDay: 1,
   },
   sortOrder: 0,
