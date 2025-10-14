@@ -229,7 +229,7 @@ export async function processFirstPurchase(inviteeId: string, orderNo: string): 
     before_balance: inviterBefore,
     after_balance: inviterBefore + INVITER_REWARD_POINTS,
     order_no: orderNo,
-    description: '推荐奖励-邀请人',
+    description: 'Referral reward - inviter',
     metadata: { source: 'referral_reward', inviterId, inviteeId, orderNo },
   })
 
@@ -241,7 +241,7 @@ export async function processFirstPurchase(inviteeId: string, orderNo: string): 
     before_balance: inviteeBefore,
     after_balance: inviteeBefore + INVITEE_REWARD_POINTS,
     order_no: orderNo,
-    description: '推荐奖励-被邀请人',
+    description: 'Referral reward - invitee',
     metadata: { source: 'referral_reward', inviterId, inviteeId, orderNo },
   })
 

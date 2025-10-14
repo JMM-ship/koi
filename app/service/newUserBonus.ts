@@ -3,7 +3,7 @@ import { getCreditBalance, addIndependentCredits } from '@/app/models/creditBala
 import { createCreditTransaction, TransactionType, CreditType } from '@/app/models/creditTransaction'
 import { CreditsAmount } from '@/app/service/credit'
 
-const BONUS_REASON = '新用户注册奖励'
+const BONUS_REASON = 'New user signup bonus'
 
 export async function hasGrantedNewUserBonus(userId: string): Promise<boolean> {
   const count = await prisma.creditTransaction.count({
@@ -60,4 +60,3 @@ export async function grantNewUserBonus(options: {
 }
 
 export const NEW_USER_BONUS_POINTS = CreditsAmount.NewUserGet
-

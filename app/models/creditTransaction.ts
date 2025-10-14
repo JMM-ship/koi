@@ -290,7 +290,7 @@ export async function batchCreateResetTransactions(
       afterPackageTokens: BigInt(reset.afterBalance),
       beforeIndependentTokens: null,
       afterIndependentTokens: null,
-      reason: '每日积分重置',
+      reason: 'Daily credits reset',
       meta: { autoReset: true },
     }));
     

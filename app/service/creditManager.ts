@@ -211,7 +211,7 @@ export async function useCredits(
             afterIndependentTokens: BigInt(afterIndependent),
             orderId: null,
             requestId: options?.requestId || (metadata?.requestId ?? null),
-            reason: `${service}服务消耗`,
+            reason: `Service usage - ${service}`,
             meta: {
               service,
               ...metadata,
@@ -315,7 +315,7 @@ export async function purchaseCredits(
           beforeIndependentTokens: BigInt(beforeIndependent),
           afterIndependentTokens: BigInt(afterIndependent),
           orderId: null, // 非 UUID 的 orderNo 不写入
-          reason: '购买独立积分',
+          reason: 'Purchased independent credits',
           meta: { orderNo, purchaseType: 'independent' },
         },
       });
@@ -378,7 +378,7 @@ export async function activatePackageCredits(
         before_balance: beforeBalance,
         after_balance: newBalance.package_credits + newBalance.independent_credits,
         order_no: orderNo,
-        description: '激活套餐积分',
+        description: 'Activated package credits',
         metadata: {
           orderNo,
           purchaseType: 'package',
@@ -436,7 +436,7 @@ export async function resetPackageCreditsForNewPackage(
       before_balance: beforeBalance,
       after_balance: newBalance.package_credits + newBalance.independent_credits,
       order_no: orderNo,
-      description: '购买套餐重置积分',
+      description: 'Package purchase reset',
       metadata: {
         orderNo,
         purchaseType: 'package',
@@ -491,7 +491,7 @@ export async function dailyResetCredits(userId: string): Promise<boolean> {
       amount: activePackage.daily_credits,
       before_balance: beforeBalance,
       after_balance: newBalance.package_credits + newBalance.independent_credits,
-      description: '每日积分重置',
+      description: 'Daily credits reset',
       metadata: {
         packageId: activePackage.package_id,
         dailyCredits: activePackage.daily_credits,
@@ -648,7 +648,7 @@ export async function refundCredits(
             beforeIndependentTokens: BigInt(beforeIndependent),
             afterIndependentTokens: BigInt(beforeIndependent),
             orderId: null,
-            reason: '订单退款扣减积分（套餐）',
+            reason: 'Order refund deduction (package)',
             meta: { orderNo, refundType, refundAmount: amount },
           },
         });
@@ -677,7 +677,7 @@ export async function refundCredits(
             beforeIndependentTokens: BigInt(beforeIndependent),
             afterIndependentTokens: BigInt(beforeIndependent - amount),
             orderId: null,
-            reason: '订单退款扣减积分（独立）',
+            reason: 'Order refund deduction (independent)',
             meta: { orderNo, refundType, refundAmount: amount },
           },
         });

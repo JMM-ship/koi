@@ -177,7 +177,7 @@ export async function autoRecoverCredits(
           beforeIndependentTokens: null,
           afterIndependentTokens: null,
           orderId: null,
-          reason: '自动恢复（每小时恢复）',
+          reason: 'Auto recovery (hourly)',
           meta: {
             source: 'autoRecoverCredits',
             recoveryRate: config.recoveryRate,
@@ -329,7 +329,7 @@ export async function manualResetCredits(userId: string): Promise<{
         beforeIndependentTokens: null,
         afterIndependentTokens: null,
         orderId: null,
-        reason: '手动重置到上限',
+        reason: 'Manual reset to cap',
         meta: {
           source: 'manualResetCredits',
           creditCap,

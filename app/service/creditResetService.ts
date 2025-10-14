@@ -73,7 +73,7 @@ export async function resetUserPackageCredits(userId: string): Promise<ResetResu
       amount: activePackage.daily_credits,
       before_balance: beforeBalance,
       after_balance: Number(newBalance.package_credits + newBalance.independent_credits),
-      description: '每日积分重置',
+      description: 'Daily credits reset',
       metadata: {
         packageId: activePackage.package_id,
         packageName: activePackage.package_snapshot?.name || 'Unknown',
