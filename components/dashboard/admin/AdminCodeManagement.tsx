@@ -7,11 +7,13 @@ import { formatCodeStatus, formatCodeType } from "@/app/lib/admin/utils";
 import AdminCodeGenerateModal from "./AdminCodeGenerateModal";
 import { FiPlus, FiSearch, FiRefreshCw, FiDownload, FiX } from "react-icons/fi";
 import { useToast } from "@/hooks/useToast";
+import { useT } from "@/contexts/I18nContext";
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function AdminCodeManagement() {
   const { showSuccess, showError } = useToast();
+  const { t } = useT()
   const { confirmState, showConfirm } = useConfirm();
   const [codes, setCodes] = useState<RedemptionCode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,12 +58,12 @@ export default function AdminCodeManagement() {
         setCodes(data.data);
         setPagination(data.pagination);
       } else {
-        setError('Failed to fetch codes');
-        showError('Failed to fetch codes list');
+        setError(t('toasts.failedFetchCodesList') || 'Failed to fetch codes');
+        showError(t('toasts.failedFetchCodesList') || 'Failed to fetch codes list');
       }
     } catch (err) {
-      setError('Failed to fetch codes');
-      showError('Failed to fetch codes list');
+      setError(t('toasts.failedFetchCodesList') || 'Failed to fetch codes');
+      showError(t('toasts.failedFetchCodesList') || 'Failed to fetch codes list');
     } finally {
       setLoading(false);
     }
@@ -79,7 +81,7 @@ export default function AdminCodeManagement() {
 
   const handleStatusUpdate = async (code: string, newStatus: 'active' | 'cancelled') => {
     showConfirm(
-      `Are you sure you want to ${newStatus === 'cancelled' ? 'cancel' : 'activate'} this code?`,
+      (newStatus === 'cancelled' ? (t('admin.codes.confirm.cancel') || 'Are you sure you want to cancel this code?') : (t('admin.codes.confirm.activate') || 'Are you sure you want to activate this code?')),
       async () => {
         try {
           const response = await fetch(`/api/admin/codes/${code}`, {
@@ -93,13 +95,13 @@ export default function AdminCodeManagement() {
           const data = await response.json();
           
           if (data.success) {
-            showSuccess(`Code ${newStatus === 'cancelled' ? 'cancelled' : 'activated'} successfully`);
+            showSuccess(newStatus === 'cancelled' ? (t('toasts.codeCancelledSuccess') || 'Code cancelled successfully') : (t('toasts.codeActivatedSuccess') || 'Code activated successfully'));
             fetchCodes();
           } else {
-            showError(data.error || 'Failed to update code status');
+            showError(data.error || (t('toasts.failedUpdateCodeStatus') || 'Failed to update code status'));
           }
         } catch (err) {
-          showError('Failed to update code status');
+          showError(t('toasts.failedUpdateCodeStatus') || 'Failed to update code status');
         }
       }
     );
@@ -107,12 +109,12 @@ export default function AdminCodeManagement() {
 
   const formatDate = (date: Date | string | null) => {
     if (!date) return '-';
-    return new Date(date).toLocaleDateString('zh-CN');
+    return new Date(date).toLocaleDateString(undefined);
   };
 
   const exportCodes = () => {
     // 生成CSV内容
-    const headers = ['卡密编码', '类型', '值', '状态', '批次ID', '创建时间', '使用时间', '使用者'];
+    const headers = [t('admin.codes.table.code')||'卡密编码', t('admin.codes.table.type')||'类型', t('admin.codes.table.value')||'值', t('admin.codes.table.status')||'状态', t('admin.codes.table.batchId')||'批次ID', t('admin.codes.table.createdAt')||'创建时间', t('admin.codes.table.usedAt')||'使用时间', t('admin.codes.table.usedBy')||'使用者'];
     const rows = codes.map(code => [
       code.code,
       formatCodeType(code.codeType),
@@ -137,7 +139,7 @@ export default function AdminCodeManagement() {
     link.download = `codes_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    showSuccess('Codes list exported successfully');
+    showSuccess(t('toasts.codesListExported') || 'Codes list exported successfully');
   };
 
   return (
@@ -146,8 +148,8 @@ export default function AdminCodeManagement() {
         <div className="content-header mb-4">
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <h2 className="content-title">卡密管理</h2>
-              <p className="text-muted mb-0">生成和管理兑换卡密</p>
+              <h2 className="content-title">{t('admin.codes.title') || '卡密管理'}</h2>
+              <p className="text-muted mb-0">{t('admin.codes.subtitle') || '生成和管理兑换卡密'}</p>
             </div>
             <div>
               <button 
@@ -155,7 +157,7 @@ export default function AdminCodeManagement() {
                 onClick={() => setShowGenerateModal(true)}
               >
                 <FiPlus className="me-2" />
-                生成卡密
+                {t('admin.codes.generate') || '生成卡密'}
               </button>
             </div>
           </div>
@@ -171,7 +173,7 @@ export default function AdminCodeManagement() {
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="搜索卡密编码..."
+                      placeholder={t('admin.codes.searchPlaceholder') || '搜索卡密编码...'}
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -186,11 +188,11 @@ export default function AdminCodeManagement() {
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                   >
-                    <option value="">所有状态</option>
-                    <option value="active">未使用</option>
-                    <option value="used">已使用</option>
-                    <option value="expired">已过期</option>
-                    <option value="cancelled">已作废</option>
+                    <option value="">{t('common.all') || '所有状态'}</option>
+                    <option value="active">{t('common.unused') || '未使用'}</option>
+                    <option value="used">{t('common.used') || '已使用'}</option>
+                    <option value="expired">{t('common.expired') || '已过期'}</option>
+                    <option value="cancelled">{t('common.cancelled') || '已作废'}</option>
                   </select>
                 </div>
                 <div className="col-md-2">
@@ -199,9 +201,9 @@ export default function AdminCodeManagement() {
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
                   >
-                    <option value="">所有类型</option>
-                    <option value="credits">积分卡</option>
-                    <option value="plan">套餐卡</option>
+                    <option value="">{t('common.allTypes') || '所有类型'}</option>
+                    <option value="credits">{t('admin.generate.credits') || '积分卡'}</option>
+                    <option value="plan">{t('admin.generate.plan') || '套餐卡'}</option>
                   </select>
                 </div>
                 <div className="col-md-2">
@@ -227,7 +229,7 @@ export default function AdminCodeManagement() {
                       }}
                     >
                       <FiRefreshCw className="me-2" />
-                      重置
+                      {t('admin.codes.reset') || '重置'}
                     </button>
                     <button 
                       type="button" 
@@ -236,7 +238,7 @@ export default function AdminCodeManagement() {
                       disabled={codes.length === 0}
                     >
                       <FiDownload className="me-2" />
-                      导出
+                      {t('admin.codes.export') || '导出'}
                     </button>
                   </div>
                 </div>
@@ -264,15 +266,15 @@ export default function AdminCodeManagement() {
                   <table className="table table-hover">
                     <thead>
                       <tr>
-                        <th>卡密编码</th>
-                        <th>类型</th>
-                        <th>值</th>
-                        <th>状态</th>
-                        <th>批次ID</th>
-                        <th>创建时间</th>
-                        <th>使用时间</th>
-                        <th>使用者</th>
-                        <th>操作</th>
+                        <th>{t('admin.codes.table.code') || '卡密编码'}</th>
+                        <th>{t('admin.codes.table.type') || '类型'}</th>
+                        <th>{t('admin.codes.table.value') || '值'}</th>
+                        <th>{t('admin.codes.table.status') || '状态'}</th>
+                        <th>{t('admin.codes.table.batchId') || '批次ID'}</th>
+                        <th>{t('admin.codes.table.createdAt') || '创建时间'}</th>
+                        <th>{t('admin.codes.table.usedAt') || '使用时间'}</th>
+                        <th>{t('admin.codes.table.usedBy') || '使用者'}</th>
+                        <th>{t('admin.codes.table.actions') || '操作'}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -291,7 +293,7 @@ export default function AdminCodeManagement() {
                             </td>
                             <td>
                               {code.codeType === 'credits' 
-                                ? `${code.codeValue} 积分`
+                                ? `${code.codeValue} ${(t('packages.credits') || '积分')}`
                                 : code.codeValue
                               }
                             </td>
@@ -321,7 +323,7 @@ export default function AdminCodeManagement() {
                                 <button
                                   className="btn btn-sm btn-outline-danger"
                                   onClick={() => handleStatusUpdate(code.code, 'cancelled')}
-                                  title="作废卡密"
+                                  title={t('admin.codes.confirm.cancel') || '作废卡密'}
                                 >
                                   <FiX />
                                 </button>
@@ -330,7 +332,7 @@ export default function AdminCodeManagement() {
                                 <button
                                   className="btn btn-sm btn-outline-success"
                                   onClick={() => handleStatusUpdate(code.code, 'active')}
-                                  title="激活卡密"
+                                  title={t('admin.codes.confirm.activate') || '激活卡密'}
                                 >
                                   ✓
                                 </button>
@@ -353,19 +355,19 @@ export default function AdminCodeManagement() {
                           onClick={() => handlePageChange(pagination.page - 1)}
                           disabled={pagination.page === 1}
                         >
-                          上一页
+                          {t('admin.codes.prev') || '上一页'}
                         </button>
                       </li>
                       {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
                         const pageNum = i + 1;
                         return (
                           <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
-                            <button 
-                              className="page-link" 
-                              onClick={() => handlePageChange(pageNum)}
-                            >
-                              {pageNum}
-                            </button>
+                        <button 
+                          className="page-link" 
+                          onClick={() => handlePageChange(pageNum)}
+                        >
+                          {pageNum}
+                        </button>
                           </li>
                         );
                       })}
@@ -375,12 +377,12 @@ export default function AdminCodeManagement() {
                           onClick={() => handlePageChange(pagination.page + 1)}
                           disabled={pagination.page === pagination.totalPages}
                         >
-                          下一页
+                          {t('admin.codes.next') || '下一页'}
                         </button>
                       </li>
                     </ul>
                     <div className="text-center text-muted">
-                      第 {pagination.page} 页，共 {pagination.totalPages} 页，总计 {pagination.total} 条记录
+                      {(t('admin.codes.pageInfo', { page: pagination.page, pages: pagination.totalPages, total: pagination.total }) || `第 ${pagination.page} 页，共 ${pagination.totalPages} 页，总计 ${pagination.total} 条记录`)}
                     </div>
                   </nav>
                 )}

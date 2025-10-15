@@ -34,4 +34,17 @@
   "failedCreateRenewalOrder": "创建续费订单失败",
   "renewalFailedRetry": "续费失败，请重试",
   "paymentFailedRetry": "支付失败，请重试"
+  ,
+  "failedFetchCodesList": "获取卡密列表失败",
+  "codeCancelledSuccess": "卡密作废成功",
+  "codeActivatedSuccess": "卡密激活成功",
+  "failedUpdateCodeStatus": "更新卡密状态失败",
+  "codesListExported": "卡密列表导出成功",
+  "pleaseEnterCodeValue": "请输入卡密值",
+  "quantityBetween": "生成数量必须在 1-1000 之间",
+  "failedGenerateCodes": "生成卡密失败",
+  "codesCopied": "卡密已复制到剪贴板",
+  "copyFailedManual": "复制失败，请手动选择复制",
+  "autoCopyFailed": "自动复制失败，请手动选择文本复制",
+  "codesDownloaded": "卡密已下载"
 }

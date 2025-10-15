@@ -34,4 +34,17 @@
   "failedCreateRenewalOrder": "Failed to create renewal order",
   "renewalFailedRetry": "Renewal failed, please try again",
   "paymentFailedRetry": "Payment failed, please try again"
+  ,
+  "failedFetchCodesList": "Failed to fetch codes list",
+  "codeCancelledSuccess": "Code cancelled successfully",
+  "codeActivatedSuccess": "Code activated successfully",
+  "failedUpdateCodeStatus": "Failed to update code status",
+  "codesListExported": "Codes list exported successfully",
+  "pleaseEnterCodeValue": "Please enter code value",
+  "quantityBetween": "Quantity must be between 1-1000",
+  "failedGenerateCodes": "Failed to generate codes",
+  "codesCopied": "Codes copied to clipboard",
+  "copyFailedManual": "Copy failed, please copy manually",
+  "autoCopyFailed": "Auto copy failed, please copy manually",
+  "codesDownloaded": "Codes downloaded successfully"
 }

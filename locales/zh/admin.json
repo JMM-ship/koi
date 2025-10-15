@@ -1,0 +1,58 @@
+{
+  "codes": {
+    "title": "卡密管理",
+    "subtitle": "生成和管理兑换卡密",
+    "generate": "生成卡密",
+    "searchPlaceholder": "搜索卡密编码...",
+    "reset": "重置",
+    "export": "导出",
+    "table": {
+      "code": "卡密编码",
+      "type": "类型",
+      "value": "值",
+      "status": "状态",
+      "batchId": "批次ID",
+      "createdAt": "创建时间",
+      "usedAt": "使用时间",
+      "usedBy": "使用者",
+      "actions": "操作"
+    },
+    "prev": "上一页",
+    "next": "下一页",
+    "pageInfo": "第 {page} 页，共 {pages} 页，总计 {total} 条记录",
+    "confirm": {
+      "cancel": "确定要作废该卡密吗？",
+      "activate": "确定要激活该卡密吗？"
+    },
+    "badge": {
+      "credits": "积分",
+      "plan": "套餐"
+    }
+  },
+  "generate": {
+    "title": "批量生成卡密",
+    "type": "卡密类型",
+    "credits": "积分卡",
+    "plan": "套餐卡",
+    "value": "值",
+    "quantity": "生成数量",
+    "prefix": "卡密前缀",
+    "validDays": "有效天数",
+    "notes": "备注（可选）",
+    "tips": {
+      "title": "提示：",
+      "t1": "积分卡可用于增加用户积分余额",
+      "t2": "套餐卡可用于升级用户套餐",
+      "t3": "生成的卡密将自动保存到数据库"
+    },
+    "cancel": "取消",
+    "submit": "生成卡密",
+    "generating": "生成中...",
+    "successSummary": "成功生成 {count} 个卡密！",
+    "listLabel": "生成的卡密列表",
+    "hintSelectAll": "提示：点击文本框可全选内容，支持手动复制",
+    "copy": "复制到剪贴板",
+    "download": "下载为文本文件",
+    "done": "完成"
+  }
+}

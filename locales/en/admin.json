@@ -1,0 +1,58 @@
+{
+  "codes": {
+    "title": "Code Management",
+    "subtitle": "Generate and manage redemption codes",
+    "generate": "Generate Codes",
+    "searchPlaceholder": "Search code...",
+    "reset": "Reset",
+    "export": "Export",
+    "table": {
+      "code": "Code",
+      "type": "Type",
+      "value": "Value",
+      "status": "Status",
+      "batchId": "Batch ID",
+      "createdAt": "Created At",
+      "usedAt": "Used At",
+      "usedBy": "Used By",
+      "actions": "Actions"
+    },
+    "prev": "Prev",
+    "next": "Next",
+    "pageInfo": "Page {page} of {pages}, total {total} records",
+    "confirm": {
+      "cancel": "Are you sure you want to cancel this code?",
+      "activate": "Are you sure you want to activate this code?"
+    },
+    "badge": {
+      "credits": "Credits",
+      "plan": "Plan"
+    }
+  },
+  "generate": {
+    "title": "Batch Generate Codes",
+    "type": "Code Type",
+    "credits": "Credits",
+    "plan": "Plan",
+    "value": "Value",
+    "quantity": "Quantity",
+    "prefix": "Prefix",
+    "validDays": "Valid Days",
+    "notes": "Notes (optional)",
+    "tips": {
+      "title": "Tips:",
+      "t1": "Credit codes increase user balance.",
+      "t2": "Plan codes upgrade user plans.",
+      "t3": "Generated codes are saved to database."
+    },
+    "cancel": "Cancel",
+    "submit": "Generate",
+    "generating": "Generating...",
+    "successSummary": "Successfully generated {count} codes!",
+    "listLabel": "Generated Codes",
+    "hintSelectAll": "Hint: click textarea to select all, manual copy supported.",
+    "copy": "Copy to clipboard",
+    "download": "Download as text file",
+    "done": "Done"
+  }
+}

@@ -55,7 +55,7 @@ export default async function RootLayout({
     const cookieLocale = cookieStore.get('LOCALE')?.value || null
     const acceptLanguage = headers().get('accept-language') || null
     const locale = resolveLocaleFrom({ userLocale: undefined, cookieLocale, acceptLanguage })
-    const namespaces = ['common','header','auth','dashboard','reasons','buckets','toasts','sidebar','packages']
+    const namespaces = ['common','header','auth','dashboard','reasons','buckets','toasts','sidebar','packages','admin']
     const dictEn = await getDictionary('en', namespaces)
     const dictZh = await getDictionary('zh', namespaces)
     const dicts = { en: dictEn, zh: dictZh }
