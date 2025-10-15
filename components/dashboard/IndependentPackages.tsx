@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
+import { useT } from "@/contexts/I18nContext";
 import useSWR, { useSWRConfig } from "swr";
 import { SiStripe, SiAlipay } from "react-icons/si";
 
@@ -26,6 +27,7 @@ interface IndependentPackagesProps {
 
 const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) => {
   const { showSuccess, showError, showLoading, dismiss } = useToast();
+  const { t } = useT()
   const { mutate } = useSWRConfig();
   const { data: packagesResp } = useSWR('/api/packages/credits', async (url: string) => {
     const res = await fetch(url)
@@ -55,7 +57,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
 
   const handlePurchase = async (method: 'stripe' | 'antom') => {
     if (!selectedPackage) {
-      showError('Please select a credit package');
+      showError(t('toasts.selectCreditPackage'));
       return;
     }
 
@@ -66,13 +68,13 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
       setProcessingAntom(true);
     }
 
-    const loadingToast = showLoading('Processing purchase request...');
+    const loadingToast = showLoading(t('toasts.processingPurchaseRequest'));
 
     try {
       const selected = packages.find(pkg => pkg.id === selectedPackage);
       if (!selected) {
         dismiss(loadingToast);
-        showError('Please select a credit package');
+        showError(t('toasts.selectCreditPackage'));
         setProcessingStripe(false);
         setProcessingAntom(false);
         return;
@@ -95,7 +97,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
       const orderData = await createOrderResponse.json();
 
       if (!orderData.success) {
-        throw new Error(orderData.error?.message || 'Failed to create order');
+        throw new Error(orderData.error?.message || t('toasts.failedCreateOrder'));
       }
 
       const orderNo = orderData.data.order.orderNo as string;
@@ -109,7 +111,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.checkoutUrl) {
-          throw new Error(payData?.error?.message || 'Failed to create Stripe checkout session');
+          throw new Error(payData?.error?.message || t('toasts.failedStripeCheckout'));
         }
         dismiss(loadingToast);
         window.location.href = payData.data.checkoutUrl;
@@ -122,7 +124,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.redirectUrl) {
-          throw new Error(payData?.error?.message || 'Failed to create Antom payment');
+          throw new Error(payData?.error?.message || t('toasts.failedAntomPayment'));
         }
         dismiss(loadingToast);
         window.location.href = payData.data.redirectUrl;
@@ -131,7 +133,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
     } catch (error) {
       dismiss();
       console.error("Purchase failed:", error);
-      showError(error instanceof Error ? error.message : 'Purchase failed, please try again later');
+      showError(error instanceof Error ? error.message : t('toasts.purchaseFailedRetry'));
       setProcessingStripe(false);
       setProcessingAntom(false);
     }
@@ -177,7 +179,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
           <ArrowLeft size={18} />
         </button>
         <h3 style={{ fontSize: '1rem', fontWeight: '600', color: '#fff', margin: 0 }}>
-          Choose Your Package
+          {t('packages.chooseYourPackage')}
         </h3>
       </div>
 
@@ -190,7 +192,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
           minHeight: '250px',
           color: '#999'
         }}>
-          Loading packages...
+          {t('packages.loadingPackages')}
         </div>
       )}
 
@@ -291,7 +293,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
               </div>
 
               <div style={{ fontSize: '0.5rem', color: '#666', marginBottom: '0.5rem' }}>
-                Credits
+                {t('packages.credits')}
               </div>
 
               <div style={{
@@ -371,7 +373,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
           }}
         >
           <SiStripe size={24} style={{ color: selectedPackage && !processingStripe && !processingAntom ? '#635BFF' : '#666' }} />
-          <span>{processingStripe ? 'Processing...' : 'Card Payment'}</span>
+          <span>{processingStripe ? t('packages.processing') : t('packages.cardPayment')}</span>
         </button>
 
         {/* Antom E-Wallet Payment Button */}
@@ -411,7 +413,7 @@ const IndependentPackages = ({ onBack, onPurchase }: IndependentPackagesProps) =
           }}
         >
           <SiAlipay size={24} style={{ color: selectedPackage && !processingStripe && !processingAntom ? '#00d084' : '#666' }} />
-          <span>{processingAntom ? 'Processing...' : 'E-Wallet'}</span>
+          <span>{processingAntom ? t('packages.processing') : t('packages.eWallet')}</span>
         </button>
       </div>
     </div>

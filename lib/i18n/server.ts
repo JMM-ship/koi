@@ -1,6 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { DEFAULT_LOCALE, LOCALE_COOKIE, SUPPORTED_LOCALES, type SupportedLocale, isSupportedLocale as _isSupportedLocale, parseAcceptLanguage } from '@/config/i18n'
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES, type SupportedLocale, isSupportedLocale as _isSupportedLocale, parseAcceptLanguage } from '@/config/i18n'
+import { PREBUNDLED_DICTIONARIES } from '@/locales/index'
 
 export function isSupportedLocale(locale?: string | null) {
   return _isSupportedLocale(locale)
@@ -27,11 +28,18 @@ export function resolveLocaleFrom(input: {
  */
 export async function getDictionary(locale: SupportedLocale | string, namespaces: string[]) {
   const lang: SupportedLocale = isSupportedLocale(locale) ? (locale as SupportedLocale) : DEFAULT_LOCALE
-  const baseDir = path.join(process.cwd(), 'locales', lang)
   const out: Record<string, any> = {}
+  // Prefer prebundled dictionaries to ensure availability on serverless platforms (e.g., Vercel)
+  const pre = (PREBUNDLED_DICTIONARIES as any)[lang] || {}
   for (const ns of namespaces) {
-    const file = path.join(baseDir, `${ns}.json`)
+    if (pre[ns]) {
+      out[ns] = pre[ns]
+      continue
+    }
+    // Fallback to filesystem for environments where files are present
     try {
+      const baseDir = path.join(process.cwd(), 'locales', lang)
+      const file = path.join(baseDir, `${ns}.json`)
       const content = await fs.readFile(file, 'utf-8')
       out[ns] = JSON.parse(content)
     } catch {
@@ -51,4 +59,3 @@ export function formatCurrency(value: number, locale: SupportedLocale | string, 
 
 // Placeholder for future Next.js integration (not used by current tests):
 // export function resolveLocaleFromRequest(req: NextRequest): SupportedLocale { ... }
-

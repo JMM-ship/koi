@@ -6,6 +6,7 @@ import { FiCheck, FiAlertTriangle, FiX } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/useToast";
+import { useT } from "@/contexts/I18nContext";
 import ModalPortal from "@/components/common/ModalPortal";
 import RedeemCodeCard from "@/components/dashboard/RedeemCodeCard";
 import PaymentMethodModal from "@/components/dashboard/PaymentMethodModal";
@@ -90,6 +91,7 @@ export default function PlansContent() {
   const { data: session } = useSession();
   const router = useRouter();
   const { showSuccess, showError, showWarning } = useToast();
+  const { t } = useT()
   const [selectedPackage, setSelectedPackage] = useState<Package | null>(null);
   const [purchasing, setPurchasing] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -233,7 +235,7 @@ export default function PlansContent() {
 
     if (!session) {
       console.log('No session, redirecting to signin');
-      showWarning('Please login first');
+      showWarning(t('toasts.pleaseLoginFirst'));
       router.push('/signin');
       return;
     }
@@ -299,11 +301,11 @@ export default function PlansContent() {
         setShowRenewModal(false);
         setShowPaymentMethodModal(true);
       } else {
-        showError(data.error?.message || 'Failed to create renewal order');
+        showError(data.error?.message || t('toasts.failedCreateRenewalOrder'));
         setIsRenewing(false);
       }
     } catch (error) {
-      showError('Renewal failed, please try again');
+      showError(t('toasts.renewalFailedRetry'));
       setIsRenewing(false);
     }
   };
@@ -339,11 +341,11 @@ export default function PlansContent() {
         setShowConfirmModal(false);
         setShowPaymentMethodModal(true);
       } else {
-        showError(data.error?.message || 'Failed to create order');
+        showError(data.error?.message || t('toasts.failedCreateOrder'));
         setPurchasing(false);
       }
     } catch (error) {
-      showError('Purchase failed, please try again');
+      showError(t('toasts.purchaseFailedRetry'));
       setPurchasing(false);
     }
   };
@@ -364,7 +366,7 @@ export default function PlansContent() {
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.checkoutUrl) {
-          throw new Error(payData?.error?.message || 'Failed to create Stripe checkout session');
+          throw new Error(payData?.error?.message || t('toasts.failedStripeCheckout'));
         }
         window.location.href = payData.data.checkoutUrl;
         return; // Redirecting
@@ -377,13 +379,13 @@ export default function PlansContent() {
         });
         const payData = await payResp.json();
         if (!payResp.ok || !payData?.success || !payData?.data?.redirectUrl) {
-          throw new Error(payData?.error?.message || 'Failed to create Antom payment');
+          throw new Error(payData?.error?.message || t('toasts.failedAntomPayment'));
         }
         window.location.href = payData.data.redirectUrl;
         return; // Redirecting
       }
     } catch (error: any) {
-      showError(error.message || 'Payment failed, please try again');
+      showError(error.message || t('toasts.paymentFailedRetry'));
       setProcessingPayment(false);
       setShowPaymentMethodModal(false);
       setPendingOrderNo(null);

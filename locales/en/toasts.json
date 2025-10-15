@@ -23,4 +23,15 @@
   "changePasswordError": "An error occurred while changing password"
   ,
   "logoutFailedRetry": "Logout failed, please retry"
+  ,
+  "selectCreditPackage": "Please select a credit package",
+  "processingPurchaseRequest": "Processing purchase request...",
+  "failedCreateOrder": "Failed to create order",
+  "failedStripeCheckout": "Failed to create Stripe checkout session",
+  "failedAntomPayment": "Failed to create Antom payment",
+  "purchaseFailedRetry": "Purchase failed, please try again later",
+  "pleaseLoginFirst": "Please login first",
+  "failedCreateRenewalOrder": "Failed to create renewal order",
+  "renewalFailedRetry": "Renewal failed, please try again",
+  "paymentFailedRetry": "Payment failed, please try again"
 }

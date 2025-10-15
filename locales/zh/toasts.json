@@ -23,4 +23,15 @@
   "changePasswordError": "修改密码时发生错误"
   ,
   "logoutFailedRetry": "退出登录失败，请重试"
+  ,
+  "selectCreditPackage": "请选择积分套餐",
+  "processingPurchaseRequest": "正在处理购买请求...",
+  "failedCreateOrder": "创建订单失败",
+  "failedStripeCheckout": "创建 Stripe 结账会话失败",
+  "failedAntomPayment": "创建 Antom 支付失败",
+  "purchaseFailedRetry": "购买失败，请稍后重试",
+  "pleaseLoginFirst": "请先登录",
+  "failedCreateRenewalOrder": "创建续费订单失败",
+  "renewalFailedRetry": "续费失败，请重试",
+  "paymentFailedRetry": "支付失败，请重试"
 }
