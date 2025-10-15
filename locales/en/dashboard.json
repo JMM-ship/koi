@@ -4,6 +4,13 @@
     "loading": "Loading...",
     "empty": "No records"
   },
+  "creditsBalance": {
+    "title": "Credits Balance",
+    "resetToCap": "Manual Reset to Cap",
+    "resetting": "Resetting...",
+    "resetTitleNoRemain": "No resets remaining today",
+    "resetTitle": "Reset package credits to cap"
+  },
   "redeem": {
     "title": "Redeem Code",
     "format": "Format: KOI-ABCD-EFGH-IJKL",
@@ -15,5 +22,17 @@
     "tipEmpty": "Tip: Paste the code or type it in uppercase.",
     "tipLooksGood": "Looks good. You can redeem now.",
     "tipInvalid": "Invalid format. Example: KOI-ABCD-EFGH-IJKL"
+  },
+  "planCard": {
+    "currentPlan": "Current Plan",
+    "credit": "Credit",
+    "dailyCredit": "Daily Credit",
+    "subscriptionPeriod": "Subscription Period",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "features": "Features",
+    "upgrade": "Upgrade",
+    "renew": "Renew",
+    "month": "month"
   }
 }

@@ -5,6 +5,7 @@ import * as echarts from 'echarts';
 import useSWR from 'swr'
 import { useDashboard, useCreditBalance, useUserInfo } from "@/contexts/DashboardContext";
 import { useToast } from "@/hooks/useToast";
+import { useT } from "@/contexts/I18nContext";
 
 const SatisfactionRate = () => {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -365,11 +366,14 @@ const SatisfactionRate = () => {
     };
   }, [creditData, isLoading]);
 
+  let _t = (k: string) => k
+  try { _t = useT().t } catch {}
+
   if (isLoading) {
     return (
       <div className="satisfaction-card">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '250px' }}>
-          <span style={{ color: '#999' }}>Loading...</span>
+          <span style={{ color: '#999' }}>{'Loading...'}</span>
         </div>
       </div>
     );
@@ -383,7 +387,7 @@ const SatisfactionRate = () => {
         alignItems: 'center',
         marginBottom: '16px'
       }}>
-        <h3 className="card-title" style={{ margin: 0 }}>Credits Balance</h3>
+        <h3 className="card-title" style={{ margin: 0 }}>{_t('dashboard.creditsBalance.title') || 'Credits Balance'}</h3>
       </div>
 
       <div
@@ -396,19 +400,19 @@ const SatisfactionRate = () => {
       <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
         {(() => {
           if ((recoveryStatus as any).kind === 'loading') {
-            return <div style={{ fontSize: 12, color: '#8b8d97' }}>Loading recovery info...</div>
+            return <div style={{ fontSize: 12, color: '#8b8d97' }}>{'Loading recovery info...'}</div>
           }
           if ((recoveryStatus as any).kind === 'paused') {
-            return <div style={{ fontSize: 12, color: '#8b8d97' }}>No recoverable package / paused</div>
+            return <div style={{ fontSize: 12, color: '#8b8d97' }}>{'No recoverable package / paused'}</div>
           }
           if ((recoveryStatus as any).kind === 'atCap') {
-            return <div style={{ fontSize: 12, color: '#8b8d97' }}>No recovery (at cap)</div>
+            return <div style={{ fontSize: 12, color: '#8b8d97' }}>{'No recovery (at cap)'}</div>
           }
           const r = recoveryStatus as { kind: 'next'; amount: number; etaMs: number; nextAt: Date }
           const eta = formatRelativeMm(r.etaMs)
           return (
             <div style={{ fontSize: 12, color: '#8b8d97', textAlign: 'center' }}>
-              Next +{r.amount.toLocaleString()} credits in {eta}
+              {'Next '}{`+${r.amount.toLocaleString()}`} {'credits in '} {eta}
             </div>
           )
         })()}
@@ -455,11 +459,11 @@ const SatisfactionRate = () => {
           }}
           title={
             resetsRemainingToday !== null && resetsRemainingToday <= 0
-              ? 'No resets remaining today'
-              : 'Reset package credits to cap'
+              ? (_t('dashboard.creditsBalance.resetTitleNoRemain') || 'No resets remaining today')
+              : (_t('dashboard.creditsBalance.resetTitle') || 'Reset package credits to cap')
           }
         >
-          {resetLoading ? 'Resetting...' : 'Manual Reset to Cap'}
+          {resetLoading ? (_t('dashboard.creditsBalance.resetting') || 'Resetting...') : (_t('dashboard.creditsBalance.resetToCap') || 'Manual Reset to Cap')}
         </button>
         <div style={{ fontSize: 12, color: '#8b8d97' }}>
           {typeof resetsRemainingToday === 'number'
@@ -468,7 +472,7 @@ const SatisfactionRate = () => {
         </div>
         {nextAvailableAtUtc && (
           <div style={{ fontSize: 12, color: '#6c6f7b' }}>
-            Next available: {new Date(nextAvailableAtUtc).toLocaleString()}
+            {'Next available: '} {new Date(nextAvailableAtUtc).toLocaleString()}
           </div>
         )}
       </div>

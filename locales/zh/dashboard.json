@@ -4,6 +4,13 @@
     "loading": "加载中...",
     "empty": "暂无记录"
   },
+  "creditsBalance": {
+    "title": "积分余额",
+    "resetToCap": "手动重置到上限",
+    "resetting": "重置中...",
+    "resetTitleNoRemain": "今日可重置次数已用尽",
+    "resetTitle": "将套餐积分重置为当日上限"
+  },
   "redeem": {
     "title": "兑换码",
     "format": "格式：KOI-ABCD-EFGH-IJKL",
@@ -15,5 +22,17 @@
     "tipEmpty": "提示：粘贴兑换码或直接输入（自动转大写）",
     "tipLooksGood": "格式良好，可以兑换",
     "tipInvalid": "格式不正确，例如：KOI-ABCD-EFGH-IJKL"
+  },
+  "planCard": {
+    "currentPlan": "当前套餐",
+    "credit": "积分",
+    "dailyCredit": "每日积分",
+    "subscriptionPeriod": "订阅周期",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "features": "功能",
+    "upgrade": "升级",
+    "renew": "续费",
+    "month": "月"
   }
 }
