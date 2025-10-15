@@ -1,5 +1,8 @@
 'use client'
+import { useT } from "@/contexts/I18nContext";
 export default function Section3() {
+    let t = (k: string) => k
+    try { t = useT().t } catch {}
     return (
         <>
             {/*ai-solutions home section 3*/}
@@ -11,29 +14,20 @@ export default function Section3() {
                     <div className="text-center">
                         <div className="d-flex align-items-center gap-3 justify-content-center" data-aos="fade-up">
                             <span className="small-line" />
-                            <span className="btn-text text-primary">Our Technical Difference</span>
+                            <span className="btn-text text-primary">{t('home.s3.tag') || 'Our Technical Difference'}</span>
                             <span className="small-line" />
                         </div>
-                        <h2 className="text-white my-3 text-anime-style-3" data-aos="fade-up" data-aos-delay="100">
-                            Our Technical Advantages
-                        </h2>
-                        <p className="text-white opacity-75 mb-5" data-aos="fade-up" data-aos-delay="200">
-                            Professional technical architecture providing more stable and efficient service experience
-                        </p>
+                        <h2 className="text-white my-3 text-anime-style-3" data-aos="fade-up" data-aos-delay="100">{t('home.s3.title') || 'Our Technical Advantages'}</h2>
+                        <p className="text-white opacity-75 mb-5" data-aos="fade-up" data-aos-delay="200">{t('home.s3.desc') || 'Professional technical architecture providing more stable and efficient service experience'}</p>
                     </div>
                     
                     {/* Core Statement */}
                     <div className="text-center my-5 py-5" data-aos="fade-up" data-aos-delay="300">
                         <h3 className="text-white mb-4">
-                            Our core is a dynamic resource pool composed of{" "}
+                            {t('home.s3.coreTitlePrefix') || 'Our core is a dynamic resource pool composed of'}{' '}
                             <span className="text-primary">$200 Max accounts</span>
                         </h3>
-                        <p className="text-white opacity-75 fs-5">
-                            All accounts are{" "}
-                            <span className="text-primary fw-bold">official $200 Max subscription accounts</span>, 
-                            intelligently scheduling resources in real-time to ensure smooth operations. 
-                            Massive account pool eliminates single account rate limit issues.
-                        </p>
+                        <p className="text-white opacity-75 fs-5">{t('home.s3.coreDetail') || 'All accounts are official $200 Max subscription accounts, intelligently scheduling resources in real-time to ensure smooth operations. Massive account pool eliminates single account rate limit issues.'}</p>
                     </div>
                     {/* Feature Icons */}
                     <div className="row g-md-5 g-3 mt-80">
@@ -45,8 +39,8 @@ export default function Section3() {
                                         <path d="M8 12L11 15L16 9" stroke="#00D4FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                     </svg>
                                 </div>
-                                <h6 className="mt-5 mb-3 text-white">Dynamic Resource Pool</h6>
-                                <p className="text-white opacity-75">Massive official $200 Max account pool forms dynamic resource pool</p>
+                                <h6 className="mt-5 mb-3 text-white">{t('home.s3.f1.title') || 'Dynamic Resource Pool'}</h6>
+                                <p className="text-white opacity-75">{t('home.s3.f1.desc') || 'Massive official $200 Max account pool forms dynamic resource pool'}</p>
                             </div>
                         </div>
                         <div className="col-lg-3 col-md-6 col-12">
@@ -57,8 +51,8 @@ export default function Section3() {
                                         <circle cx="12" cy="12" r="9" stroke="#FFD700" strokeWidth="2"/>
                                     </svg>
                                 </div>
-                                <h6 className="mt-5 mb-3 text-white">Load Balancing</h6>
-                                <p className="text-white opacity-75">Real-time load balancing with intelligent scheduling strategy</p>
+                                <h6 className="mt-5 mb-3 text-white">{t('home.s3.f2.title') || 'Load Balancing'}</h6>
+                                <p className="text-white opacity-75">{t('home.s3.f2.desc') || 'Real-time load balancing with intelligent scheduling strategy'}</p>
                             </div>
                         </div>
                         <div className="col-lg-3 col-md-6 col-12">

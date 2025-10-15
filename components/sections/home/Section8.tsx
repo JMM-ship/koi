@@ -3,6 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import SwiperPadding from "@/components/elements/BoxSwiperPadding";
 import Link from "next/link";
+import { useT } from "@/contexts/I18nContext";
 
 const swiperOptions = {
     modules: [Autoplay, Pagination, Navigation],
@@ -50,6 +51,8 @@ const swiperOptions = {
 };
 
 export default function Section8() {
+    let t = (k: string) => k
+    try { t = useT().t } catch {}
     return (
         <>
             {/*ai-solutions home section 8*/}
@@ -60,9 +63,9 @@ export default function Section8() {
                         <div className="col-lg-6 swipper-root">
                             <div className="d-flex align-items-center gap-3">
                                 <span className="small-line" />
-                                <span className="btn-text text-primary">testimonials</span>
+                                <span className="btn-text text-primary">{t('home.s8.tag') || 'testimonials'}</span>
                             </div>
-                            <h2 className="text-dark mt-3 mb-0 text-anime-style-2">Real User Feedback</h2>
+                            <h2 className="text-dark mt-3 mb-0 text-anime-style-2">{t('home.s8.title') || 'Real User Feedback'}</h2>
                         </div>
                         <div className="col-lg-2 col-md-4 col-6 ms-lg-auto text-center mt-3 mt-lg-0">
                             <div className="position-relative mx-auto">

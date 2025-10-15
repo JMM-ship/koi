@@ -1,8 +1,11 @@
 'use client'
 import Link from "next/link";
 import { useEffect } from 'react';
+import { useT } from "@/contexts/I18nContext";
 
 export default function Section5() {
+    let t = (k: string) => k
+    try { t = useT().t } catch {}
     useEffect(() => {
         // Initialize counter animations
         const animateValue = (element: HTMLElement, start: number, end: number, duration: number, suffix: string = '') => {
@@ -54,11 +57,11 @@ export default function Section5() {
                     <div className="text-center">
                         <div className="d-flex align-items-center gap-3 justify-content-center" data-aos="fade-up">
                             <span className="small-line bg-white" />
-                            <span className="btn-text text-white">USAGE GUIDE</span>
+                            <span className="btn-text text-white">{t('home.s5.tag') || 'USAGE GUIDE'}</span>
                             <span className="small-line bg-white" />
                         </div>
-                        <h2 className="text-white my-3 text-anime-style-2" data-aos="fade-up" data-aos-delay="100">Credit Usage Guide</h2>
-                        <p className="text-white opacity-75 mt-3" data-aos="fade-up" data-aos-delay="200">Understand the value of credits and consumption comparison across different platforms</p>
+                        <h2 className="text-white my-3 text-anime-style-2" data-aos="fade-up" data-aos-delay="100">{t('home.s5.title') || 'Credit Usage Guide'}</h2>
+                        <p className="text-white opacity-75 mt-3" data-aos="fade-up" data-aos-delay="200">{t('home.s5.subtitle') || 'Understand the value of credits and consumption comparison across different platforms'}</p>
                     </div>
                     <div className="row mt-80">
                         <div className="col-md-6 mb-5 mb-md-0">
@@ -69,19 +72,19 @@ export default function Section5() {
                                             <path d="M12 2L2 7V12C2 16.5 4.23 20.68 7.62 23.15L12 24L16.38 23.15C19.77 20.68 22 16.5 22 12V7L12 2Z" fill="#dc3545"/>
                                         </svg>
                                     </div>
-                                    <h4 className="mb-0 text-white">Credits can be used for:</h4>
+                                    <h4 className="mb-0 text-white">{t('home.s5.left.title') || 'Credits can be used for:'}</h4>
                                 </div>
                                 <div className="usage-items">
                                     <div className="usage-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
-                                        <span className="text-white">Sonnet 4 model calls</span>
+                                        <span className="text-white">{t('home.s5.left.items.sonnet4') || 'Sonnet 4 model calls'}</span>
                                         <span className="counter-value text-primary fw-bold fs-5" data-value="100" data-suffix="%">0%</span>
                                     </div>
                                     <div className="usage-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
-                                        <span className="text-white">Opus 4 model calls</span>
+                                        <span className="text-white">{t('home.s5.left.items.opus4') || 'Opus 4 model calls'}</span>
                                         <span className="counter-value text-primary fw-bold fs-5" data-value="20" data-suffix="%">0%</span>
                                     </div>
                                     <div className="usage-item d-flex justify-content-between align-items-center py-3">
-                                        <span className="text-white">Equivalent to Cursor fast requests</span>
+                                        <span className="text-white">{t('home.s5.left.items.cursorFast') || 'Equivalent to Cursor fast requests'}</span>
                                         <span className="counter-value text-primary fw-bold fs-5" data-value="2000" data-suffix=" times">0 times</span>
                                     </div>
                                 </div>
@@ -96,19 +99,19 @@ export default function Section5() {
                                             <path d="M7 12H17V14H7V12Z" fill="#ffc107"/>
                                         </svg>
                                     </div>
-                                    <h4 className="mb-0 text-white">Consumption in Cursor:</h4>
+                                    <h4 className="mb-0 text-white">{t('home.s5.right.title') || 'Consumption in Cursor:'}</h4>
                                 </div>
                                 <div className="usage-items">
                                     <div className="usage-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
-                                        <span className="text-white">Sonnet 4 per conversation</span>
+                                        <span className="text-white">{t('home.s5.right.items.sonnet4PerConv') || 'Sonnet 4 per conversation'}</span>
                                         <span className="counter-value text-warning fw-bold fs-5" data-value="15" data-suffix="-20%">0%</span>
                                     </div>
                                     <div className="usage-item d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
-                                        <span className="text-white">Opus 4 per conversation</span>
+                                        <span className="text-white">{t('home.s5.right.items.opus4PerConv') || 'Opus 4 per conversation'}</span>
                                         <span className="counter-value text-warning fw-bold fs-5" data-value="60" data-suffix="-70%">0%</span>
                                     </div>
                                     <div className="usage-item d-flex justify-content-between align-items-center py-3">
-                                        <span className="text-white opacity-50">More efficient credit utilization</span>
+                                        <span className="text-white opacity-50">{t('home.s5.right.items.efficient') || 'More efficient credit utilization'}</span>
                                         <span className="text-success fw-bold">✓</span>
                                     </div>
                                 </div>
@@ -118,7 +121,7 @@ export default function Section5() {
                     <div className="text-center mt-5" data-aos="fade-up" data-aos-delay="500">
                         <div className="alert bg-dark border border-warning d-inline-flex align-items-center gap-2 px-5 py-3 rounded-pill">
                             <span className="fs-4">💡</span>
-                            <span className="fw-medium text-warning">Compared to the official $200 fixed monthly fee, we offer flexible billing options with better value!</span>
+                            <span className="fw-medium text-warning">{t('home.s5.alert') || 'Compared to the official $200 fixed monthly fee, we offer flexible billing options with better value!'}</span>
                         </div>
                     </div>
                 </div>

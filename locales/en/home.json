@@ -45,5 +45,61 @@
       "q3": "Q. How can I get technical support?",
       "a3": "We provide 1-on-1 engineer support (not a bot). If you run into any issues, contact our technical team and we will assist remotely to ensure you can use the service normally."
     }
+  },
+  "s3": {
+    "tag": "Our Technical Difference",
+    "title": "Our Technical Advantages",
+    "desc": "Professional technical architecture providing more stable and efficient service experience",
+    "coreTitlePrefix": "Our core is a dynamic resource pool composed of",
+    "coreDetail": "All accounts are official $200 Max subscription accounts, intelligently scheduling resources in real-time to ensure smooth operations. Massive account pool eliminates single account rate limit issues.",
+    "f1": { "title": "Dynamic Resource Pool", "desc": "Massive official $200 Max account pool forms dynamic resource pool" },
+    "f2": { "title": "Load Balancing", "desc": "Real-time load balancing with intelligent scheduling strategy" }
+  },
+  "s5": {
+    "tag": "USAGE GUIDE",
+    "title": "Credit Usage Guide",
+    "subtitle": "Understand the value of credits and consumption comparison across different platforms",
+    "left": {
+      "title": "Credits can be used for:",
+      "items": {
+        "sonnet4": "Sonnet 4 model calls",
+        "opus4": "Opus 4 model calls",
+        "cursorFast": "Equivalent to Cursor fast requests"
+      }
+    },
+    "right": {
+      "title": "Consumption in Cursor:",
+      "items": {
+        "sonnet4PerConv": "Sonnet 4 per conversation",
+        "opus4PerConv": "Opus 4 per conversation",
+        "efficient": "More efficient credit utilization"
+      }
+    },
+    "alert": "Compared to the official $200 fixed monthly fee, we offer flexible billing options with better value!"
+  },
+  "s6": {
+    "tag": "COMPARISON",
+    "title": "Full Comparison Analysis",
+    "subtitle": "Why choose us? Same service experience, price only 28% of official"
+  },
+  "s7": {
+    "tag": "FAQ & A",
+    "title": "Frequently Asked Questions",
+    "q1": "What’s the difference from subscribing to official Claude or GPT directly?",
+    "a1": "We subscribe to the official services. You get responses identical in speed, format, and model capability to the official ones, while a single subscription lets you use more vendors’ command-line programming tools. Note: we currently do not provide a web-based chat service.",
+    "q2": "How is security guaranteed?",
+    "a2": "We use a technical relay approach; your account faces no ban risk. All data transmission is encrypted. We do not store your code or any sensitive information, ensuring privacy and security.",
+    "q3": "How can I get technical support?",
+    "a3": "We provide 1-on-1 engineer support (not a bot). If you run into any issues, contact our technical team and we will assist remotely to ensure you can use the service normally.",
+    "q4": "Which models are currently supported?",
+    "a4": "All plans support Claude Sonnet and Codex models. Pro and Max additionally support Claude 4 Opus. Our account pool consists of official Max accounts, ensuring access to the latest and most powerful model capabilities. Gemini 3 is coming soon.",
+    "q5": "How are credits calculated?",
+    "a5": "Credit calculation follows the same algorithm as official Claude. Our account pool ensures that even if one account reaches its limit, we seamlessly switch to another to continue service.",
+    "q6": "Is this service suitable for commercial use?",
+    "a6": "Absolutely. Our service is designed for professional developers and teams. With stable availability, security guarantees, and professional support, it's perfect for commercial projects and enterprise development."
+  },
+  "s8": {
+    "tag": "testimonials",
+    "title": "Real User Feedback"
   }
 }

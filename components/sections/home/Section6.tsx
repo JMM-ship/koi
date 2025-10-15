@@ -1,7 +1,10 @@
 'use client'
 import Link from "next/link";
+import { useT } from "@/contexts/I18nContext";
 
 export default function Section6() {
+    let t = (k: string) => k
+    try { t = useT().t } catch {}
     return (
         <>
             {/*ai-solutions-home section 6*/}
@@ -10,15 +13,11 @@ export default function Section6() {
                     <div className="text-center mb-5">
                         <div className="d-flex align-items-center gap-3 justify-content-center" data-aos="fade-up">
                             <span className="small-line" />
-                            <span className="btn-text text-primary">COMPARISON</span>
+                            <span className="btn-text text-primary">{t('home.s6.tag') || 'COMPARISON'}</span>
                             <span className="small-line" />
                         </div>
-                        <h2 className="text-dark my-3 text-anime-style-3" data-aos="fade-up" data-aos-delay="100">
-                            Full Comparison Analysis
-                        </h2>
-                        <p className="text-dark opacity-75" data-aos="fade-up" data-aos-delay="200">
-                            Why choose us? Same service experience, price only 28% of official
-                        </p>
+                        <h2 className="text-dark my-3 text-anime-style-3" data-aos="fade-up" data-aos-delay="100">{t('home.s6.title') || 'Full Comparison Analysis'}</h2>
+                        <p className="text-dark opacity-75" data-aos="fade-up" data-aos-delay="200">{t('home.s6.subtitle') || 'Why choose us? Same service experience, price only 28% of official'}</p>
                     </div>
 
                     <div className="row g-lg-4 g-3 mt-5">
