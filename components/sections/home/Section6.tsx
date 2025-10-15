@@ -24,24 +24,24 @@ export default function Section6() {
                     <div className="row g-lg-4 g-3 mt-5">
                         {/* AI Code With Card - Featured */}
                         <div className="col-lg-4">
-                            <div className="card-pricing position-relative rounded-4 p-5 h-100 shadow-2 bg-primary" style={{ transform: 'scale(1.05)' }} data-aos="zoom-in" data-aos-delay="0">
+                            <div className="card-pricing position-relative rounded-4 p-5 h-100 bg-white border-0 shadow-soft card-featured-gradient" data-aos="zoom-in" data-aos-delay="0">
                                 <div className="position-absolute top-0 start-50 translate-middle">
-                                    <span className="badge bg-warning text-dark px-4 py-2 rounded-pill shadow">
+                                    <span className="badge bg-white text-primary border border-primary px-4 py-2 rounded-pill shadow-sm">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="me-1">
                                             <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                                         </svg>
                                         <strong>Best Choice</strong>
                                     </span>
                                 </div>
-                                <div className="text-center text-white mt-4">
+                                <div className="text-center mt-4">
                                     <h4 className="mb-3">KOI</h4>
                                     <div className="d-flex justify-content-center align-items-baseline mb-2">
                                         <h1 className="display-4 mb-0">$50</h1>
                                         <span className="fs-5">/month</span>
                                     </div>
-                                    <span className="badge bg-white text-primary px-4 py-2 rounded-pill mb-4">Save 72%</span>
+                                    <span className="badge bg-primary text-white px-4 py-2 rounded-pill mb-4">Save 75%</span>
                                 </div>
-                                <ul className="list-unstyled mt-4 text-white">
+                                <ul className="list-unstyled mt-4">
                                     {/* <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
@@ -51,49 +51,58 @@ export default function Section6() {
                                             <span className="text-white fw-bold">¥399/month ✓</span>
                                         </div>
                                     </li> */}
-                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-light">
+                                        <svg className="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Usage Limit</span>
-                                            <span className="text-white fw-bold">6000 credits daily ✓</span>
+                                            <span className="text-primary fw-bold">9000 credits daily ✓</span>
                                         </div>
                                     </li>
-                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-light">
+                                        <svg className="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        <div className="d-flex justify-content-between w-100">
+                                            <span>Platform Compatibility</span>
+                                            <span className="text-primary fw-bold">One subscription, multi-platform ✓</span>
+                                        </div>
+                                    </li>
+                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-light">
+                                        <svg className="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Response Speed</span>
-                                            <span className="text-white fw-bold">Full speed ✓</span>
+                                            <span className="text-primary fw-bold">Full speed ✓</span>
                                         </div>
                                     </li>
-                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-light">
+                                        <svg className="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Account Security</span>
-                                            <span className="text-white fw-bold">Zero ban risk ✓</span>
+                                            <span className="text-primary fw-bold">Zero ban risk ✓</span>
                                         </div>
                                     </li>
-                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-white border-opacity-10">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom border-light">
+                                        <svg className="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Billing Method</span>
-                                            <span className="text-white fw-bold">Flexible billing ✓</span>
+                                            <span className="text-primary fw-bold">Flexible billing ✓</span>
                                         </div>
                                     </li>
                                     <li className="d-flex align-items-center gap-3 py-3">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <svg className="text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="20 6 9 17 4 12"></polyline>
                                         </svg>
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Tech Support</span>
-                                            <span className="text-white fw-bold">1v1 Engineer ✓</span>
+                                            <span className="text-primary fw-bold">1v1 Engineer ✓</span>
                                         </div>
                                     </li>
                                 </ul>
@@ -117,7 +126,7 @@ export default function Section6() {
                                         <h2 className="display-5 mb-0">$200</h2>
                                         <span className="text-muted">/month</span>
                                     </div>
-                                    <span className="text-muted small">≈¥1400</span>
+                                    <span className="text-muted small">too expensive</span>
                                 </div>
                                 <ul className="list-unstyled mt-4">
                                     <li className="d-flex align-items-center gap-3 py-3 border-bottom">
@@ -137,6 +146,16 @@ export default function Section6() {
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Usage Limit</span>
                                             <span className="text-primary">10,800 credits daily ✓</span>
+                                        </div>
+                                    </li>
+                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc3545" strokeWidth="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                        <div className="d-flex justify-content-between w-100">
+                                            <span>Platform Compatibility</span>
+                                            <span className="text-danger">Official Claude website only ✗</span>
                                         </div>
                                     </li>
                                     <li className="d-flex align-items-center gap-3 py-3 border-bottom">
@@ -212,6 +231,16 @@ export default function Section6() {
                                         <div className="d-flex justify-content-between w-100">
                                             <span>Usage Limit</span>
                                             <span className="text-danger">500 times then rate limit ✗</span>
+                                        </div>
+                                    </li>
+                                    <li className="d-flex align-items-center gap-3 py-3 border-bottom">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc3545" strokeWidth="2">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                        <div className="d-flex justify-content-between w-100">
+                                            <span>Platform Compatibility</span>
+                                            <span className="text-danger">IDE only ✗</span>
                                         </div>
                                     </li>
                                     <li className="d-flex align-items-center gap-3 py-3 border-bottom">

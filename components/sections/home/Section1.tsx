@@ -18,7 +18,7 @@ export default function Section1() {
                     <div className="row">
                         <div className="col-lg-8 mx-auto mt-4">
                             <p className="text-white fs-5 text-center mb-4">
-                                Massive official Max account pool, zero ban risk, identical response speed and model capabilities as the official version
+                                KOI brings together leading AI models for a one-stop experience. Explore GPT-5, Claude Opus 4.1, Claude Sonnet 4.5, and Gemini (coming soon).
                             </p>
                             <div className="text-center">
                                 <span className="text-warning fs-6 me-3">🎁</span>

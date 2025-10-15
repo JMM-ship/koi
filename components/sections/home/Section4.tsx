@@ -12,45 +12,45 @@ export default function Section4() {
                                 <span className="small-line" />
                                 <span className="btn-text text-primary">FAQ</span>
                             </div>
-                            <h2 className="text-dark mt-3 mb-8 text-anime-style-2">Get every answer here</h2>
+                            <h2 className="text-dark mt-3 mb-8 text-anime-style-2">Frequently Asked Questions</h2>
                             <div className="accordion">
                                 <div className="px-0 py-3 card border-0 border-top border-bottom rounded-0 mb-3 collapse-custom" data-aos="fade-up" data-aos-delay={0}>
                                     <div className="p-0 card-header border-0 rounded-3 bg-white">
-                                        <Link className="collapsed p-3 fw-bold d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-1">
+                                        <Link className="p-3 fw-bold d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-1">
                                             <h6 className="text-primary fs-6 mb-0">
-                                                Q. <span className="text-dark">What support &amp; service package are available?</span>
+                                                Q. <span className="text-dark">What’s the difference from subscribing to official Claude or GPT directly?</span>
                                             </h6>
                                             <span className="ms-auto arrow" />
                                         </Link>
                                     </div>
                                     <div id="collapse-1" className="collapse" data-bs-parent=".accordion">
-                                        <p className="px-3 fs-6 fw-regular">We offer a range of support and service packages tailored to meet various needs, from basic assistance to comprehensive solutions. Please cnt our sales team asap.</p>
+                                        <p className="px-3 fs-6 fw-regular">We subscribe to the official services. You get responses identical in speed, format, and model capability to the official ones, while a single subscription lets you use more vendors’ command-line programming tools. Note: we currently do not provide a web-based chat service.</p>
                                     </div>
                                 </div>
                                 <div className="px-0 py-3 card border-0 border-top border-bottom rounded-0 mb-3 collapse-custom" data-aos="fade-up" data-aos-delay={200}>
                                     <div className="p-0 card-header border-0 rounded-3 bg-white">
-                                        <Link className="p-3 fw-bold d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-2">
+                                        <Link className="collapsed p-3 fw-bold d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-2">
                                             <h6 className="text-primary fs-6 mb-0">
-                                                Q. <span className="text-dark">How can I make the payment?</span>
+                                                Q. <span className="text-dark">How is security guaranteed?</span>
                                             </h6>
                                             <span className="ms-auto arrow" />
                                         </Link>
                                     </div>
-                                    <div id="collapse-2" className="collapse show" data-bs-parent=".accordion">
-                                        <p className="px-3 fs-6 fw-regular">We offer a range of support and service packages tailored to meet various needs, from basic assistance to comprehensive solutions. Please cnt our sales team asap.</p>
+                                    <div id="collapse-2" className="collapse" data-bs-parent=".accordion">
+                                        <p className="px-3 fs-6 fw-regular">We use a technical relay approach; your account faces no ban risk. All data transmission is encrypted. We do not store your code or any sensitive information, ensuring privacy and security.</p>
                                     </div>
                                 </div>
                                 <div className="px-0 py-3 card border-0 border-top border-bottom rounded-0 mb-3 collapse-custom" data-aos="fade-up" data-aos-delay={400}>
                                     <div className="p-0 card-header border-0 rounded-3 bg-white">
                                         <Link className="collapsed p-3 fw-bold d-flex align-items-center" data-bs-toggle="collapse" href="#collapse-3">
                                             <h6 className="text-primary fs-6 mb-0">
-                                                Q. <span className="text-dark">Do you provide any refund?</span>
+                                                Q. <span className="text-dark">How can I get technical support?</span>
                                             </h6>
                                             <span className="ms-auto arrow" />
                                         </Link>
                                     </div>
                                     <div id="collapse-3" className="collapse" data-bs-parent=".accordion">
-                                        <p className="px-3 fs-6 fw-regular">We offer a range of support and service packages tailored to meet various needs, from basic assistance to comprehensive solutions. Please cnt our sales team asap.</p>
+                                        <p className="px-3 fs-6 fw-regular">We provide 1-on-1 engineer support (not a bot). If you run into any issues, contact our technical team and we will assist remotely to ensure you can use the service normally.</p>
                                     </div>
                                 </div>
                             </div>

@@ -80,7 +80,10 @@
   background-color: #100915;
 }
 .ai-solutions-home-section-7 .accordion-2 .card {
-  --bs-card-border-color: #22172b;
+  /* Subtle separation and spacing between items */
+  --bs-card-border-color: rgba(255, 255, 255, 0.06);
+  margin-bottom: 12px;
+  border-radius: 12px;
 }
 .ai-solutions-home-section-7 .accordion-2 .card .card-header a .arrow::before {
   transition: 0.3s;
@@ -99,10 +102,28 @@
   transform: rotate(180deg);
   content: "\f4fe";
 }
+.ai-solutions-home-section-7 .accordion-2 .card .collapse {
+  /* Softer divider for content body */
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
 .ai-solutions-home-section-7 .accordion-2 .card .collapse.show {
-  border-bottom: 1px solid var(--tc-theme-primary);
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
+/* Featured comparison card (KOI) – light style */
+.card-featured-gradient {
+  position: relative;
+  border: 1px solid transparent;
+  border-image: linear-gradient(180deg, var(--tc-theme-primary), #60a5fa) 1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.shadow-soft {
+  box-shadow: 0 8px 28px rgba(16, 24, 40, 0.08) !important;
+}
+.card-featured-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(16, 24, 40, 0.12) !important;
+}
 .section-footer-4 {
   --bs-border-color: #332457;
 }
