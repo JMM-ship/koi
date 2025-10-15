@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import useSWR, { useSWRConfig } from 'swr'
 import { FiCopy, FiEdit2, FiUsers, FiGift, FiLink } from 'react-icons/fi'
 import { useToast } from '@/hooks/useToast'
+import { useT } from '@/contexts/I18nContext'
 import { INVITE_CODE_MIN_LEN, INVITE_CODE_CHARSET } from '@/config/referral.config'
 
 const fetcher = (url: string) => fetch(url).then((r) => {
@@ -44,6 +45,7 @@ export default function ReferralContent() {
   const pageSize = 20
   const { mutate } = useSWRConfig()
   const { showSuccess, showError } = useToast()
+  const { t } = useT()
 
   const { data: summary } = useSWR<SummaryData>('/api/referrals/summary', fetcher)
   const invitesUrl = useMemo(() => `/api/referrals/invites?page=${page}&pageSize=${pageSize}`,[page])
@@ -58,7 +60,7 @@ export default function ReferralContent() {
     if (!inviteUrl) return
     try {
       await navigator.clipboard?.writeText(inviteUrl)
-      showSuccess('Invite link copied')
+      showSuccess(t('toasts.inviteLinkCopied'))
     } catch {}
   }, [inviteUrl, showSuccess])
 
@@ -66,7 +68,7 @@ export default function ReferralContent() {
     if (!inviteCode) return
     try {
       await navigator.clipboard?.writeText(inviteCode)
-      showSuccess('Invite code copied')
+      showSuccess(t('toasts.inviteCodeCopied'))
     } catch {}
   }, [inviteCode, showSuccess])
   // Edit code dialog state and handlers
@@ -107,13 +109,13 @@ export default function ReferralContent() {
         body: JSON.stringify({ code: normalizeCode(draftCode) }),
       })
       const data = await res.json()
-      if (!res.ok || !data?.success) throw new Error(data?.error?.message || 'Failed to update')
-      showSuccess('Invite code updated')
+      if (!res.ok || !data?.success) throw new Error(data?.error?.message || t('toasts.failedToUpdate'))
+      showSuccess(t('toasts.inviteCodeUpdated'))
       setEditOpen(false)
       mutate('/api/referrals/summary')
     } catch (e: any) {
-      setErrorText(String(e?.message || 'Failed to update'))
-      showError(String(e?.message || 'Failed to update'))
+      setErrorText(String(e?.message || t('toasts.failedToUpdate')))
+      showError(String(e?.message || t('toasts.failedToUpdate')))
     } finally {
       setSaving(false)
     }

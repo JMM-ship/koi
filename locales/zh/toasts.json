@@ -1,0 +1,14 @@
+{
+  "inviteLinkCopied": "邀请链接已复制",
+  "inviteCodeCopied": "邀请码已复制",
+  "inviteCodeUpdated": "邀请码已更新",
+  "failedToUpdate": "更新失败",
+  "apiKeyCopied": "API 密钥已复制到剪贴板",
+  "keyCannotReveal": "该密钥不可显示，请旋转生成新的密钥。",
+  "apiKeyTitleRequired": "请输入 API 密钥标题",
+  "apiKeyCreated": "API 密钥已创建",
+  "failedToCreateKey": "创建 API 密钥失败",
+  "deletedName": "已删除 \"{name}\"",
+  "failedToDeleteKey": "删除 API 密钥失败",
+  "deletionCancelled": "已取消删除"
+}

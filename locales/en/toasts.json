@@ -1,0 +1,14 @@
+{
+  "inviteLinkCopied": "Invite link copied",
+  "inviteCodeCopied": "Invite code copied",
+  "inviteCodeUpdated": "Invite code updated",
+  "failedToUpdate": "Failed to update",
+  "apiKeyCopied": "API key copied to clipboard",
+  "keyCannotReveal": "This key cannot be revealed. Please rotate a new key.",
+  "apiKeyTitleRequired": "Please enter a title for your API key",
+  "apiKeyCreated": "API key created",
+  "failedToCreateKey": "Failed to create API key",
+  "deletedName": "Deleted \"{name}\"",
+  "failedToDeleteKey": "Failed to delete API key",
+  "deletionCancelled": "Deletion cancelled"
+}

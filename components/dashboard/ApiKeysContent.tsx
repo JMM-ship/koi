@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import { FiCopy, FiEye, FiEyeOff, FiPlus, FiTrash2, FiKey, FiTerminal, FiCode } from "react-icons/fi";
 import { FaApple, FaWindows, FaLinux } from "react-icons/fa";
 import { useToast } from "@/hooks/useToast";
+import { useT } from "@/contexts/I18nContext";
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -99,6 +100,7 @@ export default function ApiKeysContent() {
   const [activeTab, setActiveTab] = useState<GuideTab>("windows");
   const [selectedGuide, setSelectedGuide] = useState<GuideKind>(null);
   const { showSuccess, showInfo, showError } = useToast();
+  const { t } = useT()
   const { confirmState, showConfirm } = useConfirm();
 
   // 从 apiKeys 中提取 fullKey (apiKeys 已经在 SWR fetcher 中从 localStorage 恢复了 fullKey)
@@ -123,7 +125,7 @@ export default function ApiKeysContent() {
     if (!full) return
     navigator.clipboard.writeText(full)
     setCopiedKey(full)
-    showSuccess("API key copied to clipboard")
+    showSuccess(t('toasts.apiKeyCopied'))
     setTimeout(() => setCopiedKey(null), 2000)
   }
 
@@ -136,7 +138,7 @@ export default function ApiKeysContent() {
         let code: string | undefined
         try { const b = await res.json(); code = b?.code } catch {}
         if (code === 'NO_ENCRYPTED_KEY') {
-          showError('This key cannot be revealed. Please rotate a new key.')
+          showError(t('toasts.keyCannotReveal'))
           return undefined
         }
         throw new Error('Failed to load API key')
@@ -158,7 +160,7 @@ export default function ApiKeysContent() {
 
   const handleCreateKey = async () => {
     if (!newKeyTitle.trim()) {
-      showError("Please enter a title for your API key");
+      showError(t('toasts.apiKeyTitleRequired'));
       return;
     }
     setCreating(true);
@@ -177,10 +179,10 @@ export default function ApiKeysContent() {
       });
       const data = await response.json();
 
-      if (!response.ok) throw new Error(data.error || "Failed to create API key");
+      if (!response.ok) throw new Error(data.error || t('toasts.failedToCreateKey'));
       setShowCreateModal(false);
       setNewKeyTitle("");
-      showSuccess("API key created");
+      showSuccess(t('toasts.apiKeyCreated'));
 
       // 将 fullKey 存入持久化缓存（使用 ref，不会被 SWR 重新获取时覆盖）
       if (data.apiKey.fullKey) {
@@ -227,8 +229,8 @@ export default function ApiKeysContent() {
           await mutateKeys((old: any) => ({ apiKeys: (old?.apiKeys || []).filter((k: any) => k.id !== keyId) }), false)
 
           const response = await fetch(`/api/apikeys?id=${keyId}`, { method: "DELETE" });
-          if (!response.ok) throw new Error("Failed to delete API key");
-          showSuccess(`Deleted "${keyTitle}"`);
+          if (!response.ok) throw new Error(t('toasts.failedToDeleteKey'));
+          showSuccess(t('toasts.deletedName', { name: keyTitle }));
           // cleanup local cache
           setFullKeyMap((prev) => { const c = { ...prev }; delete c[keyId]; return c })
           // cleanup persistent cache
@@ -241,12 +243,12 @@ export default function ApiKeysContent() {
           }
         } catch (e) {
           console.error("Error deleting API key", e);
-          showError("Failed to delete API key");
+          showError(t('toasts.failedToDeleteKey'));
           // rollback
           await mutateKeys()
         }
       },
-      () => showInfo("Deletion cancelled")
+      () => showInfo(t('toasts.deletionCancelled'))
     );
   };
 
