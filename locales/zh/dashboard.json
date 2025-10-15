@@ -3,5 +3,17 @@
     "title": "积分流水",
     "loading": "加载中...",
     "empty": "暂无记录"
+  },
+  "redeem": {
+    "title": "兑换码",
+    "format": "格式：KOI-ABCD-EFGH-IJKL",
+    "placeholder": "请输入兑换码",
+    "paste": "粘贴",
+    "clear": "清除",
+    "redeem": "兑换",
+    "redeeming": "兑换中...",
+    "tipEmpty": "提示：粘贴兑换码或直接输入（自动转大写）",
+    "tipLooksGood": "格式良好，可以兑换",
+    "tipInvalid": "格式不正确，例如：KOI-ABCD-EFGH-IJKL"
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FiGift, FiClipboard, FiX, FiLoader } from "react-icons/fi";
+import { useT } from "@/contexts/I18nContext";
 
 interface RedeemCodeCardProps {
   mutatePackages: () => Promise<any> | any;
@@ -26,6 +27,7 @@ function looksLikeCode(s: string) {
 }
 
 export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCardProps) {
+  const { t } = useT()
   const [redeemCode, setRedeemCode] = useState("");
   const [isRedeeming, setIsRedeeming] = useState(false);
   const isValidish = looksLikeCode(redeemCode);
@@ -36,10 +38,10 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
         const text = await navigator.clipboard.readText();
         setRedeemCode(toUpperSafe(text).trim());
       } else {
-        toast.showWarning?.('Clipboard not available');
+        toast.showWarning?.(t('toasts.clipboardNotAvailable'));
       }
     } catch {
-      toast.showWarning?.('Failed to read clipboard');
+      toast.showWarning?.(t('toasts.failedReadClipboard'));
     }
   };
 
@@ -48,7 +50,7 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
   const handleRedeem = async () => {
     if (!redeemCode) return;
     if (!isValidish) {
-      toast.showWarning?.('Please enter a valid code format');
+      toast.showWarning?.(t('toasts.invalidRedeemCodeFormat'));
       return;
     }
     setIsRedeeming(true);
@@ -60,15 +62,15 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
       })
       const data = await resp.json()
       if (resp.ok && data?.success) {
-        toast.showSuccess('Redeemed successfully. Your plan has been updated.');
+        toast.showSuccess(t('toasts.redeemedSuccessfullyPlanUpdated'));
         setRedeemCode("");
         await Promise.resolve(mutatePackages?.());
       } else {
-        const msg = data?.error || 'Failed to redeem the code';
+        const msg = data?.error || t('toasts.failedRedeemCode');
         toast.showError(msg);
       }
     } catch (e) {
-      toast.showError('Redeem failed. Please try again later.');
+      toast.showError(t('toasts.redeemFailedTryLater'));
     } finally {
       setIsRedeeming(false);
     }
@@ -110,8 +112,8 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
               <FiGift size={20} color="#ffc107" />
             </div>
             <div>
-              <h3 style={{ margin: 0, color: '#fff', fontWeight: 700, fontSize: 16 }}>Redeem Code</h3>
-              <div style={{ color: '#9aa0a6', fontSize: 12 }}>Format: KOI-ABCD-EFGH-IJKL</div>
+              <h3 style={{ margin: 0, color: '#fff', fontWeight: 700, fontSize: 16 }}>{t('dashboard.redeem.title')}</h3>
+              <div style={{ color: '#9aa0a6', fontSize: 12 }}>{t('dashboard.redeem.format')}</div>
             </div>
           </div>
         </div>
@@ -122,7 +124,7 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
             <div style={{ position: 'relative', flex: 1 }}>
               <input
                 type="text"
-                placeholder="Enter your redemption code"
+                placeholder={t('dashboard.redeem.placeholder')}
                 value={redeemCode}
                 onChange={(e) => setRedeemCode(toUpperSafe(e.target.value))}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleRedeem(); }}
@@ -143,7 +145,7 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
                 <button
                   type="button"
                   onClick={handlePaste}
-                  title="Paste"
+                  title={t('dashboard.redeem.paste')}
                   style={{
                     border: '1px solid rgba(255,255,255,0.12)',
                     background: 'rgba(255,255,255,0.06)',
@@ -159,7 +161,7 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
                   <button
                     type="button"
                     onClick={handleClear}
-                    title="Clear"
+                    title={t('dashboard.redeem.clear')}
                     style={{
                       border: '1px solid rgba(255,255,255,0.12)',
                       background: 'rgba(255,255,255,0.06)',
@@ -193,17 +195,17 @@ export default function RedeemCodeCard({ mutatePackages, toast }: RedeemCodeCard
             >
               {isRedeeming ? (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                  <FiLoader size={16} /> Redeeming...
+                  <FiLoader size={16} /> {t('dashboard.redeem.redeeming')}
                 </span>
-              ) : 'Redeem Code'}
+              ) : t('dashboard.redeem.redeem')}
             </button>
           </div>
         </div>
 
         <div style={{ marginTop: 10, color: isValidish || redeemCode.length === 0 ? '#9aa0a6' : '#ff6b6b', fontSize: 12 }}>
           {redeemCode.length === 0
-            ? 'Tip: Paste the code or type it in uppercase.'
-            : (isValidish ? 'Looks good. You can redeem now.' : 'Invalid format. Example: KOI-ABCD-EFGH-IJKL')}
+            ? t('dashboard.redeem.tipEmpty')
+            : (isValidish ? t('dashboard.redeem.tipLooksGood') : t('dashboard.redeem.tipInvalid'))}
         </div>
       </div>
     </div>

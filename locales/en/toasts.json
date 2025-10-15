@@ -47,4 +47,11 @@
   "copyFailedManual": "Copy failed, please copy manually",
   "autoCopyFailed": "Auto copy failed, please copy manually",
   "codesDownloaded": "Codes downloaded successfully"
+  ,
+  "clipboardNotAvailable": "Clipboard not available",
+  "failedReadClipboard": "Failed to read clipboard",
+  "invalidRedeemCodeFormat": "Please enter a valid code format",
+  "redeemedSuccessfullyPlanUpdated": "Redeemed successfully. Your plan has been updated.",
+  "failedRedeemCode": "Failed to redeem the code",
+  "redeemFailedTryLater": "Redeem failed. Please try again later."
 }

@@ -3,5 +3,17 @@
     "title": "Credits History",
     "loading": "Loading...",
     "empty": "No records"
+  },
+  "redeem": {
+    "title": "Redeem Code",
+    "format": "Format: KOI-ABCD-EFGH-IJKL",
+    "placeholder": "Enter your redemption code",
+    "paste": "Paste",
+    "clear": "Clear",
+    "redeem": "Redeem",
+    "redeeming": "Redeeming...",
+    "tipEmpty": "Tip: Paste the code or type it in uppercase.",
+    "tipLooksGood": "Looks good. You can redeem now.",
+    "tipInvalid": "Invalid format. Example: KOI-ABCD-EFGH-IJKL"
   }
 }

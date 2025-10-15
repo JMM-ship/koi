@@ -47,4 +47,11 @@
   "copyFailedManual": "复制失败，请手动选择复制",
   "autoCopyFailed": "自动复制失败，请手动选择文本复制",
   "codesDownloaded": "卡密已下载"
+  ,
+  "clipboardNotAvailable": "剪贴板不可用",
+  "failedReadClipboard": "读取剪贴板失败",
+  "invalidRedeemCodeFormat": "请输入有效的卡密格式",
+  "redeemedSuccessfullyPlanUpdated": "兑换成功，套餐已更新",
+  "failedRedeemCode": "兑换失败",
+  "redeemFailedTryLater": "兑换失败，请稍后再试"
 }
