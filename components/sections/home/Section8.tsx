@@ -100,7 +100,7 @@ export default function Section8() {
                                     <SwiperSlide>
                                         <div className="card-testimonial mb-lg-0 mb-5 border p-5 rounded-4" data-aos="fade-up" data-aos-delay={0}>
                                             <div className="d-flex gap-2 mb-3">
-                                                <span className="badge bg-primary">Vim User's First Choice</span>
+                                                <span className="badge bg-primary">{t('home.s8.t1.badge') || "Vim User's First Choice"}</span>
                                             </div>
                                             <div className="d-flex gap-2">
                                                 <i className="bi bi-star-fill text-primary" />
@@ -109,16 +109,16 @@ export default function Section8() {
                                                 <i className="bi bi-star-fill text-primary" />
                                                 <i className="bi bi-star-fill text-primary" />
                                             </div>
-                                            <h6 className="mb-0 mt-4 fw-medium">"Most people in our company now use Cursor, few use terminal-based tools. I'm used to Vim, and I can't get used to Cursor. I still like this tool, don't like Cursor. This AI is much stronger than Cursor!"</h6>
+                                            <h6 className="mb-0 mt-4 fw-medium">{t('home.s8.t1.quote') || "\"Most people in our company now use Cursor, few use terminal-based tools. I'm used to Vim, and I can't get used to Cursor. I still like this tool, don't like Cursor. This AI is much stronger than Cursor!\""}</h6>
                                             <div className="d-flex align-items-center mt-5">
                                                 <Link href="#">
                                                     <img className="rounded-circle icon-shape icon-50" src="assets/imgs/pages/ai-solutions/page-home/home-section-8/avatar-1.png" alt="AstraX" />
                                                 </Link>
                                                 <div className="text-start ms-3">
                                                     <Link href="#">
-                                                        <span className="btn-text">Old Li</span>
+                                                        <span className="btn-text">{t('home.s8.t1.name') || 'Old Li'}</span>
                                                     </Link>
-                                                    <p className="mb-0 fs-7">Senior Development Engineer, Tech Company</p>
+                                                    <p className="mb-0 fs-7">{t('home.s8.t1.role') || 'Senior Development Engineer, Tech Company'}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -126,7 +126,7 @@ export default function Section8() {
                                     <SwiperSlide>
                                         <div className="card-testimonial mb-lg-0 mb-5 border p-5 rounded-4" data-aos="fade-up" data-aos-delay={200}>
                                             <div className="d-flex gap-2 mb-3">
-                                                <span className="badge bg-primary">Code Refactoring Artifact</span>
+                                                <span className="badge bg-primary">{t('home.s8.t2.badge') || 'Code Refactoring Artifact'}</span>
                                             </div>
                                             <div className="d-flex gap-2">
                                                 <i className="bi bi-star-fill text-primary" />
@@ -135,16 +135,16 @@ export default function Section8() {
                                                 <i className="bi bi-star-fill text-primary" />
                                                 <i className="bi bi-star-fill text-primary" />
                                             </div>
-                                            <h6 className="mb-0 mt-4 fw-medium">"This AI is too powerful! It refactored all the messy code I wrote ten thousand years ago. Code quality has improved by more than one level, and old projects I dared not touch before can now be easily maintained."</h6>
+                                            <h6 className="mb-0 mt-4 fw-medium">{t('home.s8.t2.quote') || "\"This AI is too powerful! It refactored all the messy code I wrote ten thousand years ago. Code quality has improved by more than one level, and old projects I dared not touch before can now be easily maintained.\""}</h6>
                                             <div className="d-flex align-items-center mt-5">
                                                 <Link href="#">
                                                     <img className="rounded-circle icon-shape icon-50" src="assets/imgs/pages/ai-solutions/page-home/home-section-8/avatar-2.png" alt="AstraX" />
                                                 </Link>
                                                 <div className="text-start ms-3">
                                                     <Link href="#">
-                                                        <span className="btn-text">Engineer Zhang</span>
+                                                        <span className="btn-text">{t('home.s8.t2.name') || 'Engineer Zhang'}</span>
                                                     </Link>
-                                                    <p className="mb-0 fs-7">Architect, Internet Company</p>
+                                                    <p className="mb-0 fs-7">{t('home.s8.t2.role') || 'Architect, Internet Company'}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -152,7 +152,7 @@ export default function Section8() {
                                     <SwiperSlide>
                                         <div className="card-testimonial mb-lg-0 mb-5 border p-5 rounded-4" data-aos="fade-up" data-aos-delay={400}>
                                             <div className="d-flex gap-2 mb-3">
-                                                <span className="badge bg-primary">King of Cost-Effectiveness</span>
+                                                <span className="badge bg-primary">{t('home.s8.t3.badge') || 'King of Cost-Effectiveness'}</span>
                                             </div>
                                             <div className="d-flex gap-2">
                                                 <i className="bi bi-star-fill text-primary" />
@@ -161,16 +161,16 @@ export default function Section8() {
                                                 <i className="bi bi-star-fill text-primary" />
                                                 <i className="bi bi-star-fill text-primary" />
                                             </div>
-                                            <h6 className="mb-0 mt-4 fw-medium">"Used it for 2 months, very stable! The official price for one month can be used for 4 months here, it's cheap and easy to use, and development efficiency has increased several times. Cursor's 500 quick requests are simply not enough."</h6>
+                                            <h6 className="mb-0 mt-4 fw-medium">{t('home.s8.t3.quote') || "\"Used it for 2 months, very stable! The official price for one month can be used for 4 months here, it's cheap and easy to use, and development efficiency has increased several times. Cursor's 500 quick requests are simply not enough.\""}</h6>
                                             <div className="d-flex align-items-center mt-5">
                                                 <Link href="#">
                                                     <img className="rounded-circle icon-shape icon-50" src="assets/imgs/pages/ai-solutions/page-home/home-section-8/avatar-3.png" alt="AstraX" />
                                                 </Link>
                                                 <div className="text-start ms-3">
                                                     <Link href="#">
-                                                        <span className="btn-text">Little Wang</span>
+                                                        <span className="btn-text">{t('home.s8.t3.name') || 'Little Wang'}</span>
                                                     </Link>
-                                                    <p className="mb-0 fs-7">Full-stack Engineer, Independent Developer</p>
+                                                    <p className="mb-0 fs-7">{t('home.s8.t3.role') || 'Full-stack Engineer, Independent Developer'}</p>
                                                 </div>
                                             </div>
                                         </div>

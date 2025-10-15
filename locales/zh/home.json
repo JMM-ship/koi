@@ -80,7 +80,52 @@
   "s6": {
     "tag": "对比分析",
     "title": "全面对比分析",
-    "subtitle": "为什么选择我们？服务体验一致，价格仅为官方的 28%"
+    "subtitle": "为什么选择我们？服务体验一致，价格仅为官方的 28%",
+    "perMonth": "／月",
+    "labels": {
+      "monthlyPrice": "月费",
+      "usageLimit": "使用上限",
+      "platform": "平台兼容性",
+      "speed": "响应速度",
+      "security": "账号安全",
+      "billing": "计费方式",
+      "support": "技术支持"
+    },
+    "koi": {
+      "badge": "最佳选择",
+      "save": "省 75%",
+      "usageLimitValue": "每日 9000 积分 ✓",
+      "platformValue": "一份订阅，多平台可用 ✓",
+      "speedValue": "全速 ✓",
+      "securityValue": "零封禁风险 ✓",
+      "billingValue": "计费更灵活 ✓",
+      "supportValue": "工程师 1v1 ✓",
+      "cta": "立即开始"
+    },
+    "claude": {
+      "badge": "官方产品",
+      "title": "Claude 官方",
+      "subnote": "价格过高",
+      "monthlyPriceValue": "$200/\u6708 ✗",
+      "usageLimitValue": "每日 10,800 积分 ✓",
+      "platformValue": "仅限 Claude 官网 ✗",
+      "speedValue": "标准速度 ✓",
+      "securityValue": "存在封禁风险 ✗",
+      "billingValue": "固定月费 ✗",
+      "supportValue": "邮箱支持 ✗"
+    },
+    "cursor": {
+      "badge": "代码编辑器工具",
+      "title": "Cursor",
+      "subnote": "+ 额外计费",
+      "monthlyPriceValue": "$20 + 额外费用 △",
+      "usageLimitValue": "500 次后限速 ✗",
+      "platformValue": "仅 IDE ✗",
+      "speedValue": "限速后极慢 ✗",
+      "securityValue": "相对安全 ✓",
+      "billingValue": "固定月费 ✗",
+      "supportValue": "社区支持 △"
+    }
   },
   "s7": {
     "tag": "常见问答",
@@ -100,6 +145,24 @@
   },
   "s8": {
     "tag": "用户见证",
-    "title": "真实用户反馈"
+    "title": "真实用户反馈",
+    "t1": {
+      "badge": "Vim 用户首选",
+      "quote": "\"公司里大多数人都用 Cursor，很少有人用终端类工具。我一直用 Vim，用不惯 Cursor。我还是喜欢这个工具，不喜欢 Cursor。这个 AI 比 Cursor 强太多了！\"",
+      "name": "老李",
+      "role": "资深开发工程师 · 科技公司"
+    },
+    "t2": {
+      "badge": "代码重构神器",
+      "quote": "\"这 AI 太强了！它把我一万年前写的烂代码都重构了，代码质量提升不止一个档次，以前不敢动的老项目现在也能轻松维护了。\"",
+      "name": "工程师张",
+      "role": "架构师 · 互联网公司"
+    },
+    "t3": {
+      "badge": "性价比之王",
+      "quote": "\"用了 2 个月，非常稳定！官方一个月的价格在这里能用 4 个月，便宜好用，开发效率提升数倍。Cursor 的 500 次快请求根本不够用。\"",
+      "name": "小王",
+      "role": "全栈工程师 · 独立开发者"
+    }
   }
 }

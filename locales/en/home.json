@@ -80,7 +80,52 @@
   "s6": {
     "tag": "COMPARISON",
     "title": "Full Comparison Analysis",
-    "subtitle": "Why choose us? Same service experience, price only 28% of official"
+    "subtitle": "Why choose us? Same service experience, price only 28% of official",
+    "perMonth": "/month",
+    "labels": {
+      "monthlyPrice": "Monthly Price",
+      "usageLimit": "Usage Limit",
+      "platform": "Platform Compatibility",
+      "speed": "Response Speed",
+      "security": "Account Security",
+      "billing": "Billing Method",
+      "support": "Tech Support"
+    },
+    "koi": {
+      "badge": "Best Choice",
+      "save": "Save 75%",
+      "usageLimitValue": "9000 credits daily ✓",
+      "platformValue": "One subscription, multi-platform ✓",
+      "speedValue": "Full speed ✓",
+      "securityValue": "Zero ban risk ✓",
+      "billingValue": "Flexible billing ✓",
+      "supportValue": "1v1 Engineer ✓",
+      "cta": "Get Started Now"
+    },
+    "claude": {
+      "badge": "Official Product",
+      "title": "Claude Official",
+      "subnote": "too expensive",
+      "monthlyPriceValue": "$200/month ✗",
+      "usageLimitValue": "10,800 credits daily ✓",
+      "platformValue": "Official Claude website only ✗",
+      "speedValue": "Standard speed ✓",
+      "securityValue": "Ban risk exists ✗",
+      "billingValue": "Fixed monthly ✗",
+      "supportValue": "Email support ✗"
+    },
+    "cursor": {
+      "badge": "Code Editor Tool",
+      "title": "Cursor",
+      "subnote": "+ Extra charges",
+      "monthlyPriceValue": "$20 + extra △",
+      "usageLimitValue": "500 times then rate limit ✗",
+      "platformValue": "IDE only ✗",
+      "speedValue": "Extremely slow after limit ✗",
+      "securityValue": "Relatively safe ✓",
+      "billingValue": "Fixed monthly ✗",
+      "supportValue": "Community support △"
+    }
   },
   "s7": {
     "tag": "FAQ & A",
@@ -100,6 +145,24 @@
   },
   "s8": {
     "tag": "testimonials",
-    "title": "Real User Feedback"
+    "title": "Real User Feedback",
+    "t1": {
+      "badge": "Vim User's First Choice",
+      "quote": "\"Most people in our company now use Cursor, few use terminal-based tools. I'm used to Vim, and I can't get used to Cursor. I still like this tool, don't like Cursor. This AI is much stronger than Cursor!\"",
+      "name": "Old Li",
+      "role": "Senior Development Engineer, Tech Company"
+    },
+    "t2": {
+      "badge": "Code Refactoring Artifact",
+      "quote": "\"This AI is too powerful! It refactored all the messy code I wrote ten thousand years ago. Code quality has improved by more than one level, and old projects I dared not touch before can now be easily maintained.\"",
+      "name": "Engineer Zhang",
+      "role": "Architect, Internet Company"
+    },
+    "t3": {
+      "badge": "King of Cost-Effectiveness",
+      "quote": "\"Used it for 2 months, very stable! The official price for one month can be used for 4 months here, it's cheap and easy to use, and development efficiency has increased several times. Cursor's 500 quick requests are simply not enough.\"",
+      "name": "Little Wang",
+      "role": "Full-stack Engineer, Independent Developer"
+    }
   }
 }
