@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions as any)
+    const session = await getServerSession(authOptions)
     if (!session || !session.user?.email) {
       return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Unauthorized' } }, { status: 401 })
     }
@@ -20,10 +20,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: { code: 'INVALID_LOCALE', message: 'Unsupported locale' } }, { status: 422 })
     }
 
-    await prisma.user.update({ where: { email: session.user.email }, data: { locale } })
+    const userId = (session.user as any).id as string | undefined
+    if (!userId) {
+      return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Unauthorized' } }, { status: 401 })
+    }
+    await prisma.user.update({ where: { id: userId }, data: { locale } })
     return NextResponse.json({ success: true, data: { locale } }, { status: 200 })
   } catch (e) {
     return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR' } }, { status: 500 })
   }
 }
-

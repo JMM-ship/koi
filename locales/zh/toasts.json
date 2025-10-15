@@ -21,4 +21,6 @@
   "passwordChangedSuccess": "密码修改成功！",
   "failedToChangePassword": "修改密码失败",
   "changePasswordError": "修改密码时发生错误"
+  ,
+  "logoutFailedRetry": "退出登录失败，请重试"
 }

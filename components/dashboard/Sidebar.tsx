@@ -30,6 +30,7 @@ import {
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from '@/hooks/useToast'
+import { useT } from '@/contexts/I18nContext'
 
 interface MenuItem {
   id: number;
@@ -68,6 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const { confirmState, showConfirm } = useConfirm();
   const { showError } = useToast()
+  const { t } = useT()
   // 检查是否为管理员
   const isAdmin = session?.user?.role === 'admin';
 
@@ -98,21 +100,21 @@ const Sidebar: React.FC<SidebarProps> = ({
 
 
   const menuItems: MenuItem[] = [
-    { id: 1, icon: FiGrid, label: "Dashboard", path: "dashboard", active: activeTab === "dashboard" },
-    { id: 3, icon: FiSlack, label: "API Keys", path: "api-keys", active: activeTab === "api-keys" },
-    { id: 4, icon: FiShoppingBag, label: "Purchase Plans", path: "plans", active: activeTab === "plans" },
-    { id: 5, icon: FiUsers, label: "Referral Program", path: "referral", active: activeTab === "referral" },
+    { id: 1, icon: FiGrid, label: t('sidebar.dashboard'), path: "dashboard", active: activeTab === "dashboard" },
+    { id: 3, icon: FiSlack, label: t('sidebar.apiKeys'), path: "api-keys", active: activeTab === "api-keys" },
+    { id: 4, icon: FiShoppingBag, label: t('sidebar.purchasePlans'), path: "plans", active: activeTab === "plans" },
+    { id: 5, icon: FiUsers, label: t('sidebar.referralProgram'), path: "referral", active: activeTab === "referral" },
   ];
 
   // 管理员菜单项
   const adminItems: MenuItem[] = isAdmin ? [
-    { id: 10, icon: FiShield, label: "Admin Panel", path: "admin", active: activeTab === "admin" },
-    { id: 11, icon: FiUsers, label: "User Management", path: "admin-users", active: activeTab === "admin-users" },
-    { id: 12, icon: FiKey, label: "Code Management", path: "admin-codes", active: activeTab === "admin-codes" },
+    { id: 10, icon: FiShield, label: t('sidebar.adminPanel'), path: "admin", active: activeTab === "admin" },
+    { id: 11, icon: FiUsers, label: t('sidebar.userManagement'), path: "admin-users", active: activeTab === "admin-users" },
+    { id: 12, icon: FiKey, label: t('sidebar.codeManagement'), path: "admin-codes", active: activeTab === "admin-codes" },
   ] : [];
 
   const accountItems: MenuItem[] = [
-    { id: 2, icon: FiUser, label: "Profile", path: "profile", active: activeTab === "profile" },
+    { id: 2, icon: FiUser, label: t('sidebar.profile'), path: "profile", active: activeTab === "profile" },
   ];
 
   const toggleSidebar = () => {
@@ -162,7 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       });
 
     } catch (error) {
-      showError("Logout failed, please retry")
+      showError(t('toasts.logoutFailedRetry') || 'Logout failed, please retry')
       setIsLoggingOut(false);
     }
   };

@@ -21,4 +21,6 @@
   "passwordChangedSuccess": "Password changed successfully!",
   "failedToChangePassword": "Failed to change password",
   "changePasswordError": "An error occurred while changing password"
+  ,
+  "logoutFailedRetry": "Logout failed, please retry"
 }
