@@ -7,8 +7,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useToast } from '@/hooks/useToast'
 import GoogleOneTap from '@/components/auth/GoogleOneTap'
+import { useT } from '@/contexts/I18nContext'
 
 export default function SignInPage() {
+    let t = (k: string) => k
+    try { t = useT().t } catch {}
     const router = useRouter()
     const searchParams = useSearchParams()
     const { showSuccess, showError, showInfo } = useToast()
@@ -223,7 +226,7 @@ export default function SignInPage() {
                                             className={`nav-link text-white ${isLogin ? 'active bg-gradient' : ''}`}
                                             onClick={() => { setIsLogin(true); setError('') }}
                                         >
-                                            Login
+                                            {t('auth.login')}
                                         </button>
                                     </li>
                                     <li className="nav-item">
@@ -231,7 +234,7 @@ export default function SignInPage() {
                                             className={`nav-link text-white ${!isLogin ? 'active bg-gradient' : ''}`}
                                             onClick={() => { setIsLogin(false); setError('') }}
                                         >
-                                            Register
+                                            {t('auth.register')}
                                         </button>
                                     </li>
                                 </ul>
@@ -247,7 +250,7 @@ export default function SignInPage() {
                                 {isLogin ? (
                                     <form onSubmit={handleLogin}>
                                         <div className="mb-3">
-                                            <label className="form-label text-white">Email</label>
+                                            <label className="form-label text-white">{t('auth.email')}</label>
                                             <input
                                                 type="email"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -257,7 +260,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-4">
-                                            <label className="form-label text-white">Password</label>
+                                            <label className="form-label text-white">{t('auth.password')}</label>
                                             <input
                                                 type="password"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -311,7 +314,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label text-white">Email</label>
+                                            <label className="form-label text-white">{t('auth.email')}</label>
                                             <input
                                                 type="email"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -321,7 +324,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label text-white">Password</label>
+                                            <label className="form-label text-white">{t('auth.password')}</label>
                                             <input
                                                 type="password"
                                                 className="form-control bg-dark text-white border-secondary"
@@ -332,7 +335,7 @@ export default function SignInPage() {
                                             />
                                         </div>
                                         <div className="mb-4">
-                                            <label className="form-label text-white">Verification Code</label>
+                                            <label className="form-label text-white">{t('auth.verificationCode')}</label>
                                             <div className="input-group">
                                                 <input
                                                     type="text"
@@ -347,7 +350,7 @@ export default function SignInPage() {
                                                     onClick={sendVerificationCode}
                                                     disabled={loading || countdown > 0}
                                                 >
-                                                    {countdown > 0 ? `${countdown}s` : 'Send Code'}
+                                                    {countdown > 0 ? `${countdown}s` : t('auth.sendCode')}
                                                 </button>
                                             </div>
                                         </div>
@@ -364,7 +367,7 @@ export default function SignInPage() {
                                 {/* Divider */}
                                 <div className="d-flex align-items-center my-4">
                                     <hr className="flex-grow-1 text-secondary" />
-                                    <span className="px-3 text-white">or</span>
+                                    <span className="px-3 text-white">{t('auth.or')}</span>
                                     <hr className="flex-grow-1 text-secondary" />
                                 </div>
 
@@ -380,7 +383,7 @@ export default function SignInPage() {
                                         <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
                                         <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
                                     </svg>
-                                    Sign in with Google
+                                    {t('auth.signInWithGoogle')}
                                 </button>
                             </div>
                         </div>

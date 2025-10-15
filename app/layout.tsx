@@ -15,6 +15,9 @@ import "/public/assets/css/responsive-units.css";
 import "/public/assets/css/style.css";
 
 import type { Metadata } from "next";
+import { headers, cookies } from 'next/headers'
+import { resolveLocaleFrom, getDictionary } from '@/lib/i18n/server'
+import I18nClientProvider from '@/app/i18n/I18nClientProvider'
 import { Libre_Franklin, Rubik } from "next/font/google";
 import { Providers } from "./providers";
 import DebugProvider from "@/components/debug/DebugProvider";
@@ -42,19 +45,30 @@ export const metadata: Metadata = {
     },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    // Resolve locale from cookie and Accept-Language; user locale will be wired later if needed
+    const cookieStore = cookies()
+    const cookieLocale = cookieStore.get('LOCALE')?.value || null
+    const acceptLanguage = headers().get('accept-language') || null
+    const locale = resolveLocaleFrom({ userLocale: undefined, cookieLocale, acceptLanguage })
+    const namespaces = ['common','header','auth','dashboard','reasons','buckets']
+    const dictEn = await getDictionary('en', namespaces)
+    const dictZh = await getDictionary('zh', namespaces)
+    const dicts = { en: dictEn, zh: dictZh }
     return (
-        <html lang="en">
+        <html lang={locale}>
             <body className={`${LibreFranklinHeading.variable} ${rubik.variable}`}>
                 <Providers>
-                    <DebugProvider>
-                        {children}
-                    </DebugProvider>
-                    <ToastProvider />
+                    <I18nClientProvider locale={locale} dicts={dicts}>
+                        <DebugProvider>
+                            {children}
+                        </DebugProvider>
+                        <ToastProvider />
+                    </I18nClientProvider>
                 </Providers>
             </body>
         </html>

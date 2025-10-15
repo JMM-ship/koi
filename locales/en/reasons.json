@@ -1,0 +1,14 @@
+{
+  "dailyReset": "Daily credits reset",
+  "purchasedIndependent": "Purchased independent credits",
+  "activatedPackage": "Activated package credits",
+  "packagePurchaseReset": "Package purchase reset",
+  "orderRefundPackage": "Order refund deduction (package)",
+  "orderRefundIndependent": "Order refund deduction (independent)",
+  "newUserBonus": "New user signup bonus",
+  "autoRecoveryHourly": "Auto recovery (hourly)",
+  "manualResetToCap": "Manual reset to cap",
+  "referralInviter": "Referral reward - inviter",
+  "referralInvitee": "Referral reward - invitee",
+  "serviceUsage": "Service usage - {service}"
+}

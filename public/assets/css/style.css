@@ -211,6 +211,48 @@
   border-radius: var(--bs-progress-border-radius);
 }
 
+/* Language switcher (koi-lang) */
+.koi-lang .dropdown-toggle::after { display: none !important; }
+.koi-lang__toggle {
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--tc-system-white);
+}
+.koi-lang__toggle:hover,
+.koi-lang__toggle:active,
+.koi-lang__toggle:focus {
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.koi-lang__menu {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+.koi-lang__item {
+  background-color: transparent !important;
+}
+.koi-lang__item:hover,
+.koi-lang__item:focus,
+.koi-lang__item.active {
+  background-color: transparent !important;
+}
+.koi-lang__item-text {
+  background: var(--tc-linear-1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.koi-lang__label {
+  background: var(--tc-linear-1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .tag-process .icon-shape {
   transform: rotate(90deg);
 }

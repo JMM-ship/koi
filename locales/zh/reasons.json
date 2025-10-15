@@ -1,0 +1,14 @@
+{
+  "dailyReset": "每日积分重置",
+  "purchasedIndependent": "购买独立积分",
+  "activatedPackage": "激活套餐积分",
+  "packagePurchaseReset": "购买套餐重置积分",
+  "orderRefundPackage": "订单退款扣减积分（套餐）",
+  "orderRefundIndependent": "订单退款扣减积分（独立）",
+  "newUserBonus": "新用户注册奖励",
+  "autoRecoveryHourly": "自动恢复（每小时恢复）",
+  "manualResetToCap": "手动重置到上限",
+  "referralInviter": "推荐奖励-邀请人",
+  "referralInvitee": "推荐奖励-被邀请人",
+  "serviceUsage": "{service}服务消耗"
+}
