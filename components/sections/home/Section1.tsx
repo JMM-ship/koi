@@ -1,6 +1,10 @@
+"use client";
 import Link from "next/link";
+import { useT } from "@/contexts/I18nContext";
 
 export default function Section1() {
+    let t = (k: string) => k
+    try { t = useT().t } catch {}
     return (
         <>
             {/*ai-solutions home section 1*/}
@@ -12,24 +16,24 @@ export default function Section1() {
                     <div className="row align-items-center">
                         <div className="col-10 mx-auto">
                             <h1 className="text-white fs-120 mb-0 text-lg-center text-anime-style-2">KOI</h1>
-                            <h1 className="text-white fs-240 mb-0 text-lg-center text-anime-style-1">Your Coding Assistant</h1>
+                            <h1 className="text-white fs-240 mb-0 text-lg-center text-anime-style-1">{t('home.s1.subtitle') || 'Your Coding Assistant'}</h1>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-lg-8 mx-auto mt-4">
                             <p className="text-white fs-5 text-center mb-4">
-                                KOI brings together leading AI models for a one-stop experience. Explore GPT-5, Claude Opus 4.1, Claude Sonnet 4.5, and Gemini (coming soon).
+                                {t('home.s1.description') || 'KOI brings together leading AI models for a one-stop experience. Explore GPT-5, Claude Opus 4.1, Claude Sonnet 4.5, and Gemini (coming soon).'}
                             </p>
                             <div className="text-center">
                                 <span className="text-warning fs-6 me-3">🎁</span>
-                                <span className="text-white fs-6">Register now to experience professional AI assistant models and services</span>
+                                <span className="text-white fs-6">{t('home.s1.registerNote') || 'Register now to experience professional AI assistant models and services'}</span>
                             </div>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-lg-6 mx-auto mt-5 text-center">
                             <Link href="/auth/signin" className="btn btn-linear m-2 fs-7 fw-bold" type="submit" aria-label="generate" data-aos="fade-zoom-in" data-aos-delay={100}>
-                                Get Started
+                                {t('home.s1.cta') || 'Get Started'}
                             </Link>
                         </div>
                     </div>
