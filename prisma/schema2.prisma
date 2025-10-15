@@ -1,0 +1,395 @@
+// PostgreSQL Schema for Supabase
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ========== 用户模型 ==========
+model User {
+  id String @id @default(uuid()) @db.Uuid
+  email          String
+  nickname       String?
+  avatarUrl      String?   @map("avatar_url")
+  locale         String?
+  signinType     String?   @map("signin_type")
+  signinIp       String?   @map("signin_ip")
+  signinProvider String?   @map("signin_provider")
+  signinOpenid   String?   @map("signin_openid")
+  inviteCode     String    @default("") @map("invite_code")
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  invitedBy      String    @default("") @map("invited_by")
+  isAffiliate    Boolean   @default(false) @map("is_affiliate")
+  password       String?
+  role           String    @default("user")
+  status         String    @default("active")
+  planType       String    @default("free") @map("plan_type")
+  planExpiredAt  DateTime? @map("plan_expired_at") @db.Timestamptz
+  totalCredits   Int       @default(0) @map("total_credits")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  // 关联
+  orders             Order[]
+  wallets            Wallet?
+  apiKeys            ApiKey[]
+  userPackages       UserPackage[]
+  oauthSessions      OauthSession[]
+  auditLogs          AdminAuditLog[]
+  usageRecords       UsageRecord[]
+  creditTransactions CreditTransaction[]
+
+  @@map("users")
+
+  // 索引
+  @@unique([email, signinProvider], name: "uk_email_provider")
+  @@index([email], name: "idx_email")
+  @@index([inviteCode], name: "idx_invite_code")
+}
+
+// ========== 账户组模型 ==========
+model AccountGroup {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String   @unique
+  provider      String
+  strategy      String
+  defaultRegion String?  @map("default_region")
+  defaultModels Json     @default("{}") @map("default_models")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关联
+  providerAccounts ProviderAccount[]
+
+  @@map("account_groups")
+}
+
+// ========== 提供商账户模型 ==========
+model ProviderAccount {
+  id                   String    @id @default(uuid()) @db.Uuid
+  provider             String
+  name                 String?
+  region               String?
+  allowedModels        Json      @default("[]") @map("allowed_models")
+  credentialRef        String?   @map("credential_ref")
+  encryptedCredentials Json?     @map("encrypted_credentials")
+  maxConcurrency       Int?      @map("max_concurrency")
+  maxRpm               Int?      @map("max_rpm")
+  maxTpm               Int?      @map("max_tpm")
+  dailyTokensLimit     BigInt?   @map("daily_tokens_limit")
+  weight               Int       @default(1)
+  priority             Int       @default(0)
+  isActive             Boolean   @default(true) @map("is_active")
+  groupId              String?   @map("group_id") @db.Uuid
+  status               String    @default("healthy")
+  lastError            String?   @map("last_error")
+  cooldownUntil        DateTime? @map("cooldown_until") @db.Timestamptz
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关联
+  group           AccountGroup?    @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  usageAggregates UsageAggregate[]
+
+  @@index([provider])
+  @@index([groupId])
+  @@index([isActive])
+  @@map("provider_accounts")
+}
+
+// ========== 套餐模型 ==========
+model Package {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  version       String
+  description   String?
+  priceCents    Int      @map("price_cents")
+  currency      String   @default("USD")
+  dailyPoints   Int      @map("daily_points")
+  planType      String   @map("plan_type")
+  validDays     Int?     @map("valid_days")
+  features      Json     @default("{}")
+  limitations   Json     @default("{}")
+  isActive      Boolean  @default(true) @map("is_active")
+  sortOrder     Int      @default(0) @map("sort_order")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关联
+  orders       Order[]
+  userPackages UserPackage[]
+
+  @@unique([name, version])
+  @@index([isActive])
+  @@map("packages")
+}
+
+// ========== 订单模型 ==========
+model Order {
+  id                String    @id @default(uuid()) @db.Uuid
+  orderNo           String    @unique @map("order_no")
+  userId            String    @map("user_id") @db.Uuid
+  status            String    @default("created")
+  amountCents       Int       @map("amount_cents")
+  currency          String
+  productType       String    @map("product_type")
+  packageId         String?   @map("package_id") @db.Uuid
+  creditsPoints     Int?      @map("credits_points")
+  paymentProvider   String?   @map("payment_provider")
+  paymentSessionId  String?   @map("payment_session_id")
+  paidAt            DateTime? @map("paid_at") @db.Timestamptz
+  details           Json      @default("{}")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关联
+  user              User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  package           Package?            @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  userPackages      UserPackage[]
+  creditTransactions CreditTransaction[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+// ========== 钱包模型 ==========
+model Wallet {
+  userId                 String    @id @map("user_id") @db.Uuid
+  packageDailyQuotaTokens BigInt   @default(0) @map("package_daily_quota_tokens")
+  packageTokensRemaining  BigInt   @default(0) @map("package_tokens_remaining")
+  packageResetAt          DateTime? @map("package_reset_at") @db.Timestamptz
+  independentTokens       BigInt   @default(0) @map("independent_tokens")
+  lockedTokens            BigInt   @default(0) @map("locked_tokens")
+  version                 Int      @default(0)
+  createdAt               DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt               DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@map("wallets")
+}
+
+// ========== API密钥模型 ==========
+model ApiKey {
+  id           String    @id @default(uuid()) @db.Uuid
+  ownerUserId  String    @map("owner_user_id") @db.Uuid
+  keyHash      String    @unique @map("key_hash")
+  prefix       String
+  name         String?
+  status       String    @default("active")
+  expiresAt    DateTime? @map("expires_at") @db.Timestamptz
+  meta         Json      @default("{}")
+  lastUsedAt   DateTime? @map("last_used_at") @db.Timestamptz
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关联
+  owner           User              @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  usageRecords    UsageRecord[]
+  costAggregates  CostAggregate[]
+  usageAggregates UsageAggregate[]
+
+  @@index([ownerUserId])
+  @@index([status])
+  @@map("api_keys")
+}
+
+// ========== 用户套餐模型 ==========
+model UserPackage {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  packageId        String   @map("package_id") @db.Uuid
+  orderId          String?  @map("order_id") @db.Uuid
+  startAt          DateTime @map("start_at") @db.Timestamptz
+  endAt            DateTime @map("end_at") @db.Timestamptz
+  dailyPoints      Int      @map("daily_points")
+  dailyQuotaTokens BigInt   @map("daily_quota_tokens")
+  isActive         Boolean  @default(true) @map("is_active")
+  packageSnapshot  Json     @default("{}") @map("package_snapshot")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关联
+  user    User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  package Package  @relation(fields: [packageId], references: [id], onDelete: Restrict)
+  order   Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isActive])
+  @@index([userId, startAt, endAt])
+  @@map("user_packages")
+}
+
+// ========== 使用记录模型 ==========
+model UsageRecord {
+  id                     String    @id @default(uuid()) @db.Uuid
+  requestId              String    @unique @map("request_id")
+  userId                 String    @map("user_id") @db.Uuid
+  apiKeyId               String?   @map("api_key_id") @db.Uuid
+  provider               String
+  model                  String
+  promptTokens           Int       @default(0) @map("prompt_tokens")
+  completionTokens       Int       @default(0) @map("completion_tokens")
+  cacheTokens            Int       @default(0) @map("cache_tokens")
+  totalTokens            Int       @default(0) @map("total_tokens")
+  tokensCharged          Int       @default(0) @map("tokens_charged")
+  pointsCharged          Int       @default(0) @map("points_charged")
+  bucketPackageTokens    Int       @default(0) @map("bucket_package_tokens")
+  bucketIndependentTokens Int      @default(0) @map("bucket_independent_tokens")
+  status                 String
+  errorCode              String?   @map("error_code")
+  latencyMs              Int?      @map("latency_ms")
+  meta                   Json      @default("{}")
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  // 关联
+  user   User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  apiKey ApiKey? @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([apiKeyId])
+  @@index([createdAt])
+  @@map("usage_records")
+}
+
+// ========== 积分交易模型 ==========
+model CreditTransaction {
+  id                       String    @id @default(uuid()) @db.Uuid
+  userId                   String    @map("user_id") @db.Uuid
+  type                     String
+  bucket                   String
+  tokens                   Int
+  points                   Int
+  beforePackageTokens      BigInt?   @map("before_package_tokens")
+  afterPackageTokens       BigInt?   @map("after_package_tokens")
+  beforeIndependentTokens  BigInt?   @map("before_independent_tokens")
+  afterIndependentTokens   BigInt?   @map("after_independent_tokens")
+  requestId                String?   @map("request_id")
+  orderId                  String?   @map("order_id") @db.Uuid
+  reason                   String?
+  meta                     Json      @default("{}")
+  createdAt                DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  // 关联
+  user  User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([orderId])
+  @@index([requestId])
+  @@map("credit_transactions")
+}
+
+// ========== 速率限制策略模型 ==========
+model RateLimitPolicy {
+  id                     String   @id @default(uuid()) @db.Uuid
+  subjectType            String   @map("subject_type")
+  subjectId              String   @map("subject_id") @db.Uuid
+  windowMinutes          Int?     @map("window_minutes")
+  maxRequests            Int?     @map("max_requests")
+  maxTokens              Int?     @map("max_tokens")
+  maxPoints              Int?     @map("max_points")
+  dailyPointsLimit       Int?     @map("daily_points_limit")
+  weeklyModelPointsLimit Json     @default("{}") @map("weekly_model_points_limit")
+  enabled                Boolean  @default(true)
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt              DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@unique([subjectType, subjectId])
+  @@index([enabled])
+  @@map("rate_limit_policies")
+}
+
+// ========== 管理员审计日志模型 ==========
+model AdminAuditLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  adminUserId  String   @map("admin_user_id") @db.Uuid
+  action       String
+  targetType   String   @map("target_type")
+  targetId     String   @map("target_id")
+  before       Json?
+  after        Json?
+  ip           String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // 关联
+  admin User @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
+
+  @@index([adminUserId])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
+}
+
+// ========== OAuth会话模型 ==========
+model OauthSession {
+  sessionId String   @id @map("session_id")
+  userId    String   @map("user_id") @db.Uuid
+  type      String
+  data      Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("oauth_sessions")
+}
+
+// ========== 邮箱验证码模型 ==========
+model EmailVerificationCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String
+  code      String   @db.VarChar(6)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  isUsed    Boolean  @default(false) @map("is_used")
+
+  @@map("email_verification_codes")
+  @@index([email, code], name: "idx_email_code")
+  @@index([expiresAt], name: "idx_expires_at")
+  @@index([createdAt], name: "idx_created_at")
+}
+
+// ========== 成本聚合模型 ==========
+model CostAggregate {
+  apiKeyId    String   @map("api_key_id") @db.Uuid
+  granularity String
+  bucketAt    DateTime @map("bucket_at") @db.Timestamptz
+  amount      Decimal  @default(0) @db.Decimal
+
+  // 关联
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@id([apiKeyId, granularity, bucketAt])
+  @@map("cost_aggregates")
+}
+
+// ========== 使用聚合模型 ==========
+model UsageAggregate {
+  apiKeyId     String   @map("api_key_id") @db.Uuid
+  accountId    String?  @map("account_id") @db.Uuid
+  model        String
+  granularity  String
+  bucketAt     DateTime @map("bucket_at") @db.Timestamptz
+  inputTokens  BigInt   @default(0) @map("input_tokens")
+  outputTokens BigInt   @default(0) @map("output_tokens")
+  cacheTokens  BigInt   @default(0) @map("cache_tokens")
+  allTokens    BigInt   @default(0) @map("all_tokens")
+  requests     BigInt   @default(0)
+
+  // 关联
+  apiKey  ApiKey           @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  account ProviderAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+
+  @@id([apiKeyId, model, granularity, bucketAt])
+  @@map("usage_aggregates")
+}

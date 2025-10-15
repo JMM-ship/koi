@@ -1,0 +1,131 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/auth/config';
+import { createOrder, OrderType } from '@/app/service/orderProcessor';
+import { findUserByEmail } from '@/app/models/user';
+
+// POST /api/orders/create - 创建订单
+export async function POST(request: NextRequest) {
+  try {
+    // 验证用户登录
+    const session = await getServerSession(authOptions);
+    if ((!session?.user?.uuid && !session?.user?.id) || !session?.user?.email) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'AUTH_REQUIRED',
+            message: 'Authentication required',
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: 401 }
+      );
+    }
+    
+    // 解析请求体
+    const body = await request.json();
+    const {
+      orderType,
+      packageId,
+      creditAmount,
+      paymentMethod = 'stripe',
+      couponCode,
+      upgradeDiscount = 0, // 升级折扣金额
+      renewMonths = 1, // 续费月数
+    } = body;
+    
+    // 验证参数
+    if (!orderType || !Object.values(OrderType).includes(orderType)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_PARAMS',
+            message: 'Invalid order type',
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: 400 }
+      );
+    }
+    
+    if (orderType === OrderType.Package && !packageId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_PARAMS',
+            message: 'Package ID is required for package orders',
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: 400 }
+      );
+    }
+    
+    if (orderType === OrderType.Credits && (!creditAmount || creditAmount <= 0)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_PARAMS',
+            message: 'Valid credit amount is required for credit orders',
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: 400 }
+      );
+    }
+    
+    // 创建订单
+    const user = await findUserByEmail(session.user.email)
+
+    const result = await createOrder({
+      userId: user?.id!,
+      userEmail: session.user.email,
+      orderType,
+      packageId,
+      creditAmount,
+      paymentMethod,
+      couponCode,
+      upgradeDiscount, // 传递升级折扣
+      renewMonths, // 传递续费月数
+    });
+    
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'ORDER_CREATE_FAILED',
+            message: result.error || 'Failed to create order',
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: 400 }
+      );
+    }
+    
+    return NextResponse.json({
+      success: true,
+      data: {
+        order: result.order,
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('Error creating order:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'SERVER_ERROR',
+          message: 'Failed to create order',
+        },
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
+  }
+}
