@@ -3,6 +3,7 @@ import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import LanguageSwitcher from '@/components/common/LanguageSwitcher'
 import { I18nProvider } from '@/contexts/I18nContext'
+jest.mock('next/navigation', () => ({ useRouter: () => ({ refresh: jest.fn() }) }))
 let AUTHED = false
 jest.mock('next-auth/react', () => ({
   useSession: () => (AUTHED ? { data: { user: { email: 'a@b.c' } }, status: 'authenticated' } : { data: null, status: 'unauthenticated' })

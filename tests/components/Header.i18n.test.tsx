@@ -6,6 +6,7 @@ import { I18nProvider } from '@/contexts/I18nContext'
 
 // Mock next-auth session to unauthenticated so Sign in shows
 jest.mock('next-auth/react', () => ({ useSession: () => ({ data: null, status: 'unauthenticated' }) }))
+jest.mock('next/navigation', () => ({ useRouter: () => ({ refresh: jest.fn() }), usePathname: () => '/' }))
 
 describe('Header i18n', () => {
   const dictEn = { header: { signIn: 'Sign in' } }
@@ -29,4 +30,3 @@ describe('Header i18n', () => {
     expect(screen.getByText('登录')).toBeInTheDocument()
   })
 })
-

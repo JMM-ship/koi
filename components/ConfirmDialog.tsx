@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useT } from '@/contexts/I18nContext'
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -20,6 +21,10 @@ export default function ConfirmDialog({
   cancelText = 'Cancel',
 }: ConfirmDialogProps) {
   if (!isOpen) return null;
+  let t = (k: string) => k
+  try { t = useT().t } catch {}
+  const confirmLabel = confirmText || t('common.confirm')
+  const cancelLabel = cancelText || t('common.cancel')
 
   return (
     <>
@@ -109,7 +114,7 @@ export default function ConfirmDialog({
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
-                {confirmText}
+                {t('common.confirm')}
               </button>
               <button
                 onClick={onCancel}
@@ -137,7 +142,7 @@ export default function ConfirmDialog({
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                {cancelText}
+                {t('common.cancel')}
               </button>
             </div>
           </div>

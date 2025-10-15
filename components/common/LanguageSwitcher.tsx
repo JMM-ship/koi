@@ -2,10 +2,12 @@
 import React, { useCallback } from 'react'
 import { useT } from '@/contexts/I18nContext'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function LanguageSwitcher() {
   const { locale, setLocale: setLocaleCtx } = useT()
   const { status } = useSession()
+  const router = useRouter()
 
   const setLocale = useCallback(async (target: 'en' | 'zh') => {
     try {
@@ -22,7 +24,8 @@ export default function LanguageSwitcher() {
     }
     // instant client-side switch for all client components
     try { setLocaleCtx(target) } catch {}
-    // optionally can call router.refresh() here, but we avoid requiring app router in tests
+    // light refresh to update server-rendered parts (e.g., html[lang])
+    try { router.refresh() } catch {}
   }, [status])
 
   const currentLabel = locale === 'zh' ? '中文' : 'EN'
