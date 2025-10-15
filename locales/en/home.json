@@ -4,5 +4,46 @@
     "description": "KOI brings together leading AI models for a one-stop experience. Explore GPT-5, Claude Opus 4.1, Claude Sonnet 4.5, and Gemini (coming soon).",
     "registerNote": "Register now to experience professional AI assistant models and services",
     "cta": "Get Started"
+  },
+  "s2": {
+    "tag": "why choose us",
+    "title": "Our Core Advantages",
+    "desc": "Based on a dynamic pool of official Max accounts worth $200 each, we provide a service experience identical to the official one.",
+    "c1": {
+      "title": "All-in-One CLI Access",
+      "subtitle": "One subscription, all top CLIs",
+      "desc": "Use the market’s best AI command-line tools under a single plan—simpler workflow and far more cost-effective than purchasing separately.",
+      "badge": "Best Value"
+    },
+    "c2": {
+      "title": "Professional Service",
+      "subtitle": "1-on-1 Engineer Support",
+      "desc": "Expert technical support from real engineers (not bots). Remote troubleshooting and professional assistance when you need it.",
+      "badge": "Not a robot!"
+    },
+    "c3": {
+      "title": "Unique Credit Mechanism",
+      "subtitle": "Transparent mechanics, efficient usage",
+      "desc": "Credits restore every hour, ensuring continuous and stable supply to meet any workload.",
+      "badge": "Always On"
+    },
+    "c4": {
+      "title": "Account Security",
+      "subtitle": "Technical Transfer, Zero Ban Risk",
+      "desc": "Professional technical architecture ensures your account is completely safe. With our technical transfer method, your account will never face any ban risk.",
+      "badge": "Use with confidence!"
+    }
+  },
+  "s4": {
+    "faq": {
+      "tag": "FAQ",
+      "title": "Frequently Asked Questions",
+      "q1": "Q. What’s the difference from subscribing to official Claude or GPT directly?",
+      "a1": "We subscribe to the official services. You get responses identical in speed, format, and model capability to the official ones, while a single subscription lets you use more vendors’ command-line programming tools. Note: we currently do not provide a web-based chat service.",
+      "q2": "Q. How is security guaranteed?",
+      "a2": "We use a technical relay approach; your account faces no ban risk. All data transmission is encrypted. We do not store your code or any sensitive information, ensuring privacy and security.",
+      "q3": "Q. How can I get technical support?",
+      "a3": "We provide 1-on-1 engineer support (not a bot). If you run into any issues, contact our technical team and we will assist remotely to ensure you can use the service normally."
+    }
   }
 }
