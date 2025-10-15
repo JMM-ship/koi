@@ -5,11 +5,13 @@ import { FiUser, FiMail, FiLock, FiShield, FiCopy, FiEye, FiEyeOff } from "react
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/useToast";
+import { useT } from "@/contexts/I18nContext";
 import { useUserData } from "@/hooks/useUserData";
 
 export default function ProfileContent() {
   const { data: session } = useSession();
   const { showSuccess, showError, showInfo } = useToast();
+  const { t } = useT()
   const { user, isLoading: userLoading, updateProfile, refreshUserData } = useUserData();
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -39,7 +41,7 @@ export default function ProfileContent() {
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(avatarUrl);
     setCopiedUrl(true);
-    showInfo("Avatar URL copied to clipboard");
+    showInfo(t('toasts.avatarUrlCopied'));
     setTimeout(() => setCopiedUrl(false), 2000);
   };
 
@@ -53,10 +55,10 @@ export default function ProfileContent() {
         avatarUrl: avatarUrl,
       });
 
-      showSuccess("Profile updated successfully!");
+      showSuccess(t('toasts.profileUpdatedSuccess'));
       // The user data will be automatically updated through SWR
     } catch (error) {
-      showError(error instanceof Error ? error.message : "An error occurred while updating profile");
+      showError(error instanceof Error ? error.message : t('toasts.updateProfileError'));
     } finally {
       setLoading(false);
     }
@@ -67,19 +69,19 @@ export default function ProfileContent() {
 
     // 验证输入
     if (!currentPassword || !newPassword || !confirmPassword) {
-      showError("All password fields are required");
+      showError(t('toasts.passwordFieldsRequired'));
       setLoading(false);
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      showError("New passwords do not match");
+      showError(t('toasts.passwordMismatch'));
       setLoading(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      showError("Password must be at least 6 characters long");
+      showError(t('toasts.passwordTooShort'));
       setLoading(false);
       return;
     }
@@ -100,16 +102,16 @@ export default function ProfileContent() {
       const data = await response.json();
 
       if (response.ok) {
-        showSuccess("Password changed successfully!");
+        showSuccess(t('toasts.passwordChangedSuccess'));
         // 清空密码字段
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        showError(data.error || "Failed to change password");
+        showError(data.error || t('toasts.failedToChangePassword'));
       }
     } catch (error) {
-      showError("An error occurred while changing password");
+      showError(t('toasts.changePasswordError'));
     } finally {
       setLoading(false);
     }

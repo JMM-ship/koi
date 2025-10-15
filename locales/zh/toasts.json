@@ -11,4 +11,14 @@
   "deletedName": "已删除 \"{name}\"",
   "failedToDeleteKey": "删除 API 密钥失败",
   "deletionCancelled": "已取消删除"
+  ,
+  "avatarUrlCopied": "头像链接已复制",
+  "profileUpdatedSuccess": "资料已更新",
+  "updateProfileError": "更新资料时发生错误",
+  "passwordFieldsRequired": "请填写所有密码字段",
+  "passwordMismatch": "两次输入的新密码不一致",
+  "passwordTooShort": "新密码长度至少 6 位",
+  "passwordChangedSuccess": "密码修改成功！",
+  "failedToChangePassword": "修改密码失败",
+  "changePasswordError": "修改密码时发生错误"
 }

@@ -11,4 +11,14 @@
   "deletedName": "Deleted \"{name}\"",
   "failedToDeleteKey": "Failed to delete API key",
   "deletionCancelled": "Deletion cancelled"
+  ,
+  "avatarUrlCopied": "Avatar URL copied to clipboard",
+  "profileUpdatedSuccess": "Profile updated successfully!",
+  "updateProfileError": "An error occurred while updating profile",
+  "passwordFieldsRequired": "All password fields are required",
+  "passwordMismatch": "New passwords do not match",
+  "passwordTooShort": "Password must be at least 6 characters long",
+  "passwordChangedSuccess": "Password changed successfully!",
+  "failedToChangePassword": "Failed to change password",
+  "changePasswordError": "An error occurred while changing password"
 }
