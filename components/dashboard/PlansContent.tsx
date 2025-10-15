@@ -148,25 +148,25 @@ export default function PlansContent() {
 
   // Determine button text based on package price comparison
   const getButtonText = (pkg: Package): string => {
-    if (!currentPackage) return 'Choose Plan';
+    if (!currentPackage) return t('packages.choosePlan');
 
     if (currentPackage.packageId === pkg.id) {
-      return 'Renew';
+      return t('packages.renew');
     }
 
     // 获取当前套餐的价格
     const currentPkg = packages.find(p => p.id === currentPackage.packageId);
-    if (!currentPkg) return 'Choose Plan';
+    if (!currentPkg) return t('packages.choosePlan');
 
     const currentPrice = currentPkg.price;
     const targetPrice = pkg.price;
 
     // 根据价格判断:目标价格高于当前价格才是升级
     if (targetPrice > currentPrice) {
-      return 'Upgrade';
+      return t('packages.upgrade');
     }
 
-    return 'Choose Plan';
+    return t('packages.choosePlan');
   };
 
   // Determine if button should be disabled
@@ -459,10 +459,10 @@ export default function PlansContent() {
       <div className="dashboard-header mb-4">
         <div className="text-center">
           <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#fff', marginBottom: '16px' }}>
-            Pricing Plans
+            {t('packages.pricingTitle')}
           </h1>
           <p style={{ fontSize: '16px', color: '#999', marginBottom: '12px' }}>
-            Base plan $200 Max account, monthly pricing is 28% of base, best value
+            {t('packages.pricingSubtitle')}
           </p>
 
           {/* {currentPackage && (
@@ -498,7 +498,7 @@ export default function PlansContent() {
           }}>
             <FiAlertTriangle style={{ color: '#ffc107', fontSize: '18px', flexShrink: 0 }} />
             <span style={{ fontSize: '13px', color: '#ffc107', textAlign: 'left' }}>
-              <strong>Important:</strong> During subscription period, the pricing will follow Claude's official adjustments (non-member, non-platform pricing)
+              <strong>{t('packages.important')}</strong> {t('packages.pricingFollowClaude')}
             </span>
           </div>
         </div>
@@ -547,7 +547,7 @@ export default function PlansContent() {
                     gap: '6px',
                     whiteSpace: 'nowrap'
                   }}>
-                    🔥 Most Popular
+                    🔥 {t('packages.mostPopular')}
                   </div>
                 )}
 
@@ -579,8 +579,8 @@ export default function PlansContent() {
                   }}>{pkg.name}</h3>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 6, marginBottom: 18 }}>
                     <span style={{ fontSize: 48, fontWeight: 800, color: '#fff', lineHeight: 1 }}>${pkg.price}</span>
-                    <span style={{ fontSize: 14, color: '#9aa0a6' }}>/month</span>
-                  </div>
+                    <span style={{ fontSize: 14, color: '#9aa0a6' }}>{t('packages.perMonth')}</span>
+                </div>
                 </div>
 
                 <ul className="list-unstyled" style={{ flex: 1, marginBottom: '24px', position: 'relative', zIndex: 1 }}>
@@ -921,7 +921,7 @@ export default function PlansContent() {
                     fontSize: '10px',
                     fontWeight: 'bold'
                   }}>
-                    POPULAR
+                    {t('packages.popular').toUpperCase()}
                   </span>
                 )}
               </button>

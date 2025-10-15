@@ -3,7 +3,16 @@
   "loadingPackages": "Loading packages...",
   "credits": "Credits",
   "popular": "Popular",
+  "mostPopular": "Most Popular",
   "cardPayment": "Card Payment",
   "eWallet": "E-Wallet",
-  "processing": "Processing..."
+  "processing": "Processing...",
+  "pricingTitle": "Pricing Plans",
+  "pricingSubtitle": "Base plan $200 Max account, monthly pricing is 28% of base, best value",
+  "important": "Important:",
+  "pricingFollowClaude": "During subscription period, the pricing will follow Claude's official adjustments (non-member, non-platform pricing)",
+  "perMonth": "/month",
+  "choosePlan": "Choose Plan",
+  "renew": "Renew",
+  "upgrade": "Upgrade"
 }

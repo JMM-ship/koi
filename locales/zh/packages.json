@@ -3,7 +3,16 @@
   "loadingPackages": "正在加载套餐...",
   "credits": "积分",
   "popular": "热门",
+  "mostPopular": "最受欢迎",
   "cardPayment": "银行卡支付",
   "eWallet": "电子钱包",
-  "processing": "处理中..."
+  "processing": "处理中...",
+  "pricingTitle": "定价方案",
+  "pricingSubtitle": "基础档 Max 账户为 $200，月付为基础价的 28%，性价比更高",
+  "important": "重要提示：",
+  "pricingFollowClaude": "订阅期间，价格将跟随 Claude 官方（非会员、非平台价）调整",
+  "perMonth": "／月",
+  "choosePlan": "选择套餐",
+  "renew": "续费",
+  "upgrade": "升级"
 }

@@ -6,6 +6,7 @@ import enReasons from './en/reasons.json'
 import enBuckets from './en/buckets.json'
 import enToasts from './en/toasts.json'
 import enSidebar from './en/sidebar.json'
+import enPackages from './en/packages.json'
 
 import zhCommon from './zh/common.json'
 import zhHeader from './zh/header.json'
@@ -15,6 +16,7 @@ import zhReasons from './zh/reasons.json'
 import zhBuckets from './zh/buckets.json'
 import zhToasts from './zh/toasts.json'
 import zhSidebar from './zh/sidebar.json'
+import zhPackages from './zh/packages.json'
 
 export const PREBUNDLED_DICTIONARIES = {
   en: {
@@ -26,6 +28,7 @@ export const PREBUNDLED_DICTIONARIES = {
     buckets: enBuckets,
     toasts: enToasts,
     sidebar: enSidebar,
+    packages: enPackages,
   },
   zh: {
     common: zhCommon,
@@ -36,6 +39,6 @@ export const PREBUNDLED_DICTIONARIES = {
     buckets: zhBuckets,
     toasts: zhToasts,
     sidebar: zhSidebar,
+    packages: zhPackages,
   }
 } as const
-
