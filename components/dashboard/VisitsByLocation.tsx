@@ -11,8 +11,8 @@ interface CurrentPlanProps {
 }
 
 const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
-  let _t = (k: string) => k
-  try { _t = useT().t } catch {}
+  let _t: (k: string, params?: Record<string, string | number>) => string = (k) => k
+  try { _t = useT().t as any } catch {}
   const [planDetails, setPlanDetails] = useState<any>(null);
   const [dailyCredit, setDailyCredit] = useState(0)
   const [packageCredits, setPackageCredits] = useState(0)
