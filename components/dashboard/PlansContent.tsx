@@ -146,28 +146,23 @@ export default function PlansContent() {
   const currentPackage: UserPackage | null = packagesResp?.data?.currentPackage ? fromApiUserPackage(packagesResp.data.currentPackage) : null
   // keep other state lines removed above relocated earlier
 
-  // Determine button text based on package price comparison
+  // Determine button kind and text
+  const getButtonKind = (pkg: Package): 'choose' | 'renew' | 'upgrade' => {
+    if (!currentPackage) return 'choose'
+    if (currentPackage.packageId === pkg.id) return 'renew'
+    const currentPkg = packages.find(p => p.id === currentPackage.packageId)
+    if (!currentPkg) return 'choose'
+    const currentPrice = currentPkg.price
+    const targetPrice = pkg.price
+    if (targetPrice > currentPrice) return 'upgrade'
+    return 'choose'
+  }
   const getButtonText = (pkg: Package): string => {
-    if (!currentPackage) return t('packages.choosePlan');
-
-    if (currentPackage.packageId === pkg.id) {
-      return t('packages.renew');
-    }
-
-    // 获取当前套餐的价格
-    const currentPkg = packages.find(p => p.id === currentPackage.packageId);
-    if (!currentPkg) return t('packages.choosePlan');
-
-    const currentPrice = currentPkg.price;
-    const targetPrice = pkg.price;
-
-    // 根据价格判断:目标价格高于当前价格才是升级
-    if (targetPrice > currentPrice) {
-      return t('packages.upgrade');
-    }
-
-    return t('packages.choosePlan');
-  };
+    const kind = getButtonKind(pkg)
+    if (kind === 'renew') return t('packages.renew')
+    if (kind === 'upgrade') return t('packages.upgrade')
+    return t('packages.choosePlan')
+  }
 
   // Determine if button should be disabled
   const isButtonDisabled = (pkg: Package): boolean => {
@@ -240,15 +235,15 @@ export default function PlansContent() {
       return;
     }
 
-    const buttonText = getButtonText(pkg);
-    console.log('Button text:', buttonText);
+    const kind = getButtonKind(pkg);
+    console.log('Button kind:', kind);
 
-    if (buttonText === 'Renew') {
+    if (kind === 'renew') {
       // Handle renewal - could redirect to renewal flow or show renewal modal
       handleRenewal(pkg);
-    } else if (buttonText === 'Upgrade') {
+    } else if (kind === 'upgrade') {
       // Calculate discount for upgrade
-      console.log(buttonText);
+      console.log('Upgrade');
 
       const discount = calculateUpgradeDiscount(pkg);
       setUpgradeDiscount(discount);
@@ -426,12 +421,20 @@ export default function PlansContent() {
     const hoursToFull = recoveryRate > 0 && creditCap > 0 ? Math.ceil(creditCap / recoveryRate) : null;
 
     const common = [
-      `${creditCap.toLocaleString()} credit cap`,
-      recoveryRate > 0 ? `Recovery rate ${recoveryRate.toLocaleString()}/hour` : 'Recovery rate 0/hour',
-      dailyUsageLimit > 0 ? `Daily max usage ${dailyUsageLimit.toLocaleString()} credits` : 'No daily usage cap',
-      hoursToFull ? `Full recovery in ~${hoursToFull} hours` : 'Full recovery N/A',
-      manualResetPerDay > 0 ? `Manual reset to cap ${manualResetPerDay} time(s) per day` : 'No manual reset',
-      'Supports Claude and full suite of CLI tools',
+      t('packages.features.creditCap', { count: creditCap.toLocaleString() }) || `${creditCap.toLocaleString()} credit cap`,
+      recoveryRate > 0
+        ? (t('packages.features.recoveryPerHour', { count: recoveryRate.toLocaleString() }) || `Recovery rate ${recoveryRate.toLocaleString()}/hour`)
+        : (t('packages.features.recoveryZero') || 'Recovery rate 0/hour'),
+      dailyUsageLimit > 0
+        ? (t('packages.features.dailyMaxUsage', { count: dailyUsageLimit.toLocaleString() }) || `Daily max usage ${dailyUsageLimit.toLocaleString()} credits`)
+        : (t('packages.features.noDailyCap') || 'No daily usage cap'),
+      hoursToFull
+        ? (t('packages.features.fullRecoveryHours', { hours: String(hoursToFull) }) || `Full recovery in ~${hoursToFull} hours`)
+        : (t('packages.features.fullRecoveryNA') || 'Full recovery N/A'),
+      manualResetPerDay > 0
+        ? (t('packages.features.manualResetPerDay', { count: String(manualResetPerDay) }) || `Manual reset to cap ${manualResetPerDay} time(s) per day`)
+        : (t('packages.features.noManualReset') || 'No manual reset'),
+      t('packages.features.cliTools') || 'Supports Claude and full suite of CLI tools',
     ];
 
     const name = (pkg.name || '').toLowerCase();
@@ -439,9 +442,9 @@ export default function PlansContent() {
     const isMax = name.includes('max') || pkg.plan_type === 'enterprise' || pkg.planType === 'enterprise';
 
     if (isPro || isMax) {
-      return [...common, 'Priority technical support'];
+      return [...common, (t('packages.features.prioritySupport') || 'Priority technical support')];
     }
-    return [...common, 'Standard technical support'];
+    return [...common, (t('packages.features.standardSupport') || 'Standard technical support')];
   };
 
   if (loading) {
@@ -626,10 +629,10 @@ export default function PlansContent() {
                     borderRadius: '10px',
                     border: 'none',
                     background: (() => {
-                      const buttonText = getButtonText(pkg);
-                      if (buttonText === 'Renew') {
+                      const kind = getButtonKind(pkg);
+                      if (kind === 'renew') {
                         return 'linear-gradient(135deg, #00d084 0%, #00b377 100%)';
-                      } else if (buttonText === 'Upgrade') {
+                      } else if (kind === 'upgrade') {
                         return 'linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)';
                       } else if (pkg.is_recommended) {
                         return 'linear-gradient(135deg, #ff4444 0%, #ff6666 100%)';
@@ -731,7 +734,7 @@ export default function PlansContent() {
             </button>
 
             <h3 style={{ color: '#fff', marginBottom: '24px' }}>
-              {selectedPackage && getButtonText(selectedPackage) === 'Upgrade' ? 'Confirm Upgrade' : 'Confirm Purchase'}
+              {getButtonKind(selectedPackage) === 'upgrade' ? t('packages.confirmUpgrade') || 'Confirm Upgrade' : t('packages.confirmPurchase') || 'Confirm Purchase'}
             </h3>
 
             <div style={{
@@ -744,7 +747,7 @@ export default function PlansContent() {
                 {selectedPackage.name}
               </h4>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <span style={{ color: '#999' }}>Original Price</span>
+                <span style={{ color: '#999' }}>{t('packages.originalPrice') || 'Original Price'}</span>
                 <span style={{ color: '#fff', fontWeight: 'bold' }}>${selectedPackage.price}</span>
               </div>
 
@@ -760,7 +763,7 @@ export default function PlansContent() {
                     border: '1px solid rgba(0, 208, 132, 0.2)'
                   }}>
                     <span style={{ color: '#00d084', fontSize: '14px' }}>
-                      Upgrade Discount ({upgradeDiscount.days} days remaining)
+                      {(t('packages.upgradeDiscountLabel', { days: String(upgradeDiscount.days) }) || `Upgrade Discount (${upgradeDiscount.days} days remaining)`)}
                     </span>
                     <span style={{ color: '#00d084', fontWeight: 'bold' }}>-${upgradeDiscount.amount}</span>
                   </div>
@@ -771,7 +774,7 @@ export default function PlansContent() {
                     paddingTop: '12px',
                     borderTop: '1px solid #333'
                   }}>
-                    <span style={{ color: '#fff', fontWeight: '600' }}>Final Price</span>
+                    <span style={{ color: '#fff', fontWeight: '600' }}>{t('packages.finalPrice') || 'Final Price'}</span>
                     <span style={{
                       color: '#00d084',
                       fontWeight: 'bold',
@@ -784,12 +787,12 @@ export default function PlansContent() {
               )}
 
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <span style={{ color: '#999' }}>Daily Credits</span>
+                <span style={{ color: '#999' }}>{t('packages.dailyCredits') || 'Daily Credits'}</span>
                 <span style={{ color: '#fff' }}>{selectedPackage.daily_credits.toLocaleString()}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#999' }}>Validity</span>
-                <span style={{ color: '#fff' }}>{selectedPackage.valid_days} days</span>
+                <span style={{ color: '#999' }}>{t('packages.validity') || 'Validity'}</span>
+                <span style={{ color: '#fff' }}>{t('packages.daysWithCount', { days: String(selectedPackage.valid_days) }) || `${selectedPackage.valid_days} days`}</span>
               </div>
             </div>
 
@@ -806,7 +809,7 @@ export default function PlansContent() {
               }}>
                 <FiAlertTriangle style={{ color: '#ffc107', fontSize: '16px', flexShrink: 0 }} />
                 <span style={{ fontSize: '12px', color: '#ffc107' }}>
-                  Your remaining {upgradeDiscount.days} days from current plan has been converted to a discount
+                  {t('packages.discountNotice', { days: String(upgradeDiscount.days) }) || `Your remaining ${upgradeDiscount.days} days from current plan has been converted to a discount`}
                 </span>
               </div>
             )}
@@ -826,7 +829,7 @@ export default function PlansContent() {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('common.cancel') || 'Cancel'}
               </button>
               <button
                 onClick={confirmPurchase}
@@ -844,7 +847,7 @@ export default function PlansContent() {
                   opacity: purchasing ? 0.6 : 1
                 }}
               >
-                {purchasing ? 'Processing...' : 'Confirm'}
+                {purchasing ? (t('packages.processing') || 'Processing...') : (t('common.confirm') || 'Confirm')}
               </button>
             </div>
           </div>
@@ -855,7 +858,7 @@ export default function PlansContent() {
       <ModalPortal
         isOpen={showRenewModal}
         onClose={() => setShowRenewModal(false)}
-        title="Renew Your Package"
+        title={t('packages.renewTitle') || 'Renew Your Package'}
         maxWidth="480px"
       >
         <div style={{
@@ -871,7 +874,7 @@ export default function PlansContent() {
             fontSize: '15px',
             textAlign: 'center'
           }}>
-            Select your renewal period
+            {t('packages.selectRenewalPeriod') || 'Select your renewal period'}
           </p>
 
           <div style={{
@@ -907,7 +910,7 @@ export default function PlansContent() {
                   {months}
                 </div>
                 <div style={{ fontSize: '12px', opacity: 0.8 }}>
-                  {months === 1 ? 'Month' : 'Months'}
+                  {months === 1 ? (t('packages.month') || 'Month') : (t('packages.months') || 'Months')}
                 </div>
                 {months === 6 && (
                   <span style={{
@@ -941,7 +944,7 @@ export default function PlansContent() {
               marginBottom: '12px'
             }}>
               <span style={{ color: '#999', fontSize: '14px' }}>
-                Selected Duration
+                {t('packages.selectedDuration') || 'Selected Duration'}
               </span>
               <span style={{
                 color: '#fff',
@@ -952,7 +955,7 @@ export default function PlansContent() {
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }}>
-                {selectedMonths} {selectedMonths === 1 ? 'Month' : 'Months'}
+                {selectedMonths} {selectedMonths === 1 ? (t('packages.month') || 'Month') : (t('packages.months') || 'Months')}
               </span>
             </div>
             <div style={{
@@ -963,7 +966,7 @@ export default function PlansContent() {
               borderTop: '1px solid rgba(255, 255, 255, 0.05)'
             }}>
               <span style={{ color: '#999', fontSize: '14px' }}>
-                New Expiry Date
+                {t('packages.newExpiryDate') || 'New Expiry Date'}
               </span>
               <span style={{
                 color: '#00d084',
@@ -1002,7 +1005,7 @@ export default function PlansContent() {
               transition: 'all 0.2s'
             }}
           >
-            Cancel
+            {t('common.cancel') || 'Cancel'}
           </button>
           <button
             onClick={confirmRenew}
@@ -1023,7 +1026,7 @@ export default function PlansContent() {
               boxShadow: '0 4px 15px rgba(0, 208, 132, 0.3)'
             }}
           >
-            {isRenewing ? 'Processing...' : 'Confirm Renewal'}
+            {isRenewing ? (t('packages.processing') || 'Processing...') : (t('packages.confirmRenewal') || 'Confirm Renewal')}
           </button>
         </div>
       </ModalPortal>
