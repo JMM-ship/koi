@@ -168,3 +168,136 @@
 
 如无异议，我将按本文档从“里程碑 1：先提交测试，再实现基建”开始推进，并在每个里程碑完成后提交简要变更说明与验收记录。
 
+---
+
+## 当前进度总览（批次 A｜已落实）
+
+- 基建与注入
+  - i18n 解析、字典加载、客户端 Context（`useT()`）与 SSR 注入完成。
+  - 语言切换器支持“即时切换 + 轻刷新（router.refresh）”，未登录写 Cookie，已登录调用 `/api/profile/locale` 持久化。
+  - 线上（Vercel）预打包字典修复：新增 `locales/index.ts`，`lib/i18n/server.ts` 优先使用预打包字典，解决 Serverless 读取 JSON 失败导致显示 `sidebar.xxx` 的问题。
+
+- 已接入组件/页面（文案字典化 + 测试）
+  - 布局/入口：Header、Breadcrumb（common.home）、LanguageSwitcher（透明渐变样式）。
+  - 登录页：`/auth/signin` 核心文案（Login/Register/Email/Password/Send Code/Google 登录等）。
+  - Dashboard：
+    - CreditsHistory（标题/状态 + 原因/桶字典化，兼容历史中文原因）。
+    - Sidebar（菜单项字典化 + logout 失败提示字典化）。
+    - IndependentPackages（选择套餐、加载态、支付按钮及购买流程 Toast 全部字典化）。
+    - PlansContent（购买/续费/支付流程 Toast 全部字典化；页面标题/说明/按钮等静态文案补齐字典化）。
+    - ProfileContent（头像复制/资料更新/修改密码流程 Toast 全部字典化）。
+    - ReferralContent（复制链接/邀请码、更新邀请码 Toast 字典化）。
+    - ApiKeysContent（复制/创建/删除/错误提示 Toast 字典化）。
+    - SatisfactionRate（Credits Balance 卡片标题/提示/按钮字典化）。
+    - VisitsByLocation（Current Plan 卡片：标题、日期、小节标题与操作按钮字典化）。
+    - RedeemCodeCard（输入占位/动作按钮/提示与所有兑换相关 Toast 字典化）。
+  - Admin：
+    - AdminCodeManagement（标题/副标题/表头/筛选/分页字典化；状态变更与导出等 Toast 字典化）。
+    - AdminCodeGenerateModal（表单/提示/操作按钮及复制下载等 Toast 全部字典化）。
+  - 首页（营销）：
+    - Section1–8 核心文案字典化（主视觉、副标题、卡片要点、FAQ、对比分析、用户反馈等）。
+
+- 新增/扩展的字典命名空间（en/zh）
+  - `common`（confirm/cancel/home 等）
+  - `header`、`auth`、`dashboard`、`reasons`、`buckets`
+  - `toasts`（大量通用提示，包括购买/支付/续费/Admin 操作等）
+  - `sidebar`（侧边栏）
+  - `packages`（购买积分界面）
+  - `home`（首页 Section1–8 文案）
+  - `admin`（Admin 管理界面：codes/generate）
+
+- 代表性测试（节选）
+  - 解析与加载：`tests/i18n/resolve-locale.test.ts`、`tests/i18n/dictionary.test.ts`、`tests/i18n/format.test.ts`
+  - UI 与切换：`tests/components/Header.i18n.test.tsx`、`tests/pages/Signin.i18n.test.tsx`、`tests/components/LanguageSwitcher.test.tsx`
+  - Dashboard：
+    - `tests/components/CreditsHistory.i18n.test.tsx`、`tests/components/CreditsHistory.test.tsx`
+    - `tests/components/IndependentPackages.toasts.i18n.test.tsx`
+    - `tests/components/ProfileContent.toasts.i18n.test.tsx`
+    - `tests/components/Sidebar.i18n.test.tsx`、`tests/components/Breadcrumb.i18n.test.tsx`
+    - `tests/components/PlansContent.i18n.test.tsx`
+    - `tests/components/RedeemCodeCard.i18n.test.tsx`
+    - `tests/components/SatisfactionRate.i18n.test.tsx`
+    - `tests/components/VisitsByLocation.i18n.test.tsx`
+  - Admin：
+    - `tests/components/AdminCodeManagement.i18n.test.tsx`
+  - API：`tests/api/profile.locale.test.ts`
+
+## 线上适配（Vercel）
+
+- 为避免 Serverless 读取本地 JSON 失败：
+  - 新增 `locales/index.ts`，通过静态 import 打包所有命名空间。
+  - `lib/i18n/server.ts#getDictionary()` 优先从 `PREBUNDLED_DICTIONARIES` 读取；fs 仅作兜底。
+  - app 布局预加载命名空间需同步在 `app/layout.tsx` 更新。
+
+## 下一步工作（批次 A 收尾）
+
+优先级建议（可按需调整）：
+1) Admin 其它页面（若有）的文案字典化与测试补充；
+2) 首页剩余区块/细节（如 Section9 或新增营销片段、页脚/顶部附属信息）字典化与文案校对；
+3) 统一营销文案措辞，进行一次 en/zh 术语对齐与审校；
+4) 按需扩展第三语种（如 `ja`），验证字典预打包与 SSR 预加载流程；
+5) 路由与 SEO（进入 B 阶段）：`/<locale>/` 前缀引入、`alternate` hreflang、`canonical` 与站内链接更新；补充对应测试。
+
+## 接入规范与注意事项（给下一个同事）
+
+- 放置 key 的命名空间
+  - 导航/框架：`header`、`sidebar`、`common`（如 home/confirm/cancel 等）
+  - 业务页面：`packages`（购买积分）、`admin`（管理界面）
+  - 通用提示：统一放 `toasts`，避免散落在业务命名空间。
+
+- 为新组件接入 i18n 的步骤（TDD）
+  1) 先新增测试（jsdom 环境）：
+     - 断言关键文案在 `en/zh` 下渲染正确；
+     - 若涉及 Toast，mock `useToast()`，对入参断言；
+     - 若组件用到了 Router，mock `next/navigation`（例如 `useRouter/refresh/usePathname`）。
+  2) 接入实现：
+     - 使用 `useT()` 替换硬编码；
+     - 文案新增到对应命名空间；
+     - 若是新命名空间：
+       - 在 `locales/en|zh/<ns>.json` 添加键值；
+       - 在 `locales/index.ts` 引入并添加到 `PREBUNDLED_DICTIONARIES`；
+       - 在 `app/layout.tsx` 的 `namespaces` 数组加入 `<ns>`，确保 SSR 预加载；
+  3) 运行测试并修正；
+  4) 推送并验证 Vercel 部署页面渲染。
+
+- 轻刷新说明
+  - 切换语言后调用 `router.refresh()` 用于同步服务端段落（如 `<html lang>`）；
+  - 如某些测试因缺少 App Router 报错，记得 mock `next/navigation`：`useRouter: { refresh: jest.fn() }`。
+
+- Sentry/instrumentation 提示（非阻塞）
+  - 构建有 Sentry 与 instrumentation 的警告；可在后续统一迁移 Sentry.init 到 instrumentation.ts 的 register() 中并加上 global-error.js。
+
+## 变更记录（本阶段新增的主要文件/修改点）
+
+- 新增：`locales/index.ts`（预打包字典），`locales/en|zh/{sidebar,packages,admin,toasts,common,home,...}.json`
+- 修改：`lib/i18n/server.ts` 优先使用预打包字典；`app/layout.tsx` 预加载命名空间扩展（新增 `home`）。
+- 组件改造（部分）：
+  - `components/layout/header/Header.tsx`、`components/layout/Breadcrumb.tsx`
+  - `components/common/LanguageSwitcher.tsx`（透明渐变样式，轻刷新开启）
+  - `components/ConfirmDialog.tsx`
+  - Dashboard：`IndependentPackages.tsx`、`PlansContent.tsx`、`ProfileContent.tsx`、`ReferralContent.tsx`、`ApiKeysContent.tsx`、`Sidebar.tsx`、`CreditsHistory.tsx`、`SatisfactionRate.tsx`、`VisitsByLocation.tsx`、`RedeemCodeCard.tsx`
+  - Admin：`admin/AdminCodeManagement.tsx`、`admin/AdminCodeGenerateModal.tsx`
+  - 首页：`components/sections/home/{Section1,Section2,Section3,Section4,Section5,Section6,Section7,Section8}.tsx`
+- API：新增 `/api/profile/locale`；修复为按 id 更新 locale（避免唯一键冲突）。
+
+### 新增/更新的测试（本次对话产出）
+- `tests/components/PlansContent.i18n.test.tsx`
+- `tests/components/RedeemCodeCard.i18n.test.tsx`
+- `tests/components/SatisfactionRate.i18n.test.tsx`
+- `tests/components/VisitsByLocation.i18n.test.tsx`
+
+## 交接信息（How to Continue）
+
+- 本阶段目标：收尾批次 A，确保 Admin 及其它尚未覆盖页面的文案字典化，并准备进入 B 阶段（路由与 SEO）。
+- 建议任务拆分：
+  1) Admin 其它页面（若有）的字典化与测试；
+  2) 首页 Section9 与页脚/侧边等通用区块文案（如地址、联系方式）字典化；
+  3) 统一文案审校（en/zh 术语一致性、标点风格）；
+  4) 可选：新增语种（如 `ja`），验证预打包与 SSR 注入；
+  5) 进入 B 阶段：启用 `/<locale>/` 路由前缀、`alternate` hreflang/canonical，新增/调整对应测试。
+- 提交流程：
+  - 新增/调整测试 → 实现改造 → 本地 `npm test` → `npm run build` → 推远程触发 Vercel 部署。
+- 验收：
+  - 切换语言即时生效（含 `<html lang>` 与关键区块）；
+  - 关键页面（Dashboard、Admin、首页）文案来自字典；
+  - Toast 提示统一来自 `toasts` 命名空间。

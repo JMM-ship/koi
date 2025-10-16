@@ -104,7 +104,7 @@
     "status": "Status",
     "active": "Active",
     "inactive": "Inactive",
-    "morePlatforms": "For other platforms and troubleshooting, see"
+    "morePlatforms": "For other platforms and troubleshooting, see",
     "important": "Important",
     "codex": {
       "step1Title": "Step 1: Create auth.json",

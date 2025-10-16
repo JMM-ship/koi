@@ -104,7 +104,7 @@
     "status": "状态",
     "active": "启用",
     "inactive": "停用",
-    "morePlatforms": "更多平台与故障排查见"
+    "morePlatforms": "更多平台与故障排查见",
     "important": "重要",
     "codex": {
       "step1Title": "步骤 1：创建 auth.json",
