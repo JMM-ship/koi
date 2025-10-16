@@ -280,14 +280,14 @@ export default function ApiKeysContent() {
       )}
 
       {apiKeysResp === undefined ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200, color: "#999" }}>Loading API keys...</div>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200, color: "#999" }}>{t('dashboard.apiKeys.loading') || 'Loading API keys...'}</div>
       ) : apiKeys.length === 0 ? (
         <div className="balance-card" style={{ background: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: 12, padding: 40, textAlign: "center" }}>
           <FiKey style={{ fontSize: 48, color: "#666", marginBottom: 16 }} />
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 8 }}>No API Keys Yet</h3>
-          <p style={{ fontSize: 14, color: "#999", marginBottom: 24 }}>Create your first API key to start using our services programmatically</p>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 8 }}>{t('dashboard.apiKeys.empty.title') || 'No API Keys Yet'}</h3>
+          <p style={{ fontSize: 14, color: "#999", marginBottom: 24 }}>{t('dashboard.apiKeys.empty.desc') || 'Create your first API key to start using our services programmatically'}</p>
           <button className="btn" style={{ background: "linear-gradient(135deg, #794aff 0%, #b084ff 100%)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 14, fontWeight: 500, cursor: "pointer" }} onClick={() => setShowCreateModal(true)}>
-            <FiPlus style={{ marginRight: 8 }} /> Create Your First Key
+            <FiPlus style={{ marginRight: 8 }} /> {t('dashboard.apiKeys.empty.createFirst') || 'Create Your First Key'}
           </button>
         </div>
       ) : (
@@ -307,7 +307,7 @@ export default function ApiKeysContent() {
                 <div className="api-key-bar">
                   <code className="api-key-code">{showKey[apiKey.id] ? (mergedFullKeyMap[apiKey.id] || 'Loading...') : apiKey.apiKey}</code>
                   <div className="api-key-actions">
-                    <button className="btn-icon" aria-label={showKey[apiKey.id] ? 'Hide API key' : 'Reveal API key'} onClick={async () => {
+              <button className="btn-icon" aria-label={showKey[apiKey.id] ? (t('dashboard.apiKeys.hideKey') || 'Hide API key') : (t('dashboard.apiKeys.revealKey') || 'Reveal API key')} onClick={async () => {
                       if (!showKey[apiKey.id]) {
                         const full = await ensureFullKey(apiKey.id)
                         if (!full) return
@@ -316,7 +316,7 @@ export default function ApiKeysContent() {
                     }}>
                       {showKey[apiKey.id] ? <FiEyeOff /> : <FiEye />}
                     </button>
-                    <button className="btn-icon" aria-label="Copy API key" onClick={() => handleCopyById(apiKey.id)}>
+                    <button className="btn-icon" aria-label={t('dashboard.apiKeys.copyKey') || 'Copy API key'} onClick={() => handleCopyById(apiKey.id)}>
                       <FiCopy />
                     </button>
                   </div>
@@ -367,7 +367,7 @@ export default function ApiKeysContent() {
             {activeTab === "windows" && (
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installNode') || 'Step 1: Install Node.js'}</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>Option 1 (Recommended): Download the LTS installer from https://nodejs.org, run the installer and follow default steps.</p>
                   <p style={{ color: "#ccc", marginTop: 4 }}>Option 2 (winget):</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
@@ -394,7 +394,7 @@ export default function ApiKeysContent() {
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`$env:ANTHROPIC_AUTH_TOKEN = "${userApiKey || 'Your Token'}"`}</code>
                   </div>
-                  <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (user scope):</p>
+              <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.permanentUserScope') || 'Permanent (user scope):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://koicode.xyz/api", [System.EnvironmentVariableTarget]::User)</code>
                   </div>
@@ -403,7 +403,7 @@ export default function ApiKeysContent() {
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 4: Get Started</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>claude</code>
                   </div>
@@ -462,7 +462,7 @@ export default function ApiKeysContent() {
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Use your distribution's package manager, then verify with node --version. Examples:</p>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.linux.installHint') || "Use your distribution's package manager, then verify with node --version. Examples:"}</p>
                   <p style={{ color: "#ccc", marginTop: 4 }}>Ubuntu/Debian:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>sudo apt update &amp;&amp; sudo apt install -y nodejs npm</code>
@@ -477,21 +477,21 @@ export default function ApiKeysContent() {
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 2: Install Claude Code CLI</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installClaudeCli') || 'Step 2: Install Claude Code CLI'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>sudo npm install -g @anthropic-ai/claude-code</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Temporary (current session):</p>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.configureEnv') || 'Step 3: Configure Environment'}</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.temporarySession') || 'Temporary (current session):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://koicode.xyz/api"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
                   </div>
-                  <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (~/.bashrc):</p>
+                  <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.permanentBashrc') || 'Permanent (~/.bashrc):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://koicode.xyz/api"' &gt;&gt; ~/.bashrc</code>
                   </div>
@@ -503,7 +503,7 @@ export default function ApiKeysContent() {
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 4: Get Started</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>claude</code>
                   </div>

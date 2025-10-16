@@ -59,5 +59,53 @@
     "editDesc": "邀请码仅可修改一次。请使用大写字母和数字（A–Z、0–9），至少 {min} 位。",
     "editPlaceholder": "输入新的邀请码",
     "saving": "保存中..."
+  },
+  "apiKeys": {
+    "create": {
+      "title": "创建新的 API Key",
+      "labelTitle": "Key 标题",
+      "placeholderTitle": "例如：生产环境 Key",
+      "createBtn": "创建 Key",
+      "creating": "创建中..."
+    },
+    "loading": "正在加载 API Keys...",
+    "empty": {
+      "title": "暂无 API Keys",
+      "desc": "创建你的第一个 API Key 以便以编程方式使用我们的服务",
+      "createFirst": "创建你的第一个 Key"
+    },
+    "hideKey": "隐藏 API Key",
+    "revealKey": "显示 API Key",
+    "copyKey": "复制 API Key",
+    "tabs": { "windows": "Windows", "macos": "macOS", "linux": "Linux" },
+    "step": {
+      "installNode": "步骤 1：安装 Node.js",
+      "installClaudeCli": "步骤 2：安装 Claude Code CLI",
+      "configureEnv": "步骤 3：配置环境变量",
+      "getStarted": "步骤 4：开始使用"
+    },
+    "option1Recommended": "方式一（推荐）：从 https://nodejs.org 下载 LTS 安装包，按默认步骤安装。",
+    "option2Winget": "方式二（winget）：",
+    "verifyInstallation": "验证安装：",
+    "option1Homebrew": "方式一（推荐）：使用 Homebrew。",
+    "option2DownloadPkg": "方式二：从 https://nodejs.org 下载 LTS 安装包（.pkg）并按提示安装。",
+    "temporarySession": "临时（当前会话）：",
+    "permanentUserScope": "永久（用户级）：",
+    "permanentZshOrBash": "永久（~/.zshrc 或 ~/.bash_profile）：",
+    "permanentBashrc": "永久（~/.bashrc）：",
+    "linux": { "installHint": "使用发行版的包管理器安装，然后使用 node --version 验证。示例：" },
+    "noteTitle": "使用说明",
+    "noteDesc": "你的 koi.codes API Key 可同时用于 Codex 与 Claude Code。",
+    "important": "重要",
+    "codex": {
+      "step1Title": "步骤 1：创建 auth.json",
+      "deleteAuth": "删除 ~/.codex 目录下已有的 auth.json（如存在），并新建 auth.json。",
+      "step2Title": "步骤 2：创建 config.toml",
+      "configImportantDesc": "配置文件必须命名为 config.toml 且使用 TOML 格式，请勿创建 config.json 等其他格式。",
+      "deleteConfig": "删除 ~/.codex 下已有的 config.toml（如存在），并重新创建。",
+      "createConfig": "然后新建 ~/.codex/config.toml，内容示例如下：",
+      "step3Title": "步骤 3：设置环境变量",
+      "step4Title": "步骤 4：开始使用"
+    }
   }
 }

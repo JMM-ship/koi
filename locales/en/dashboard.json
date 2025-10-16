@@ -59,5 +59,53 @@
     "editDesc": "You can change your invite code only once. Use uppercase letters and digits (A–Z, 0–9), at least {min} characters.",
     "editPlaceholder": "Enter new invite code",
     "saving": "Saving..."
+  },
+  "apiKeys": {
+    "create": {
+      "title": "Create New API Key",
+      "labelTitle": "Key Title",
+      "placeholderTitle": "e.g., Production Key",
+      "createBtn": "Create Key",
+      "creating": "Creating..."
+    },
+    "loading": "Loading API keys...",
+    "empty": {
+      "title": "No API Keys Yet",
+      "desc": "Create your first API key to start using our services programmatically",
+      "createFirst": "Create Your First Key"
+    },
+    "hideKey": "Hide API key",
+    "revealKey": "Reveal API key",
+    "copyKey": "Copy API key",
+    "tabs": { "windows": "Windows", "macos": "macOS", "linux": "Linux" },
+    "step": {
+      "installNode": "Step 1: Install Node.js",
+      "installClaudeCli": "Step 2: Install Claude Code CLI",
+      "configureEnv": "Step 3: Configure Environment",
+      "getStarted": "Step 4: Get Started"
+    },
+    "option1Recommended": "Option 1 (Recommended): Download the LTS installer from https://nodejs.org, run the installer and follow default steps.",
+    "option2Winget": "Option 2 (winget):",
+    "verifyInstallation": "Verify installation:",
+    "option1Homebrew": "Option 1 (Recommended): Use Homebrew.",
+    "option2DownloadPkg": "Option 2: Download the LTS installer (.pkg) from https://nodejs.org and follow the instructions.",
+    "temporarySession": "Temporary (current session):",
+    "permanentUserScope": "Permanent (user scope):",
+    "permanentZshOrBash": "Permanent (~/.zshrc or ~/.bash_profile):",
+    "permanentBashrc": "Permanent (~/.bashrc):",
+    "linux": { "installHint": "Use your distribution's package manager, then verify with node --version. Examples:" },
+    "noteTitle": "Usage Note",
+    "noteDesc": "Your koi.codes API key can be used in both Codex and Claude Code.",
+    "important": "Important",
+    "codex": {
+      "step1Title": "Step 1: Create auth.json",
+      "deleteAuth": "Delete any existing auth.json under ~/.codex (if present), then create a new auth.json.",
+      "step2Title": "Step 2: Create config.toml",
+      "configImportantDesc": "The config file must be named config.toml and use TOML format. Do not create config.json or other formats.",
+      "deleteConfig": "Delete any existing config.toml under ~/.codex (if present), then create a new config.toml.",
+      "createConfig": "Then create a new ~/.codex/config.toml with the content below:",
+      "step3Title": "Step 3: Set Environment Variable",
+      "step4Title": "Step 4: Get Started"
+    }
   }
 }
