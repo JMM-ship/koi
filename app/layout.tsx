@@ -15,6 +15,7 @@ import "/public/assets/css/responsive-units.css";
 import "/public/assets/css/style.css";
 
 import type { Metadata } from "next";
+import Script from 'next/script'
 import { headers, cookies } from 'next/headers'
 import { resolveLocaleFrom, getDictionary } from '@/lib/i18n/server'
 import I18nClientProvider from '@/app/i18n/I18nClientProvider'
@@ -62,6 +63,20 @@ export default async function RootLayout({
     return (
         <html lang={locale}>
             <body className={`${LibreFranklinHeading.variable} ${rubik.variable}`}>
+                {/* Google tag (gtag.js) - load early in head */}
+                <Script
+                    id="gtag-src"
+                    src="https://www.googletagmanager.com/gtag/js?id=AW-17646208711"
+                    strategy="beforeInteractive"
+                />
+                <Script id="gtag-init" strategy="beforeInteractive">
+                    {`
+                      window.dataLayer = window.dataLayer || [];
+                      function gtag(){dataLayer.push(arguments);} 
+                      gtag('js', new Date());
+                      gtag('config', 'AW-17646208711');
+                    `}
+                </Script>
                 <Providers>
                     <I18nClientProvider locale={locale} dicts={dicts}>
                         <DebugProvider>
