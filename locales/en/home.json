@@ -164,5 +164,17 @@
       "name": "Little Wang",
       "role": "Full-stack Engineer, Independent Developer"
     }
+  },
+  "s9": {
+    "tag": "insights",
+    "title": "Company blog feeds",
+    "by": "By",
+    "admin": "Admin",
+    "cat": { "ai": "ai", "automation": "automation", "software": "software" },
+    "posts": {
+      "p1": { "title": "2025: brace for the 'big one' cyber attack." },
+      "p2": { "title": "2025: brace for the 'big one' cyber attack." },
+      "p3": { "title": "2025: brace for the 'big one' cyber attack." }
+    }
   }
 }
