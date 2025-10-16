@@ -123,7 +123,7 @@ export default function ReferralContent() {
 
   return (
     <div style={{ padding: 16 }}>
-      <h2 style={{ color: '#fff', marginBottom: 16 }}>Referral Program</h2>
+      <h2 style={{ color: '#fff', marginBottom: 16 }}>{t('dashboard.referral.title') || 'Referral Program'}</h2>
 
       {/* How to Invite - three steps */}
       <div style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12, padding: 20, marginBottom: 18 }}>
@@ -132,43 +132,43 @@ export default function ReferralContent() {
           <div style={{ border: '1px solid #1f1f1f', borderRadius: 10, padding: 16, background: '#0f0f0f' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#bda7ff' }}>
               <div style={{ width: 28, height: 28, borderRadius: 14, background: '#1c1533', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>1</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#d0c7ff' }}><FiLink /> Copy your invite link</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#d0c7ff' }}><FiLink /> {t('dashboard.referral.copyLinkTitle') || 'Copy your invite link'}</div>
             </div>
-            <div style={{ color: '#9aa', marginTop: 8, fontSize: 12 }}>Click the copy button to get your personal link.</div>
+            <div style={{ color: '#9aa', marginTop: 8, fontSize: 12 }}>{t('dashboard.referral.copyLinkDesc') || 'Click the copy button to get your personal link.'}</div>
           </div>
           <div style={{ border: '1px solid #1f1f1f', borderRadius: 10, padding: 16, background: '#0f0f0f' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#bda7ff' }}>
               <div style={{ width: 28, height: 28, borderRadius: 14, background: '#1c1533', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>2</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#d0c7ff' }}><FiUsers /> Share with friends</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#d0c7ff' }}><FiUsers /> {t('dashboard.referral.shareTitle') || 'Share with friends'}</div>
             </div>
-            <div style={{ color: '#9aa', marginTop: 8, fontSize: 12 }}>Send the link to your friends via your channels.</div>
+            <div style={{ color: '#9aa', marginTop: 8, fontSize: 12 }}>{t('dashboard.referral.shareDesc') || 'Send the link to your friends via your channels.'}</div>
           </div>
           <div style={{ border: '1px solid #1f1f1f', borderRadius: 10, padding: 16, background: '#0f0f0f' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#bda7ff' }}>
               <div style={{ width: 28, height: 28, borderRadius: 14, background: '#1c1533', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>3</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#d0c7ff' }}><FiGift /> Earn rewards</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#d0c7ff' }}><FiGift /> {t('dashboard.referral.earnTitle') || 'Earn rewards'}</div>
             </div>
-            <div style={{ color: '#9aa', marginTop: 8, fontSize: 12 }}>When friends purchase any plan, both of you get points.</div>
+            <div style={{ color: '#9aa', marginTop: 8, fontSize: 12 }}>{t('dashboard.referral.earnDesc') || 'When friends purchase any plan, both of you get points.'}</div>
           </div>
         </div>
       </div>
 
       {/* My invite summary cards */}
       <div style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12, padding: 20, marginBottom: 18 }}>
-        <div style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>My invite</div>
-        <div style={{ color: '#9aa', fontSize: 12, marginTop: 6 }}>Share your invite code with friends. When they buy any plan, you get 2000 credits and your friend gets 1000 credits.</div>
+        <div style={{ color: '#fff', fontSize: 16, fontWeight: 600 }}>{t('dashboard.referral.myInviteTitle') || 'My invite'}</div>
+        <div style={{ color: '#9aa', fontSize: 12, marginTop: 6 }}>{t('dashboard.referral.myInviteDesc') || 'Share your invite code with friends. When they buy any plan, you get 2000 credits and your friend gets 1000 credits.'}</div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 12, marginTop: 12 }}>
           {/* Card 1: my code */}
           <div style={{ border: '1px solid #1f1f1f', borderRadius: 10, padding: 16, background: '#101010' }}>
-            <div style={{ color: '#9aa', fontSize: 12, marginBottom: 6 }}>My invite code</div>
+            <div style={{ color: '#9aa', fontSize: 12, marginBottom: 6 }}>{t('dashboard.referral.myInviteCode') || 'My invite code'}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ color: '#fff', fontWeight: 700, fontSize: 18 }}>{inviteCode}</div>
               <button onClick={copyCode} aria-label="Copy Code" title="Copy code" style={{ background: 'transparent', color: '#aaa', border: '1px solid #222', padding: 6, borderRadius: 6 }}><FiCopy /></button>
               <button onClick={openEdit} aria-label="Edit Code" title="Edit code" style={{ background: 'transparent', color: '#aaa', border: '1px solid #222', padding: 6, borderRadius: 6 }}><FiEdit2 /></button>
               <div style={{ flex: 1 }} />
               <button onClick={copyLink} aria-label="Copy" style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #2a2a2a', background: 'linear-gradient(135deg, #794aff 0%, #b084ff 100%)', color: '#fff' }}>
-                Copy Invite Link
+                {t('dashboard.referral.copyInviteLink') || 'Copy Invite Link'}
               </button>
             </div>
             <div style={{ color: '#9cf', fontSize: 12, marginTop: 8, wordBreak: 'break-all' }}>{inviteUrl}</div>
@@ -176,29 +176,29 @@ export default function ReferralContent() {
 
           {/* Card 2: invited count */}
           <div style={{ border: '1px solid #1f1f1f', borderRadius: 10, padding: 16, background: '#101010', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ color: '#9aa', fontSize: 12 }}>Invited:</div>
+            <div style={{ color: '#9aa', fontSize: 12 }}>{t('dashboard.referral.invitedLabel') || 'Invited:'}</div>
             <div style={{ color: '#86efac', fontWeight: 800, fontSize: 24 }}>{invitedCount}</div>
           </div>
 
           {/* Card 3: total rewards */}
           <div style={{ border: '1px solid #1f1f1f', borderRadius: 10, padding: 16, background: '#101010', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ color: '#9aa', fontSize: 12 }}>Total Rewards:</div>
+            <div style={{ color: '#9aa', fontSize: 12 }}>{t('dashboard.referral.totalRewardsLabel') || 'Total Rewards:'}</div>
             <div style={{ color: '#fca5a5', fontWeight: 800, fontSize: 24 }}>{totalRewardPoints}</div>
           </div>
         </div>
       </div>
 
       <div style={{ background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12, padding: 16 }}>
-        <div style={{ color: '#fff', marginBottom: 8 }}>Invites</div>
+        <div style={{ color: '#fff', marginBottom: 8 }}>{t('dashboard.referral.invitesTitle') || 'Invites'}</div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', color: '#ddd', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
-                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>Email</th>
-                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>Name</th>
-                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>Registered</th>
-                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>Purchase</th>
-                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>Reward</th>
+                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>{t('dashboard.referral.th.email') || 'Email'}</th>
+                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>{t('dashboard.referral.th.name') || 'Name'}</th>
+                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>{t('dashboard.referral.th.registered') || 'Registered'}</th>
+                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>{t('dashboard.referral.th.purchase') || 'Purchase'}</th>
+                <th style={{ textAlign: 'left', padding: 8, borderBottom: '1px solid #1a1a1a' }}>{t('dashboard.referral.th.reward') || 'Reward'}</th>
               </tr>
             </thead>
             <tbody>
@@ -213,7 +213,7 @@ export default function ReferralContent() {
               ))}
               {(!invites?.data?.items || invites.data.items.length === 0) && (
                 <tr>
-                  <td colSpan={5} style={{ padding: 12, color: '#666' }}>No invites yet</td>
+                  <td colSpan={5} style={{ padding: 12, color: '#666' }}>{t('dashboard.referral.empty') || 'No invites yet'}</td>
                 </tr>
               )}
             </tbody>
@@ -221,9 +221,9 @@ export default function ReferralContent() {
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12 }}>
-          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} style={{ padding: '6px 12px', borderRadius: 6 }}>Prev</button>
-          <div style={{ color: '#aaa' }}>Page {page}</div>
-          <button onClick={() => setPage((p) => p + 1)} style={{ padding: '6px 12px', borderRadius: 6 }}>Next</button>
+          <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} style={{ padding: '6px 12px', borderRadius: 6 }}>{t('dashboard.referral.prev') || 'Prev'}</button>
+          <div style={{ color: '#aaa' }}>{t('dashboard.referral.page', { page: String(page) }) || `Page ${page}`}</div>
+          <button onClick={() => setPage((p) => p + 1)} style={{ padding: '6px 12px', borderRadius: 6 }}>{t('dashboard.referral.next') || 'Next'}</button>
         </div>
       </div>
 
@@ -234,12 +234,12 @@ export default function ReferralContent() {
             <div style={{ maxWidth: 520, width: '92%', animation: 'fadeIn .25s ease-out' }}>
               <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', borderRadius: 16, padding: 2, boxShadow: '0 25px 50px rgba(0,0,0,.3)' }}>
                 <div style={{ background: 'linear-gradient(135deg, #0b0b0b 0%, #141217 100%)', borderRadius: 14, padding: 22, border: '1px solid #221b33' }}>
-                  <div style={{ color: '#fff', fontWeight: 700, fontSize: 16, marginBottom: 10 }}>Edit invite code</div>
-                  <div style={{ color: '#9aa', fontSize: 12, marginBottom: 12 }}>You can change your invite code only once. Use uppercase letters and digits (A–Z, 0–9), at least {INVITE_CODE_MIN_LEN} characters.</div>
+                  <div style={{ color: '#fff', fontWeight: 700, fontSize: 16, marginBottom: 10 }}>{t('dashboard.referral.editTitle') || 'Edit invite code'}</div>
+                  <div style={{ color: '#9aa', fontSize: 12, marginBottom: 12 }}>{t('dashboard.referral.editDesc', { min: String(INVITE_CODE_MIN_LEN) }) || `You can change your invite code only once. Use uppercase letters and digits (A–Z, 0–9), at least ${INVITE_CODE_MIN_LEN} characters.`}</div>
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <input value={draftCode} onChange={(e) => setDraftCode(e.target.value.toUpperCase())} placeholder="Enter new invite code" style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1px solid #2a2a2a', background: '#0f0f0f', color: '#fff' }} />
-                    <button onClick={submitEdit} disabled={saving} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: '#fff', fontWeight: 700, minWidth: 110 }}>{saving ? 'Saving...' : 'Confirm'}</button>
-                    <button onClick={closeEdit} disabled={saving} style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid #2a2a2a', background: '#0f0f0f', color: '#aaa', minWidth: 110 }}>Cancel</button>
+                    <input value={draftCode} onChange={(e) => setDraftCode(e.target.value.toUpperCase())} placeholder={t('dashboard.referral.editPlaceholder') || 'Enter new invite code'} style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1px solid #2a2a2a', background: '#0f0f0f', color: '#fff' }} />
+                    <button onClick={submitEdit} disabled={saving} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: '#fff', fontWeight: 700, minWidth: 110 }}>{saving ? (t('dashboard.referral.saving') || 'Saving...') : (t('common.confirm') || 'Confirm')}</button>
+                    <button onClick={closeEdit} disabled={saving} style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid #2a2a2a', background: '#0f0f0f', color: '#aaa', minWidth: 110 }}>{t('common.cancel') || 'Cancel'}</button>
                   </div>
                   {errorText && <div style={{ color: '#fca5a5', fontSize: 12, marginTop: 8 }}>{errorText}</div>}
                 </div>

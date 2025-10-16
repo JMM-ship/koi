@@ -2,6 +2,7 @@
 
 import { FiX, FiCreditCard, FiSmartphone } from "react-icons/fi";
 import { SiStripe, SiAlipay } from "react-icons/si";
+import { useT } from "@/contexts/I18nContext";
 
 interface PaymentMethodModalProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ export default function PaymentMethodModal({
   processing
 }: PaymentMethodModalProps) {
   if (!isOpen) return null;
+  let t = (k: string) => k
+  try { t = useT().t } catch {}
 
   return (
     <div style={{
@@ -69,14 +72,14 @@ export default function PaymentMethodModal({
             fontWeight: '700',
             marginBottom: '8px'
           }}>
-            Select Payment Method
+            {t('packages.selectPaymentMethod') || 'Select Payment Method'}
           </h2>
           <p style={{
             color: '#999',
             fontSize: '14px',
             margin: 0
           }}>
-            Choose your preferred payment method to complete the purchase
+            {t('packages.choosePaymentMethodDesc') || 'Choose your preferred payment method to complete the purchase'}
           </p>
         </div>
 
@@ -142,7 +145,7 @@ export default function PaymentMethodModal({
                   alignItems: 'center',
                   gap: '8px'
                 }}>
-                  Card Payment
+                  {t('packages.cardPaymentTitle') || t('packages.cardPayment') || 'Card Payment'}
                   <FiCreditCard size={18} />
                 </div>
                 <div style={{
@@ -150,7 +153,7 @@ export default function PaymentMethodModal({
                   fontSize: '13px',
                   lineHeight: '1.5'
                 }}>
-                  Supports Visa, Mastercard, American Express and other international credit/debit cards
+                  {t('packages.cardPaymentDesc') || 'Supports Visa, Mastercard, American Express and other international credit/debit cards'}
                 </div>
               </div>
 
@@ -162,7 +165,7 @@ export default function PaymentMethodModal({
                 fontWeight: '600',
                 color: '#a29bff'
               }}>
-                Recommended
+                {t('packages.recommended') || 'Recommended'}
               </div>
             </div>
           </button>
@@ -224,7 +227,7 @@ export default function PaymentMethodModal({
                   alignItems: 'center',
                   gap: '8px'
                 }}>
-                  E-Wallet Payment
+                  {t('packages.eWalletPaymentTitle') || t('packages.eWallet') || 'E-Wallet Payment'}
                   <FiSmartphone size={18} />
                 </div>
                 <div style={{
@@ -232,7 +235,7 @@ export default function PaymentMethodModal({
                   fontSize: '13px',
                   lineHeight: '1.5'
                 }}>
-                  Supports Alipay, WeChat Pay, GCash, GoPay, Kakao Pay and other e-wallets
+                  {t('packages.eWalletPaymentDesc') || 'Supports Alipay, WeChat Pay, GCash, GoPay, Kakao Pay and other e-wallets'}
                 </div>
               </div>
             </div>
@@ -259,7 +262,7 @@ export default function PaymentMethodModal({
               marginRight: '12px'
             }} />
             <span style={{ color: '#794aff', fontSize: '14px', fontWeight: '600' }}>
-              Processing payment request...
+              {t('packages.processingPaymentRequest') || 'Processing payment request...'}
             </span>
           </div>
         )}

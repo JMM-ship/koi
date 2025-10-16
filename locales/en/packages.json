@@ -15,4 +15,13 @@
   "choosePlan": "Choose Plan",
   "renew": "Renew",
   "upgrade": "Upgrade"
+  ,
+  "selectPaymentMethod": "Select Payment Method",
+  "choosePaymentMethodDesc": "Choose your preferred payment method to complete the purchase",
+  "cardPaymentTitle": "Card Payment",
+  "cardPaymentDesc": "Supports Visa, Mastercard, American Express and other international credit/debit cards",
+  "recommended": "Recommended",
+  "eWalletPaymentTitle": "E-Wallet Payment",
+  "eWalletPaymentDesc": "Supports Alipay, WeChat Pay, GCash, GoPay, Kakao Pay and other e-wallets",
+  "processingPaymentRequest": "Processing payment request..."
 }

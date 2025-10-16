@@ -34,5 +34,30 @@
     "upgrade": "Upgrade",
     "renew": "Renew",
     "month": "month"
+  },
+  "referral": {
+    "title": "Referral Program",
+    "copyLinkTitle": "Copy your invite link",
+    "copyLinkDesc": "Click the copy button to get your personal link.",
+    "shareTitle": "Share with friends",
+    "shareDesc": "Send the link to your friends via your channels.",
+    "earnTitle": "Earn rewards",
+    "earnDesc": "When friends purchase any plan, both of you get points.",
+    "myInviteTitle": "My invite",
+    "myInviteDesc": "Share your invite code with friends. When they buy any plan, you get 2000 credits and your friend gets 1000 credits.",
+    "myInviteCode": "My invite code",
+    "copyInviteLink": "Copy Invite Link",
+    "invitedLabel": "Invited:",
+    "totalRewardsLabel": "Total Rewards:",
+    "invitesTitle": "Invites",
+    "th": { "email": "Email", "name": "Name", "registered": "Registered", "purchase": "Purchase", "reward": "Reward" },
+    "empty": "No invites yet",
+    "prev": "Prev",
+    "next": "Next",
+    "page": "Page {page}",
+    "editTitle": "Edit invite code",
+    "editDesc": "You can change your invite code only once. Use uppercase letters and digits (A–Z, 0–9), at least {min} characters.",
+    "editPlaceholder": "Enter new invite code",
+    "saving": "Saving..."
   }
 }
