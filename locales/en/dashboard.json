@@ -96,6 +96,15 @@
     "linux": { "installHint": "Use your distribution's package manager, then verify with node --version. Examples:" },
     "noteTitle": "Usage Note",
     "noteDesc": "Your koi.codes API key can be used in both Codex and Claude Code.",
+    "quickStart": "Quick Start",
+    "cardClaude": "Claude Code",
+    "cardCodex": "Codex",
+    "cliSetup": "CLI install & setup",
+    "created": "Created",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "morePlatforms": "For other platforms and troubleshooting, see"
     "important": "Important",
     "codex": {
       "step1Title": "Step 1: Create auth.json",
@@ -107,5 +116,28 @@
       "step3Title": "Step 3: Set Environment Variable",
       "step4Title": "Step 4: Get Started"
     }
-  }
+  },
+  "ranking": {
+    "title": "Credits Consumption Ranking",
+    "today": "Today",
+    "sevenDays": "7 Days",
+    "thirtyDays": "30 Days",
+    "creditsConsumed": "Credits Consumed",
+    "performance": "Performance Ranking",
+    "betterThanUsers": "Better than {percent}% of users",
+    "period24h": "24h",
+    "period7d": "7d",
+    "period30d": "30d",
+    "period": "Period",
+    "betterThan": "Better Than"
+  },
+  "details": {
+    "title": "Credits Details",
+    "totalRecords": "Total {count} records",
+    "emptyTitle": "No credit usage yet",
+    "emptyDesc": "You haven’t used any credits yet — try unlocking premium features now!",
+    "useNow": "Use Credits Now",
+    "creditsUnit": "Credits"
+  },
+  "loading": "Loading..."
 }

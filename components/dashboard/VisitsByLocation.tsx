@@ -53,28 +53,16 @@ const CurrentPlan = ({ onUpgradeClick }: CurrentPlanProps) => {
           // 构建功能列表
           const featuresList = [];
           if (creditCap > 0) {
-            featuresList.push({
-              name: `Credit Cap: ${creditCap.toLocaleString()}`,
-              included: true
-            });
+            featuresList.push({ name: (useT().t('packages.features.creditCap', { count: creditCap.toLocaleString() }) || `Credit Cap: ${creditCap.toLocaleString()}`), included: true });
           }
           if (recoveryRate > 0) {
-            featuresList.push({
-              name: `Recovery Rate: ${recoveryRate.toLocaleString()}/hour`,
-              included: true
-            });
+            featuresList.push({ name: (useT().t('packages.features.recoveryPerHour', { count: recoveryRate.toLocaleString() }) || `Recovery Rate: ${recoveryRate.toLocaleString()}/hour`), included: true });
           }
           if (dailyUsageLimit > 0) {
-            featuresList.push({
-              name: `Daily Usage Limit: ${dailyUsageLimit.toLocaleString()}`,
-              included: true
-            });
+            featuresList.push({ name: (useT().t('packages.features.dailyMaxUsage', { count: dailyUsageLimit.toLocaleString() }) || `Daily Usage Limit: ${dailyUsageLimit.toLocaleString()}`), included: true });
           }
           if (manualResetPerDay > 0) {
-            featuresList.push({
-              name: `Manual Resets: ${manualResetPerDay}/day`,
-              included: true
-            });
+            featuresList.push({ name: (useT().t('packages.features.manualResetPerDay', { count: String(manualResetPerDay) }) || `Manual Resets: ${manualResetPerDay}/day`), included: true });
           }
 
           // 如果没有从数据库获取到功能,使用基本功能

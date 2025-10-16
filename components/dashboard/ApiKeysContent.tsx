@@ -323,12 +323,12 @@ export default function ApiKeysContent() {
                 </div>
                 <div className="api-key-footer">
                   <div>
-                    <span>Created • </span>
+                    <span>{t('dashboard.apiKeys.created') || 'Created'} • </span>
                     <span>{new Date(apiKey.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                   </div>
                   <div>
-                    <span>Status: </span>
-                    <span className={apiKey.status === 'active' ? 'text-success' : 'text-dim'}>{apiKey.status === 'active' ? 'Active' : 'Inactive'}</span>
+                    <span>{t('dashboard.apiKeys.status') || 'Status'}: </span>
+                    <span className={apiKey.status === 'active' ? 'text-success' : 'text-dim'}>{apiKey.status === 'active' ? (t('dashboard.apiKeys.active') || 'Active') : (t('dashboard.apiKeys.inactive') || 'Inactive')}</span>
                   </div>
                 </div>
               </div>
@@ -339,20 +339,20 @@ export default function ApiKeysContent() {
 
       {/* Quick Start */}
       <div style={{ background: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: 12, padding: 20, marginTop: 20 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 16 }}>🚀 Quick Start</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 16 }}>🚀 {t('dashboard.apiKeys.quickStart') || 'Quick Start'}</h3>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div onClick={() => setSelectedGuide(selectedGuide === "claude" ? null : "claude")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "claude" ? "#121212" : "#1a1a1a", border: selectedGuide === "claude" ? "1px solid #794aff" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
             <FiTerminal style={{ color: "#794aff", fontSize: 24 }} />
             <div>
-              <div style={{ color: "#fff", fontWeight: 600 }}>Claude Code</div>
-              <div style={{ color: "#999", fontSize: 12 }}>CLI install & setup</div>
+              <div style={{ color: "#fff", fontWeight: 600 }}>{t('dashboard.apiKeys.cardClaude') || 'Claude Code'}</div>
+              <div style={{ color: "#999", fontSize: 12 }}>{t('dashboard.apiKeys.cliSetup') || 'CLI install & setup'}</div>
             </div>
           </div>
           <div onClick={() => setSelectedGuide(selectedGuide === "codex" ? null : "codex")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "codex" ? "#121212" : "#1a1a1a", border: selectedGuide === "codex" ? "1px solid #00d084" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
             <FiCode style={{ color: "#00d084", fontSize: 24 }} />
             <div>
-              <div style={{ color: "#fff", fontWeight: 600 }}>Codex</div>
-              <div style={{ color: "#999", fontSize: 12 }}>CLI install & setup</div>
+              <div style={{ color: "#fff", fontWeight: 600 }}>{t('dashboard.apiKeys.cardCodex') || 'Codex'}</div>
+              <div style={{ color: "#999", fontSize: 12 }}>{t('dashboard.apiKeys.cliSetup') || 'CLI install & setup'}</div>
             </div>
           </div>
         </div>
@@ -527,7 +527,7 @@ export default function ApiKeysContent() {
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>brew install codex</code>
               </div>
-              <div style={{ fontSize: 12, color: "#999" }}>For other platforms and troubleshooting, see https://github.com/openai/codex</div>
+              <div style={{ fontSize: 12, color: "#999" }}>{t('dashboard.apiKeys.morePlatforms') || 'For other platforms and troubleshooting, see'} https://github.com/openai/codex</div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
               <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 1: Create auth.json</div>

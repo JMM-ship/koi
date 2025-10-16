@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useDashboard, useCreditStats } from "@/contexts/DashboardContext";
+import { useT } from "@/contexts/I18nContext";
 
 const ExchangeBalance = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('today');
@@ -45,11 +46,13 @@ const ExchangeBalance = () => {
     }
   }, [data, creditStats]);
 
+  const { t } = (() => { try { return { t: useT().t } } catch { return { t: (k: string) => k } } })()
+
   if (isLoading || !rankingData) {
     return (
       <div className="team-members-card">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '300px' }}>
-          <span style={{ color: '#999' }}>Loading...</span>
+          <span style={{ color: '#999' }}>{t('dashboard.loading') || 'Loading...'}</span>
         </div>
       </div>
     );
@@ -60,7 +63,7 @@ const ExchangeBalance = () => {
   return (
     <div className="team-members-card">
       <div className="card-header">
-        <h3 className="card-title">Credits Consumption Ranking</h3>
+        <h3 className="card-title">{t('dashboard.ranking.title') || 'Credits Consumption Ranking'}</h3>
         <div className="period-switcher" style={{ display: 'flex', gap: '0.5rem' }}>
           <button
             onClick={() => setSelectedPeriod('today')}
@@ -75,7 +78,7 @@ const ExchangeBalance = () => {
               transition: 'all 0.2s'
             }}
           >
-            Today
+            {t('dashboard.ranking.today') || 'Today'}
           </button>
           <button
             onClick={() => setSelectedPeriod('week')}
@@ -90,7 +93,7 @@ const ExchangeBalance = () => {
               transition: 'all 0.2s'
             }}
           >
-            7 Days
+            {t('dashboard.ranking.sevenDays') || '7 Days'}
           </button>
           <button
             onClick={() => setSelectedPeriod('month')}
@@ -105,7 +108,7 @@ const ExchangeBalance = () => {
               transition: 'all 0.2s'
             }}
           >
-            30 Days
+            {t('dashboard.ranking.thirtyDays') || '30 Days'}
           </button>
         </div>
       </div>
@@ -118,7 +121,7 @@ const ExchangeBalance = () => {
                 {currentData.points}
               </span>
               <span style={{ fontSize: '0.875rem', color: '#6b7280', marginLeft: '0.5rem' }}>
-                Credits Consumed
+                {t('dashboard.ranking.creditsConsumed') || 'Credits Consumed'}
               </span>
             </div>
             <span style={{ fontSize: '0.875rem', color: currentData.color }}>
@@ -131,14 +134,14 @@ const ExchangeBalance = () => {
           <div style={{ marginBottom: '0.75rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
               <span style={{ fontSize: '0.875rem', color: '#9ca3af' }}>
-                Performance Ranking
+                {t('dashboard.ranking.performance') || 'Performance Ranking'}
               </span>
               <span style={{ fontSize: '1.125rem', fontWeight: 'bold', color: currentData.color }}>
                 {currentData.percentage}%
               </span>
             </div>
             <div style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.5rem' }}>
-              Better than {currentData.percentage}% of users
+              {(t('dashboard.ranking.betterThanUsers', { percent: String(currentData.percentage) }) || `Better than ${currentData.percentage}% of users`)}
             </div>
             <div style={{
               width: '100%',
@@ -168,15 +171,15 @@ const ExchangeBalance = () => {
         }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#fff' }}>
-              {selectedPeriod === 'today' ? '24h' : selectedPeriod === 'week' ? '7d' : '30d'}
+              {selectedPeriod === 'today' ? (t('dashboard.ranking.period24h') || '24h') : selectedPeriod === 'week' ? (t('dashboard.ranking.period7d') || '7d') : (t('dashboard.ranking.period30d') || '30d')}
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Period</div>
+            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{t('dashboard.ranking.period') || 'Period'}</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '1.25rem', fontWeight: 'bold', color: currentData.color }}>
               {currentData.percentage}%
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>Better Than</div>
+            <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>{t('dashboard.ranking.betterThan') || 'Better Than'}</div>
           </div>
         </div>
       </div>

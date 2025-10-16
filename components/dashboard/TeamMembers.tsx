@@ -1,6 +1,7 @@
 "use client";
 
 import { data } from 'isotope-layout';
+import { useT } from '@/contexts/I18nContext'
 import useSWR from 'swr'
 
 interface CreditDetail {
@@ -67,6 +68,8 @@ const TeamMembers = () => {
     }
   })
   const loading = !creditDetails
+  let t = (k: string, p?: any) => k
+  try { t = useT().t } catch {}
 
   const getModelColor = (detail: CreditDetail) => {
     if (detail.bucket === 'package') return '#4f46e5'
@@ -91,7 +94,7 @@ const TeamMembers = () => {
     return (
       <div className="team-members-card">
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '300px' }}>
-          <span style={{ color: '#999' }}>Loading...</span>
+          <span style={{ color: '#999' }}>{t('dashboard.loading') || 'Loading...'}</span>
         </div>
       </div>
     );
@@ -100,9 +103,9 @@ const TeamMembers = () => {
   return (
     <div className="team-members-card">
       <div className="card-header">
-        <h3 className="card-title">Credits Details</h3>
+        <h3 className="card-title">{t('dashboard.details.title') || 'Credits Details'}</h3>
         <div className="team-location">
-          <span>Total {totalRecords} records</span>
+          <span>{t('dashboard.details.totalRecords', { count: String(totalRecords) }) || `Total ${totalRecords} records`}</span>
         </div>
       </div>
 
@@ -123,10 +126,10 @@ const TeamMembers = () => {
             }}
           >
             <div style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: "0.5rem" }}>
-              No credit usage yet
+              {t('dashboard.details.emptyTitle') || 'No credit usage yet'}
             </div>
             <div style={{ fontSize: "0.875rem", marginBottom: "1rem" }}>
-              You haven’t used any credits yet — try unlocking premium features now!
+              {t('dashboard.details.emptyDesc') || 'You haven’t used any credits yet — try unlocking premium features now!'}
             </div>
             <button
               style={{
@@ -142,7 +145,7 @@ const TeamMembers = () => {
                 // Navigate to credits usage page or feature
               }}
             >
-              Use Credits Now
+              {t('dashboard.details.useNow') || 'Use Credits Now'}
             </button>
           </div>
         ) : (
@@ -205,7 +208,7 @@ const TeamMembers = () => {
                     textAlign: "right"
                   }}
                 >
-                  -{detail?.credits} Credits
+                  -{detail?.credits} {t('dashboard.details.creditsUnit') || 'Credits'}
                 </span>
               </div>
             </div>

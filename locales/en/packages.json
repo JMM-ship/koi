@@ -55,4 +55,9 @@
     "prioritySupport": "Priority technical support",
     "standardSupport": "Standard technical support"
   }
+  ,
+  "refresh": {
+    "reminder": "Daily refresh reminder: The quota will be consumed during the morning refresh. This helps you see the latest updates from Claude official and completes the login process.",
+    "autoLogin": "We handle the tedious login work for you automatically"
+  }
 }

@@ -55,4 +55,9 @@
     "prioritySupport": "优先级技术支持",
     "standardSupport": "标准技术支持"
   }
+  ,
+  "refresh": {
+    "reminder": "日常刷新提醒：配额会在早晨刷新时消耗，用于获取 Claude 官方的最新状态并完成登录流程。",
+    "autoLogin": "我们会自动为你处理繁琐的登录工作"
+  }
 }

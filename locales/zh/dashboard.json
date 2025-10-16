@@ -96,6 +96,15 @@
     "linux": { "installHint": "使用发行版的包管理器安装，然后使用 node --version 验证。示例：" },
     "noteTitle": "使用说明",
     "noteDesc": "你的 koi.codes API Key 可同时用于 Codex 与 Claude Code。",
+    "quickStart": "快速开始",
+    "cardClaude": "Claude Code",
+    "cardCodex": "Codex",
+    "cliSetup": "CLI 安装与配置",
+    "created": "创建时间",
+    "status": "状态",
+    "active": "启用",
+    "inactive": "停用",
+    "morePlatforms": "更多平台与故障排查见"
     "important": "重要",
     "codex": {
       "step1Title": "步骤 1：创建 auth.json",
@@ -107,5 +116,28 @@
       "step3Title": "步骤 3：设置环境变量",
       "step4Title": "步骤 4：开始使用"
     }
-  }
+  },
+  "ranking": {
+    "title": "积分消耗排行",
+    "today": "今日",
+    "sevenDays": "近 7 天",
+    "thirtyDays": "近 30 天",
+    "creditsConsumed": "消耗积分",
+    "performance": "表现排名",
+    "betterThanUsers": "超过 {percent}% 的用户",
+    "period24h": "24 小时",
+    "period7d": "7 天",
+    "period30d": "30 天",
+    "period": "统计周期",
+    "betterThan": "优于比例"
+  },
+  "details": {
+    "title": "积分明细",
+    "totalRecords": "共 {count} 条记录",
+    "emptyTitle": "暂无积分使用记录",
+    "emptyDesc": "你还没有使用过积分——现在就去解锁高级功能吧！",
+    "useNow": "立即使用积分",
+    "creditsUnit": "积分"
+  },
+  "loading": "加载中..."
 }

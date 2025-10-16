@@ -684,10 +684,10 @@ export default function PlansContent() {
             <span style={{ fontSize: '20px' }}>💡</span>
             <div>
               <p style={{ fontSize: '14px', color: '#fff', marginBottom: '8px', fontWeight: '500' }}>
-                Daily refresh reminder: The quota will be consumed during the morning refresh. This helps you see the latest updates from Claude official and completes the login process.
+                {t('packages.refresh.reminder') || 'Daily refresh reminder: The quota will be consumed during the morning refresh. This helps you see the latest updates from Claude official and completes the login process.'}
               </p>
               <p style={{ fontSize: '13px', color: '#999', margin: 0 }}>
-                We handle the tedious login work for you automatically
+                {t('packages.refresh.autoLogin') || 'We handle the tedious login work for you automatically'}
               </p>
             </div>
           </div>
