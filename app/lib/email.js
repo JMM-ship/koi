@@ -63,3 +63,31 @@ export async function sendVerificationEmail(to, code) {
   }
 }
 
+export async function sendWelcomeEmail(to) {
+  const transporter = getEmailTransporter();
+  const mailOptions = {
+    from: `"${process.env.SMTP_FROM_NAME || 'KOI'}" <${process.env.SMTP_USER || 'noreply@koi.com'}>`,
+    to,
+    subject: 'Welcome to KOI',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333; text-align: center;">Welcome to KOI</h2>
+        <p style="color: #666; font-size: 16px;">感谢注册 KOI！</p>
+        <ol style="color: #666; font-size: 14px;">
+          <li>创建 API Key；</li>
+          <li>运行一次测试调用；</li>
+          <li>选择套餐/领取试用；</li>
+          <li>在个人资料设置语言偏好。</li>
+        </ol>
+        <p style="color: #666; font-size: 14px;">祝使用愉快！</p>
+      </div>
+    `,
+  }
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('发送欢迎邮件失败:', error);
+    return { success: false, error: error.message };
+  }
+}

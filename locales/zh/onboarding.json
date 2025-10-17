@@ -1,0 +1,31 @@
+{
+  "title": "欢迎使用",
+  "subtitle": "按照以下步骤快速开始",
+  "reward": "已发放 {points} 积分",
+  "step": {
+    "createKey": "创建 API Key",
+    "firstCall": "运行一次测试调用",
+    "choosePlan": "选择套餐/领取试用",
+    "setLocale": "设置语言"
+  },
+  "cta": {
+    "createKey": "去创建",
+    "firstCall": "去试跑",
+    "choosePlan": "去选择",
+    "setLocale": "去设置",
+    "skip": "跳过",
+    "done": "我已完成"
+  },
+  "tip": {
+    "inviteReward": "邀请好友可获得奖励"
+  },
+  "state": { "done": "已完成" },
+  "callout": {
+    "noUsage": {
+      "title": "还没有使用记录",
+      "desc": "创建一个 API Key 并运行一次测试调用，开始记录你的使用情况。",
+      "cta": "去创建 API Key"
+    }
+  }
+}
+

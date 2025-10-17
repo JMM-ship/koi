@@ -3,6 +3,7 @@ import { createUserWithPassword, findUserByEmail } from '@/app/models/user';
 import { CreditsAmount } from '@/app/service/credit';
 import { grantNewUserBonus } from '@/app/service/newUserBonus'
 import { findEmailVerificationCodeByEmailAndCode, markVerificationCodeAsUsed } from '@/app/models/verification';
+import { sendWelcomeEmail } from '@/app/lib/email'
 
 export async function POST(request) {
   try {
@@ -94,6 +95,13 @@ export async function POST(request) {
     } catch (creditError) {
       console.error("Failed to grant initial credits to new user:", creditError);
       // Continue with registration, don't block user creation
+    }
+
+    // Send welcome email (best effort, non-blocking)
+    try {
+      await sendWelcomeEmail(newUser.email)
+    } catch (err) {
+      console.error('Failed to send welcome email:', err)
     }
 
     // Return success response

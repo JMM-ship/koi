@@ -1,0 +1,31 @@
+{
+  "title": "Welcome",
+  "subtitle": "Follow the steps to get started",
+  "reward": "{points} credits granted",
+  "step": {
+    "createKey": "Create API Key",
+    "firstCall": "Run a test request",
+    "choosePlan": "Choose plan / claim trial",
+    "setLocale": "Set language"
+  },
+  "cta": {
+    "createKey": "Create",
+    "firstCall": "Try",
+    "choosePlan": "Choose",
+    "setLocale": "Set",
+    "skip": "Skip",
+    "done": "Done"
+  },
+  "tip": {
+    "inviteReward": "Invite friends to get rewards"
+  },
+  "state": { "done": "Done" },
+  "callout": {
+    "noUsage": {
+      "title": "No usage yet",
+      "desc": "Create an API key and run a test request to start tracking your usage.",
+      "cta": "Create API Key"
+    }
+  }
+}
+

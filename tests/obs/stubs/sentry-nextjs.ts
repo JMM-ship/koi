@@ -1,5 +1,6 @@
 let lastInitArg: any = null
 const tagCalls: Array<[string, string]> = []
+const messages: Array<{ message: string; context?: any }> = []
 
 export function init(arg: any) {
   lastInitArg = arg
@@ -17,3 +18,15 @@ export function __getTagCalls() {
   return tagCalls.slice()
 }
 
+export function captureMessage(message: string, context?: any) {
+  messages.push({ message, context })
+}
+
+export function __getCapturedMessages() {
+  return messages.slice()
+}
+
+export function __resetCapturedMessages() {
+  messages.length = 0
+  tagCalls.length = 0
+}

@@ -8,6 +8,7 @@ import enToasts from './en/toasts.json'
 import enSidebar from './en/sidebar.json'
 import enPackages from './en/packages.json'
 import enHome from './en/home.json'
+import enOnboarding from './en/onboarding.json'
 
 import zhCommon from './zh/common.json'
 import zhHeader from './zh/header.json'
@@ -19,6 +20,7 @@ import zhToasts from './zh/toasts.json'
 import zhSidebar from './zh/sidebar.json'
 import zhPackages from './zh/packages.json'
 import zhHome from './zh/home.json'
+import zhOnboarding from './zh/onboarding.json'
 
 export const PREBUNDLED_DICTIONARIES = {
   en: {
@@ -32,6 +34,7 @@ export const PREBUNDLED_DICTIONARIES = {
     sidebar: enSidebar,
     packages: enPackages,
     home: enHome,
+    onboarding: enOnboarding,
   },
   zh: {
     common: zhCommon,
@@ -44,5 +47,6 @@ export const PREBUNDLED_DICTIONARIES = {
     sidebar: zhSidebar,
     packages: zhPackages,
     home: zhHome,
+    onboarding: zhOnboarding,
   }
 } as const

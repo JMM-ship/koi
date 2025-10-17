@@ -11,12 +11,15 @@ import SatisfactionRate from "@/components/dashboard/SatisfactionRate";
 import IndependentCredits from "@/components/dashboard/IndependentCredits";
 import CreditTestButton from "@/components/dashboard/CreditTestButton";
 import CreditsHistory from "@/components/dashboard/CreditsHistory";
+import NoUsageCallout from "@/components/dashboard/NoUsageCallout";
+import useSWR from 'swr'
 
 interface DashboardContentProps {
   onNavigateToPlans?: () => void;
+  onNavigateToApiKeys?: () => void;
 }
 
-export default function DashboardContent({ onNavigateToPlans }: DashboardContentProps) {
+export default function DashboardContent({ onNavigateToPlans, onNavigateToApiKeys }: DashboardContentProps) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Refresh dashboard data after credits are used
@@ -24,9 +27,27 @@ export default function DashboardContent({ onNavigateToPlans }: DashboardContent
     setRefreshKey(prev => prev + 1);
   };
 
+  // Lightweight dashboard data for no-usage callout visibility
+  const { data: dashData } = useSWR(
+    '/api/dashboard',
+    async (url: string) => {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error('Failed to fetch dashboard data')
+      return res.json()
+    },
+    { revalidateOnFocus: false, revalidateOnReconnect: true, dedupingInterval: 2000 }
+  )
+  const noUsage = (dashData?.creditStats?.month?.amount || 0) === 0 && (!Array.isArray(dashData?.modelUsages) || dashData.modelUsages.length === 0)
+
   return (
     <DashboardProvider>
       <div className="dashboard-grid">
+      {/* 无使用引导 Callout */}
+      {noUsage && (
+        <div style={{ gridColumn: '1 / -1' }}>
+          <NoUsageCallout onCreateApiKey={onNavigateToApiKeys} />
+        </div>
+      )}
       {/* 左侧主要内容区 */}
       <div className="main-content">
         {/* 消耗趋势图 */}
