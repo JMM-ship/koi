@@ -9,7 +9,7 @@ export default function LanguageSwitcher() {
   const { status } = useSession()
   const router = useRouter()
 
-  const setLocale = useCallback(async (target: 'en' | 'zh') => {
+  const setLocale = useCallback(async (target: 'en' | 'zh' | 'vi') => {
     if (target === locale) return
     try {
       document.cookie = `LOCALE=${target}; path=/; max-age=31536000`
@@ -47,6 +47,15 @@ export default function LanguageSwitcher() {
         }}
         aria-pressed={locale === 'zh'}
       >中文</button>
+      <button
+        onClick={() => setLocale('vi')}
+        style={{
+          padding: '6px 12px',
+          background: locale === 'vi' ? '#2a2a2a' : 'transparent',
+          color: '#fff', border: 'none', cursor: 'pointer'
+        }}
+        aria-pressed={locale === 'vi'}
+      >vi</button>
     </div>
   )
 }

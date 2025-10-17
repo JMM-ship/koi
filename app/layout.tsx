@@ -19,24 +19,13 @@ import Script from 'next/script'
 import { headers, cookies } from 'next/headers'
 import { resolveLocaleFrom, getDictionary } from '@/lib/i18n/server'
 import I18nClientProvider from '@/app/i18n/I18nClientProvider'
-import { Libre_Franklin, Rubik } from "next/font/google";
+// Google Fonts disabled in offline builds; use CSS fallbacks
 import { Providers } from "./providers";
 import DebugProvider from "@/components/debug/DebugProvider";
 import ToastProvider from "@/components/providers/ToastProvider";
 
-const LibreFranklinHeading = Libre_Franklin({
-    weight: ["300", "400", "500", "600", "700"], // Only bold for headings
-    subsets: ["latin"],
-    variable: "--tc-heading-font-family",
-    display: "swap",
-});
-
-const rubik = Rubik({
-    weight: ["300", "400", "500", "600", "700"],
-    subsets: ["latin"],
-    variable: "--tc-body-font-family",
-    display: "swap",
-});
+const LibreFranklinHeading = { variable: '' }
+const rubik = { variable: '' }
 
 export const metadata: Metadata = {
     title: "KOI - Your Coding Assistant",
@@ -59,7 +48,8 @@ export default async function RootLayout({
     const namespaces = ['common','header','auth','dashboard','reasons','buckets','toasts','sidebar','packages','admin','home','onboarding']
     const dictEn = await getDictionary('en', namespaces)
     const dictZh = await getDictionary('zh', namespaces)
-    const dicts = { en: dictEn, zh: dictZh }
+    const dictVi = await getDictionary('vi', namespaces)
+    const dicts = { en: dictEn, zh: dictZh, vi: dictVi }
     return (
         <html lang={locale}>
             <body className={`${LibreFranklinHeading.variable} ${rubik.variable}`}>

@@ -1,0 +1,37 @@
+{
+  "title": "Chào mừng",
+  "subtitle": "Làm theo các bước để bắt đầu",
+  "reward": "Đã nhận {points} tín dụng",
+  "step": {
+    "createKey": "Tạo khóa API",
+    "firstCall": "Thực hiện yêu cầu thử",
+    "choosePlan": "Chọn gói",
+    "setLocale": "Đặt ngôn ngữ"
+  },
+  "stepDesc": {
+    "createKey": "Tạo khóa đầu tiên để truy cập API",
+    "firstCall": "Gửi yêu cầu thử với khóa để xác minh tích hợp",
+    "choosePlan": "Chọn gói phù hợp nhu cầu của bạn (bao gồm tín dụng đăng ký)",
+    "setLocale": "Đặt ngôn ngữ giao diện để có trải nghiệm tốt hơn"
+  },
+  "cta": {
+    "createKey": "Tạo",
+    "firstCall": "Thử",
+    "choosePlan": "Chọn",
+    "setLocale": "Đặt",
+    "skip": "Bỏ qua",
+    "done": "Hoàn tất"
+  },
+  "tip": {
+    "inviteReward": "Mời bạn bè để nhận thưởng"
+  },
+  "state": { "done": "Hoàn tất" },
+  "callout": {
+    "noUsage": {
+      "title": "Chưa có lượt sử dụng",
+      "desc": "Tạo khóa API và gửi yêu cầu thử để bắt đầu theo dõi mức sử dụng.",
+      "cta": "Tạo khóa API"
+    }
+  }
+}
+

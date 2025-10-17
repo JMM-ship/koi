@@ -53,7 +53,7 @@ export async function getDictionary(locale: SupportedLocale | string, namespaces
  * Minimal currency formatter to show differences between locales in tests.
  */
 export function formatCurrency(value: number, locale: SupportedLocale | string, currency: string) {
-  const full = locale === 'zh' ? 'zh-CN' : 'en-US'
+  const full = locale === 'zh' ? 'zh-CN' : locale === 'vi' ? 'vi-VN' : 'en-US'
   return new Intl.NumberFormat(full, { style: 'currency', currency }).format(value)
 }
 

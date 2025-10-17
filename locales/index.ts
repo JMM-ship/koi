@@ -22,6 +22,19 @@ import zhPackages from './zh/packages.json'
 import zhHome from './zh/home.json'
 import zhOnboarding from './zh/onboarding.json'
 
+import viCommon from './vi/common.json'
+import viHeader from './vi/header.json'
+import viAuth from './vi/auth.json'
+import viDashboard from './vi/dashboard.json'
+import viReasons from './vi/reasons.json'
+import viBuckets from './vi/buckets.json'
+import viToasts from './vi/toasts.json'
+import viSidebar from './vi/sidebar.json'
+import viPackages from './vi/packages.json'
+import viHome from './vi/home.json'
+import viOnboarding from './vi/onboarding.json'
+import viAdmin from './vi/admin.json'
+
 export const PREBUNDLED_DICTIONARIES = {
   en: {
     common: enCommon,
@@ -48,5 +61,19 @@ export const PREBUNDLED_DICTIONARIES = {
     packages: zhPackages,
     home: zhHome,
     onboarding: zhOnboarding,
+  },
+  vi: {
+    common: viCommon,
+    header: viHeader,
+    auth: viAuth,
+    dashboard: viDashboard,
+    reasons: viReasons,
+    buckets: viBuckets,
+    toasts: viToasts,
+    sidebar: viSidebar,
+    packages: viPackages,
+    home: viHome,
+    onboarding: viOnboarding,
+    admin: viAdmin,
   }
 } as const

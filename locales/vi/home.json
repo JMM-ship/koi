@@ -1,0 +1,181 @@
+{
+  "s1": {
+    "subtitle": "Trợ lý lập trình của bạn",
+    "description": "KOI tập hợp các mô hình AI hàng đầu trong một trải nghiệm duy nhất. Khám phá GPT-5, Claude Opus 4.1, Claude Sonnet 4.5, và Gemini (sắp ra mắt).",
+    "registerNote": "Đăng ký ngay để trải nghiệm các mô hình và dịch vụ trợ lý AI chuyên nghiệp",
+    "cta": "Bắt đầu"
+  },
+  "s2": {
+    "tag": "vì sao chọn chúng tôi",
+    "title": "Lợi thế cốt lõi của chúng tôi",
+    "desc": "Dựa trên cụm tài khoản Max chính thức trị giá $200 mỗi tài khoản, chúng tôi mang lại trải nghiệm dịch vụ giống hệt bản chính thức.",
+    "c1": {
+      "title": "Truy cập CLI tất cả trong một",
+      "subtitle": "Một gói, mọi CLI hàng đầu",
+      "desc": "Sử dụng các công cụ dòng lệnh AI tốt nhất thị trường chỉ với một gói—đơn giản quy trình và tiết kiệm chi phí hơn nhiều so với mua riêng lẻ.",
+      "badge": "Giá trị nhất"
+    },
+    "c2": {
+      "title": "Dịch vụ chuyên nghiệp",
+      "subtitle": "Kỹ sư 1-kèm-1",
+      "desc": "Hỗ trợ kỹ thuật bởi kỹ sư thật (không phải bot). Hỗ trợ từ xa và trợ giúp chuyên nghiệp khi bạn cần.",
+      "badge": "Không phải robot!"
+    },
+    "c3": {
+      "title": "Cơ chế tín dụng độc đáo",
+      "subtitle": "Cơ chế minh bạch, sử dụng hiệu quả",
+      "desc": "Tín dụng khôi phục mỗi giờ, đảm bảo nguồn lực liên tục và ổn định cho mọi khối lượng công việc.",
+      "badge": "Luôn sẵn sàng"
+    },
+    "c4": {
+      "title": "An toàn tài khoản",
+      "subtitle": "Truyền kỹ thuật, không lo khóa",
+      "desc": "Kiến trúc kỹ thuật chuyên nghiệp đảm bảo tài khoản của bạn hoàn toàn an toàn. Với phương pháp truyền kỹ thuật của chúng tôi, tài khoản của bạn sẽ không gặp rủi ro bị khóa.",
+      "badge": "Yên tâm sử dụng!"
+    }
+  },
+  "s4": {
+    "faq": {
+      "tag": "FAQ",
+      "title": "Câu hỏi thường gặp",
+      "q1": "Khác gì so với việc đăng ký trực tiếp Claude hoặc GPT chính thức?",
+      "a1": "Chúng tôi đăng ký các dịch vụ chính thức. Bạn nhận phản hồi giống hệt về tốc độ, định dạng và năng lực mô hình như bản chính thức, đồng thời một gói cho phép bạn dùng nhiều công cụ lập trình dòng lệnh. Lưu ý: hiện chúng tôi không cung cấp dịch vụ chat trên web.",
+      "q2": "Bảo mật được đảm bảo như thế nào?",
+      "a2": "Chúng tôi sử dụng phương pháp chuyển tiếp kỹ thuật; tài khoản của bạn không có rủi ro bị khóa. Mọi truyền tải dữ liệu đều được mã hóa. Chúng tôi không lưu trữ mã nguồn hay thông tin nhạy cảm của bạn, đảm bảo quyền riêng tư và an toàn.",
+      "q3": "Tôi nhận hỗ trợ kỹ thuật bằng cách nào?",
+      "a3": "Chúng tôi cung cấp hỗ trợ kỹ sư 1-kèm-1 (không phải bot). Nếu gặp vấn đề, hãy liên hệ đội kỹ thuật, chúng tôi sẽ hỗ trợ từ xa để đảm bảo bạn sử dụng bình thường."
+    }
+  },
+  "s3": {
+    "tag": "Khác biệt kỹ thuật",
+    "title": "Ưu thế kỹ thuật của chúng tôi",
+    "desc": "Kiến trúc kỹ thuật chuyên nghiệp mang lại trải nghiệm ổn định và hiệu quả hơn",
+    "coreTitlePrefix": "Cốt lõi của chúng tôi là cụm tài nguyên động gồm",
+    "coreDetail": "Tất cả tài khoản là tài khoản Max $200 chính thức, lập lịch thông minh theo thời gian thực để hoạt động trơn tru. Cụm tài khoản lớn loại bỏ giới hạn tốc độ của từng tài khoản.",
+    "f1": { "title": "Cụm tài nguyên động", "desc": "Cụm tài khoản Max $200 chính thức quy mô lớn tạo thành nguồn tài nguyên động" },
+    "f2": { "title": "Cân bằng tải", "desc": "Cân bằng tải thời gian thực với chiến lược lập lịch thông minh" }
+  },
+  "s5": {
+    "tag": "HƯỚNG DẪN SỬ DỤNG",
+    "title": "Hướng dẫn sử dụng tín dụng",
+    "subtitle": "Hiểu giá trị tín dụng và so sánh mức tiêu thụ trên các nền tảng",
+    "left": {
+      "title": "Tín dụng dùng cho:",
+      "items": {
+        "sonnet4": "Gọi mô hình Sonnet 4",
+        "opus4": "Gọi mô hình Opus 4",
+        "cursorFast": "Tương đương yêu cầu nhanh của Cursor"
+      }
+    },
+    "right": {
+      "title": "Mức tiêu thụ ở Cursor:",
+      "items": {
+        "sonnet4PerConv": "Sonnet 4 mỗi hội thoại",
+        "opus4PerConv": "Opus 4 mỗi hội thoại",
+        "efficient": "Tận dụng tín dụng hiệu quả hơn"
+      }
+    },
+    "alert": "So với phí cố định $200/tháng của bản chính thức, chúng tôi cung cấp phương án linh hoạt với giá trị tốt hơn!"
+  },
+  "s6": {
+    "tag": "SO SÁNH",
+    "title": "Phân tích so sánh toàn diện",
+    "subtitle": "Vì sao chọn chúng tôi? Cùng trải nghiệm, giá chỉ 28% bản chính thức",
+    "perMonth": "/tháng",
+    "labels": {
+      "monthlyPrice": "Giá theo tháng",
+      "usageLimit": "Giới hạn sử dụng",
+      "platform": "Tương thích nền tảng",
+      "speed": "Tốc độ phản hồi",
+      "security": "An toàn tài khoản",
+      "billing": "Hình thức thanh toán",
+      "support": "Hỗ trợ kỹ thuật"
+    },
+    "koi": {
+      "badge": "Lựa chọn tốt nhất",
+      "save": "Tiết kiệm 75%",
+      "usageLimitValue": "9000 tín dụng mỗi ngày ✓",
+      "platformValue": "Một gói, đa nền tảng ✓",
+      "speedValue": "Tốc độ tối đa ✓",
+      "securityValue": "Không rủi ro khóa ✓",
+      "billingValue": "Thanh toán linh hoạt ✓",
+      "supportValue": "Kỹ sư 1v1 ✓",
+      "cta": "Bắt đầu ngay"
+    },
+    "claude": {
+      "badge": "Sản phẩm chính thức",
+      "title": "Claude Official",
+      "subnote": "quá đắt",
+      "monthlyPriceValue": "$200/tháng ✗",
+      "usageLimitValue": "10.800 tín dụng/ngày ✓",
+      "platformValue": "Chỉ trang web chính thức của Claude ✗",
+      "speedValue": "Tốc độ tiêu chuẩn ✓",
+      "securityValue": "Nguy cơ bị khóa ✗",
+      "billingValue": "Cố định theo tháng ✗",
+      "supportValue": "Hỗ trợ qua email ✗"
+    },
+    "cursor": {
+      "badge": "Công cụ IDE",
+      "title": "Cursor",
+      "subnote": "+ Phụ phí",
+      "monthlyPriceValue": "$20 + phụ phí △",
+      "usageLimitValue": "500 lần rồi bị giới hạn ✗",
+      "platformValue": "Chỉ IDE ✗",
+      "speedValue": "Rất chậm sau khi bị giới hạn ✗",
+      "securityValue": "Tương đối an toàn ✓",
+      "billingValue": "Cố định theo tháng ✗",
+      "supportValue": "Hỗ trợ cộng đồng △"
+    }
+  },
+  "s7": {
+    "tag": "FAQ & A",
+    "title": "Câu hỏi thường gặp",
+    "q1": "Khác gì so với việc đăng ký trực tiếp Claude hoặc GPT chính thức?",
+    "a1": "Chúng tôi đăng ký các dịch vụ chính thức. Bạn nhận phản hồi giống hệt về tốc độ, định dạng và năng lực mô hình như bản chính thức, đồng thời một gói cho phép bạn dùng nhiều công cụ lập trình dòng lệnh. Lưu ý: hiện chúng tôi không cung cấp dịch vụ chat trên web.",
+    "q2": "Bảo mật được đảm bảo như thế nào?",
+    "a2": "Chúng tôi sử dụng phương pháp chuyển tiếp kỹ thuật; tài khoản của bạn không có rủi ro bị khóa. Mọi truyền tải dữ liệu đều được mã hóa. Chúng tôi không lưu trữ mã nguồn hay thông tin nhạy cảm của bạn, đảm bảo quyền riêng tư và an toàn.",
+    "q3": "Tôi nhận hỗ trợ kỹ thuật bằng cách nào?",
+    "a3": "Chúng tôi cung cấp hỗ trợ kỹ sư 1-kèm-1 (không phải bot). Nếu gặp vấn đề, hãy liên hệ đội kỹ thuật, chúng tôi sẽ hỗ trợ từ xa để đảm bảo bạn sử dụng bình thường.",
+    "q4": "Hiện hỗ trợ những mô hình nào?",
+    "a4": "Tất cả gói đều hỗ trợ Claude Sonnet và Codex. Pro và Max hỗ trợ thêm Claude 4 Opus. Cụm tài khoản của chúng tôi gồm các tài khoản Max chính thức, đảm bảo truy cập năng lực mô hình mới nhất và mạnh mẽ nhất. Gemini 3 sẽ sớm có mặt.",
+    "q5": "Tín dụng được tính như thế nào?",
+    "a5": "Tính toán tín dụng theo cùng thuật toán với Claude chính thức. Cụm tài khoản của chúng tôi đảm bảo nếu một tài khoản đạt giới hạn, sẽ chuyển tiếp sang tài khoản khác để tiếp tục dịch vụ.",
+    "q6": "Dịch vụ có phù hợp cho mục đích thương mại không?",
+    "a6": "Hoàn toàn phù hợp. Dịch vụ của chúng tôi dành cho nhà phát triển và đội ngũ chuyên nghiệp. Với độ ổn định, bảo mật và hỗ trợ chuyên nghiệp, rất phù hợp cho dự án thương mại và doanh nghiệp."
+  },
+  "s8": {
+    "tag": "chứng thực",
+    "title": "Phản hồi người dùng thực",
+    "t1": {
+      "badge": "Lựa chọn của người dùng Vim",
+      "quote": "\"Hầu hết công ty tôi dùng Cursor, ít người dùng công cụ terminal. Tôi quen Vim, không quen Cursor. Tôi vẫn thích công cụ này, không thích Cursor. AI này mạnh hơn Cursor rất nhiều!\"",
+      "name": "Lão Lý",
+      "role": "Kỹ sư phát triển cao cấp, Công ty công nghệ"
+    },
+    "t2": {
+      "badge": "Bảo bối tái cấu trúc mã",
+      "quote": "\"AI này quá mạnh! Nó tái cấu trúc toàn bộ đống mã lộn xộn tôi viết từ thuở xa xưa. Chất lượng mã cải thiện rõ rệt, những dự án cũ trước đây không dám đụng giờ có thể bảo trì dễ dàng.\"",
+      "name": "Kỹ sư Trương",
+      "role": "Kiến trúc sư, Công ty Internet"
+    },
+    "t3": {
+      "badge": "Vua hiệu quả chi phí",
+      "quote": "\"Dùng 2 tháng rồi, rất ổn định! Giá chính thức một tháng ở đây dùng được 4 tháng, vừa rẻ vừa dễ dùng, hiệu suất phát triển tăng nhiều lần. 500 yêu cầu nhanh của Cursor là không đủ.\"",
+      "name": "Tiểu Vương",
+      "role": "Kỹ sư full-stack, Lập trình viên độc lập"
+    }
+  },
+  "s9": {
+    "tag": "insights",
+    "title": "Bài viết từ blog công ty",
+    "by": "Bởi",
+    "admin": "Quản trị",
+    "cat": { "ai": "ai", "automation": "tự động hóa", "software": "phần mềm" },
+    "posts": {
+      "p1": { "title": "2025: sẵn sàng cho cuộc tấn công mạng 'đại họa'." },
+      "p2": { "title": "2025: sẵn sàng cho cuộc tấn công mạng 'đại họa'." },
+      "p3": { "title": "2025: sẵn sàng cho cuộc tấn công mạng 'đại họa'." }
+    }
+  }
+}
+

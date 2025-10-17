@@ -1,0 +1,144 @@
+{
+  "creditsHistory": {
+    "title": "Lịch sử tín dụng",
+    "loading": "Đang tải...",
+    "empty": "Không có bản ghi"
+  },
+  "creditsBalance": {
+    "title": "Số dư tín dụng",
+    "resetToCap": "Đặt lại thủ công về giới hạn",
+    "resetting": "Đang đặt lại...",
+    "resetTitleNoRemain": "Hôm nay không còn lượt đặt lại",
+    "resetTitle": "Đặt lại tín dụng gói về giới hạn"
+  },
+  "redeem": {
+    "title": "Đổi mã",
+    "format": "Định dạng: KOI-ABCD-EFGH-IJKL",
+    "placeholder": "Nhập mã đổi quà của bạn",
+    "paste": "Dán",
+    "clear": "Xóa",
+    "redeem": "Đổi",
+    "redeeming": "Đang đổi...",
+    "tipEmpty": "Gợi ý: Dán mã hoặc nhập bằng CHỮ HOA.",
+    "tipLooksGood": "Hợp lệ. Bạn có thể đổi ngay.",
+    "tipInvalid": "Định dạng không hợp lệ. Ví dụ: KOI-ABCD-EFGH-IJKL"
+  },
+  "planCard": {
+    "currentPlan": "Gói hiện tại",
+    "credit": "Tín dụng",
+    "dailyCredit": "Tín dụng mỗi ngày",
+    "subscriptionPeriod": "Chu kỳ đăng ký",
+    "startDate": "Ngày bắt đầu",
+    "endDate": "Ngày kết thúc",
+    "features": "Tính năng",
+    "upgrade": "Nâng cấp",
+    "renew": "Gia hạn",
+    "month": "tháng"
+  },
+  "referral": {
+    "title": "Chương trình giới thiệu",
+    "copyLinkTitle": "Sao chép liên kết mời",
+    "copyLinkDesc": "Nhấp nút sao chép để lấy liên kết cá nhân của bạn.",
+    "shareTitle": "Chia sẻ với bạn bè",
+    "shareDesc": "Gửi liên kết cho bạn bè qua các kênh của bạn.",
+    "earnTitle": "Nhận phần thưởng",
+    "earnDesc": "Khi bạn bè mua bất kỳ gói nào, cả hai đều nhận điểm.",
+    "myInviteTitle": "Lời mời của tôi",
+    "myInviteDesc": "Chia sẻ mã mời với bạn bè. Khi họ mua bất kỳ gói nào, bạn nhận 2000 tín dụng và bạn bè nhận 1000 tín dụng.",
+    "myInviteCode": "Mã mời của tôi",
+    "copyInviteLink": "Sao chép liên kết mời",
+    "invitedLabel": "Đã mời:",
+    "totalRewardsLabel": "Tổng thưởng:",
+    "invitesTitle": "Danh sách mời",
+    "th": { "email": "Email", "name": "Tên", "registered": "Đã đăng ký", "purchase": "Mua", "reward": "Thưởng" },
+    "empty": "Chưa có lời mời",
+    "prev": "Trước",
+    "next": "Sau",
+    "page": "Trang {page}",
+    "editTitle": "Chỉnh sửa mã mời",
+    "editDesc": "Bạn chỉ có thể thay đổi mã mời một lần. Dùng chữ in hoa và số (A–Z, 0–9), tối thiểu {min} ký tự.",
+    "editPlaceholder": "Nhập mã mời mới",
+    "saving": "Đang lưu..."
+  },
+  "apiKeys": {
+    "create": {
+      "title": "Tạo khóa API mới",
+      "labelTitle": "Tiêu đề khóa",
+      "placeholderTitle": "vd: Khóa Production",
+      "createBtn": "Tạo khóa",
+      "creating": "Đang tạo..."
+    },
+    "loading": "Đang tải khóa API...",
+    "empty": {
+      "title": "Chưa có khóa API",
+      "desc": "Tạo khóa đầu tiên để bắt đầu dùng dịch vụ bằng chương trình",
+      "createFirst": "Tạo khóa đầu tiên"
+    },
+    "hideKey": "Ẩn khóa API",
+    "revealKey": "Hiện khóa API",
+    "copyKey": "Sao chép khóa API",
+    "tabs": { "windows": "Windows", "macos": "macOS", "linux": "Linux" },
+    "step": {
+      "installNode": "Bước 1: Cài Node.js",
+      "installClaudeCli": "Bước 2: Cài Claude Code CLI",
+      "configureEnv": "Bước 3: Cấu hình môi trường",
+      "getStarted": "Bước 4: Bắt đầu"
+    },
+    "option1Recommended": "Cách 1 (Khuyến nghị): Tải trình cài đặt LTS từ https://nodejs.org, chạy và làm theo mặc định.",
+    "option2Winget": "Cách 2 (winget):",
+    "verifyInstallation": "Xác minh cài đặt:",
+    "option1Homebrew": "Cách 1 (Khuyến nghị): Dùng Homebrew.",
+    "option2DownloadPkg": "Cách 2: Tải trình cài đặt LTS (.pkg) từ https://nodejs.org và làm theo hướng dẫn.",
+    "temporarySession": "Tạm thời (phiên hiện tại):",
+    "permanentUserScope": "Vĩnh viễn (phạm vi người dùng):",
+    "permanentZshOrBash": "Vĩnh viễn (~/.zshrc hoặc ~/.bash_profile):",
+    "permanentBashrc": "Vĩnh viễn (~/.bashrc):",
+    "linux": { "installHint": "Dùng trình quản lý gói của bản phân phối, rồi kiểm tra với node --version. Ví dụ:" },
+    "noteTitle": "Lưu ý sử dụng",
+    "noteDesc": "Khóa API koi.codes của bạn dùng được cho cả Codex và Claude Code.",
+    "quickStart": "Bắt đầu nhanh",
+    "cardClaude": "Claude Code",
+    "cardCodex": "Codex",
+    "cliSetup": "Cài & cấu hình CLI",
+    "created": "Đã tạo",
+    "status": "Trạng thái",
+    "active": "Đang hoạt động",
+    "inactive": "Ngừng hoạt động",
+    "morePlatforms": "Đối với nền tảng khác và xử lý sự cố, xem",
+    "important": "Quan trọng",
+    "codex": {
+      "step1Title": "Bước 1: Tạo auth.json",
+      "deleteAuth": "Xóa auth.json hiện có trong ~/.codex (nếu có), sau đó tạo auth.json mới.",
+      "step2Title": "Bước 2: Tạo config.toml",
+      "configImportantDesc": "Tệp cấu hình phải tên là config.toml và dùng định dạng TOML. Không dùng config.json hoặc định dạng khác.",
+      "deleteConfig": "Xóa config.toml hiện có trong ~/.codex (nếu có), sau đó tạo tệp mới.",
+      "createConfig": "Sau đó tạo ~/.codex/config.toml với nội dung sau:",
+      "step3Title": "Bước 3: Thiết lập biến môi trường",
+      "step4Title": "Bước 4: Bắt đầu"
+    }
+  },
+  "ranking": {
+    "title": "Xếp hạng tiêu thụ tín dụng",
+    "today": "Hôm nay",
+    "sevenDays": "7 ngày",
+    "thirtyDays": "30 ngày",
+    "creditsConsumed": "Tín dụng đã dùng",
+    "performance": "Xếp hạng hiệu suất",
+    "betterThanUsers": "Tốt hơn {percent}% người dùng",
+    "period24h": "24h",
+    "period7d": "7d",
+    "period30d": "30d",
+    "period": "Khoảng thời gian",
+    "betterThan": "Tốt hơn"
+  },
+  "details": {
+    "title": "Chi tiết tín dụng",
+    "totalRecords": "Tổng {count} bản ghi",
+    "emptyTitle": "Chưa có sử dụng tín dụng",
+    "emptyDesc": "Bạn chưa sử dụng tín dụng nào — hãy thử mở khóa các tính năng cao cấp ngay!",
+    "useNow": "Sử dụng tín dụng ngay",
+    "creditsUnit": "Tín dụng"
+  },
+  "loading": "Đang tải..."
+}
+

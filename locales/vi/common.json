@@ -1,0 +1,11 @@
+{
+  "confirm": "Xác nhận",
+  "cancel": "Hủy",
+  "home": "Trang chủ",
+  "support": {
+    "modalTitle": "Liên hệ hỗ trợ",
+    "modalSubtitle": "Quét để tham gia kênh hỗ trợ Discord của chúng tôi",
+    "qrAlt": "Mã QR hỗ trợ Discord",
+    "actionLink": "Liên hệ hỗ trợ (Quét QR)"
+  }
+}

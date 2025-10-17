@@ -1,0 +1,15 @@
+{
+  "dailyReset": "Đặt lại tín dụng hằng ngày",
+  "purchasedIndependent": "Đã mua tín dụng độc lập",
+  "activatedPackage": "Đã kích hoạt tín dụng gói",
+  "packagePurchaseReset": "Đặt lại khi mua gói",
+  "orderRefundPackage": "Hoàn tiền đơn hàng (gói)",
+  "orderRefundIndependent": "Hoàn tiền đơn hàng (độc lập)",
+  "newUserBonus": "Thưởng người dùng mới",
+  "autoRecoveryHourly": "Tự khôi phục (theo giờ)",
+  "manualResetToCap": "Đặt lại thủ công về giới hạn",
+  "referralInviter": "Thưởng giới thiệu - người mời",
+  "referralInvitee": "Thưởng giới thiệu - người được mời",
+  "serviceUsage": "Sử dụng dịch vụ - {service}"
+}
+

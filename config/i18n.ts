@@ -1,4 +1,4 @@
-export const SUPPORTED_LOCALES = ['en', 'zh'] as const
+export const SUPPORTED_LOCALES = ['en', 'zh', 'vi'] as const
 export type SupportedLocale = typeof SUPPORTED_LOCALES[number]
 
 export const DEFAULT_LOCALE: SupportedLocale = 'en'
@@ -18,7 +18,7 @@ export function parseAcceptLanguage(header?: string | null): SupportedLocale | u
   const lower = header.toLowerCase()
   // quick contains checks
   if (/(^|,|\s)zh(\b|-)/.test(lower)) return 'zh'
+  if (/(^|,|\s)vi(\b|-)/.test(lower)) return 'vi'
   if (/(^|,|\s)en(\b|-)/.test(lower)) return 'en'
   return undefined
 }
-

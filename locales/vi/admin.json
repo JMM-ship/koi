@@ -1,0 +1,59 @@
+{
+  "codes": {
+    "title": "Quản lý mã",
+    "subtitle": "Tạo và quản lý mã đổi quà",
+    "generate": "Tạo mã",
+    "searchPlaceholder": "Tìm mã...",
+    "reset": "Đặt lại",
+    "export": "Xuất",
+    "table": {
+      "code": "Mã",
+      "type": "Loại",
+      "value": "Giá trị",
+      "status": "Trạng thái",
+      "batchId": "Mã lô",
+      "createdAt": "Ngày tạo",
+      "usedAt": "Ngày sử dụng",
+      "usedBy": "Người sử dụng",
+      "actions": "Thao tác"
+    },
+    "prev": "Trước",
+    "next": "Sau",
+    "pageInfo": "Trang {page} / {pages}, tổng {total} bản ghi",
+    "confirm": {
+      "cancel": "Bạn có chắc muốn hủy mã này?",
+      "activate": "Bạn có chắc muốn kích hoạt mã này?"
+    },
+    "badge": {
+      "credits": "Tín dụng",
+      "plan": "Gói"
+    }
+  },
+  "generate": {
+    "title": "Tạo mã hàng loạt",
+    "type": "Loại mã",
+    "credits": "Tín dụng",
+    "plan": "Gói",
+    "value": "Giá trị",
+    "quantity": "Số lượng",
+    "prefix": "Tiền tố",
+    "validDays": "Số ngày hiệu lực",
+    "notes": "Ghi chú (tùy chọn)",
+    "tips": {
+      "title": "Mẹo:",
+      "t1": "Mã tín dụng sẽ tăng số dư người dùng.",
+      "t2": "Mã gói sẽ nâng cấp gói của người dùng.",
+      "t3": "Mã được tạo sẽ được lưu vào cơ sở dữ liệu."
+    },
+    "cancel": "Hủy",
+    "submit": "Tạo",
+    "generating": "Đang tạo...",
+    "successSummary": "Đã tạo thành công {count} mã!",
+    "listLabel": "Danh sách mã đã tạo",
+    "hintSelectAll": "Gợi ý: nhấp vào vùng văn bản để chọn tất cả, hỗ trợ sao chép thủ công.",
+    "copy": "Sao chép vào clipboard",
+    "download": "Tải xuống tệp văn bản",
+    "done": "Hoàn tất"
+  }
+}
+
