@@ -7,6 +7,8 @@ import ApiKeysContent from "@/components/dashboard/ApiKeysContent";
 import PlansContent from "@/components/dashboard/PlansContent";
 import ProfileContent from "@/components/dashboard/ProfileContent";
 import ReferralContent from "@/components/dashboard/ReferralContent";
+import dynamic from "next/dynamic";
+const GuideContent = dynamic(() => import("@/components/dashboard/GuideContent"), { ssr: false });
 import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
 import AdminUserManagement from "@/components/dashboard/admin/AdminUserManagement";
 import AdminCodeManagement from "@/components/dashboard/admin/AdminCodeManagement";
@@ -40,6 +42,8 @@ export default function Dashboard() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // 不再提前 return，保持 hooks 顺序一致；通过条件渲染控制部分内容显示
 
   // 决定是否展示欢迎引导
   useEffect(() => {
@@ -90,6 +94,8 @@ export default function Dashboard() {
     switch (activeTab) {
       case 'dashboard':
         return <DashboardContent onNavigateToPlans={() => setActiveTab('plans')} onNavigateToApiKeys={() => setActiveTab('api-keys')} hideNoUsageCallout={showWelcome} />;
+      case 'guide':
+        return <GuideContent onNavigateToApiKeys={() => setActiveTab('api-keys')} />;
       case 'api-keys':
         return <ApiKeysContent />;
       case 'plans':
@@ -112,61 +118,71 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      {/* 移动端菜单按钮 */}
-      {isMobile && (
-        <button
-          className="mobile-menu-btn"
-          onClick={() => setIsMobileMenuOpen(true)}
-          style={{
-            position: 'fixed',
-            top: '20px',
-            left: '20px',
-            zIndex: 998,
-            background: 'var(--dashboard-card-bg)',
-            border: '1px solid var(--dashboard-border)',
-            borderRadius: '8px',
-            width: '44px',
-            height: '44px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--dashboard-text)',
-            fontSize: '20px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-            transition: 'all 0.3s ease'
-          }}
-        >
-          <FiMenu />
-        </button>
-      )}
-
-      <Sidebar
-        onCollapsedChange={setIsSidebarCollapsed}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        isMobileMenuOpen={isMobileMenuOpen}
-        onMobileMenuClose={() => setIsMobileMenuOpen(false)}
-      />
-
-      <div className={`dashboard-main ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}>
-        <div className="dashboard-content">
-          {/* 欢迎引导卡片（放在内容区域顶部，避免打乱整体布局） */}
-          {mounted && showWelcome && (
-            <div style={{ marginBottom: '12px' }} suppressHydrationWarning>
-              <WelcomeGuide
-                bonusPoints={Number(process.env.NEXT_PUBLIC_NEW_USER_BONUS_POINTS || 0)}
-                onGotoApiKeys={() => setActiveTab('api-keys')}
-                onGotoPlans={() => setActiveTab('plans')}
-                onGotoSetLocale={() => setActiveTab('profile')}
-                onGotoProfile={() => setActiveTab('profile')}
-                onDismiss={() => setShowWelcome(false)}
-              />
-            </div>
-          )}
-          {renderContent()}
+      {!mounted ? (
+        <div style={{ padding: 24, width: '100%' }}>
+          <div style={{ height: 14, width: 180, background: '#111', borderRadius: 6, marginBottom: 12 }} />
+          <div style={{ height: 10, width: 280, background: '#0d0d0d', borderRadius: 6, marginBottom: 24 }} />
+          <div style={{ height: 120, background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 12 }} />
         </div>
-      </div>
+      ) : (
+        <>
+          {/* 移动端菜单按钮 */}
+          {isMobile && (
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setIsMobileMenuOpen(true)}
+              style={{
+                position: 'fixed',
+                top: '20px',
+                left: '20px',
+                zIndex: 998,
+                background: 'var(--dashboard-card-bg)',
+                border: '1px solid var(--dashboard-border)',
+                borderRadius: '8px',
+                width: '44px',
+                height: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'var(--dashboard-text)',
+                fontSize: '20px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <FiMenu />
+            </button>
+          )}
+
+          <Sidebar
+            onCollapsedChange={setIsSidebarCollapsed}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            isMobileMenuOpen={isMobileMenuOpen}
+            onMobileMenuClose={() => setIsMobileMenuOpen(false)}
+          />
+
+          <div className={`dashboard-main ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}>
+            <div className="dashboard-content">
+              {/* 欢迎引导卡片（放在内容区域顶部，避免打乱整体布局） */}
+              {showWelcome && (
+                <div style={{ marginBottom: '12px' }}>
+                  <WelcomeGuide
+                    bonusPoints={Number(process.env.NEXT_PUBLIC_NEW_USER_BONUS_POINTS || 0)}
+                    onGotoApiKeys={() => setActiveTab('api-keys')}
+                    onGotoPlans={() => setActiveTab('plans')}
+                    onGotoSetLocale={() => setActiveTab('profile')}
+                    onGotoProfile={() => setActiveTab('profile')}
+                    onDismiss={() => setShowWelcome(false)}
+                  />
+                </div>
+              )}
+              {renderContent()}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
