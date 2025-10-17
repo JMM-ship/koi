@@ -1,5 +1,11 @@
 {
   "confirm": "Confirm",
   "cancel": "Cancel",
-  "home": "Home"
+  "home": "Home",
+  "support": {
+    "modalTitle": "Contact Support",
+    "modalSubtitle": "Scan to join our Discord support channel",
+    "qrAlt": "Discord support QR",
+    "actionLink": "Contact Support (Scan QR)"
+  }
 }

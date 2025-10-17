@@ -1,6 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from 'react'
+import { useT } from '@/contexts/I18nContext'
+import SupportContactModal from '@/components/common/SupportContactModal'
 
 export default function Footer() {
+    let t = (k: string) => k
+    try { t = useT().t } catch {}
+    const [supportOpen, setSupportOpen] = useState(false)
     return (
         <>
             {/* Footer */}
@@ -107,6 +115,15 @@ export default function Footer() {
                                 </p>
                                 <p className="m-0 text-center">
                                     if you have any questions, please contact us at lau@koi.codes.
+                                    <span className="mx-2">·</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setSupportOpen(true)}
+                                      className="btn btn-link p-0 align-baseline"
+                                      style={{ color: 'white', textDecoration: 'underline' }}
+                                    >
+                                      {t('common.support.actionLink') || 'Contact Support (Scan QR)'}
+                                    </button>
                                 </p>
                                 {/* <ul className="list-unstyled d-flex mb-0 justify-content-center ms-lg-auto">
                                     <li>
@@ -149,6 +166,7 @@ export default function Footer() {
                     </div>
                 </div>
             </footer>
+            <SupportContactModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} imageSrc="/support/WechatIMG853.jpg" />
         </>
     );
 }

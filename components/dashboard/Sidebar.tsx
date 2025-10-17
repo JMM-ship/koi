@@ -25,12 +25,14 @@ import {
   FiLock,
   FiShield,
   FiLogOut,
-  FiKey
+  FiKey,
+  FiHelpCircle
 } from "react-icons/fi";
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToast } from '@/hooks/useToast'
 import { useT } from '@/contexts/I18nContext'
+import SupportContactModal from '@/components/common/SupportContactModal'
 
 interface MenuItem {
   id: number;
@@ -41,6 +43,7 @@ interface MenuItem {
   hasNotification?: boolean;
   hasDropdown?: boolean;
   subItems?: MenuItem[];
+  onClick?: () => void;
 }
 
 interface SidebarProps {
@@ -104,6 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: 3, icon: FiSlack, label: t('sidebar.apiKeys'), path: "api-keys", active: activeTab === "api-keys" },
     { id: 4, icon: FiShoppingBag, label: t('sidebar.purchasePlans'), path: "plans", active: activeTab === "plans" },
     { id: 5, icon: FiUsers, label: t('sidebar.referralProgram'), path: "referral", active: activeTab === "referral" },
+    { id: 6, icon: FiHelpCircle, label: t('sidebar.support') || 'Support', onClick: () => setSupportOpen(true) },
   ];
 
   // 管理员菜单项
@@ -125,6 +129,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
     onCollapsedChange?.(newCollapsed);
   };
+
+  const [supportOpen, setSupportOpen] = useState(false)
 
   // 处理移动端菜单项点击
   const handleMenuItemClick = (path: string) => {
@@ -286,7 +292,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onMouseLeave={() => setShowTooltip(null)}
               >
                 <div
-                  onClick={() => handleMenuItemClick(item.path!)}
+                  onClick={() => item.onClick ? item.onClick() : handleMenuItemClick(item.path!)}
                   className="nav-link"
                   style={{
                     display: 'flex',
@@ -477,6 +483,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
       <ConfirmDialog {...confirmState} />
+      <SupportContactModal isOpen={supportOpen} onClose={() => setSupportOpen(false)} imageSrc="/support/WechatIMG853.jpg" />
     </>
   );
 };

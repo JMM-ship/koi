@@ -1,5 +1,11 @@
 {
   "confirm": "确认",
   "cancel": "取消",
-  "home": "首页"
+  "home": "首页",
+  "support": {
+    "modalTitle": "联系客服",
+    "modalSubtitle": "扫码加入我们的 Discord 客服频道",
+    "qrAlt": "Discord 客服二维码",
+    "actionLink": "联系客服（扫码）"
+  }
 }
