@@ -211,7 +211,7 @@ export default function GuideContent({ onNavigateToApiKeys }: Props) {
             <Code code={`"claude-code.environmentVariables": [
     {
         "name": "ANTHROPIC_BASE_URL",
-        "value": "https://api.jiuwanliguoxue.com"
+        "value": "https://koicode.xyz/api"
     }
 ]`} />
           </Quote>
@@ -219,7 +219,7 @@ export default function GuideContent({ onNavigateToApiKeys }: Props) {
             <div>{t('dashboard.guide.vscode.apikey.step1')}</div>
             <div>{t('dashboard.guide.vscode.apikey.step2')}</div>
             <Code code={`{
-    "primaryApiKey": "sk-acw-**"
+    "primaryApiKey": "koi-**"
 }`} />
           </Quote>
           <Quote title={t('dashboard.guide.vscode.start.title')}>

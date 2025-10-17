@@ -188,7 +188,7 @@
       "apikey": {
         "title": "Cấu hình API Key",
         "step1": "1. Tạo ~/.claude/config.json",
-        "step2": "2. Thêm API key lấy từ aicodewith.com:"
+        "step2": "2. Thêm API key lấy từ koi.codes:"
       },
       "start": {"title": "Bắt đầu", "desc": "Khởi động lại VSCode để dùng Claude Code trực tiếp trong trình soạn thảo."}
     }

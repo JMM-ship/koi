@@ -188,7 +188,7 @@
       "apikey": {
         "title": "配置 API 密钥",
         "step1": "1. 创建配置文件 ~/.claude/config.json",
-        "step2": "2. 添加你在 aicodewith.com 获取的 API 密钥："
+        "step2": "2. 添加你在 koi.codes 获取的 API 密钥："
       },
       "start": {"title": "开始使用", "desc": "配置完成后，重启 VSCode 即可在编辑器中直接使用 Claude Code。"}
     }
