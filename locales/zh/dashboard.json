@@ -61,6 +61,7 @@
     "saving": "保存中..."
   },
   "apiKeys": {
+    "intro": "管理你的 API 密钥以访问我们的服务",
     "create": {
       "title": "创建新的 API Key",
       "labelTitle": "Key 标题",
@@ -107,6 +108,8 @@
     "morePlatforms": "更多平台与故障排查见",
     "important": "重要",
     "codex": {
+      "installTitle": "步骤 0：安装 Codex",
+      "createAuth": "然后新建 ~/.codex/auth.json，内容如下：",
       "step1Title": "步骤 1：创建 auth.json",
       "deleteAuth": "删除 ~/.codex 目录下已有的 auth.json（如存在），并新建 auth.json。",
       "step2Title": "步骤 2：创建 config.toml",
