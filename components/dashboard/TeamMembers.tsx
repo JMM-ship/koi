@@ -69,7 +69,7 @@ const TeamMembers = () => {
   })
   const loading = !creditDetails
   let t = (k: string, p?: any) => k
-  try { t = useT().t } catch {}
+  try { t = useT().t } catch { }
 
   const getModelColor = (detail: CreditDetail) => {
     if (detail.bucket === 'package') return '#4f46e5'
@@ -81,7 +81,7 @@ const TeamMembers = () => {
       "gpt-5-codex": "#00b4d8",
       "claude-opus-4-1-20250805": "#ffa500",
       "DALL-E 3": "#ff006e",
-      "Midjourney": "#8b5cf6"
+      "claude-haiku-4-5-20251001": "#8b5cf6"
     };
     return colors[detail.model] || "#6b7280";
   };
