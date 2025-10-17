@@ -164,7 +164,7 @@ export default function WelcomeGuide({
           <div style={{ color: '#fff', fontWeight: 600 }}>{t('onboarding.title')}</div>
           <div style={{ color: '#aaa', fontSize: 12 }}>{t('onboarding.subtitle')}</div>
         </div>
-        <button onClick={handleSkip} style={{ background: 'transparent', color: '#999', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.skip')}</button>
+        {/* Remove top-right skip per requirement; keep bottom actions */}
       </div>
       <div style={{ color: '#ccc', marginTop: 8 }}>{t('onboarding.reward', { points: bonusPoints })}</div>
       <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>{t('onboarding.tip.inviteReward')}</div>

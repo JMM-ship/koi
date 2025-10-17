@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/useToast";
 import { useT } from "@/contexts/I18nContext";
 import { useUserData } from "@/hooks/useUserData";
+import LanguageSwitcher from "@/components/common/LanguageSwitcher";
 
 export default function ProfileContent() {
   const { data: session } = useSession();
@@ -318,6 +319,23 @@ export default function ProfileContent() {
               <FiShield className="profile-btn-icon" />
               {loading ? 'Verifying...' : 'Verify Password'}
             </button>
+          </div>
+        </div>
+
+        {/* Language Settings Section */}
+        <div className="profile-card">
+          <div className="profile-card-header">
+            <FiUser className="profile-card-icon" />
+            <h3 className="profile-card-title">Language</h3>
+          </div>
+
+          <p className="profile-card-description">
+            Set your preferred interface language
+          </p>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <LanguageSwitcher />
+            <span style={{ color: '#999', fontSize: 12 }}>The change applies immediately.</span>
           </div>
         </div>
       </div>
