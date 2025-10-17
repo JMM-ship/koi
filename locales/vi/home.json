@@ -53,7 +53,15 @@
     "coreTitlePrefix": "Cốt lõi của chúng tôi là cụm tài nguyên động gồm",
     "coreDetail": "Tất cả tài khoản là tài khoản Max $200 chính thức, lập lịch thông minh theo thời gian thực để hoạt động trơn tru. Cụm tài khoản lớn loại bỏ giới hạn tốc độ của từng tài khoản.",
     "f1": { "title": "Cụm tài nguyên động", "desc": "Cụm tài khoản Max $200 chính thức quy mô lớn tạo thành nguồn tài nguyên động" },
-    "f2": { "title": "Cân bằng tải", "desc": "Cân bằng tải thời gian thực với chiến lược lập lịch thông minh" }
+    "f2": { "title": "Cân bằng tải", "desc": "Cân bằng tải thời gian thực với chiến lược lập lịch thông minh" },
+    "f3": { "title": "Không giới hạn tốc độ", "desc": "Chuyển ngay khi chạm giới hạn, không cần chờ" },
+    "f4": { "title": "Tương thích hoàn toàn", "desc": "Định dạng phản hồi giống hệt API chính thức, tương thích hoàn hảo" },
+    "guarantee": {
+      "title": "Cam kết dịch vụ",
+      "speed": { "title": "Tốc độ phản hồi", "desc": "Tương đương khi dùng dịch vụ chính thức" },
+      "data": { "title": "Định dạng dữ liệu", "desc": "Tương đương khi dùng dịch vụ chính thức" },
+      "model": { "title": "Năng lực mô hình", "desc": "Tương đương khi dùng dịch vụ chính thức" }
+    }
   },
   "s5": {
     "tag": "HƯỚNG DẪN SỬ DỤNG",
@@ -178,4 +186,3 @@
     }
   }
 }
-

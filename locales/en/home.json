@@ -53,7 +53,15 @@
     "coreTitlePrefix": "Our core is a dynamic resource pool composed of",
     "coreDetail": "All accounts are official $200 Max subscription accounts, intelligently scheduling resources in real-time to ensure smooth operations. Massive account pool eliminates single account rate limit issues.",
     "f1": { "title": "Dynamic Resource Pool", "desc": "Massive official $200 Max account pool forms dynamic resource pool" },
-    "f2": { "title": "Load Balancing", "desc": "Real-time load balancing with intelligent scheduling strategy" }
+    "f2": { "title": "Load Balancing", "desc": "Real-time load balancing with intelligent scheduling strategy" },
+    "f3": { "title": "Zero Rate Limit", "desc": "Reach rate limit switch instantly, no waiting required" },
+    "f4": { "title": "Fully Compatible", "desc": "Same response format as official API for perfect compatibility" },
+    "guarantee": {
+      "title": "Service Guarantee",
+      "speed": { "title": "Response Speed", "desc": "Identical to direct use of official service" },
+      "data": { "title": "Data Format", "desc": "Identical to direct use of official service" },
+      "model": { "title": "Model Capability", "desc": "Identical to direct use of official service" }
+    }
   },
   "s5": {
     "tag": "USAGE GUIDE",

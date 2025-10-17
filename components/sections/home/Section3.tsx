@@ -63,8 +63,8 @@ export default function Section3() {
                                         <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#00FF00" strokeWidth="2"/>
                                     </svg>
                                 </div>
-                                <h6 className="mt-5 mb-3 text-white">Zero Rate Limit</h6>
-                                <p className="text-white opacity-75">Reach rate limit switch instantly, no waiting required</p>
+                                <h6 className="mt-5 mb-3 text-white">{t('home.s3.f3.title') || 'Zero Rate Limit'}</h6>
+                                <p className="text-white opacity-75">{t('home.s3.f3.desc') || 'Reach rate limit switch instantly, no waiting required'}</p>
                             </div>
                         </div>
                         <div className="col-lg-3 col-md-6 col-12">
@@ -75,15 +75,15 @@ export default function Section3() {
                                         <rect x="3" y="3" width="18" height="18" rx="2" stroke="#00FF00" strokeWidth="2"/>
                                     </svg>
                                 </div>
-                                <h6 className="mt-5 mb-3 text-white">Fully Compatible</h6>
-                                <p className="text-white opacity-75">Same response format as official API for perfect compatibility</p>
+                                <h6 className="mt-5 mb-3 text-white">{t('home.s3.f4.title') || 'Fully Compatible'}</h6>
+                                <p className="text-white opacity-75">{t('home.s3.f4.desc') || 'Same response format as official API for perfect compatibility'}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Service Guarantee Section */}
                     <div className="mt-80">
-                        <h4 className="text-center text-white mb-5" data-aos="fade-up">Service Guarantee</h4>
+                        <h4 className="text-center text-white mb-5" data-aos="fade-up">{t('home.s3.guarantee.title') || 'Service Guarantee'}</h4>
                         <div className="row g-4">
                             <div className="col-md-4">
                                 <div className="service-card bg-dark border border-secondary rounded-4 p-4 h-100" data-aos="flip-left" data-aos-delay="0">
@@ -93,9 +93,9 @@ export default function Section3() {
                                                 <path d="M5 13L9 17L19 7" stroke="#00FF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
                                         </div>
-                                        <h6 className="text-white mb-0">Response Speed</h6>
+                                        <h6 className="text-white mb-0">{t('home.s3.guarantee.speed.title') || 'Response Speed'}</h6>
                                     </div>
-                                    <p className="text-white opacity-75 mb-0">Identical to direct use of official service</p>
+                                    <p className="text-white opacity-75 mb-0">{t('home.s3.guarantee.speed.desc') || 'Identical to direct use of official service'}</p>
                                 </div>
                             </div>
                             <div className="col-md-4">
@@ -106,9 +106,9 @@ export default function Section3() {
                                                 <path d="M5 13L9 17L19 7" stroke="#00FF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
                                         </div>
-                                        <h6 className="text-white mb-0">Data Format</h6>
+                                        <h6 className="text-white mb-0">{t('home.s3.guarantee.data.title') || 'Data Format'}</h6>
                                     </div>
-                                    <p className="text-white opacity-75 mb-0">Identical to direct use of official service</p>
+                                    <p className="text-white opacity-75 mb-0">{t('home.s3.guarantee.data.desc') || 'Identical to direct use of official service'}</p>
                                 </div>
                             </div>
                             <div className="col-md-4">
@@ -119,9 +119,9 @@ export default function Section3() {
                                                 <path d="M5 13L9 17L19 7" stroke="#00FF00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                             </svg>
                                         </div>
-                                        <h6 className="text-white mb-0">Model Capability</h6>
+                                        <h6 className="text-white mb-0">{t('home.s3.guarantee.model.title') || 'Model Capability'}</h6>
                                     </div>
-                                    <p className="text-white opacity-75 mb-0">Identical to direct use of official service</p>
+                                    <p className="text-white opacity-75 mb-0">{t('home.s3.guarantee.model.desc') || 'Identical to direct use of official service'}</p>
                                 </div>
                             </div>
                         </div>
