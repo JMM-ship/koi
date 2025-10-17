@@ -5,8 +5,14 @@
   "step": {
     "createKey": "创建 API Key",
     "firstCall": "运行一次测试调用",
-    "choosePlan": "选择套餐/领取试用",
+    "choosePlan": "选择套餐",
     "setLocale": "设置语言"
+  },
+  "stepDesc": {
+    "createKey": "生成你的第一个密钥以访问 API",
+    "firstCall": "使用密钥进行一次测试调用，验证接入",
+    "choosePlan": "根据需求选择合适的套餐（已含注册积分）",
+    "setLocale": "设置界面语言，获得更佳体验"
   },
   "cta": {
     "createKey": "去创建",
@@ -28,4 +34,3 @@
     }
   }
 }
-

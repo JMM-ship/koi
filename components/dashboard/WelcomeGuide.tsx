@@ -132,16 +132,28 @@ export default function WelcomeGuide({
     marginBottom: 16,
   }
 
-  const stepRow = (label: string, done: boolean, onGo?: () => void, onMark?: () => void, ctaLabel?: string) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0' }}>
-      <div aria-checked={done} role="checkbox" style={{ width: 16, height: 16, borderRadius: 3, border: '1px solid #2a2a2a', background: done ? '#00d084' : 'transparent' }} />
-      <div style={{ flex: 1, color: '#fff' }}>{label} {done ? <span style={{ color: '#0bd084', marginLeft: 6 }}>{t('onboarding.state.done')}</span> : null}</div>
-      {onGo ? (
-        <button onClick={onGo} style={{ background: 'transparent', color: '#fff', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{ctaLabel}</button>
-      ) : null}
-      {!done && onMark ? (
-        <button onClick={() => { onMark(); handleMaybeComplete() }} style={{ background: 'transparent', color: '#999', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.done')}</button>
-      ) : null}
+  const stepRow = (label: string, done: boolean, onGo?: () => void, onMark?: () => void, ctaLabel?: string, desc?: string) => (
+    <div style={{
+      background: '#0a0a0a',
+      border: '1px solid #1a1a1a',
+      borderRadius: 12,
+      padding: 16,
+      display: 'flex', flexDirection: 'column', gap: 8,
+      minHeight: 120
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ color: '#fff', fontWeight: 600 }}>{label}</div>
+        {done ? <span style={{ color: '#0bd084', fontSize: 12 }}>{t('onboarding.state.done')}</span> : null}
+      </div>
+      {desc ? <div style={{ color: '#aaa', fontSize: 12 }}>{desc}</div> : null}
+      <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+        {onGo ? (
+          <button onClick={onGo} style={{ background: 'transparent', color: '#fff', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{ctaLabel}</button>
+        ) : null}
+        {!done && onMark ? (
+          <button onClick={() => { onMark(); handleMaybeComplete() }} style={{ background: 'transparent', color: '#999', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.done')}</button>
+        ) : null}
+      </div>
     </div>
   )
 
@@ -157,11 +169,19 @@ export default function WelcomeGuide({
       <div style={{ color: '#ccc', marginTop: 8 }}>{t('onboarding.reward', { points: bonusPoints })}</div>
       <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>{t('onboarding.tip.inviteReward')}</div>
 
-      <div style={{ marginTop: 12 }}>
-        {stepRow(t('onboarding.step.createKey'), steps.createKey, onGotoApiKeys, () => markStep('createKey', true), t('onboarding.cta.createKey'))}
-        {stepRow(t('onboarding.step.firstCall'), steps.firstCall, undefined, () => markStep('firstCall', true), t('onboarding.cta.firstCall'))}
-        {stepRow(t('onboarding.step.choosePlan'), steps.choosePlan, onGotoPlans, () => markStep('choosePlan', true), t('onboarding.cta.choosePlan'))}
-        {stepRow(t('onboarding.step.setLocale'), steps.setLocale, onGotoSetLocale || onGotoProfile, () => markStep('setLocale', true), t('onboarding.cta.setLocale'))}
+      <div style={{ marginTop: 12,
+        display: 'grid',
+        gap: 12,
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))'
+      }}>
+        {stepRow(t('onboarding.step.createKey'), steps.createKey, onGotoApiKeys, () => markStep('createKey', true), t('onboarding.cta.createKey'), t('onboarding.stepDesc.createKey'))}
+        {stepRow(t('onboarding.step.firstCall'), steps.firstCall, undefined, () => markStep('firstCall', true), t('onboarding.cta.firstCall'), t('onboarding.stepDesc.firstCall'))}
+        {stepRow(t('onboarding.step.choosePlan'), steps.choosePlan, onGotoPlans, () => markStep('choosePlan', true), t('onboarding.cta.choosePlan'), t('onboarding.stepDesc.choosePlan'))}
+        {stepRow(t('onboarding.step.setLocale'), steps.setLocale, onGotoSetLocale || onGotoProfile, () => markStep('setLocale', true), t('onboarding.cta.setLocale'), t('onboarding.stepDesc.setLocale'))}
+      </div>
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}>
+        <button onClick={handleSkip} style={{ background: 'transparent', color: '#999', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.skip')}</button>
+        <button onClick={() => { try { window.localStorage.setItem(LS_DONE_KEY, '1') } catch {}; try { fetch('/api/onboarding/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: true, steps, firstSeenAt: localStorage.getItem(LS_FIRST_SEEN) }) }) } catch {}; onDismiss?.() }} style={{ background: 'transparent', color: '#fff', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.done')}</button>
       </div>
     </div>
   )

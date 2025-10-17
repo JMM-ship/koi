@@ -5,8 +5,14 @@
   "step": {
     "createKey": "Create API Key",
     "firstCall": "Run a test request",
-    "choosePlan": "Choose plan / claim trial",
+    "choosePlan": "Choose plan",
     "setLocale": "Set language"
+  },
+  "stepDesc": {
+    "createKey": "Generate your first key to access APIs",
+    "firstCall": "Make a test call with the key to verify integration",
+    "choosePlan": "Pick a plan that fits your needs (signup credits included)",
+    "setLocale": "Set interface language for better experience"
   },
   "cta": {
     "createKey": "Create",
@@ -28,4 +34,3 @@
     }
   }
 }
-

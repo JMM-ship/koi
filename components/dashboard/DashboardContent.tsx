@@ -17,9 +17,10 @@ import useSWR from 'swr'
 interface DashboardContentProps {
   onNavigateToPlans?: () => void;
   onNavigateToApiKeys?: () => void;
+  hideNoUsageCallout?: boolean;
 }
 
-export default function DashboardContent({ onNavigateToPlans, onNavigateToApiKeys }: DashboardContentProps) {
+export default function DashboardContent({ onNavigateToPlans, onNavigateToApiKeys, hideNoUsageCallout }: DashboardContentProps) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Refresh dashboard data after credits are used
@@ -43,7 +44,7 @@ export default function DashboardContent({ onNavigateToPlans, onNavigateToApiKey
     <DashboardProvider>
       <div className="dashboard-grid">
       {/* 无使用引导 Callout */}
-      {noUsage && (
+      {noUsage && !hideNoUsageCallout && (
         <div style={{ gridColumn: '1 / -1' }}>
           <NoUsageCallout onCreateApiKey={onNavigateToApiKeys} />
         </div>
