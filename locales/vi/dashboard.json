@@ -61,6 +61,7 @@
     "saving": "Đang lưu..."
   },
   "apiKeys": {
+    "intro": "Quản lý khóa API để truy cập dịch vụ",
     "create": {
       "title": "Tạo khóa API mới",
       "labelTitle": "Tiêu đề khóa",
@@ -107,6 +108,8 @@
     "morePlatforms": "Đối với nền tảng khác và xử lý sự cố, xem",
     "important": "Quan trọng",
     "codex": {
+      "installTitle": "Bước 0: Cài Codex",
+      "createAuth": "Sau đó tạo ~/.codex/auth.json với nội dung sau:",
       "step1Title": "Bước 1: Tạo auth.json",
       "deleteAuth": "Xóa auth.json hiện có trong ~/.codex (nếu có), sau đó tạo auth.json mới.",
       "step2Title": "Bước 2: Tạo config.toml",
@@ -141,4 +144,3 @@
   },
   "loading": "Đang tải..."
 }
-

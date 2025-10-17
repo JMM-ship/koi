@@ -257,8 +257,8 @@ export default function ApiKeysContent() {
       <div className="dashboard-header mb-4">
         <div className="d-flex justify-content-between align-items-center">
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 600, color: "#fff", marginBottom: 8 }}>API Keys</h1>
-            <p style={{ fontSize: 14, color: "#999" }}>Manage your API keys for accessing our services</p>
+            <h1 style={{ fontSize: 24, fontWeight: 600, color: "#fff", marginBottom: 8 }}>{t('sidebar.apiKeys') || 'API Keys'}</h1>
+            <p style={{ fontSize: 14, color: "#999" }}>{t('dashboard.apiKeys.intro') || 'Manage your API keys for accessing our services'}</p>
           </div>
         </div>
       </div>
@@ -266,14 +266,14 @@ export default function ApiKeysContent() {
       {showCreateModal && (
         <div style={{ position: "fixed", inset: 0 as any, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
           <div style={{ background: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: 12, padding: 24, width: "90%", maxWidth: 500 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 20 }}>Create New API Key</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 20 }}>{t('dashboard.apiKeys.create.title') || 'Create New API Key'}</h3>
             <div style={{ marginBottom: 20 }}>
-              <label style={{ display: "block", fontSize: 14, color: "#999", marginBottom: 8 }}>Key Title</label>
-              <input type="text" value={newKeyTitle} onChange={(e) => setNewKeyTitle(e.target.value)} placeholder="e.g., Production Key" style={{ width: "100%", padding: 10, background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 6, color: "#fff", fontSize: 14 }} />
+              <label style={{ display: "block", fontSize: 14, color: "#999", marginBottom: 8 }}>{t('dashboard.apiKeys.create.labelTitle') || 'Key Title'}</label>
+              <input type="text" value={newKeyTitle} onChange={(e) => setNewKeyTitle(e.target.value)} placeholder={t('dashboard.apiKeys.create.placeholderTitle') || 'e.g., Production Key'} style={{ width: "100%", padding: 10, background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 6, color: "#fff", fontSize: 14 }} />
             </div>
             <div style={{ display: "flex", gap: 12 }}>
-              <button onClick={() => { setShowCreateModal(false); setNewKeyTitle(""); }} style={{ flex: 1, padding: 10, background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 6, color: "#999", fontSize: 14, fontWeight: 500, cursor: "pointer" }}>Cancel</button>
-              <button onClick={handleCreateKey} disabled={creating || !newKeyTitle.trim()} style={{ flex: 1, padding: 10, background: creating || !newKeyTitle.trim() ? "#333" : "linear-gradient(135deg, #794aff 0%, #b084ff 100%)", border: "none", borderRadius: 6, color: "#fff", fontSize: 14, fontWeight: 500, cursor: creating || !newKeyTitle.trim() ? "not-allowed" : "pointer" }}>{creating ? "Creating..." : "Create Key"}</button>
+              <button onClick={() => { setShowCreateModal(false); setNewKeyTitle(""); }} style={{ flex: 1, padding: 10, background: "#1a1a1a", border: "1px solid #2a2a2a", borderRadius: 6, color: "#999", fontSize: 14, fontWeight: 500, cursor: "pointer" }}>{t('common.cancel') || 'Cancel'}</button>
+              <button onClick={handleCreateKey} disabled={creating || !newKeyTitle.trim()} style={{ flex: 1, padding: 10, background: creating || !newKeyTitle.trim() ? "#333" : "linear-gradient(135deg, #794aff 0%, #b084ff 100%)", border: "none", borderRadius: 6, color: "#fff", fontSize: 14, fontWeight: 500, cursor: creating || !newKeyTitle.trim() ? "not-allowed" : "pointer" }}>{creating ? (t('dashboard.apiKeys.create.creating') || 'Creating...') : (t('dashboard.apiKeys.create.createBtn') || 'Create Key')}</button>
             </div>
           </div>
         </div>
@@ -360,9 +360,9 @@ export default function ApiKeysContent() {
         {selectedGuide === "claude" && (
           <div>
             <div style={{ display: "flex", gap: 8, borderBottom: "2px solid #1a1a1a", marginBottom: 12 }}>
-              <button onClick={() => setActiveTab("windows")} style={{ background: activeTab === "windows" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: activeTab === "windows" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaWindows /> Windows</button>
-              <button onClick={() => setActiveTab("macos")} style={{ background: activeTab === "macos" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: activeTab === "macos" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaApple /> macOS</button>
-              <button onClick={() => setActiveTab("linux")} style={{ background: activeTab === "linux" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: activeTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> Linux</button>
+              <button onClick={() => setActiveTab("windows")} style={{ background: activeTab === "windows" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: activeTab === "windows" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaWindows /> {t('dashboard.apiKeys.tabs.windows') || 'Windows'}</button>
+              <button onClick={() => setActiveTab("macos")} style={{ background: activeTab === "macos" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: activeTab === "macos" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaApple /> {t('dashboard.apiKeys.tabs.macos') || 'macOS'}</button>
+              <button onClick={() => setActiveTab("linux")} style={{ background: activeTab === "linux" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: activeTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> {t('dashboard.apiKeys.tabs.linux') || 'Linux'}</button>
             </div>
             {activeTab === "windows" && (
               <>
@@ -379,7 +379,7 @@ export default function ApiKeysContent() {
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 2: Install Claude Code CLI</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installClaudeCli') || 'Step 2: Install Claude Code CLI'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>npm install -g @anthropic-ai/claude-code</code>
                   </div>
@@ -413,7 +413,7 @@ export default function ApiKeysContent() {
             {activeTab === "macos" && (
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installNode') || 'Step 1: Install Node.js'}</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>Option 1 (Recommended): Use Homebrew.</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>brew install node</code>
@@ -425,21 +425,21 @@ export default function ApiKeysContent() {
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 2: Install Claude Code CLI</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installClaudeCli') || 'Step 2: Install Claude Code CLI'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>npm install -g @anthropic-ai/claude-code</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Temporary (current session):</p>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.temporarySession') || 'Temporary (current session):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>export ANTHROPIC_BASE_URL="https://koicode.xyz/api"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`export ANTHROPIC_AUTH_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
                   </div>
-                  <p style={{ color: "#ccc", marginTop: 12 }}>Permanent (~/.zshrc or ~/.bash_profile):</p>
+                  <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.permanentZshOrBash') || 'Permanent (~/.zshrc or ~/.bash_profile):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>echo 'export ANTHROPIC_BASE_URL="https://koicode.xyz/api"' &gt;&gt; ~/.zshrc</code>
                   </div>
@@ -461,7 +461,7 @@ export default function ApiKeysContent() {
             {activeTab === "linux" && (
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 1: Install Node.js</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installNode') || 'Step 1: Install Node.js'}</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.linux.installHint') || "Use your distribution's package manager, then verify with node --version. Examples:"}</p>
                   <p style={{ color: "#ccc", marginTop: 4 }}>Ubuntu/Debian:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
@@ -517,10 +517,10 @@ export default function ApiKeysContent() {
           <div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
               <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Usage Note</div>
-              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>Your koi.codes API key can be used in both Codex and Claude Code.</p>
+              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>{t('dashboard.apiKeys.noteDesc') || 'Your koi.codes API key can be used in both Codex and Claude Code.'}</p>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 0: Install Codex</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.codex.installTitle') || 'Step 0: Install Codex'}</div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>npm install -g @openai/codex</code>
               </div>
@@ -530,12 +530,12 @@ export default function ApiKeysContent() {
               <div style={{ fontSize: 12, color: "#999" }}>{t('dashboard.apiKeys.morePlatforms') || 'For other platforms and troubleshooting, see'} https://github.com/openai/codex</div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 1: Create auth.json</div>
-              <p style={{ color: "#ccc", marginTop: 4 }}>Delete any existing auth.json under ~/.codex (if present), then create a new auth.json.</p>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.codex.step1Title') || 'Step 1: Create auth.json'}</div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.codex.deleteAuth') || 'Delete any existing auth.json under ~/.codex (if present), then create a new auth.json.'}</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>rm ~/.codex/auth.json</code>
               </div>
-              <p style={{ color: "#ccc", marginTop: 4 }}>Then create a new ~/.codex/auth.json with the following content:</p>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.codex.createAuth') || 'Then create a new ~/.codex/auth.json with the following content:'}</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                 <pre style={{ margin: 0 }}><code style={{ fontSize: 14, color: "#00d084" }}>{`{
   "OPENAI_API_KEY": null
@@ -543,16 +543,16 @@ export default function ApiKeysContent() {
               </div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 2: Create config.toml</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.codex.step2Title') || 'Step 2: Create config.toml'}</div>
               <div style={{ background: "#221a00", border: "1px solid #ffa500", borderRadius: 6, padding: 10, marginBottom: 8 }}>
-                <div style={{ color: "#ffa500", fontWeight: 700, marginBottom: 4 }}>Important</div>
-                <div style={{ color: "#ffd27f", fontSize: 12 }}>The config file must be named config.toml and use TOML format. Do not create config.json or other formats.</div>
+                <div style={{ color: "#ffa500", fontWeight: 700, marginBottom: 4 }}>{t('dashboard.apiKeys.important') || 'Important'}</div>
+                <div style={{ color: "#ffd27f", fontSize: 12 }}>{t('dashboard.apiKeys.codex.configImportantDesc') || 'The config file must be named config.toml and use TOML format. Do not create config.json or other formats.'}</div>
               </div>
-              <p style={{ color: "#ccc", marginTop: 4 }}>Delete any existing config.toml under ~/.codex (if present), then create a new config.toml.</p>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.codex.deleteConfig') || 'Delete any existing config.toml under ~/.codex (if present), then create a new config.toml.'}</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>rm ~/.codex/config.toml</code>
               </div>
-              <p style={{ color: "#ccc", marginTop: 4 }}>Then create a new ~/.codex/config.toml with the content below:</p>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.codex.createConfig') || 'Then create a new ~/.codex/config.toml with the content below:'}</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                 <pre style={{ margin: 0 }}><code style={{ fontSize: 14, color: "#00d084" }}>{`model_provider = "koi"
 model = "gpt-5-codex"
@@ -569,12 +569,12 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
               </div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 3: Set Environment Variable</div>
-              <p style={{ color: "#ccc", marginTop: 4 }}>Temporary (current session):</p>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.codex.step3Title') || 'Step 3: Set Environment Variable'}</div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.temporarySession') || 'Temporary (current session):'}</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>{`export KOI_OPENAI_TOKEN="${userApiKey || 'Your API Token'}"`}</code>
               </div>
-              <p style={{ color: "#ccc", marginTop: 4 }}>Permanent (~/.zshrc or ~/.bash_profile):</p>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.permanentZshOrBash') || 'Permanent (~/.zshrc or ~/.bash_profile):'}</p>
               <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>{`echo 'export KOI_OPENAI_TOKEN="${userApiKey || 'Your API Token'}"' >> ~/.zshrc`}</code>
               </div>
@@ -589,7 +589,7 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
               </div>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Step 4: Get Started</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.codex.step4Title') || 'Step 4: Get Started'}</div>
               <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                 <code style={{ fontSize: 14, color: "#00d084" }}>codex</code>
               </div>

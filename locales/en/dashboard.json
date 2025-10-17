@@ -61,6 +61,7 @@
     "saving": "Saving..."
   },
   "apiKeys": {
+    "intro": "Manage your API keys for accessing our services",
     "create": {
       "title": "Create New API Key",
       "labelTitle": "Key Title",
@@ -107,6 +108,8 @@
     "morePlatforms": "For other platforms and troubleshooting, see",
     "important": "Important",
     "codex": {
+      "installTitle": "Step 0: Install Codex",
+      "createAuth": "Then create a new ~/.codex/auth.json with the following content:",
       "step1Title": "Step 1: Create auth.json",
       "deleteAuth": "Delete any existing auth.json under ~/.codex (if present), then create a new auth.json.",
       "step2Title": "Step 2: Create config.toml",
