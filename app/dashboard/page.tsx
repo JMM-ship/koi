@@ -112,19 +112,6 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      {/* 欢迎引导卡片 */}
-      {mounted && showWelcome && (
-        <div style={{ position: 'relative', zIndex: 1, margin: '12px 12px 0 12px' }} suppressHydrationWarning>
-          <WelcomeGuide
-            bonusPoints={Number(process.env.NEXT_PUBLIC_NEW_USER_BONUS_POINTS || 0)}
-            onGotoApiKeys={() => setActiveTab('api-keys')}
-            onGotoPlans={() => setActiveTab('plans')}
-            onGotoSetLocale={() => setActiveTab('profile')}
-            onGotoProfile={() => setActiveTab('profile')}
-            onDismiss={() => setShowWelcome(false)}
-          />
-        </div>
-      )}
       {/* 移动端菜单按钮 */}
       {isMobile && (
         <button
@@ -164,6 +151,19 @@ export default function Dashboard() {
 
       <div className={`dashboard-main ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}>
         <div className="dashboard-content">
+          {/* 欢迎引导卡片（放在内容区域顶部，避免打乱整体布局） */}
+          {mounted && showWelcome && (
+            <div style={{ marginBottom: '12px' }} suppressHydrationWarning>
+              <WelcomeGuide
+                bonusPoints={Number(process.env.NEXT_PUBLIC_NEW_USER_BONUS_POINTS || 0)}
+                onGotoApiKeys={() => setActiveTab('api-keys')}
+                onGotoPlans={() => setActiveTab('plans')}
+                onGotoSetLocale={() => setActiveTab('profile')}
+                onGotoProfile={() => setActiveTab('profile')}
+                onDismiss={() => setShowWelcome(false)}
+              />
+            </div>
+          )}
           {renderContent()}
         </div>
       </div>
