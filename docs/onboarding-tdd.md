@@ -348,3 +348,41 @@ Feature flags
 
 Open option
 - Optionally hide No-usage Callout when the full Welcome card is visible to reduce visual redundancy.
+
+---
+
+# Session Update — Step Grid Card UI + Language Setting
+
+Summary of the latest iteration based on user feedback and live QA on `https://koi.codes/dashboard`:
+
+- Guide placement and layout
+  - Render the onboarding guide inside `dashboard-content` (not above Sidebar) to preserve the page layout and avoid vertical displacement.
+  - The guide now uses a responsive step grid: 4 cards in a row on desktops; auto-fit to 2/1 columns on smaller screens.
+  - When the guide is visible, hide the No-usage Callout to avoid duplicate guidance.
+
+- Step content & behavior
+  - Steps: Create API Key → Run a test request → Choose plan → Set language (trial removed because signup already grants credits).
+  - Auto detection + manual completion coexist; user manual completion takes precedence and syncs to `/api/onboarding/state`.
+  - Removed the top-right Skip; keep only bottom-right Skip and Done buttons. Skip/Done permanently hide the guide (`done=true`).
+  - Added concise step descriptions via `onboarding.stepDesc.*` in locales.
+
+- i18n + language setting
+  - Added `onboarding` namespace to layout dictionaries to ensure all onboarding keys are loaded server-side.
+  - Personal Settings page now includes a Language card with a non-Bootstrap inline toggle (EN/中文) to change language instantly, and POST `/api/profile/locale` to persist for authenticated users.
+  - Replaced the Bootstrap dropdown (which required Bootstrap JS) with a pure React inline toggle to ensure clicks work without extra JS.
+
+- QA overrides & hydration
+  - `?welcome=1|true` now overrides any `done=true` state to force-show the guide during QA.
+  - Hydration safety: the guide only renders after client mount; the container uses `suppressHydrationWarning` to prevent SSR/CSR mismatches.
+
+Files touched in this pass
+- app/dashboard/page.tsx — render guide inside content; `welcome=1` override; hide Callout when guide visible.
+- components/dashboard/WelcomeGuide.tsx — step grid card UI; remove top-right Skip; keep bottom actions; step descriptions; manual completion + server sync.
+- components/dashboard/DashboardContent.tsx — `hideNoUsageCallout` prop to toggle Callout.
+- locales/en|zh/onboarding.json — updated step titles and added `stepDesc` keys.
+- components/dashboard/ProfileContent.tsx — added Language setting card.
+- components/common/LanguageSwitcher.tsx — replaced Bootstrap dropdown with inline toggle and ensured router refresh + server persistence.
+
+Validation
+- Verified in tests (unit/integration) and via live QA on `?welcome=1`.
+- For production QA, clear local and server onboarding state or use the `?welcome=1` override.
