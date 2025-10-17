@@ -44,10 +44,11 @@ export default function Dashboard() {
   // 决定是否展示欢迎引导
   useEffect(() => {
     try {
+      const welcomeParam = sp.get('welcome')
+      // QA/调试优先：当 URL 指定 welcome=1/true 时，强制显示（忽略已完成状态）
+      if (welcomeParam === '1' || welcomeParam === 'true') { setShowWelcome(true); return }
       const done = window.localStorage.getItem('onboard.v1.done') === '1'
       if (done) { setShowWelcome(false); return }
-      const welcomeParam = sp.get('welcome')
-      if (welcomeParam === '1' || welcomeParam === 'true') { setShowWelcome(true); return }
       // 7天可见窗口
       const fs = window.localStorage.getItem('onboard.v1.firstSeenAt')
       const now = Date.now()
