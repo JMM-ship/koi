@@ -88,6 +88,7 @@
     "option1Recommended": "方式一（推荐）：从 https://nodejs.org 下载 LTS 安装包，按默认步骤安装。",
     "option2Winget": "方式二（winget）：",
     "verifyInstallation": "验证安装：",
+    "powershellTemporary": "PowerShell（临时：当前会话）：",
     "option1Homebrew": "方式一（推荐）：使用 Homebrew。",
     "option2DownloadPkg": "方式二：从 https://nodejs.org 下载 LTS 安装包（.pkg）并按提示安装。",
     "temporarySession": "临时（当前会话）：",
@@ -107,6 +108,7 @@
     "inactive": "停用",
     "morePlatforms": "更多平台与故障排查见",
     "important": "重要",
+    "windows": { "runAsAdmin": "若出现权限问题，请以管理员身份运行 PowerShell。" },
     "codex": {
       "installTitle": "步骤 0：安装 Codex",
       "createAuth": "然后新建 ~/.codex/auth.json，内容如下：",

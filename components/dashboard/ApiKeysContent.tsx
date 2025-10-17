@@ -368,12 +368,12 @@ export default function ApiKeysContent() {
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installNode') || 'Step 1: Install Node.js'}</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Option 1 (Recommended): Download the LTS installer from https://nodejs.org, run the installer and follow default steps.</p>
-                  <p style={{ color: "#ccc", marginTop: 4 }}>Option 2 (winget):</p>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.option1Recommended') || 'Option 1 (Recommended): Download the LTS installer from https://nodejs.org, run the installer and follow default steps.'}</p>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.option2Winget') || 'Option 2 (winget):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>winget install OpenJS.NodeJS.LTS</code>
                   </div>
-                  <p style={{ color: "#ccc", marginTop: 4 }}>Verify installation:</p>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.verifyInstallation') || 'Verify installation:'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>node --version</code>
                   </div>
@@ -383,11 +383,11 @@ export default function ApiKeysContent() {
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>npm install -g @anthropic-ai/claude-code</code>
                   </div>
-                  <p style={{ color: "#aaa", marginTop: 8 }}>If permission issues occur, run PowerShell as Administrator.</p>
+                  <p style={{ color: "#aaa", marginTop: 8 }}>{t('dashboard.apiKeys.windows.runAsAdmin') || 'If permission issues occur, run PowerShell as Administrator.'}</p>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 3: Configure Environment</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>PowerShell (temporary for current session):</p>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.configureEnv') || 'Step 3: Configure Environment'}</h5>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.powershellTemporary') || 'PowerShell (temporary for current session):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>$env:ANTHROPIC_BASE_URL = "https://koicode.xyz/api"</code>
                   </div>
@@ -414,12 +414,12 @@ export default function ApiKeysContent() {
               <>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installNode') || 'Step 1: Install Node.js'}</h5>
-                  <p style={{ color: "#ccc", marginTop: 8 }}>Option 1 (Recommended): Use Homebrew.</p>
+                  <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.option1Homebrew') || 'Option 1 (Recommended): Use Homebrew.'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>brew install node</code>
                   </div>
-                  <p style={{ color: "#ccc", marginTop: 4 }}>Option 2: Download the LTS installer (.pkg) from https://nodejs.org and follow the instructions.</p>
-                  <p style={{ color: "#ccc", marginTop: 4 }}>Verify installation:</p>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.option2DownloadPkg') || 'Option 2: Download the LTS installer (.pkg) from https://nodejs.org and follow the instructions.'}</p>
+                  <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.verifyInstallation') || 'Verify installation:'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>node --version</code>
                   </div>
@@ -451,7 +451,7 @@ export default function ApiKeysContent() {
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
-                  <h5 style={{ margin: 0, color: "#fff" }}>Step 4: Get Started</h5>
+                  <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>claude</code>
                   </div>
@@ -516,7 +516,7 @@ export default function ApiKeysContent() {
         {selectedGuide === "codex" && (
           <div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
-              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>Usage Note</div>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.noteTitle') || 'Usage Note'}</div>
               <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>{t('dashboard.apiKeys.noteDesc') || 'Your koi.codes API key can be used in both Codex and Claude Code.'}</p>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>

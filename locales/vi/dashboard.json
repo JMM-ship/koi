@@ -88,6 +88,7 @@
     "option1Recommended": "Cách 1 (Khuyến nghị): Tải trình cài đặt LTS từ https://nodejs.org, chạy và làm theo mặc định.",
     "option2Winget": "Cách 2 (winget):",
     "verifyInstallation": "Xác minh cài đặt:",
+    "powershellTemporary": "PowerShell (tạm thời cho phiên hiện tại):",
     "option1Homebrew": "Cách 1 (Khuyến nghị): Dùng Homebrew.",
     "option2DownloadPkg": "Cách 2: Tải trình cài đặt LTS (.pkg) từ https://nodejs.org và làm theo hướng dẫn.",
     "temporarySession": "Tạm thời (phiên hiện tại):",
@@ -107,6 +108,7 @@
     "inactive": "Ngừng hoạt động",
     "morePlatforms": "Đối với nền tảng khác và xử lý sự cố, xem",
     "important": "Quan trọng",
+    "windows": { "runAsAdmin": "Nếu gặp lỗi quyền hạn, hãy chạy PowerShell với quyền Quản trị viên." },
     "codex": {
       "installTitle": "Bước 0: Cài Codex",
       "createAuth": "Sau đó tạo ~/.codex/auth.json với nội dung sau:",

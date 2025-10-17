@@ -33,11 +33,16 @@ describe('ApiKeysContent i18n (zh)', () => {
     // Open Claude guide panel and assert Step 2 Chinese title
     fireEvent.click(screen.getByText('Claude Code'))
     expect(screen.getByText('步骤 2：安装 Claude Code CLI')).toBeInTheDocument()
+    // macOS tab specific options and verify text
+    fireEvent.click(screen.getByText('macOS'))
+    expect(screen.getByText('方式一（推荐）：使用 Homebrew。')).toBeInTheDocument()
+    expect(screen.getByText('方式二：从 https://nodejs.org 下载 LTS 安装包（.pkg）并按提示安装。')).toBeInTheDocument()
+    expect(screen.getAllByText('验证安装：')[0]).toBeInTheDocument()
 
-    // Open Codex guide panel and assert Step 1 and Important
+    // Open Codex guide panel and assert Step 1 and Important and Usage Note
     fireEvent.click(screen.getByText('Codex'))
+    expect(screen.getByText('使用说明')).toBeInTheDocument()
     expect(screen.getByText('步骤 1：创建 auth.json')).toBeInTheDocument()
     expect(screen.getAllByText('重要')[0]).toBeInTheDocument()
   })
 })
-

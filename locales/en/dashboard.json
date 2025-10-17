@@ -88,6 +88,7 @@
     "option1Recommended": "Option 1 (Recommended): Download the LTS installer from https://nodejs.org, run the installer and follow default steps.",
     "option2Winget": "Option 2 (winget):",
     "verifyInstallation": "Verify installation:",
+    "powershellTemporary": "PowerShell (temporary for current session):",
     "option1Homebrew": "Option 1 (Recommended): Use Homebrew.",
     "option2DownloadPkg": "Option 2: Download the LTS installer (.pkg) from https://nodejs.org and follow the instructions.",
     "temporarySession": "Temporary (current session):",
@@ -107,6 +108,7 @@
     "inactive": "Inactive",
     "morePlatforms": "For other platforms and troubleshooting, see",
     "important": "Important",
+    "windows": { "runAsAdmin": "If permission issues occur, run PowerShell as Administrator." },
     "codex": {
       "installTitle": "Step 0: Install Codex",
       "createAuth": "Then create a new ~/.codex/auth.json with the following content:",

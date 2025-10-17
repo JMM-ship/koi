@@ -36,13 +36,16 @@ describe('ApiKeysContent i18n (vi)', () => {
     // Windows tab default: Step 2 should be Vietnamese
     expect(screen.getByText('Bước 2: Cài Claude Code CLI')).toBeInTheDocument()
 
-    // Switch to macOS and expect same Vietnamese step 2
+    // macOS options
     fireEvent.click(screen.getByText('macOS'))
-    expect(await screen.findByText('Bước 2: Cài Claude Code CLI')).toBeInTheDocument()
+    expect(screen.getByText('Cách 1 (Khuyến nghị): Dùng Homebrew.')).toBeInTheDocument()
+    expect(screen.getByText('Cách 2: Tải trình cài đặt LTS (.pkg) từ https://nodejs.org và làm theo hướng dẫn.')).toBeInTheDocument()
+    expect(screen.getAllByText('Xác minh cài đặt:')[0]).toBeInTheDocument()
 
     // Open Codex guide panel
     fireEvent.click(screen.getByText('Codex'))
-    // Codex guide: Step 1 title should be Vietnamese
+    // Codex guide: Usage Note + Step 1 title should be Vietnamese
+    expect(screen.getByText('Lưu ý sử dụng')).toBeInTheDocument()
     expect(screen.getByText('Bước 1: Tạo auth.json')).toBeInTheDocument()
     // Important label should be Vietnamese
     expect(screen.getAllByText('Quan trọng')[0]).toBeInTheDocument()
