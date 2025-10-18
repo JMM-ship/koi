@@ -31,6 +31,11 @@ export async function GET(_req: Request) {
     if (!session?.user) return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED' } }, { status: 401 })
     const userId = (session.user as any).id || (session.user as any).uuid
     if (!userId) return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED' } }, { status: 401 })
+    // Admin exemption: admin 用户始终视为已完成，引导永不显示
+    if ((session.user as any).role === 'admin') {
+      const state: OnboardingState = { done: true, steps: {}, firstSeenAt: null }
+      return NextResponse.json({ success: true, data: state })
+    }
 
     await ensureTable()
     const rows = await prisma.$queryRawUnsafe<any[]>(`SELECT data FROM user_meta WHERE user_id = $1`, userId)
@@ -53,6 +58,11 @@ export async function POST(req: Request) {
     if (!session?.user) return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED' } }, { status: 401 })
     const userId = (session.user as any).id || (session.user as any).uuid
     if (!userId) return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED' } }, { status: 401 })
+    // Admin exemption: 忽略对 admin 用户的写入，始终返回 done=true
+    if ((session.user as any).role === 'admin') {
+      const state: OnboardingState = { done: true, steps: {}, firstSeenAt: null }
+      return NextResponse.json({ success: true, data: state })
+    }
 
     let body: any
     try { body = await req.json() } catch { body = {} }
@@ -76,4 +86,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR' } }, { status: 500 })
   }
 }
-

@@ -76,7 +76,12 @@ export default function Dashboard() {
                 onGotoPlans={() => setActiveTab('plans')}
                 onGotoSetLocale={() => setActiveTab('profile')}
                 onGotoProfile={() => setActiveTab('profile')}
-                onDismiss={() => { /* 完成后由组件提交 done=true，此处不做额外逻辑；刷新后不再显示 */ }}
+                onDismiss={() => {
+                  // 立即切换为显示面板，提升完成后的即时反馈；
+                  // 真实持久化依赖服务端 POST，刷新时仍以服务端为准。
+                  setServerDone(true)
+                  setSessionShowPanel(true)
+                }}
               />
             </div>
           )

@@ -159,10 +159,10 @@ export default function WelcomeGuide({
 
       {/* ToDo 列表：自上而下 */}
       <div style={{ marginTop: 8, borderTop: '1px solid #141414' }}>
-        {stepRow(1, t('onboarding.step.createKey'), steps.createKey, onGotoApiKeys, () => markStep('createKey', true), t('onboarding.cta.createKey'), t('onboarding.stepDesc.createKey'))}
-        {stepRow(2, t('onboarding.step.firstCall'), steps.firstCall, undefined, () => markStep('firstCall', true), t('onboarding.cta.firstCall'), t('onboarding.stepDesc.firstCall'))}
-        {stepRow(3, t('onboarding.step.choosePlan'), steps.choosePlan, onGotoPlans, () => markStep('choosePlan', true), t('onboarding.cta.choosePlan'), t('onboarding.stepDesc.choosePlan'))}
-        {stepRow(4, t('onboarding.step.setLocale'), steps.setLocale, onGotoSetLocale || onGotoProfile, () => markStep('setLocale', true), t('onboarding.cta.setLocale'), t('onboarding.stepDesc.setLocale'))}
+        {stepRow(1, t('onboarding.step.createKey'), steps.createKey, onGotoApiKeys, () => markStep('createKey', !steps.createKey), t('onboarding.cta.createKey'), t('onboarding.stepDesc.createKey'))}
+        {stepRow(2, t('onboarding.step.firstCall'), steps.firstCall, undefined, () => markStep('firstCall', !steps.firstCall), t('onboarding.cta.firstCall'), t('onboarding.stepDesc.firstCall'))}
+        {stepRow(3, t('onboarding.step.choosePlan'), steps.choosePlan, onGotoPlans, () => markStep('choosePlan', !steps.choosePlan), t('onboarding.cta.choosePlan'), t('onboarding.stepDesc.choosePlan'))}
+        {stepRow(4, t('onboarding.step.setLocale'), steps.setLocale, onGotoSetLocale || onGotoProfile, () => markStep('setLocale', !steps.setLocale), t('onboarding.cta.setLocale'), t('onboarding.stepDesc.setLocale'))}
       </div>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}>
         <button
