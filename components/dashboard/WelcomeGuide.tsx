@@ -63,31 +63,10 @@ export default function WelcomeGuide({
     trackOnboardingEvent('onboarding_started', { stepCount: 4 })
   }, [anyTracking])
 
-  // 自动探测：API Key / 用量 预标记
-  useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      try {
-        const [keysResp, dashResp] = await Promise.all([
-          fetch('/api/apikeys').then(r => (r.ok ? r.json() : { apiKeys: [] })),
-          fetch('/api/dashboard').then(r => (r.ok ? r.json() : { creditStats: { month: { amount: 0 } }, modelUsages: [] })),
-        ])
-        const hasKey = Array.isArray(keysResp?.apiKeys) && keysResp.apiKeys.some((k: any) => k?.status !== 'deleted')
-        const hasUsage = (dashResp?.creditStats?.month?.amount || 0) > 0 || (Array.isArray(dashResp?.modelUsages) && dashResp.modelUsages.length > 0)
-        if (cancelled) return
-        setSteps(prev => {
-          const next = { ...prev }
-          if (hasKey) next.createKey = true
-          if (hasUsage) next.firstCall = true
-          persistSteps(next)
-          return next
-        })
-      } catch {}
-    })()
-    return () => { cancelled = true }
-  }, [])
+  // 取消自动探测：改为用户自测（手动勾选）
 
   const completeCount = useMemo(() => Object.values(steps).filter(Boolean).length, [steps])
+  const allDone = useMemo(() => Object.values(steps).every(Boolean), [steps])
 
   const persistSteps = (s: StepsState) => {
     try { window.localStorage.setItem(LS_STEPS_KEY, JSON.stringify(s)) } catch {}
@@ -100,30 +79,16 @@ export default function WelcomeGuide({
       if (anyTracking && val) trackOnboardingEvent('onboarding_step_done', { step: String(key) })
       // 尝试将状态同步至服务端（不阻断）
       try {
-        fetch('/api/onboarding/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: Object.values(next).every(Boolean), steps: next, firstSeenAt: localStorage.getItem(LS_FIRST_SEEN) }) })
+        // 步骤标记不自动完成，由最终确认按钮触发 done
+        fetch('/api/onboarding/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: false, steps: next, firstSeenAt: localStorage.getItem(LS_FIRST_SEEN) }) })
       } catch {}
       return next
     })
   }
 
-  const handleSkip = () => {
-    try { window.localStorage.setItem(LS_DONE_KEY, '1') } catch {}
-    if (anyTracking) trackOnboardingEvent('onboarding_dismissed')
-    try { fetch('/api/onboarding/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: true, steps, firstSeenAt: localStorage.getItem(LS_FIRST_SEEN) }) }) } catch {}
-    onDismiss?.()
-  }
+  // 取消“跳过”和自动完成逻辑：由底部按钮手动完成
 
-  const handleMaybeComplete = () => {
-    const allDone = Object.values(steps).every(Boolean)
-    if (allDone) {
-      try { window.localStorage.setItem(LS_DONE_KEY, '1') } catch {}
-      if (anyTracking) trackOnboardingEvent('onboarding_completed')
-      try { fetch('/api/onboarding/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: true, steps, firstSeenAt: localStorage.getItem(LS_FIRST_SEEN) }) }) } catch {}
-      onDismiss?.()
-    }
-  }
-
-  // Basic card styles to blend with dashboard theme
+  // 样式：改为自上而下的 ToDoList 形式
   const cardStyle: React.CSSProperties = {
     background: '#0a0a0a',
     border: '1px solid #1a1a1a',
@@ -132,26 +97,41 @@ export default function WelcomeGuide({
     marginBottom: 16,
   }
 
-  const stepRow = (label: string, done: boolean, onGo?: () => void, onMark?: () => void, ctaLabel?: string, desc?: string) => (
+  const stepRow = (
+    idx: number,
+    label: string,
+    done: boolean,
+    onGo?: () => void,
+    onMark?: () => void,
+    ctaLabel?: string,
+    desc?: string
+  ) => (
     <div style={{
-      background: '#0a0a0a',
-      border: '1px solid #1a1a1a',
-      borderRadius: 12,
-      padding: 16,
-      display: 'flex', flexDirection: 'column', gap: 8,
-      minHeight: 120
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 12,
+      padding: '12px 8px',
+      borderBottom: '1px solid #141414'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ color: '#fff', fontWeight: 600 }}>{label}</div>
-        {done ? <span style={{ color: '#0bd084', fontSize: 12 }}>{t('onboarding.state.done')}</span> : null}
+      {/* 序号/状态 */}
+      <div style={{ width: 28, height: 28, borderRadius: 6, background: done ? 'rgba(11,208,132,0.16)' : '#121212', border: done ? '1px solid rgba(11,208,132,0.28)' : '1px solid #1f1f1f', color: done ? '#0bd084' : '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700 }}>
+        {done ? '✓' : String(idx)}
       </div>
-      {desc ? <div style={{ color: '#aaa', fontSize: 12 }}>{desc}</div> : null}
-      <div style={{ display: 'flex', gap: 8, marginTop: 'auto' }}>
+      {/* 文案区 */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ color: '#fff', fontWeight: 600 }}>{label}</div>
+          {done ? <span style={{ color: '#0bd084', fontSize: 12 }}>{t('onboarding.state.done')}</span> : null}
+        </div>
+        {desc ? <div style={{ color: '#aaa', fontSize: 12, marginTop: 4 }}>{desc}</div> : null}
+      </div>
+      {/* 操作区 */}
+      <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
         {onGo ? (
-          <button onClick={onGo} style={{ background: 'transparent', color: '#fff', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{ctaLabel}</button>
+          <button onClick={onGo} style={{ background: 'transparent', color: '#fff', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px', whiteSpace: 'nowrap' }}>{ctaLabel}</button>
         ) : null}
         {!done && onMark ? (
-          <button onClick={() => { onMark(); handleMaybeComplete() }} style={{ background: 'transparent', color: '#999', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.done')}</button>
+          <button onClick={() => { onMark() }} style={{ background: 'transparent', color: '#999', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px', whiteSpace: 'nowrap' }}>{t('onboarding.cta.done')}</button>
         ) : null}
       </div>
     </div>
@@ -169,19 +149,50 @@ export default function WelcomeGuide({
       <div style={{ color: '#ccc', marginTop: 8 }}>{t('onboarding.reward', { points: bonusPoints })}</div>
       <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>{t('onboarding.tip.inviteReward')}</div>
 
-      <div style={{ marginTop: 12,
-        display: 'grid',
-        gap: 12,
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))'
-      }}>
-        {stepRow(t('onboarding.step.createKey'), steps.createKey, onGotoApiKeys, () => markStep('createKey', true), t('onboarding.cta.createKey'), t('onboarding.stepDesc.createKey'))}
-        {stepRow(t('onboarding.step.firstCall'), steps.firstCall, undefined, () => markStep('firstCall', true), t('onboarding.cta.firstCall'), t('onboarding.stepDesc.firstCall'))}
-        {stepRow(t('onboarding.step.choosePlan'), steps.choosePlan, onGotoPlans, () => markStep('choosePlan', true), t('onboarding.cta.choosePlan'), t('onboarding.stepDesc.choosePlan'))}
-        {stepRow(t('onboarding.step.setLocale'), steps.setLocale, onGotoSetLocale || onGotoProfile, () => markStep('setLocale', true), t('onboarding.cta.setLocale'), t('onboarding.stepDesc.setLocale'))}
+      {/* 进度条/统计 */}
+      <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ height: 6, background: '#121212', border: '1px solid #1f1f1f', borderRadius: 999, overflow: 'hidden', width: '100%' }}>
+          <div style={{ height: '100%', width: `${(completeCount / 4) * 100}%`, background: '#0bd084' }} />
+        </div>
+        <div style={{ color: '#888', fontSize: 12, whiteSpace: 'nowrap' }}>{completeCount}/4</div>
+      </div>
+
+      {/* ToDo 列表：自上而下 */}
+      <div style={{ marginTop: 8, borderTop: '1px solid #141414' }}>
+        {stepRow(1, t('onboarding.step.createKey'), steps.createKey, onGotoApiKeys, () => markStep('createKey', true), t('onboarding.cta.createKey'), t('onboarding.stepDesc.createKey'))}
+        {stepRow(2, t('onboarding.step.firstCall'), steps.firstCall, undefined, () => markStep('firstCall', true), t('onboarding.cta.firstCall'), t('onboarding.stepDesc.firstCall'))}
+        {stepRow(3, t('onboarding.step.choosePlan'), steps.choosePlan, onGotoPlans, () => markStep('choosePlan', true), t('onboarding.cta.choosePlan'), t('onboarding.stepDesc.choosePlan'))}
+        {stepRow(4, t('onboarding.step.setLocale'), steps.setLocale, onGotoSetLocale || onGotoProfile, () => markStep('setLocale', true), t('onboarding.cta.setLocale'), t('onboarding.stepDesc.setLocale'))}
       </div>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 12 }}>
-        <button onClick={handleSkip} style={{ background: 'transparent', color: '#999', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.skip')}</button>
-        <button onClick={() => { try { window.localStorage.setItem(LS_DONE_KEY, '1') } catch {}; try { fetch('/api/onboarding/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ done: true, steps, firstSeenAt: localStorage.getItem(LS_FIRST_SEEN) }) }) } catch {}; onDismiss?.() }} style={{ background: 'transparent', color: '#fff', border: '1px solid #2a2a2a', borderRadius: 6, padding: '6px 10px' }}>{t('onboarding.cta.done')}</button>
+        <button
+          data-testid="onboarding-finish"
+          disabled={!allDone}
+          onClick={() => {
+            if (!allDone) return
+            try { window.localStorage.setItem(LS_DONE_KEY, '1') } catch {}
+            if (anyTracking) trackOnboardingEvent('onboarding_completed')
+            try {
+              fetch('/api/onboarding/state', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ done: true, steps, firstSeenAt: localStorage.getItem(LS_FIRST_SEEN) })
+              })
+            } catch {}
+            onDismiss?.()
+          }}
+          style={{
+            background: 'transparent',
+            color: allDone ? '#fff' : '#555',
+            border: '1px solid #2a2a2a',
+            borderRadius: 6,
+            padding: '6px 10px',
+            cursor: allDone ? 'pointer' : 'not-allowed',
+            opacity: allDone ? 1 : 0.7
+          }}
+        >
+          {t('onboarding.cta.done')}
+        </button>
       </div>
     </div>
   )

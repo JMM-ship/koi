@@ -52,8 +52,8 @@ beforeEach(() => {
   searchParamsStore.register = '1'
 })
 
-describe('Signin redirect with welcome param after successful registration', () => {
-  test('redirects to /dashboard?welcome=1 when callbackUrl is /dashboard', async () => {
+describe('Signin redirect to /dashboard after successful registration', () => {
+  test('redirects to /dashboard when callbackUrl is /dashboard', async () => {
     render(
       <I18nProvider locale="en" dict={dictEn as any}>
         <SignInPage />
@@ -75,10 +75,10 @@ describe('Signin redirect with welcome param after successful registration', () 
     fireEvent.submit(form!)
 
     await waitFor(() => expect(signInMock).toHaveBeenCalled())
-    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/dashboard?welcome=1'))
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/dashboard'))
   })
 
-  test('preserves original query and appends welcome=1 for /dashboard?a=1', async () => {
+  test('still redirects to /dashboard for /dashboard?a=1', async () => {
     searchParamsStore.callbackUrl = '/dashboard?a=1'
 
     render(
@@ -98,7 +98,7 @@ describe('Signin redirect with welcome param after successful registration', () 
     fireEvent.submit(form!)
 
     await waitFor(() => expect(signInMock).toHaveBeenCalled())
-    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/dashboard?a=1&welcome=1'))
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/dashboard'))
   })
 
   test('keeps non-dashboard callbackUrl unchanged', async () => {

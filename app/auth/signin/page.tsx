@@ -173,14 +173,12 @@ export default function SignInPage() {
                     try {
                         const url = new URL(callbackUrl, typeof window !== 'undefined' ? window.location.origin : 'http://localhost')
                         if (url.pathname === '/dashboard') {
-                            url.searchParams.set('welcome', '1')
-                            const target = url.pathname + url.search
-                            router.push(target)
+                            router.push('/dashboard')
                         } else {
                             router.push(callbackUrl)
                         }
                     } catch {
-                        router.push(callbackUrl)
+                        router.push('/dashboard')
                     }
                     router.refresh()
                 }

@@ -58,7 +58,7 @@ beforeEach(() => {
 })
 
 describe('WelcomeGuide component', () => {
-  test('renders checklist with reward and i18n strings', async () => {
+  test('renders checklist with reward and i18n strings, finish disabled initially', async () => {
     renderZh(
       <WelcomeGuide
         bonusPoints={100}
@@ -76,10 +76,23 @@ describe('WelcomeGuide component', () => {
     expect(screen.getByText('选择套餐/领取试用')).toBeInTheDocument()
     expect(screen.getByText('设置语言')).toBeInTheDocument()
     expect(screen.getByText('邀请好友可获得奖励')).toBeInTheDocument()
+    const finishBtn = screen.getByTestId('onboarding-finish') as HTMLButtonElement
+    expect(finishBtn.disabled).toBe(true)
   })
 
-  test('skip marks done and calls onDismiss', async () => {
+  test('manual marking enables finish then triggers onDismiss', async () => {
     const onDismiss = jest.fn()
+    const postCalls: any[] = []
+    const mockFetch = jest.fn(async (url: string, init?: any) => {
+      if (url.endsWith('/api/onboarding/state') && init?.method === 'POST') {
+        postCalls.push(JSON.parse(init.body as string))
+        return { ok: true, json: async () => ({ success: true }) } as any
+      }
+      return { ok: true, json: async () => ({}) } as any
+    })
+    ;(global as any).fetch = mockFetch
+    ;(window as any).fetch = mockFetch
+
     renderZh(
       <WelcomeGuide
         bonusPoints={50}
@@ -90,8 +103,16 @@ describe('WelcomeGuide component', () => {
         onDismiss={onDismiss}
       />
     )
-    fireEvent.click(await screen.findByText('跳过'))
+    // Mark all steps done via row buttons
+    const allDoneBtns = await screen.findAllByText('我已完成')
+    // Exclude final finish button by testid
+    const stepBtns = allDoneBtns.filter((el: any) => !(el.getAttribute && el.getAttribute('data-testid') === 'onboarding-finish'))
+    stepBtns.slice(0, 4).forEach(btn => fireEvent.click(btn))
+    const finishBtn = screen.getByTestId('onboarding-finish') as HTMLButtonElement
+    expect(finishBtn.disabled).toBe(false)
+    fireEvent.click(finishBtn)
     expect(localStorage.getItem('onboard.v1.done')).toBe('1')
+    await waitFor(() => expect(postCalls.length).toBeGreaterThan(0))
     expect(onDismiss).toHaveBeenCalled()
   })
 
@@ -117,34 +138,7 @@ describe('WelcomeGuide component', () => {
     expect(onGotoSetLocale).toHaveBeenCalled()
   })
 
-  test('pre-marks steps when user has api key and usage', async () => {
-    const mockFetch = jest.fn(async (url: string) => {
-      if (url.includes('/api/apikeys')) {
-        return { ok: true, json: async () => ({ apiKeys: [{ id: 'k1', status: 'active' }] }) } as any
-      }
-      if (url.includes('/api/dashboard')) {
-        return { ok: true, json: async () => ({ creditStats: { month: { amount: 10 } }, modelUsages: [{ id: 'u1' }] }) } as any
-      }
-      return { ok: true, json: async () => ({}) } as any
-    })
-    ;(global as any).fetch = mockFetch
-    ;(window as any).fetch = mockFetch
-
-    renderZh(
-      <WelcomeGuide
-        bonusPoints={10}
-        onGotoApiKeys={jest.fn()}
-        onGotoPlans={jest.fn()}
-        onGotoSetLocale={jest.fn()}
-        onGotoProfile={jest.fn()}
-        onDismiss={jest.fn()}
-      />
-    )
-
-    await waitFor(() => {
-      expect(screen.getAllByText('已完成').length).toBeGreaterThanOrEqual(2)
-    })
-  })
+  // auto pre-mark removed: unified manual check
 
   test('admin users do not see the component', async () => {
     renderZh(

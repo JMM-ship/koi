@@ -7,6 +7,11 @@ import { I18nProvider } from '@/contexts/I18nContext'
 // Mock search params: no welcome param
 jest.mock('next/navigation', () => ({
   useSearchParams: () => ({ get: (_k: string) => null }),
+  useRouter: () => ({ replace: jest.fn() }),
+}))
+
+jest.mock('next-auth/react', () => ({
+  useSession: () => ({ data: null, status: 'unauthenticated' }),
 }))
 
 // Stub heavy components
@@ -26,6 +31,7 @@ beforeEach(() => {
   localStorage.setItem('onboard.v1.firstSeenAt', new Date().toISOString())
   // No usage
   const mockFetch = jest.fn(async (url: string) => {
+    if (url.endsWith('/api/onboarding/state')) return { ok: true, json: async () => ({ success: true, data: { done: true, steps: {}, firstSeenAt: null } }) } as any
     if (url.includes('/api/apikeys')) return { ok: true, json: async () => ({ apiKeys: [] }) } as any
     if (url.includes('/api/dashboard')) return { ok: true, json: async () => ({ creditStats: { month: { amount: 0 } }, modelUsages: [] }) } as any
     return { ok: true, json: async () => ({}) } as any
