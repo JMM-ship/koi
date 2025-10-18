@@ -98,6 +98,7 @@ export default function ApiKeysContent() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newKeyTitle, setNewKeyTitle] = useState("");
   const [activeTab, setActiveTab] = useState<GuideTab>("windows");
+  const [installerTab, setInstallerTab] = useState<GuideTab>("windows");
   const [selectedGuide, setSelectedGuide] = useState<GuideKind>(null);
   const { showSuccess, showInfo, showError } = useToast();
   const { t } = useT()
@@ -337,9 +338,99 @@ export default function ApiKeysContent() {
         </div>
       )}
 
+      {/* One-Click Install - Quick Start */}
+      <div style={{ background: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: 12, padding: 20, marginTop: 20 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 16 }}>⚡ {t('dashboard.apiKeys.quickStart') || 'Quick Start'}</h3>
+        {/* Prerequisite: Node.js */}
+        <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+          <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.oneClick.prereqTitle') || 'Before you start — ensure Node.js'}</div>
+          <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.oneClick.checkInstalled') || 'Check if installed:'}</p>
+          <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+            <code style={{ color: "#00d084" }}>node --version</code>
+          </div>
+          <p style={{ color: "#aaa", fontSize: 13, margin: 0 }}>{t('dashboard.apiKeys.oneClick.installedOk') || 'If you see a version like v18.0.0, Node.js is installed.'}</p>
+          <p style={{ color: "#aaa", fontSize: 13, margin: "6px 0 0 0" }}>{t('dashboard.apiKeys.oneClick.installNode') || 'If not installed, download and install the LTS version from https://nodejs.org, then restart your terminal.'}</p>
+        </div>
+        {/* OS tabs */}
+        <div style={{ display: "flex", gap: 8, borderBottom: "2px solid #1a1a1a", marginBottom: 12 }}>
+          <button onClick={() => setInstallerTab("windows")} style={{ background: installerTab === "windows" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: installerTab === "windows" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaWindows /> {t('dashboard.apiKeys.tabs.windows') || 'Windows'}</button>
+          <button onClick={() => setInstallerTab("macos")} style={{ background: installerTab === "macos" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: installerTab === "macos" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaApple /> {t('dashboard.apiKeys.tabs.macos') || 'macOS'}</button>
+          <button onClick={() => setInstallerTab("linux")} style={{ background: installerTab === "linux" ? "linear-gradient(135deg, #794aff 0%, #b084ff 100%)" : "transparent", color: installerTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> {t('dashboard.apiKeys.tabs.linux') || 'Linux'}</button>
+        </div>
+        {installerTab === "windows" && (
+          <>
+            <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.oneClick.windowsTitle') || 'Windows'}</div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.oneClick.windowsPowerShell') || 'In PowerShell, run:'}</p>
+              <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
+                <code style={{ color: "#00d084" }}>npx "@koi.codes/koi-installer"</code>
+              </div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.oneClick.windowsCmd') || 'Or in CMD, run:'}</p>
+              <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                <code style={{ color: "#00d084" }}>npx @koi.codes/koi-installer</code>
+              </div>
+              <div style={{ background: "#221a00", border: "1px solid #ffa500", borderRadius: 6, padding: 10, marginTop: 8 }}>
+                <div style={{ color: "#ffd27f", fontSize: 12 }}>{t('dashboard.apiKeys.windows.runAsAdmin') || 'If permission issues occur, run PowerShell as Administrator.'}</div>
+              </div>
+            </div>
+            <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.oneClick.startTitle') || 'Start Using'}</div>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ flex: "1 1 240px" }}>
+                  <div style={{ color: "#999", marginBottom: 6 }}>claude</div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>claude</code>
+                  </div>
+                </div>
+                <div style={{ flex: "1 1 240px" }}>
+                  <div style={{ color: "#999", marginBottom: 6 }}>codex</div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>codex</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        {(installerTab === "macos" || installerTab === "linux") && (
+          <>
+            <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.oneClick.macLinuxTitle') || 'macOS & Linux'}</div>
+              <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.oneClick.macLinuxRun') || 'In Terminal, run:'}</p>
+              <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                <code style={{ color: "#00d084" }}>npx @koi.codes/koi-installer</code>
+              </div>
+            </div>
+            <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
+              <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.oneClick.startTitle') || 'Start Using'}</div>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <div style={{ flex: "1 1 240px" }}>
+                  <div style={{ color: "#999", marginBottom: 6 }}>claude</div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>claude</code>
+                  </div>
+                </div>
+                <div style={{ flex: "1 1 240px" }}>
+                  <div style={{ color: "#999", marginBottom: 6 }}>codex</div>
+                  <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+                    <code style={{ color: "#00d084" }}>codex</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        <div style={{ background: "#121212", borderRadius: 8, padding: 16 }}>
+          <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.oneClick.uninstallNote') || 'To completely uninstall:'}</div>
+          <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
+            <code style={{ color: "#00d084" }}>npx @koi.codes/koi-installer uninstall</code>
+          </div>
+        </div>
+      </div>
+
       {/* Quick Start */}
       <div style={{ background: "#0a0a0a", border: "1px solid #1a1a1a", borderRadius: 12, padding: 20, marginTop: 20 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 16 }}>🚀 {t('dashboard.apiKeys.quickStart') || 'Quick Start'}</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 16 }}>🛠️ {t('dashboard.apiKeys.manualInstall') || 'Manual Installation'}</h3>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
           <div onClick={() => setSelectedGuide(selectedGuide === "claude" ? null : "claude")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "claude" ? "#121212" : "#1a1a1a", border: selectedGuide === "claude" ? "1px solid #794aff" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
             <FiTerminal style={{ color: "#794aff", fontSize: 24 }} />

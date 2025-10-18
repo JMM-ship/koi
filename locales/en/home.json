@@ -157,19 +157,19 @@
     "t1": {
       "badge": "Vim User's First Choice",
       "quote": "\"Most people in our company now use Cursor, few use terminal-based tools. I'm used to Vim, and I can't get used to Cursor. I still like this tool, don't like Cursor. This AI is much stronger than Cursor!\"",
-      "name": "Old Li",
+      "name": "John Smith",
       "role": "Senior Development Engineer, Tech Company"
     },
     "t2": {
       "badge": "Code Refactoring Artifact",
       "quote": "\"This AI is too powerful! It refactored all the messy code I wrote ten thousand years ago. Code quality has improved by more than one level, and old projects I dared not touch before can now be easily maintained.\"",
-      "name": "Engineer Zhang",
+      "name": "Markus Schneider",
       "role": "Architect, Internet Company"
     },
     "t3": {
       "badge": "King of Cost-Effectiveness",
       "quote": "\"Used it for 2 months, very stable! The official price for one month can be used for 4 months here, it's cheap and easy to use, and development efficiency has increased several times. Cursor's 500 quick requests are simply not enough.\"",
-      "name": "Little Wang",
+      "name": "Sophie Martin",
       "role": "Full-stack Engineer, Independent Developer"
     }
   },

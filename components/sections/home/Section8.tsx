@@ -116,7 +116,7 @@ export default function Section8() {
                                                 </Link>
                                                 <div className="text-start ms-3">
                                                     <Link href="#">
-                                                        <span className="btn-text">{t('home.s8.t1.name') || 'Old Li'}</span>
+                                                        <span className="btn-text">{t('home.s8.t1.name') || 'John Smith'}</span>
                                                     </Link>
                                                     <p className="mb-0 fs-7">{t('home.s8.t1.role') || 'Senior Development Engineer, Tech Company'}</p>
                                                 </div>
@@ -142,7 +142,7 @@ export default function Section8() {
                                                 </Link>
                                                 <div className="text-start ms-3">
                                                     <Link href="#">
-                                                        <span className="btn-text">{t('home.s8.t2.name') || 'Engineer Zhang'}</span>
+                                                        <span className="btn-text">{t('home.s8.t2.name') || 'Markus Schneider'}</span>
                                                     </Link>
                                                     <p className="mb-0 fs-7">{t('home.s8.t2.role') || 'Architect, Internet Company'}</p>
                                                 </div>
@@ -168,7 +168,7 @@ export default function Section8() {
                                                 </Link>
                                                 <div className="text-start ms-3">
                                                     <Link href="#">
-                                                        <span className="btn-text">{t('home.s8.t3.name') || 'Little Wang'}</span>
+                                                        <span className="btn-text">{t('home.s8.t3.name') || 'Sophie Martin'}</span>
                                                     </Link>
                                                     <p className="mb-0 fs-7">{t('home.s8.t3.role') || 'Full-stack Engineer, Independent Developer'}</p>
                                                 </div>

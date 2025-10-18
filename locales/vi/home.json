@@ -157,19 +157,19 @@
     "t1": {
       "badge": "Lựa chọn của người dùng Vim",
       "quote": "\"Hầu hết công ty tôi dùng Cursor, ít người dùng công cụ terminal. Tôi quen Vim, không quen Cursor. Tôi vẫn thích công cụ này, không thích Cursor. AI này mạnh hơn Cursor rất nhiều!\"",
-      "name": "Lão Lý",
+      "name": "John Smith",
       "role": "Kỹ sư phát triển cao cấp, Công ty công nghệ"
     },
     "t2": {
       "badge": "Bảo bối tái cấu trúc mã",
       "quote": "\"AI này quá mạnh! Nó tái cấu trúc toàn bộ đống mã lộn xộn tôi viết từ thuở xa xưa. Chất lượng mã cải thiện rõ rệt, những dự án cũ trước đây không dám đụng giờ có thể bảo trì dễ dàng.\"",
-      "name": "Kỹ sư Trương",
+      "name": "Markus Schneider",
       "role": "Kiến trúc sư, Công ty Internet"
     },
     "t3": {
       "badge": "Vua hiệu quả chi phí",
       "quote": "\"Dùng 2 tháng rồi, rất ổn định! Giá chính thức một tháng ở đây dùng được 4 tháng, vừa rẻ vừa dễ dùng, hiệu suất phát triển tăng nhiều lần. 500 yêu cầu nhanh của Cursor là không đủ.\"",
-      "name": "Tiểu Vương",
+      "name": "Sophie Martin",
       "role": "Kỹ sư full-stack, Lập trình viên độc lập"
     }
   },

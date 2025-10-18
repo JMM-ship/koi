@@ -26,7 +26,8 @@ import {
   FiShield,
   FiLogOut,
   FiKey,
-  FiHelpCircle
+  FiHelpCircle,
+  FiBookOpen
 } from "react-icons/fi";
 import { useConfirm } from "@/hooks/useConfirm";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -104,6 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const menuItems: MenuItem[] = [
     { id: 1, icon: FiGrid, label: t('sidebar.dashboard'), path: "dashboard", active: activeTab === "dashboard" },
+    { id: 13, icon: FiBookOpen, label: t('sidebar.gettingStarted') || 'Getting Started', path: "guide", active: activeTab === "guide" },
     { id: 3, icon: FiSlack, label: t('sidebar.apiKeys'), path: "api-keys", active: activeTab === "api-keys" },
     { id: 4, icon: FiShoppingBag, label: t('sidebar.purchasePlans'), path: "plans", active: activeTab === "plans" },
     { id: 5, icon: FiUsers, label: t('sidebar.referralProgram'), path: "referral", active: activeTab === "referral" },
