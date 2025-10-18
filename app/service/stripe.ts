@@ -1,30 +1,16 @@
-// Type-only import removed to avoid type resolution when package not installed
-
-// Lazy load Stripe at runtime to avoid build-time dependency when package is not installed
-function loadStripeCtor(): any {
-  try {
-    // use eval to avoid webpack static resolution at build time
-    const req: any = eval('require')
-    return req('stripe')
-  } catch (e) {
-    return null
-  }
-}
+import Stripe from 'stripe'
 
 // Initialize Stripe with secret key
-const getStripeClient = (): any => {
+const getStripeClient = (): Stripe => {
   const secretKey = process.env.STRIPE_SECRET_KEY
   if (!secretKey) {
     throw new Error('Missing STRIPE_SECRET_KEY in environment variables')
   }
-  const Ctor = loadStripeCtor()
-  if (!Ctor) {
-    throw new Error('Stripe SDK not installed. Please install the "stripe" package to use Stripe payments.')
-  }
-  return new Ctor(secretKey, {
-    apiVersion: '2023-10-16',
+
+  return new Stripe(secretKey, {
+    apiVersion: '2025-09-30.clover',
     typescript: true,
-  }) as any
+  })
 }
 
 export interface StripeCheckoutParams {
@@ -107,7 +93,7 @@ export async function createStripeCheckoutSession(
 export function verifyStripeWebhook(
   payload: string | Buffer,
   signature: string
-): any {
+): Stripe.Event | null {
   try {
     const stripe = getStripeClient()
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
@@ -135,7 +121,7 @@ export function verifyStripeWebhook(
  */
 export async function getCheckoutSession(
   sessionId: string
-): Promise<any> {
+): Promise<Stripe.Checkout.Session | null> {
   try {
     const stripe = getStripeClient()
     const session = await stripe.checkout.sessions.retrieve(sessionId)
