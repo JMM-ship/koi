@@ -26,6 +26,7 @@ export default function Dashboard() {
   const { data: session } = useSession()
   const [serverDone, setServerDone] = useState<boolean | null>(null)
   const [sessionShowPanel, setSessionShowPanel] = useState(false) // 本次会话内，用户点击 Dashboard 后显示正常面板
+  const [syncTried, setSyncTried] = useState(false)
 
   // 检测是否为移动端
   useEffect(() => {
@@ -63,6 +64,32 @@ export default function Dashboard() {
     })()
     return () => { cancelled = true }
   }, [session])
+
+  // Cookie 兜底：若本地存在 onboard_done=1，则立即显示面板，并尝试与服务端同步
+  useEffect(() => {
+    try {
+      const hasCookie = typeof document !== 'undefined' && document.cookie.split(';').some(c => c.trim().startsWith('onboard_done=1'))
+      if (hasCookie) {
+        if (serverDone === false) {
+          // 后台补发一次完成态（仅尝试一次）
+          if (!syncTried) {
+            setSyncTried(true)
+            try {
+              const ls = typeof window !== 'undefined' ? window.localStorage.getItem('onboard.v1.steps') : null
+              const steps = ls ? JSON.parse(ls) : {}
+              fetch('/api/onboarding/state', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ done: true, steps, firstSeenAt: localStorage.getItem('onboard.v1.firstSeenAt') })
+              }).then(() => setServerDone(true)).catch(() => {})
+            } catch {}
+          }
+        }
+        // 本会话立即显示面板
+        setSessionShowPanel(true)
+      }
+    } catch {}
+  }, [serverDone, syncTried])
 
   const renderContent = () => {
     switch (activeTab) {

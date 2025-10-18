@@ -170,6 +170,8 @@ export default function WelcomeGuide({
           disabled={!allDone}
           onClick={() => {
             if (!allDone) return
+            // 前置：写入 cookie 作为兜底（跨刷新保留本端完成态）
+            try { document.cookie = `onboard_done=1; path=/; max-age=${60 * 60 * 24 * 180}` } catch {}
             try { window.localStorage.setItem(LS_DONE_KEY, '1') } catch {}
             if (anyTracking) trackOnboardingEvent('onboarding_completed')
             try {
