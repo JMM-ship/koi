@@ -58,11 +58,10 @@ function renderPage() {
   )
 }
 
-test('No-usage callout renders and CTA navigates to ApiKeys', async () => {
+test('No-usage callout is hidden by default', async () => {
   renderPage()
-  // WelcomeGuide may or may not show depending on window logic; we only assert the callout presence
-  const title = await screen.findByText('还没有使用记录')
-  expect(title).toBeInTheDocument()
-  fireEvent.click(screen.getByText('去创建 API Key'))
-  await waitFor(() => expect(screen.getByText('ApiKeysContent')).toBeInTheDocument())
+  // 由于默认隐藏空状态引导，不应渲染该提示
+  await waitFor(() => {
+    expect(screen.queryByText('还没有使用记录')).toBeNull()
+  })
 })

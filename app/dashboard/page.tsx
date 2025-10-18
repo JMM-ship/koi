@@ -113,7 +113,7 @@ export default function Dashboard() {
             </div>
           )
         }
-        return <DashboardContent onNavigateToPlans={() => setActiveTab('plans')} onNavigateToApiKeys={() => setActiveTab('api-keys')} hideNoUsageCallout={false} />;
+        return <DashboardContent onNavigateToPlans={() => setActiveTab('plans')} onNavigateToApiKeys={() => setActiveTab('api-keys')} hideNoUsageCallout={true} />;
       case 'guide':
         return <GuideContent onNavigateToApiKeys={() => setActiveTab('api-keys')} />;
       case 'api-keys':
@@ -132,7 +132,7 @@ export default function Dashboard() {
       case 'admin-codes':
         return <AdminCodeManagement />;
       default:
-        return <DashboardContent />;
+        return <DashboardContent hideNoUsageCallout={true} />;
     }
   };
 
