@@ -15,6 +15,7 @@ import AdminCodeManagement from "@/components/dashboard/admin/AdminCodeManagemen
 import { FiMenu } from "react-icons/fi";
 import "@/public/assets/css/dashboard.css";
 import WelcomeGuide from "@/components/dashboard/WelcomeGuide";
+import OnboardingWizard from "@/components/dashboard/OnboardingWizard";
 import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
@@ -97,15 +98,16 @@ export default function Dashboard() {
         if (serverDone === false && !sessionShowPanel) {
           return (
             <div style={{ marginBottom: '12px' }}>
-              <WelcomeGuide
-                bonusPoints={Number(process.env.NEXT_PUBLIC_NEW_USER_BONUS_POINTS || 0)}
+              <OnboardingWizard
+                bonusPoints={Number(process.env.NEXT_PUBLIC_NEW_USER_BONUS_POINTS || 500)}
+                demoVideos={{
+                  claude: process.env.NEXT_PUBLIC_ONBOARDING_VIDEO_CLAUDE as any,
+                  codex: process.env.NEXT_PUBLIC_ONBOARDING_VIDEO_CODEX as any,
+                }}
                 onGotoApiKeys={() => setActiveTab('api-keys')}
                 onGotoPlans={() => setActiveTab('plans')}
-                onGotoSetLocale={() => setActiveTab('profile')}
                 onGotoProfile={() => setActiveTab('profile')}
                 onDismiss={() => {
-                  // 立即切换为显示面板，提升完成后的即时反馈；
-                  // 真实持久化依赖服务端 POST，刷新时仍以服务端为准。
                   setServerDone(true)
                   setSessionShowPanel(true)
                 }}

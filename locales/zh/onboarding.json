@@ -2,6 +2,44 @@
   "title": "欢迎使用",
   "subtitle": "按照以下步骤快速开始",
   "reward": "已发放 {points} 积分",
+  "wizard": {
+    "title": "欢迎使用我们的平台",
+    "progress": "步骤 {cur}/{total}",
+    "install": "安装/配置",
+    "prev": "上一步",
+    "next": "下一步",
+    "finish": "完成",
+    "copy": "复制",
+    "step1": {
+      "title": "创建你的 API 密钥",
+      "desc": "生成首个密钥开始使用服务；你也可以前往 API Keys 页面创建"
+    },
+    "step2": {
+      "title": "安装 / 配置",
+      "desc": "运行一键安装脚本，按提示在脚本中输入 API key 完成配置。",
+      "hint": "当脚本运行过程中向您请求输入 API key 时，请输入："
+    },
+    "oneClickInstall": "一键安装",
+    "step3": {
+      "title": "开始你的第一次对话",
+      "desc": "在终端分别输入 Claude / codex 启动应用，并输入 \"hi\" 发起你的第一个对话。下方预留演示视频位置。"
+    },
+    "step4": {
+      "title": "选择适合你的套餐",
+      "desc": "可先使用新人免费套餐；包含 {points} 积分"
+    },
+    "video": {
+      "claude": "Claude 演示",
+      "codex": "Codex 演示",
+      "placeholder": "在此处嵌入演示视频（上传后填入地址）"
+    },
+    "plan": {
+      "free": { "name": "免费版", "desc": "仅含新人赠送 {points} 积分" },
+      "select": "选择套餐",
+      "selected": "已选择",
+      "note": "你可以在后续随时前往“购买套餐”升级。"
+    }
+  },
   "step": {
     "createKey": "创建 API Key",
     "firstCall": "运行一次测试调用",

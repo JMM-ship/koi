@@ -2,6 +2,44 @@
   "title": "Welcome",
   "subtitle": "Follow the steps to get started",
   "reward": "{points} credits granted",
+  "wizard": {
+    "title": "Welcome to our platform",
+    "progress": "Step {cur}/{total}",
+    "install": "Install/Config",
+    "prev": "Prev",
+    "next": "Next",
+    "finish": "Finish",
+    "copy": "Copy",
+    "step1": {
+      "title": "Create your API key",
+      "desc": "Generate your first key to start; you can also go to API Keys page to create one"
+    },
+    "step2": {
+      "title": "Install / Configure",
+      "desc": "Run the one‑click installer and enter your API key when prompted.",
+      "hint": "When the script asks for your API key, enter:"
+    },
+    "oneClickInstall": "One‑click install",
+    "step3": {
+      "title": "Start your first conversation",
+      "desc": "In terminal, run Claude / codex to start the app, then type \"hi\" to initiate your first chat. Video placeholder below."
+    },
+    "step4": {
+      "title": "Choose a plan",
+      "desc": "Start with the free plan for new users; includes {points} credits"
+    },
+    "video": {
+      "claude": "Claude demo",
+      "codex": "Codex demo",
+      "placeholder": "Embed your demo video here (fill the URL after upload)"
+    },
+    "plan": {
+      "free": { "name": "Free", "desc": "Includes {points} welcome credits only" },
+      "select": "Select plan",
+      "selected": "Selected",
+      "note": "You can upgrade anytime in Plans."
+    }
+  },
   "step": {
     "createKey": "Create API Key",
     "firstCall": "Run a test request",
