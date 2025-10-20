@@ -2,6 +2,44 @@
   "title": "Chào mừng",
   "subtitle": "Làm theo các bước để bắt đầu",
   "reward": "Đã nhận {points} tín dụng",
+  "wizard": {
+    "title": "Chào mừng đến KOI",
+    "progress": "Bước {cur}/{total}",
+    "install": "Cài đặt/Cấu hình",
+    "prev": "Quay lại",
+    "next": "Tiếp theo",
+    "finish": "Hoàn tất",
+    "copy": "Sao chép",
+    "oneClickInstall": "Cài đặt nhanh",
+    "step1": {
+      "title": "Tạo khóa API",
+      "desc": "Tạo khóa đầu tiên trực tiếp tại đây. Hãy lưu lại khóa đầy đủ."
+    },
+    "step2": {
+      "title": "Cài đặt / Cấu hình",
+      "desc": "Chạy trình cài đặt một bước và nhập API key khi được yêu cầu.",
+      "hint": "Khi script yêu cầu API key, hãy nhập:"
+    },
+    "step3": {
+      "title": "Bắt đầu cuộc trò chuyện đầu tiên",
+      "desc": "Trong terminal, chạy Claude/codex để khởi động ứng dụng, sau đó gõ \"hi\" để bắt đầu. Video demo bên dưới."
+    },
+    "step4": {
+      "title": "Chọn gói",
+      "desc": "Bạn có thể bắt đầu với gói miễn phí cho người dùng mới; bao gồm {points} tín dụng"
+    },
+    "video": {
+      "claude": "Demo Claude",
+      "codex": "Demo Codex",
+      "placeholder": "Nhúng video demo tại đây (điền URL sau khi tải lên)"
+    },
+    "plan": {
+      "free": { "name": "Miễn phí", "desc": "Bao gồm {points} tín dụng tặng thêm cho người mới" },
+      "select": "Chọn gói",
+      "selected": "Đã chọn",
+      "note": "Bạn có thể nâng cấp bất cứ lúc nào trong mục Gói."
+    }
+  },
   "step": {
     "createKey": "Tạo khóa API",
     "firstCall": "Thực hiện yêu cầu thử",
@@ -34,4 +72,3 @@
     }
   }
 }
-
