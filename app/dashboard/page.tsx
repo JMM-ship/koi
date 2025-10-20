@@ -66,13 +66,15 @@ export default function Dashboard() {
     return () => { cancelled = true }
   }, [session])
 
-  // Cookie 兜底：若本地存在 onboard_done=1，则立即显示面板，并尝试与服务端同步
+  // Cookie 兜底（用户作用域）：仅当本地 onboard_done=1 且与当前登录用户匹配时，才即时显示面板/尝试同步
   useEffect(() => {
     try {
       const hasCookie = typeof document !== 'undefined' && document.cookie.split(';').some(c => c.trim().startsWith('onboard_done=1'))
-      if (hasCookie) {
+      const currentUserId = (session?.user as any)?.id || (session?.user as any)?.uuid || null
+      const storedUserId = typeof window !== 'undefined' ? window.localStorage.getItem('onboard.v1.userId') : null
+      if (hasCookie && currentUserId && storedUserId && storedUserId === String(currentUserId)) {
         if (serverDone === false) {
-          // 后台补发一次完成态（仅尝试一次）
+          // 后台补发一次完成态（仅尝试一次，且仅限匹配当前用户）
           if (!syncTried) {
             setSyncTried(true)
             try {
@@ -90,7 +92,7 @@ export default function Dashboard() {
         setSessionShowPanel(true)
       }
     } catch {}
-  }, [serverDone, syncTried])
+  }, [serverDone, syncTried, session])
 
   const renderContent = () => {
     switch (activeTab) {

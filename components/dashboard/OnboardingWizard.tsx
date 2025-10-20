@@ -4,6 +4,7 @@ import { useT } from '@/contexts/I18nContext'
 import { trackOnboardingEvent } from '@/lib/track'
 import { FiKey, FiTerminal, FiMessageCircle, FiCreditCard, FiCheck, FiArrowRight, FiChevronLeft, FiCopy } from 'react-icons/fi'
 import useSWR from 'swr'
+import { useSession } from 'next-auth/react'
 import PaymentMethodModal from '@/components/dashboard/PaymentMethodModal'
 
 type Props = {
@@ -36,6 +37,7 @@ export default function OnboardingWizard({
   onDismiss,
 }: Props) {
   const { t } = useT()
+  const { data: session } = useSession()
   if (isAdmin) return null
 
   const [currentStep, setCurrentStep] = useState(1)
@@ -96,6 +98,10 @@ export default function OnboardingWizard({
   const finish = useCallback(async () => {
     try { document.cookie = `onboard_done=1; path=/; max-age=${60 * 60 * 24 * 180}` } catch {}
     try { window.localStorage.setItem(LS_DONE_KEY, '1') } catch {}
+    try {
+      const uid = (session?.user as any)?.id || (session?.user as any)?.uuid || ''
+      if (uid) window.localStorage.setItem('onboard.v1.userId', String(uid))
+    } catch {}
     if (anyTracking) trackOnboardingEvent('onboarding_completed')
     try {
       const payload = {
@@ -106,7 +112,7 @@ export default function OnboardingWizard({
       await fetch('/api/onboarding/state', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
     } catch {}
     onDismiss?.()
-  }, [stepsDone, anyTracking, onDismiss])
+  }, [stepsDone, anyTracking, onDismiss, session])
 
   const cardStyle: React.CSSProperties = {
     background: 'var(--dashboard-card-bg, #0a0a0a)',
