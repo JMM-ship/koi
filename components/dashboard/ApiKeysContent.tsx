@@ -137,7 +137,7 @@ export default function ApiKeysContent() {
       const res = await fetch(`/api/apikeys/${id}/show`)
       if (!res.ok) {
         let code: string | undefined
-        try { const b = await res.json(); code = b?.code } catch {}
+        try { const b = await res.json(); code = b?.code } catch { }
         if (code === 'NO_ENCRYPTED_KEY') {
           showError(t('toasts.keyCannotReveal'))
           return undefined
@@ -168,10 +168,12 @@ export default function ApiKeysContent() {
     try {
       // optimistic: add placeholder immediately
       const tempId = `temp-${Date.now()}`
-      await mutateKeys((old: any) => ({ apiKeys: [
-        { id: tempId, title: newKeyTitle, apiKey: 'creating...', status: 'active', createdAt: new Date().toISOString() },
-        ...((old?.apiKeys) || [])
-      ] }), false)
+      await mutateKeys((old: any) => ({
+        apiKeys: [
+          { id: tempId, title: newKeyTitle, apiKey: 'creating...', status: 'active', createdAt: new Date().toISOString() },
+          ...((old?.apiKeys) || [])
+        ]
+      }), false)
 
       const response = await fetch("/api/apikeys", {
         method: "POST",
@@ -193,17 +195,19 @@ export default function ApiKeysContent() {
       }
 
       // replace temp with real, and store fullKey in cache
-      await mutateKeys((old: any) => ({ apiKeys: [
-        {
-          id: data.apiKey.id,
-          title: data.apiKey.title,
-          apiKey: data.apiKey.apiKey,
-          fullKey: data.apiKey.fullKey, // 将完整密钥存入 SWR 缓存
-          status: data.apiKey.status,
-          createdAt: data.apiKey.createdAt
-        },
-        ...((old?.apiKeys || []).filter((k: any) => k.id !== tempId))
-      ] }), false)
+      await mutateKeys((old: any) => ({
+        apiKeys: [
+          {
+            id: data.apiKey.id,
+            title: data.apiKey.title,
+            apiKey: data.apiKey.apiKey,
+            fullKey: data.apiKey.fullKey, // 将完整密钥存入 SWR 缓存
+            status: data.apiKey.status,
+            createdAt: data.apiKey.createdAt
+          },
+          ...((old?.apiKeys || []).filter((k: any) => k.id !== tempId))
+        ]
+      }), false)
       // cache fullKey locally for copy/reveal
       setFullKeyMap((prev) => ({ ...prev, [data.apiKey.id]: data.apiKey.fullKey }))
       // ensure server truth after success (skip during tests to keep snapshots stable)
@@ -308,7 +312,7 @@ export default function ApiKeysContent() {
                 <div className="api-key-bar">
                   <code className="api-key-code">{showKey[apiKey.id] ? (mergedFullKeyMap[apiKey.id] || 'Loading...') : apiKey.apiKey}</code>
                   <div className="api-key-actions">
-              <button className="btn-icon" aria-label={showKey[apiKey.id] ? (t('dashboard.apiKeys.hideKey') || 'Hide API key') : (t('dashboard.apiKeys.revealKey') || 'Reveal API key')} onClick={async () => {
+                    <button className="btn-icon" aria-label={showKey[apiKey.id] ? (t('dashboard.apiKeys.hideKey') || 'Hide API key') : (t('dashboard.apiKeys.revealKey') || 'Reveal API key')} onClick={async () => {
                       if (!showKey[apiKey.id]) {
                         const full = await ensureFullKey(apiKey.id)
                         if (!full) return
@@ -446,8 +450,8 @@ export default function ApiKeysContent() {
               <div style={{ color: "#999", fontSize: 12 }}>{t('dashboard.apiKeys.cliSetup') || 'CLI install & setup'}</div>
             </div>
           </div>
-          <div onClick={() => setSelectedGuide(selectedGuide === "gemini" ? null : "gemini")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "gemini" ? "#121212" : "#1a1a1a", border: selectedGuide === "gemini" ? "1px solid #ff6b00" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-            <FiTerminal style={{ color: "#ff6b00", fontSize: 24 }} />
+          <div onClick={() => setSelectedGuide(selectedGuide === "gemini" ? null : "gemini")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "gemini" ? "#121212" : "#1a1a1a", border: selectedGuide === "gemini" ? "1px solid #00d084" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+            <FiTerminal style={{ color: "#00d084", fontSize: 24 }} />
             <div>
               <div style={{ color: "#fff", fontWeight: 600 }}>{t('dashboard.apiKeys.cardGemini') || 'Gemini CLI'}</div>
               <div style={{ color: "#999", fontSize: 12 }}>{t('dashboard.apiKeys.cliSetup') || 'CLI install & setup'}</div>
@@ -492,7 +496,7 @@ export default function ApiKeysContent() {
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
                     <code style={{ color: "#00d084" }}>{`$env:ANTHROPIC_AUTH_TOKEN = "${userApiKey || 'Your Token'}"`}</code>
                   </div>
-              <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.permanentUserScope') || 'Permanent (user scope):'}</p>
+                  <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.permanentUserScope') || 'Permanent (user scope):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
                     <code style={{ color: "#00d084" }}>[System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://koicode.xyz/api", [System.EnvironmentVariableTarget]::User)</code>
                   </div>
@@ -615,7 +619,7 @@ export default function ApiKeysContent() {
           <div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
               <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.noteTitle') || 'Usage Note'}</div>
-              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>{t('dashboard.apiKeys.noteDesc') || 'Your koi.codes API key can be used in both Codex and Claude Code.'}</p>
+              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>{t('dashboard.apiKeys.noteDesc') || 'Your koi.codes API key can be used in Codex, Claude Code, and Gemini.'}</p>
             </div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
               <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.codex.installTitle') || 'Step 0: Install Codex'}</div>
@@ -699,12 +703,12 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
           <div>
             <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
               <div style={{ color: "#fff", fontWeight: 600, marginBottom: 8 }}>{t('dashboard.apiKeys.noteTitle') || 'Usage Note'}</div>
-              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>{t('dashboard.apiKeys.gemini.noteDesc') || 'Use the same API key as Claude Code.'}</p>
+              <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>{t('dashboard.apiKeys.gemini.noteDesc') || 'Your koi.codes API key can be used in Codex, Claude Code, and Gemini.'}</p>
             </div>
             <div style={{ display: "flex", gap: 8, borderBottom: "2px solid #1a1a1a", marginBottom: 12 }}>
-              <button onClick={() => setActiveTab("windows")} style={{ background: activeTab === "windows" ? "linear-gradient(135deg, #ff6b00 0%, #ff9500 100%)" : "transparent", color: activeTab === "windows" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaWindows /> {t('dashboard.apiKeys.tabs.windows') || 'Windows'}</button>
-              <button onClick={() => setActiveTab("macos")} style={{ background: activeTab === "macos" ? "linear-gradient(135deg, #ff6b00 0%, #ff9500 100%)" : "transparent", color: activeTab === "macos" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaApple /> {t('dashboard.apiKeys.tabs.macos') || 'macOS'}</button>
-              <button onClick={() => setActiveTab("linux")} style={{ background: activeTab === "linux" ? "linear-gradient(135deg, #ff6b00 0%, #ff9500 100%)" : "transparent", color: activeTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> {t('dashboard.apiKeys.tabs.linux') || 'Linux'}</button>
+              <button onClick={() => setActiveTab("windows")} style={{ background: activeTab === "windows" ? "linear-gradient(135deg, #00d084 0%, #00f0a0 100%)" : "transparent", color: activeTab === "windows" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaWindows /> {t('dashboard.apiKeys.tabs.windows') || 'Windows'}</button>
+              <button onClick={() => setActiveTab("macos")} style={{ background: activeTab === "macos" ? "linear-gradient(135deg, #00d084 0%, #00f0a0 100%)" : "transparent", color: activeTab === "macos" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaApple /> {t('dashboard.apiKeys.tabs.macos') || 'macOS'}</button>
+              <button onClick={() => setActiveTab("linux")} style={{ background: activeTab === "linux" ? "linear-gradient(135deg, #00d084 0%, #00f0a0 100%)" : "transparent", color: activeTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> {t('dashboard.apiKeys.tabs.linux') || 'Linux'}</button>
             </div>
             {activeTab === "windows" && (
               <>
@@ -713,17 +717,17 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                   <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.option1Recommended') || 'Option 1 (Recommended): Download the LTS installer from https://nodejs.org, run the installer and follow default steps.'}</p>
                   <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.option2Winget') || 'Option 2 (winget):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>winget install OpenJS.NodeJS.LTS</code>
+                    <code style={{ color: "#00d084" }}>winget install OpenJS.NodeJS.LTS</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.verifyInstallation') || 'Verify installation:'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>node --version</code>
+                    <code style={{ color: "#00d084" }}>node --version</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.gemini.step2Title') || 'Step 2: Install Gemini CLI'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>npm install -g @google/gemini-cli</code>
+                    <code style={{ color: "#00d084" }}>npm install -g @google/gemini-cli</code>
                   </div>
                   <p style={{ color: "#aaa", marginTop: 8 }}>{t('dashboard.apiKeys.windows.runAsAdmin') || 'If permission issues occur, run PowerShell as Administrator.'}</p>
                 </div>
@@ -731,23 +735,23 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.configureEnv') || 'Step 3: Configure Environment'}</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.powershellTemporary') || 'PowerShell (temporary for current session):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>$env:GOOGLE_GEMINI_BASE_URL = "https://koicode.xyz/gemini"</code>
+                    <code style={{ color: "#00d084" }}>$env:GOOGLE_GEMINI_BASE_URL = "https://koicode.xyz/gemini"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>{`$env:GEMINI_API_KEY = "${userApiKey || 'Your API Key'}"`}</code>
+                    <code style={{ color: "#00d084" }}>{`$env:GEMINI_API_KEY = "${userApiKey || 'Your API Key'}"`}</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>$env:GEMINI_MODEL = "gemini-2.5-pro"</code>
+                    <code style={{ color: "#00d084" }}>$env:GEMINI_MODEL = "gemini-2.5-pro"</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.gemini.powershellPermanent') || 'Permanent (user scope):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>[System.Environment]::SetEnvironmentVariable("GOOGLE_GEMINI_BASE_URL", "https://koicode.xyz/gemini", [System.EnvironmentVariableTarget]::User)</code>
+                    <code style={{ color: "#00d084" }}>[System.Environment]::SetEnvironmentVariable("GOOGLE_GEMINI_BASE_URL", "https://koicode.xyz/gemini", [System.EnvironmentVariableTarget]::User)</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>{`[System.Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "${userApiKey || 'Your API Key'}", [System.EnvironmentVariableTarget]::User)`}</code>
+                    <code style={{ color: "#00d084" }}>{`[System.Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "${userApiKey || 'Your API Key'}", [System.EnvironmentVariableTarget]::User)`}</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>[System.Environment]::SetEnvironmentVariable("GEMINI_MODEL", "gemini-2.5-pro", [System.EnvironmentVariableTarget]::User)</code>
+                    <code style={{ color: "#00d084" }}>[System.Environment]::SetEnvironmentVariable("GEMINI_MODEL", "gemini-2.5-pro", [System.EnvironmentVariableTarget]::User)</code>
                   </div>
                   <div style={{ background: "#221a00", border: "1px solid #ffa500", borderRadius: 6, padding: 10, marginTop: 8 }}>
                     <div style={{ color: "#ffd27f", fontSize: 12 }}>{t('dashboard.apiKeys.gemini.permanentNote') || 'After setting, restart PowerShell for changes to take effect.'}</div>
@@ -756,7 +760,7 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>gemini</code>
+                    <code style={{ color: "#00d084" }}>gemini</code>
                   </div>
                 </div>
               </>
@@ -767,50 +771,50 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.installNode') || 'Step 1: Install Node.js'}</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.option1Homebrew') || 'Option 1 (Recommended): Use Homebrew.'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>brew install node</code>
+                    <code style={{ color: "#00d084" }}>brew install node</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.option2DownloadPkg') || 'Option 2: Download the LTS installer (.pkg) from https://nodejs.org and follow the instructions.'}</p>
                   <p style={{ color: "#ccc", marginTop: 4 }}>{t('dashboard.apiKeys.verifyInstallation') || 'Verify installation:'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>node --version</code>
+                    <code style={{ color: "#00d084" }}>node --version</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.gemini.step2Title') || 'Step 2: Install Gemini CLI'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>npm install -g @google/gemini-cli</code>
+                    <code style={{ color: "#00d084" }}>npm install -g @google/gemini-cli</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.configureEnv') || 'Step 3: Configure Environment'}</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.temporarySession') || 'Temporary (current session):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"</code>
+                    <code style={{ color: "#00d084" }}>export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>{`export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"`}</code>
+                    <code style={{ color: "#00d084" }}>{`export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"`}</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>export GEMINI_MODEL="gemini-2.5-pro"</code>
+                    <code style={{ color: "#00d084" }}>export GEMINI_MODEL="gemini-2.5-pro"</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.permanentZshOrBash') || 'Permanent (~/.zshrc or ~/.bash_profile):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>echo 'export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"' &gt;&gt; ~/.zshrc</code>
+                    <code style={{ color: "#00d084" }}>echo 'export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"' &gt;&gt; ~/.zshrc</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>{`echo 'export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"' >> ~/.zshrc`}</code>
+                    <code style={{ color: "#00d084" }}>{`echo 'export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"' >> ~/.zshrc`}</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>echo 'export GEMINI_MODEL="gemini-2.5-pro"' &gt;&gt; ~/.zshrc</code>
+                    <code style={{ color: "#00d084" }}>echo 'export GEMINI_MODEL="gemini-2.5-pro"' &gt;&gt; ~/.zshrc</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>source ~/.zshrc</code>
+                    <code style={{ color: "#00d084" }}>source ~/.zshrc</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>gemini</code>
+                    <code style={{ color: "#00d084" }}>gemini</code>
                   </div>
                 </div>
               </>
@@ -822,53 +826,53 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                   <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.linux.installHint') || "Use your distribution's package manager, then verify with node --version. Examples:"}</p>
                   <p style={{ color: "#ccc", marginTop: 4 }}>Ubuntu/Debian:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>sudo apt update &amp;&amp; sudo apt install -y nodejs npm</code>
+                    <code style={{ color: "#00d084" }}>sudo apt update &amp;&amp; sudo apt install -y nodejs npm</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 4 }}>Fedora/RHEL/CentOS:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>sudo dnf install -y nodejs npm</code>
+                    <code style={{ color: "#00d084" }}>sudo dnf install -y nodejs npm</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 4 }}>Arch:</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>sudo pacman -S nodejs npm</code>
+                    <code style={{ color: "#00d084" }}>sudo pacman -S nodejs npm</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.gemini.step2Title') || 'Step 2: Install Gemini CLI'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>sudo npm install -g @google/gemini-cli</code>
+                    <code style={{ color: "#00d084" }}>sudo npm install -g @google/gemini-cli</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16, marginBottom: 12 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.configureEnv') || 'Step 3: Configure Environment'}</h5>
                   <p style={{ color: "#ccc", marginTop: 8 }}>{t('dashboard.apiKeys.temporarySession') || 'Temporary (current session):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"</code>
+                    <code style={{ color: "#00d084" }}>export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>{`export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"`}</code>
+                    <code style={{ color: "#00d084" }}>{`export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"`}</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>export GEMINI_MODEL="gemini-2.5-pro"</code>
+                    <code style={{ color: "#00d084" }}>export GEMINI_MODEL="gemini-2.5-pro"</code>
                   </div>
                   <p style={{ color: "#ccc", marginTop: 12 }}>{t('dashboard.apiKeys.permanentBashrc') || 'Permanent (~/.bashrc):'}</p>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>echo 'export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"' &gt;&gt; ~/.bashrc</code>
+                    <code style={{ color: "#00d084" }}>echo 'export GOOGLE_GEMINI_BASE_URL="https://koicode.xyz/gemini"' &gt;&gt; ~/.bashrc</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>{`echo 'export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"' >> ~/.bashrc`}</code>
+                    <code style={{ color: "#00d084" }}>{`echo 'export GEMINI_API_KEY="${userApiKey || 'Your API Key'}"' >> ~/.bashrc`}</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginBottom: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>echo 'export GEMINI_MODEL="gemini-2.5-pro"' &gt;&gt; ~/.bashrc</code>
+                    <code style={{ color: "#00d084" }}>echo 'export GEMINI_MODEL="gemini-2.5-pro"' &gt;&gt; ~/.bashrc</code>
                   </div>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>source ~/.bashrc</code>
+                    <code style={{ color: "#00d084" }}>source ~/.bashrc</code>
                   </div>
                 </div>
                 <div style={{ background: "#1a1a1a", borderRadius: 8, padding: 16 }}>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
-                    <code style={{ color: "#ff6b00" }}>gemini</code>
+                    <code style={{ color: "#00d084" }}>gemini</code>
                   </div>
                 </div>
               </>

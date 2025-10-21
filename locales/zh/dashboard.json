@@ -50,7 +50,13 @@
     "invitedLabel": "已邀请：",
     "totalRewardsLabel": "累计奖励：",
     "invitesTitle": "邀请记录",
-    "th": { "email": "邮箱", "name": "姓名", "registered": "注册时间", "purchase": "购买状态", "reward": "奖励状态" },
+    "th": {
+      "email": "邮箱",
+      "name": "姓名",
+      "registered": "注册时间",
+      "purchase": "购买状态",
+      "reward": "奖励状态"
+    },
     "empty": "暂无邀请记录",
     "prev": "上一页",
     "next": "下一页",
@@ -78,7 +84,11 @@
     "hideKey": "隐藏 API Key",
     "revealKey": "显示 API Key",
     "copyKey": "复制 API Key",
-    "tabs": { "windows": "Windows", "macos": "macOS", "linux": "Linux" },
+    "tabs": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux"
+    },
     "step": {
       "installNode": "步骤 1：安装 Node.js",
       "installClaudeCli": "步骤 2：安装 Claude Code CLI",
@@ -95,9 +105,11 @@
     "permanentUserScope": "永久（用户级）：",
     "permanentZshOrBash": "永久（~/.zshrc 或 ~/.bash_profile）：",
     "permanentBashrc": "永久（~/.bashrc）：",
-    "linux": { "installHint": "使用发行版的包管理器安装，然后使用 node --version 验证。示例：" },
+    "linux": {
+      "installHint": "使用发行版的包管理器安装，然后使用 node --version 验证。示例："
+    },
     "noteTitle": "使用说明",
-    "noteDesc": "你的 koi.codes API Key 可同时用于 Codex 与 Claude Code。",
+    "noteDesc": "你的 koi.codes API Key 可同时用于 Codex ， Claude Code 以及 Gemini。",
     "quickStart": "快速开始",
     "manualInstall": "手动安装",
     "oneClick": {
@@ -123,7 +135,9 @@
     "inactive": "停用",
     "morePlatforms": "更多平台与故障排查见",
     "important": "重要",
-    "windows": { "runAsAdmin": "若出现权限问题，请以管理员身份运行 PowerShell。" },
+    "windows": {
+      "runAsAdmin": "若出现权限问题，请以管理员身份运行 PowerShell。"
+    },
     "codex": {
       "installTitle": "步骤 0：安装 Codex",
       "createAuth": "然后新建 ~/.codex/auth.json，内容如下：",
@@ -137,7 +151,7 @@
       "step4Title": "步骤 4：开始使用"
     },
     "gemini": {
-      "noteDesc": "使用与 Claude Code 相同的 API 密钥即可。",
+      "noteDesc": "你的 koi.codes API Key 可同时用于 Codex 与 Claude Code。",
       "step2Title": "步骤 2：安装 Gemini CLI",
       "powershellPermanent": "PowerShell 永久设置（用户级）：",
       "permanentNote": "设置后需要重新打开 PowerShell 窗口才能生效。"
@@ -165,34 +179,39 @@
     "useNow": "立即使用积分",
     "creditsUnit": "积分"
   },
-  "loading": "加载中..."
-  ,
+  "loading": "加载中...",
   "guide": {
     "title": "帮助与支持",
     "subtitle": "快速了解账户、安装与使用方式",
     "noteTitle": "提示",
     "noteDesc": "建议先完成 API Key 创建与 VSCode/CLI 配置，再开始日常使用。",
-    "apiKeysCta": "API密钥&安装教程"
-    ,"tags": {
+    "apiKeysCta": "API密钥&安装教程",
+    "tags": {
       "mustRead": "必读",
       "advanced": "进阶",
       "tips": "技巧",
       "important": "重要",
       "common": "常用"
-    }
-    ,"account": {
+    },
+    "account": {
       "title": "账户使用",
       "p1": "使用邮箱注册账户，验证邮箱后即可开始使用。",
       "p2": "新用户会免费获得500积分（非 Opus 模型大约可以请求 60～100 次）",
-      "quoteFree": {"title": "免费体验？", "body": "是的，新用户注册可以获得大约 60～100 次免费请求，邀请好友有任意消费您将获得 260～400 次免费请求，好友将获得 130～200 次额外免费请求【包括 1 美元的独立积分套餐也可触发奖励！】"},
-      "quoteInvite": {"title": "邀请奖励什么时候发放？", "body": "在被邀请人付费之后，为双方发放邀请奖励。"}
-    }
-    ,"usage": {
+      "quoteFree": {
+        "title": "免费体验？",
+        "body": "是的，新用户注册可以获得大约 60～100 次免费请求，邀请好友有任意消费您将获得 260～400 次免费请求，好友将获得 130～200 次额外免费请求【包括 1 美元的独立积分套餐也可触发奖励！】"
+      },
+      "quoteInvite": {
+        "title": "邀请奖励什么时候发放？",
+        "body": "在被邀请人付费之后，为双方发放邀请奖励。"
+      }
+    },
+    "usage": {
       "title": "使用方式",
       "p1": "使用官方的客户端，设置相关的环境变量，即可体验。",
       "p2": "你也可以通过设置 API 相关的环境变量来体验。"
-    }
-    ,"vscode": {
+    },
+    "vscode": {
       "title": "VSCode 插件安装",
       "desc": "在 VSCode 中使用 Claude Code 插件，享受更流畅的编码体验。",
       "install": {
@@ -211,50 +230,88 @@
         "step1": "1. 创建配置文件 ~/.claude/config.json",
         "step2": "2. 添加你在 koi.codes 获取的 API 密钥："
       },
-      "start": {"title": "开始使用", "desc": "配置完成后，重启 VSCode 即可在编辑器中直接使用 Claude Code。"}
-    }
-    ,"cli": {
+      "start": {
+        "title": "开始使用",
+        "desc": "配置完成后，重启 VSCode 即可在编辑器中直接使用 Claude Code。"
+      }
+    },
+    "cli": {
       "title": "CLI 命令行工具",
       "desc": "通过命令行使用 Claude Code，适合终端爱好者。",
-      "install": {"title": "安装 CLI", "desc": "使用 npm 全局安装最新版本："},
-      "config": {"title": "配置步骤", "line1": "1. 创建配置文件 ~/.claude/config.json", "line2": "2. 添加 API 密钥和 Base URL"},
-      "use": {"title": "使用方式", "desc": "在终端中运行 claude 命令即可开始对话。"}
-    }
-    ,"models": {
+      "install": {
+        "title": "安装 CLI",
+        "desc": "使用 npm 全局安装最新版本："
+      },
+      "config": {
+        "title": "配置步骤",
+        "line1": "1. 创建配置文件 ~/.claude/config.json",
+        "line2": "2. 添加 API 密钥和 Base URL"
+      },
+      "use": {
+        "title": "使用方式",
+        "desc": "在终端中运行 claude 命令即可开始对话。"
+      }
+    },
+    "models": {
       "title": "可以使用哪些模型呢？",
       "line1": "Opus：功能最强但消耗较多，研究能力非常厉害。",
       "line2": "Sonnet：平衡性能和成本，最适合干活儿。",
       "line3": "Haiku：速度快且经济。",
       "note": "需要注意的是，Claude Code 官方客户端会主动调用 Haiku 模型（敏感问题审查、总结工作内容、起标题、创建缓存）。因此当关闭终端时看到 Haiku 的调用记录属正常现象。"
-    }
-    ,"credits": {
+    },
+    "credits": {
       "title": "积分的意义是什么？和 token 有什么关系？",
       "line1": "积分和 token 并没有直接的兑换关系。",
       "line2": "调用模型的费用 = 模型定价 * token 数量 * 次数。",
       "line3": "而积分相当于余额。",
       "line4": "因此，积分和 token 无法直接换算，也无法保证每日多少的使用时间。"
-    }
-    ,"start": {
+    },
+    "start": {
       "title": "开始对话",
       "desc": "在对话框中输入你的问题或需求，Claude 将提供详细的回答和代码示例。",
       "quoteTitle": "基本技巧",
       "tip1": "清晰描述你的需求",
       "tip2": "提供必要的上下文",
       "tip3": "使用示例说明期望的结果"
-    }
-    ,"plans": {
+    },
+    "plans": {
       "title": "套餐选购",
       "desc": "我们设计了两种灵活的计费方式：订阅积分和独立积分。",
-      "subscription": {"title": "订阅积分", "line1": "在订阅期内，每小时按照套餐发放积分。", "line2": "积分达到套餐上限后不自动恢复。"},
-      "independent": {"title": "独立积分", "line1": "永不过期；若订阅过期，积分优先级会下降。", "line2": "免费用户的积分优先级不保证稳定性与速度。", "line3": "不建议过度囤积独立积分，按需购买即可。"},
-      "recommend": {"title": "购买场景推荐", "line1": "上班写代码、下班不用：先选择 Plus 套餐，使用 Sonnet。", "line2": "上班写代码、下班搞副业：选择 Pro 套餐。", "line3": "研究人员：建议购买 Max 套餐；Sonnet 在研究探索、创新方面效果一般。"}
-    }
-    ,"redeem": {
+      "subscription": {
+        "title": "订阅积分",
+        "line1": "在订阅期内，每小时按照套餐发放积分。",
+        "line2": "积分达到套餐上限后不自动恢复。"
+      },
+      "independent": {
+        "title": "独立积分",
+        "line1": "永不过期；若订阅过期，积分优先级会下降。",
+        "line2": "免费用户的积分优先级不保证稳定性与速度。",
+        "line3": "不建议过度囤积独立积分，按需购买即可。"
+      },
+      "recommend": {
+        "title": "购买场景推荐",
+        "line1": "上班写代码、下班不用：先选择 Plus 套餐，使用 Sonnet。",
+        "line2": "上班写代码、下班搞副业：选择 Pro 套餐。",
+        "line3": "研究人员：建议购买 Max 套餐；Sonnet 在研究探索、创新方面效果一般。"
+      }
+    },
+    "redeem": {
       "title": "兑换卡密",
       "desc": "了解关于兑换卡密的详细信息。",
-      "get": {"title": "获取卡密", "desc": "卡密可通过官方活动、合作伙伴或第三方渠道获得，请确保来源可信。"},
-      "steps": {"title": "兑换步骤", "s1": "1. 在我的订阅页面找到兑换卡密功能", "s2": "2. 输入卡密代码并点击兑换", "s3": "3. 兑换成功后，积分或套餐将立即生效"},
-      "faq": {"title": "常见问题", "desc": "如果卡密无效或已过期，请检查输入是否正确，或联系客服协助处理。"}
+      "get": {
+        "title": "获取卡密",
+        "desc": "卡密可通过官方活动、合作伙伴或第三方渠道获得，请确保来源可信。"
+      },
+      "steps": {
+        "title": "兑换步骤",
+        "s1": "1. 在我的订阅页面找到兑换卡密功能",
+        "s2": "2. 输入卡密代码并点击兑换",
+        "s3": "3. 兑换成功后，积分或套餐将立即生效"
+      },
+      "faq": {
+        "title": "常见问题",
+        "desc": "如果卡密无效或已过期，请检查输入是否正确，或联系客服协助处理。"
+      }
     }
   }
 }

@@ -50,7 +50,13 @@
     "invitedLabel": "Invited:",
     "totalRewardsLabel": "Total Rewards:",
     "invitesTitle": "Invites",
-    "th": { "email": "Email", "name": "Name", "registered": "Registered", "purchase": "Purchase", "reward": "Reward" },
+    "th": {
+      "email": "Email",
+      "name": "Name",
+      "registered": "Registered",
+      "purchase": "Purchase",
+      "reward": "Reward"
+    },
     "empty": "No invites yet",
     "prev": "Prev",
     "next": "Next",
@@ -78,7 +84,11 @@
     "hideKey": "Hide API key",
     "revealKey": "Reveal API key",
     "copyKey": "Copy API key",
-    "tabs": { "windows": "Windows", "macos": "macOS", "linux": "Linux" },
+    "tabs": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux"
+    },
     "step": {
       "installNode": "Step 1: Install Node.js",
       "installClaudeCli": "Step 2: Install Claude Code CLI",
@@ -95,9 +105,11 @@
     "permanentUserScope": "Permanent (user scope):",
     "permanentZshOrBash": "Permanent (~/.zshrc or ~/.bash_profile):",
     "permanentBashrc": "Permanent (~/.bashrc):",
-    "linux": { "installHint": "Use your distribution's package manager, then verify with node --version. Examples:" },
+    "linux": {
+      "installHint": "Use your distribution's package manager, then verify with node --version. Examples:"
+    },
     "noteTitle": "Usage Note",
-    "noteDesc": "Your koi.codes API key can be used in both Codex and Claude Code.",
+    "noteDesc": "Your koi.codes API key can be used in Codex, Claude Code, and Gemini.",
     "quickStart": "Quick Start",
     "manualInstall": "Manual Installation",
     "oneClick": {
@@ -123,7 +135,9 @@
     "inactive": "Inactive",
     "morePlatforms": "For other platforms and troubleshooting, see",
     "important": "Important",
-    "windows": { "runAsAdmin": "If permission issues occur, run PowerShell as Administrator." },
+    "windows": {
+      "runAsAdmin": "If permission issues occur, run PowerShell as Administrator."
+    },
     "codex": {
       "installTitle": "Step 0: Install Codex",
       "createAuth": "Then create a new ~/.codex/auth.json with the following content:",
@@ -137,7 +151,7 @@
       "step4Title": "Step 4: Get Started"
     },
     "gemini": {
-      "noteDesc": "Use the same API key as Claude Code.",
+      "noteDesc": "Your koi.codes API key can be used in Codex, Claude Code, and Gemini.",
       "step2Title": "Step 2: Install Gemini CLI",
       "powershellPermanent": "PowerShell Permanent (user scope):",
       "permanentNote": "After setting, restart PowerShell for changes to take effect."
@@ -165,34 +179,39 @@
     "useNow": "Use Credits Now",
     "creditsUnit": "Credits"
   },
-  "loading": "Loading..."
-  ,
+  "loading": "Loading...",
   "guide": {
     "title": "Help & Support",
     "subtitle": "A quick tour of account basics and setup",
     "noteTitle": "Tip",
     "noteDesc": "Create an API key and finish VSCode/CLI setup before daily use.",
-    "apiKeysCta": "API Keys & Install Guide"
-    ,"tags": {
+    "apiKeysCta": "API Keys & Install Guide",
+    "tags": {
       "mustRead": "MUST READ",
       "advanced": "Pro",
       "tips": "Tips",
       "important": "Important",
       "common": "Common"
-    }
-    ,"account": {
+    },
+    "account": {
       "title": "Account Usage",
       "p1": "Register with email and start after verification.",
       "p2": "New users get 500 credits (about 60–100 requests for non‑Opus models).",
-      "quoteFree": {"title": "Free trial?", "body": "Yes. New users get about 60–100 free requests. If your invitee makes any purchase, you get 260–400 extra requests, and your friend gets 130–200 extra requests. Even a $1 independent credit pack triggers rewards."},
-      "quoteInvite": {"title": "When are invite rewards granted?", "body": "Rewards are granted to both sides after the invitee completes a paid order."}
-    }
-    ,"usage": {
+      "quoteFree": {
+        "title": "Free trial?",
+        "body": "Yes. New users get about 60–100 free requests. If your invitee makes any purchase, you get 260–400 extra requests, and your friend gets 130–200 extra requests. Even a $1 independent credit pack triggers rewards."
+      },
+      "quoteInvite": {
+        "title": "When are invite rewards granted?",
+        "body": "Rewards are granted to both sides after the invitee completes a paid order."
+      }
+    },
+    "usage": {
       "title": "How to Use",
       "p1": "Use the official client and set required environment variables.",
       "p2": "You can also try by setting API‑related environment variables."
-    }
-    ,"vscode": {
+    },
+    "vscode": {
       "title": "VSCode Extension",
       "desc": "Use Claude Code in VSCode for a smoother coding experience.",
       "install": {
@@ -211,50 +230,88 @@
         "step1": "1. Create ~/.claude/config.json",
         "step2": "2. Add your API key from koi.codes:"
       },
-      "start": {"title": "Get Started", "desc": "Restart VSCode to use Claude Code directly in the editor."}
-    }
-    ,"cli": {
+      "start": {
+        "title": "Get Started",
+        "desc": "Restart VSCode to use Claude Code directly in the editor."
+      }
+    },
+    "cli": {
       "title": "CLI Tool",
       "desc": "Use Claude Code via the command line—great for terminal lovers.",
-      "install": {"title": "Install CLI", "desc": "Install the latest version globally:"},
-      "config": {"title": "Configuration", "line1": "1. Create ~/.claude/config.json", "line2": "2. Add API key and Base URL"},
-      "use": {"title": "Usage", "desc": "Run ‘claude’ in your terminal to start chatting."}
-    }
-    ,"models": {
+      "install": {
+        "title": "Install CLI",
+        "desc": "Install the latest version globally:"
+      },
+      "config": {
+        "title": "Configuration",
+        "line1": "1. Create ~/.claude/config.json",
+        "line2": "2. Add API key and Base URL"
+      },
+      "use": {
+        "title": "Usage",
+        "desc": "Run ‘claude’ in your terminal to start chatting."
+      }
+    },
+    "models": {
       "title": "Available Models",
       "line1": "Opus: most capable but higher cost; excellent research ability.",
       "line2": "Sonnet: balanced performance and cost; great for daily work.",
       "line3": "Haiku: fast and economical.",
       "note": "Note: The Claude Code client may call Haiku automatically for content review, summaries, titles, and cache creation. Seeing Haiku requests when closing the terminal is normal."
-    }
-    ,"credits": {
+    },
+    "credits": {
       "title": "What do credits mean? How do they relate to tokens?",
       "line1": "Credits and tokens are not directly convertible.",
       "line2": "Cost = model price × tokens × requests.",
       "line3": "Credits act like account balance.",
       "line4": "Therefore credits and tokens cannot be directly converted, nor guarantee daily usage time."
-    }
-    ,"start": {
+    },
+    "start": {
       "title": "Start Chatting",
       "desc": "Describe your question in the chat box and Claude will respond with details and code examples.",
       "quoteTitle": "Basic Tips",
       "tip1": "Describe your needs clearly",
       "tip2": "Provide necessary context",
       "tip3": "Use examples to show expectations"
-    }
-    ,"plans": {
+    },
+    "plans": {
       "title": "Plan Selection",
       "desc": "We offer two flexible billing options: subscription credits and independent credits.",
-      "subscription": {"title": "Subscription Credits", "line1": "Credits are issued hourly during the subscription period.", "line2": "Once the cap is reached, they don’t auto‑recover."},
-      "independent": {"title": "Independent Credits", "line1": "Never expire; if the subscription expires, priority decreases.", "line2": "Free users’ priority does not guarantee stability and speed.", "line3": "Avoid stockpiling; buy as needed."},
-      "recommend": {"title": "Recommendations", "line1": "Work coding only: choose Plus and use Sonnet.", "line2": "Work coding + side projects: choose Pro.", "line3": "Researchers: choose Max; Sonnet is not ideal for research/innovation."}
-    }
-    ,"redeem": {
+      "subscription": {
+        "title": "Subscription Credits",
+        "line1": "Credits are issued hourly during the subscription period.",
+        "line2": "Once the cap is reached, they don’t auto‑recover."
+      },
+      "independent": {
+        "title": "Independent Credits",
+        "line1": "Never expire; if the subscription expires, priority decreases.",
+        "line2": "Free users’ priority does not guarantee stability and speed.",
+        "line3": "Avoid stockpiling; buy as needed."
+      },
+      "recommend": {
+        "title": "Recommendations",
+        "line1": "Work coding only: choose Plus and use Sonnet.",
+        "line2": "Work coding + side projects: choose Pro.",
+        "line3": "Researchers: choose Max; Sonnet is not ideal for research/innovation."
+      }
+    },
+    "redeem": {
       "title": "Redeem Codes",
       "desc": "Learn more about redemption codes.",
-      "get": {"title": "Get Codes", "desc": "Obtain codes from official events, partners, or trusted third‑party channels."},
-      "steps": {"title": "Redemption Steps", "s1": "1. Go to My Subscription and open Redeem Code", "s2": "2. Enter the code and click Redeem", "s3": "3. On success, credits or plan take effect immediately"},
-      "faq": {"title": "FAQ", "desc": "If the code is invalid or expired, check the input or contact support."}
+      "get": {
+        "title": "Get Codes",
+        "desc": "Obtain codes from official events, partners, or trusted third‑party channels."
+      },
+      "steps": {
+        "title": "Redemption Steps",
+        "s1": "1. Go to My Subscription and open Redeem Code",
+        "s2": "2. Enter the code and click Redeem",
+        "s3": "3. On success, credits or plan take effect immediately"
+      },
+      "faq": {
+        "title": "FAQ",
+        "desc": "If the code is invalid or expired, check the input or contact support."
+      }
     }
   }
 }

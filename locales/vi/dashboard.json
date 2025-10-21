@@ -50,7 +50,13 @@
     "invitedLabel": "Đã mời:",
     "totalRewardsLabel": "Tổng thưởng:",
     "invitesTitle": "Danh sách mời",
-    "th": { "email": "Email", "name": "Tên", "registered": "Đã đăng ký", "purchase": "Mua", "reward": "Thưởng" },
+    "th": {
+      "email": "Email",
+      "name": "Tên",
+      "registered": "Đã đăng ký",
+      "purchase": "Mua",
+      "reward": "Thưởng"
+    },
     "empty": "Chưa có lời mời",
     "prev": "Trước",
     "next": "Sau",
@@ -78,7 +84,11 @@
     "hideKey": "Ẩn khóa API",
     "revealKey": "Hiện khóa API",
     "copyKey": "Sao chép khóa API",
-    "tabs": { "windows": "Windows", "macos": "macOS", "linux": "Linux" },
+    "tabs": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux"
+    },
     "step": {
       "installNode": "Bước 1: Cài Node.js",
       "installClaudeCli": "Bước 2: Cài Claude Code CLI",
@@ -95,9 +105,11 @@
     "permanentUserScope": "Vĩnh viễn (phạm vi người dùng):",
     "permanentZshOrBash": "Vĩnh viễn (~/.zshrc hoặc ~/.bash_profile):",
     "permanentBashrc": "Vĩnh viễn (~/.bashrc):",
-    "linux": { "installHint": "Dùng trình quản lý gói của bản phân phối, rồi kiểm tra với node --version. Ví dụ:" },
+    "linux": {
+      "installHint": "Dùng trình quản lý gói của bản phân phối, rồi kiểm tra với node --version. Ví dụ:"
+    },
     "noteTitle": "Lưu ý sử dụng",
-    "noteDesc": "Khóa API koi.codes của bạn dùng được cho cả Codex và Claude Code.",
+    "noteDesc": "Khóa API koi.codes của bạn có thể được sử dụng trong Codex, Claude Code và Gemini.",
     "quickStart": "Bắt đầu nhanh",
     "manualInstall": "Cài đặt thủ công",
     "oneClick": {
@@ -123,7 +135,9 @@
     "inactive": "Ngừng hoạt động",
     "morePlatforms": "Đối với nền tảng khác và xử lý sự cố, xem",
     "important": "Quan trọng",
-    "windows": { "runAsAdmin": "Nếu gặp lỗi quyền hạn, hãy chạy PowerShell với quyền Quản trị viên." },
+    "windows": {
+      "runAsAdmin": "Nếu gặp lỗi quyền hạn, hãy chạy PowerShell với quyền Quản trị viên."
+    },
     "codex": {
       "installTitle": "Bước 0: Cài Codex",
       "createAuth": "Sau đó tạo ~/.codex/auth.json với nội dung sau:",
@@ -137,7 +151,7 @@
       "step4Title": "Bước 4: Bắt đầu"
     },
     "gemini": {
-      "noteDesc": "Dùng cùng API key với Claude Code.",
+      "noteDesc": "Khóa API koi.codes của bạn có thể được sử dụng trong Codex, Claude Code và Gemini.",
       "step2Title": "Bước 2: Cài Gemini CLI",
       "powershellPermanent": "PowerShell vĩnh viễn (phạm vi người dùng):",
       "permanentNote": "Sau khi thiết lập, khởi động lại PowerShell để thay đổi có hiệu lực."
@@ -165,34 +179,39 @@
     "useNow": "Sử dụng tín dụng ngay",
     "creditsUnit": "Tín dụng"
   },
-  "loading": "Đang tải..."
-  ,
+  "loading": "Đang tải...",
   "guide": {
     "title": "Trợ giúp & Hỗ trợ",
     "subtitle": "Tóm tắt nhanh về tài khoản và cài đặt",
     "noteTitle": "Gợi ý",
     "noteDesc": "Hãy tạo API key và hoàn tất cài đặt VSCode/CLI trước khi sử dụng hằng ngày.",
-    "apiKeysCta": "Khóa API & Hướng dẫn cài đặt"
-    ,"tags": {
+    "apiKeysCta": "Khóa API & Hướng dẫn cài đặt",
+    "tags": {
       "mustRead": "BẮT BUỘC",
       "advanced": "Nâng cao",
       "tips": "Mẹo",
       "important": "Quan trọng",
       "common": "Phổ biến"
-    }
-    ,"account": {
+    },
+    "account": {
       "title": "Sử dụng tài khoản",
       "p1": "Đăng ký bằng email và bắt đầu sau khi xác minh.",
       "p2": "Người dùng mới nhận 500 tín dụng (khoảng 60–100 yêu cầu với model không phải Opus).",
-      "quoteFree": {"title": "Dùng thử miễn phí?", "body": "Có. Người dùng mới nhận khoảng 60–100 yêu cầu miễn phí. Khi người được mời mua bất kỳ gói nào, bạn nhận 260–400 yêu cầu, bạn bè nhận 130–200 yêu cầu. Gói độc lập $1 cũng kích hoạt thưởng."},
-      "quoteInvite": {"title": "Khi nào thưởng giới thiệu được phát?", "body": "Sau khi người được mời thanh toán, cả hai sẽ nhận thưởng."}
-    }
-    ,"usage": {
+      "quoteFree": {
+        "title": "Dùng thử miễn phí?",
+        "body": "Có. Người dùng mới nhận khoảng 60–100 yêu cầu miễn phí. Khi người được mời mua bất kỳ gói nào, bạn nhận 260–400 yêu cầu, bạn bè nhận 130–200 yêu cầu. Gói độc lập $1 cũng kích hoạt thưởng."
+      },
+      "quoteInvite": {
+        "title": "Khi nào thưởng giới thiệu được phát?",
+        "body": "Sau khi người được mời thanh toán, cả hai sẽ nhận thưởng."
+      }
+    },
+    "usage": {
       "title": "Cách sử dụng",
       "p1": "Dùng client chính thức và thiết lập biến môi trường cần thiết.",
       "p2": "Bạn cũng có thể trải nghiệm bằng cách thiết lập biến môi trường API."
-    }
-    ,"vscode": {
+    },
+    "vscode": {
       "title": "Cài đặt VSCode Extension",
       "desc": "Dùng Claude Code trong VSCode để có trải nghiệm mượt mà.",
       "install": {
@@ -211,50 +230,88 @@
         "step1": "1. Tạo ~/.claude/config.json",
         "step2": "2. Thêm API key lấy từ koi.codes:"
       },
-      "start": {"title": "Bắt đầu", "desc": "Khởi động lại VSCode để dùng Claude Code trực tiếp trong trình soạn thảo."}
-    }
-    ,"cli": {
+      "start": {
+        "title": "Bắt đầu",
+        "desc": "Khởi động lại VSCode để dùng Claude Code trực tiếp trong trình soạn thảo."
+      }
+    },
+    "cli": {
       "title": "Công cụ CLI",
       "desc": "Dùng Claude Code qua dòng lệnh—phù hợp cho người thích terminal.",
-      "install": {"title": "Cài CLI", "desc": "Cài bản mới nhất toàn cục:"},
-      "config": {"title": "Cấu hình", "line1": "1. Tạo ~/.claude/config.json", "line2": "2. Thêm API key và Base URL"},
-      "use": {"title": "Sử dụng", "desc": "Chạy ‘claude’ trong terminal để bắt đầu trò chuyện."}
-    }
-    ,"models": {
+      "install": {
+        "title": "Cài CLI",
+        "desc": "Cài bản mới nhất toàn cục:"
+      },
+      "config": {
+        "title": "Cấu hình",
+        "line1": "1. Tạo ~/.claude/config.json",
+        "line2": "2. Thêm API key và Base URL"
+      },
+      "use": {
+        "title": "Sử dụng",
+        "desc": "Chạy ‘claude’ trong terminal để bắt đầu trò chuyện."
+      }
+    },
+    "models": {
       "title": "Model khả dụng",
       "line1": "Opus: mạnh nhất nhưng tốn kém; giỏi nghiên cứu.",
       "line2": "Sonnet: cân bằng hiệu năng và chi phí; tốt cho công việc hằng ngày.",
       "line3": "Haiku: nhanh và tiết kiệm.",
       "note": "Lưu ý: Client Claude Code có thể tự động gọi Haiku để kiểm duyệt nội dung, tóm tắt, đặt tiêu đề và tạo cache. Thấy yêu cầu Haiku khi đóng terminal là bình thường."
-    }
-    ,"credits": {
+    },
+    "credits": {
       "title": "Tín dụng là gì? Liên quan token ra sao?",
       "line1": "Tín dụng và token không đổi trực tiếp.",
       "line2": "Chi phí = giá model × token × số lần.",
       "line3": "Tín dụng giống như số dư tài khoản.",
       "line4": "Vì vậy không thể đổi thẳng tín dụng–token, cũng không đảm bảo thời lượng dùng mỗi ngày."
-    }
-    ,"start": {
+    },
+    "start": {
       "title": "Bắt đầu trò chuyện",
       "desc": "Nhập câu hỏi/nhu cầu, Claude sẽ trả lời chi tiết kèm ví dụ mã.",
       "quoteTitle": "Mẹo cơ bản",
       "tip1": "Mô tả rõ yêu cầu",
       "tip2": "Cung cấp ngữ cảnh cần thiết",
       "tip3": "Dùng ví dụ để thể hiện kỳ vọng"
-    }
-    ,"plans": {
+    },
+    "plans": {
       "title": "Chọn gói",
       "desc": "Có hai hình thức linh hoạt: tín dụng đăng ký và tín dụng độc lập.",
-      "subscription": {"title": "Tín dụng đăng ký", "line1": "Cấp theo giờ trong thời hạn đăng ký.", "line2": "Đạt trần sẽ không tự hồi."},
-      "independent": {"title": "Tín dụng độc lập", "line1": "Không bao giờ hết hạn; khi hết đăng ký, ưu tiên giảm.", "line2": "Ưu tiên của người dùng miễn phí không đảm bảo ổn định và tốc độ.", "line3": "Không nên tích trữ, hãy mua theo nhu cầu."},
-      "recommend": {"title": "Khuyến nghị", "line1": "Chỉ làm việc: chọn Plus và dùng Sonnet.", "line2": "Làm thêm dự án phụ: chọn Pro.", "line3": "Nhà nghiên cứu: chọn Max; Sonnet không tối ưu cho nghiên cứu/đổi mới."}
-    }
-    ,"redeem": {
+      "subscription": {
+        "title": "Tín dụng đăng ký",
+        "line1": "Cấp theo giờ trong thời hạn đăng ký.",
+        "line2": "Đạt trần sẽ không tự hồi."
+      },
+      "independent": {
+        "title": "Tín dụng độc lập",
+        "line1": "Không bao giờ hết hạn; khi hết đăng ký, ưu tiên giảm.",
+        "line2": "Ưu tiên của người dùng miễn phí không đảm bảo ổn định và tốc độ.",
+        "line3": "Không nên tích trữ, hãy mua theo nhu cầu."
+      },
+      "recommend": {
+        "title": "Khuyến nghị",
+        "line1": "Chỉ làm việc: chọn Plus và dùng Sonnet.",
+        "line2": "Làm thêm dự án phụ: chọn Pro.",
+        "line3": "Nhà nghiên cứu: chọn Max; Sonnet không tối ưu cho nghiên cứu/đổi mới."
+      }
+    },
+    "redeem": {
       "title": "Đổi mã",
       "desc": "Tìm hiểu thêm về mã đổi.",
-      "get": {"title": "Nhận mã", "desc": "Lấy từ sự kiện chính thức, đối tác hoặc kênh bên thứ ba đáng tin."},
-      "steps": {"title": "Các bước đổi", "s1": "1. Vào trang Gói của tôi, mở tính năng Đổi mã", "s2": "2. Nhập mã và bấm Đổi", "s3": "3. Thành công: tín dụng hoặc gói có hiệu lực ngay"},
-      "faq": {"title": "Hỏi đáp", "desc": "Nếu mã không hợp lệ/hết hạn, hãy kiểm tra lại hoặc liên hệ hỗ trợ."}
+      "get": {
+        "title": "Nhận mã",
+        "desc": "Lấy từ sự kiện chính thức, đối tác hoặc kênh bên thứ ba đáng tin."
+      },
+      "steps": {
+        "title": "Các bước đổi",
+        "s1": "1. Vào trang Gói của tôi, mở tính năng Đổi mã",
+        "s2": "2. Nhập mã và bấm Đổi",
+        "s3": "3. Thành công: tín dụng hoặc gói có hiệu lực ngay"
+      },
+      "faq": {
+        "title": "Hỏi đáp",
+        "desc": "Nếu mã không hợp lệ/hết hạn, hãy kiểm tra lại hoặc liên hệ hỗ trợ."
+      }
     }
   }
 }
