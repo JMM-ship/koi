@@ -80,7 +80,7 @@ const TeamMembers = () => {
       "claude-sonnet-4-5-20250929": "#00d084",
       "gpt-5-codex": "#00b4d8",
       "claude-opus-4-1-20250805": "#ffa500",
-      "DALL-E 3": "#ff006e",
+      "gemini-2.5-pro": "#ff006e",
       "claude-haiku-4-5-20251001": "#8b5cf6"
     };
     return colors[detail.model] || "#6b7280";

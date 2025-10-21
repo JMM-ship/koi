@@ -115,6 +115,7 @@
     },
     "cardClaude": "Claude Code",
     "cardCodex": "Codex",
+    "cardGemini": "Gemini CLI",
     "cliSetup": "Cài & cấu hình CLI",
     "created": "Đã tạo",
     "status": "Trạng thái",
@@ -134,6 +135,12 @@
       "createConfig": "Sau đó tạo ~/.codex/config.toml với nội dung sau:",
       "step3Title": "Bước 3: Thiết lập biến môi trường",
       "step4Title": "Bước 4: Bắt đầu"
+    },
+    "gemini": {
+      "noteDesc": "Dùng cùng API key với Claude Code.",
+      "step2Title": "Bước 2: Cài Gemini CLI",
+      "powershellPermanent": "PowerShell vĩnh viễn (phạm vi người dùng):",
+      "permanentNote": "Sau khi thiết lập, khởi động lại PowerShell để thay đổi có hiệu lực."
     }
   },
   "ranking": {

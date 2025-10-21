@@ -115,6 +115,7 @@
     },
     "cardClaude": "Claude Code",
     "cardCodex": "Codex",
+    "cardGemini": "Gemini CLI",
     "cliSetup": "CLI install & setup",
     "created": "Created",
     "status": "Status",
@@ -134,6 +135,12 @@
       "createConfig": "Then create a new ~/.codex/config.toml with the content below:",
       "step3Title": "Step 3: Set Environment Variable",
       "step4Title": "Step 4: Get Started"
+    },
+    "gemini": {
+      "noteDesc": "Use the same API key as Claude Code.",
+      "step2Title": "Step 2: Install Gemini CLI",
+      "powershellPermanent": "PowerShell Permanent (user scope):",
+      "permanentNote": "After setting, restart PowerShell for changes to take effect."
     }
   },
   "ranking": {
