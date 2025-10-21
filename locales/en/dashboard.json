@@ -154,7 +154,9 @@
       "noteDesc": "Your koi.codes API key can be used in Codex, Claude Code, and Gemini.",
       "step2Title": "Step 2: Install Gemini CLI",
       "powershellPermanent": "PowerShell Permanent (user scope):",
-      "permanentNote": "After setting, restart PowerShell for changes to take effect."
+      "permanentNote": "After setting, restart PowerShell for changes to take effect.",
+      "fixBugNote": "If Gemini fails to run, you can delete the ~/.gemini/settings.json file and then run Gemini again.",
+      "fixBugNoteWindows": "If Gemini fails to run, you can delete the %USERPROFILE%\\.gemini\\settings.json file and then run Gemini again."
     }
   },
   "ranking": {

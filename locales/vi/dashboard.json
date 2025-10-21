@@ -154,7 +154,9 @@
       "noteDesc": "Khóa API koi.codes của bạn có thể được sử dụng trong Codex, Claude Code và Gemini.",
       "step2Title": "Bước 2: Cài Gemini CLI",
       "powershellPermanent": "PowerShell vĩnh viễn (phạm vi người dùng):",
-      "permanentNote": "Sau khi thiết lập, khởi động lại PowerShell để thay đổi có hiệu lực."
+      "permanentNote": "Sau khi thiết lập, khởi động lại PowerShell để thay đổi có hiệu lực.",
+      "fixBugNote": "Nếu không thể chạy được Gemini, bạn có thể xóa tệp ~/.gemini/settings.json rồi chạy lại Gemini.",
+      "fixBugNoteWindows": "Nếu không thể chạy được Gemini, bạn có thể xóa tệp %USERPROFILE%\\.gemini\\settings.json rồi chạy lại Gemini."
     }
   },
   "ranking": {

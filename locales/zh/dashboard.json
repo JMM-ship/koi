@@ -154,7 +154,9 @@
       "noteDesc": "你的 koi.codes API Key 可同时用于 Codex 与 Claude Code。",
       "step2Title": "步骤 2：安装 Gemini CLI",
       "powershellPermanent": "PowerShell 永久设置（用户级）：",
-      "permanentNote": "设置后需要重新打开 PowerShell 窗口才能生效。"
+      "permanentNote": "设置后需要重新打开 PowerShell 窗口才能生效。",
+      "fixBugNote": "如果无法调用gemini，你可以通过删除~/.gemini/settings.json 文件后再执行一次gemini即可。",
+      "fixBugNoteWindows": "如果无法调用gemini，你可以通过删除%USERPROFILE%\\.gemini\\settings.json 文件后再执行一次gemini即可。"
     }
   },
   "ranking": {

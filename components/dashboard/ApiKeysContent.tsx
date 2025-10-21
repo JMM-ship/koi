@@ -450,8 +450,8 @@ export default function ApiKeysContent() {
               <div style={{ color: "#999", fontSize: 12 }}>{t('dashboard.apiKeys.cliSetup') || 'CLI install & setup'}</div>
             </div>
           </div>
-          <div onClick={() => setSelectedGuide(selectedGuide === "gemini" ? null : "gemini")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "gemini" ? "#121212" : "#1a1a1a", border: selectedGuide === "gemini" ? "1px solid #00d084" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-            <FiTerminal style={{ color: "#00d084", fontSize: 24 }} />
+          <div onClick={() => setSelectedGuide(selectedGuide === "gemini" ? null : "gemini")} style={{ cursor: "pointer", flex: "1 1 300px", minWidth: 260, background: selectedGuide === "gemini" ? "#121212" : "#1a1a1a", border: selectedGuide === "gemini" ? "1px solid #ff6b00" : "1px solid #2a2a2a", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
+            <FiTerminal style={{ color: "#ff6b00", fontSize: 24 }} />
             <div>
               <div style={{ color: "#fff", fontWeight: 600 }}>{t('dashboard.apiKeys.cardGemini') || 'Gemini CLI'}</div>
               <div style={{ color: "#999", fontSize: 12 }}>{t('dashboard.apiKeys.cliSetup') || 'CLI install & setup'}</div>
@@ -706,9 +706,9 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
               <p style={{ fontSize: 14, color: "#ccc", margin: 0 }}>{t('dashboard.apiKeys.gemini.noteDesc') || 'Your koi.codes API key can be used in Codex, Claude Code, and Gemini.'}</p>
             </div>
             <div style={{ display: "flex", gap: 8, borderBottom: "2px solid #1a1a1a", marginBottom: 12 }}>
-              <button onClick={() => setActiveTab("windows")} style={{ background: activeTab === "windows" ? "linear-gradient(135deg, #00d084 0%, #00f0a0 100%)" : "transparent", color: activeTab === "windows" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaWindows /> {t('dashboard.apiKeys.tabs.windows') || 'Windows'}</button>
-              <button onClick={() => setActiveTab("macos")} style={{ background: activeTab === "macos" ? "linear-gradient(135deg, #00d084 0%, #00f0a0 100%)" : "transparent", color: activeTab === "macos" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaApple /> {t('dashboard.apiKeys.tabs.macos') || 'macOS'}</button>
-              <button onClick={() => setActiveTab("linux")} style={{ background: activeTab === "linux" ? "linear-gradient(135deg, #00d084 0%, #00f0a0 100%)" : "transparent", color: activeTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> {t('dashboard.apiKeys.tabs.linux') || 'Linux'}</button>
+              <button onClick={() => setActiveTab("windows")} style={{ background: activeTab === "windows" ? "linear-gradient(135deg, #ff6b00 0%, #ff6b00 100%)" : "transparent", color: activeTab === "windows" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaWindows /> {t('dashboard.apiKeys.tabs.windows') || 'Windows'}</button>
+              <button onClick={() => setActiveTab("macos")} style={{ background: activeTab === "macos" ? "linear-gradient(135deg, #ff6b00 0%, #ff6b00 100%)" : "transparent", color: activeTab === "macos" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaApple /> {t('dashboard.apiKeys.tabs.macos') || 'macOS'}</button>
+              <button onClick={() => setActiveTab("linux")} style={{ background: activeTab === "linux" ? "linear-gradient(135deg, #ff6b00 0%, #ff6b00 100%)" : "transparent", color: activeTab === "linux" ? "#fff" : "#999", border: "none", borderRadius: "8px 8px 0 0", padding: "10px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}><FaLinux /> {t('dashboard.apiKeys.tabs.linux') || 'Linux'}</button>
             </div>
             {activeTab === "windows" && (
               <>
@@ -761,6 +761,9 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>gemini</code>
+                  </div>
+                  <div style={{ background: "#221a00", border: "1px solid #ffa500", borderRadius: 6, padding: 10, marginTop: 8 }}>
+                    <div style={{ color: "#ffd27f", fontSize: 12 }}>{t('dashboard.apiKeys.gemini.fixBugNote')}</div>
                   </div>
                 </div>
               </>
@@ -815,6 +818,9 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>gemini</code>
+                  </div>
+                  <div style={{ background: "#221a00", border: "1px solid #ffa500", borderRadius: 6, padding: 10, marginTop: 8 }}>
+                    <div style={{ color: "#ffd27f", fontSize: 12 }}>{t('dashboard.apiKeys.gemini.fixBugNote') || 'If Gemini fails to run, you can delete the ~/.gemini/settings.json file and then run Gemini again.'}</div>
                   </div>
                 </div>
               </>
@@ -873,6 +879,9 @@ env_key = "KOI_OPENAI_TOKEN"`}</code></pre>
                   <h5 style={{ margin: 0, color: "#fff" }}>{t('dashboard.apiKeys.step.getStarted') || 'Step 4: Get Started'}</h5>
                   <div style={{ background: "#000", borderRadius: 4, padding: 8, marginTop: 8 }}>
                     <code style={{ color: "#00d084" }}>gemini</code>
+                  </div>
+                  <div style={{ background: "#221a00", border: "1px solid #ffa500", borderRadius: 6, padding: 10, marginTop: 8 }}>
+                    <div style={{ color: "#ffd27f", fontSize: 12 }}>{t('dashboard.apiKeys.gemini.fixBugNote') || 'If Gemini fails to run, you can delete the ~/.gemini/settings.json file and then run Gemini again.'}</div>
                   </div>
                 </div>
               </>
